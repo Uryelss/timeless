@@ -1,0 +1,100 @@
+.footer {
+    background-color: #007545;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 10px 100px; /* Adjusted for better spacing */
+    height: 170px; /* Increased height */
+    width: 100%;
+    position: relative;
+    bottom: 0;
+    flex-shrink: 0;
+
+    /* TIMELESS Text */
+    .footer-logo {
+        font-family: "Montserrat Subrayada", sans-serif;
+        font-size: 70px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        line-height: 1;
+        margin: 0;
+        white-space: nowrap;
+        flex-grow: 1; /* Takes available space */
+        text-align: left;
+        max-width: 55%;
+    }
+
+    /* Right Section: Support Links */
+    .footer-right {
+        max-width: 230px;
+        margin-top: auto; /* Moves it to the bottom */
+        padding-bottom: 10px;
+        align-self: flex-end;
+    }
+
+    h3 {
+        font-family: "Montserrat", sans-serif;
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 0;
+
+        li {
+            margin-bottom: 3px;
+
+            a {
+                text-decoration: none;
+                color: white;
+                font-size: 13px;
+                transition: color 0.3s;
+
+                &:hover {
+                    color: #a37e2c;
+                }
+            }
+        }
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .footer {
+        padding: 20px 50px;
+        height: 120px;
+    }
+
+    .footer-logo {
+        font-size: 50px;
+    }
+
+    .footer-right {
+        padding-bottom: 5px;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        height: auto;
+        padding: 20px 30px;
+    }
+
+    .footer-logo {
+        font-size: 45px;
+    }
+
+    .footer-right {
+        align-items: center;
+        text-align: center;
+        margin-top: 20px;
+    }
+}

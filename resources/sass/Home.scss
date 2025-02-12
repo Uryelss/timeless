@@ -1,0 +1,40 @@
+.hero-section {
+    background-image: url("/images/homepage.png");
+    background-size: cover;
+    background-position: center;
+    height: 120vh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 50px; /* Adjust as needed */
+}
+
+.content {
+    position: absolute;
+    left: 50px; /* Fixed position from left */
+    bottom: 5%; /* Move it further down */
+    transform: translateY(50%); /* Align properly */
+}
+
+.shop-btn {
+    background-color: #007545;
+    color: white;
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    font-size: 15px;
+    width: 220px; /* Fixed width */
+    height: 48px; /* Fixed height */
+    border-radius: 1000px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.8); /* Drop shadow (80% black) */
+    position: absolute;
+    left: 50px; /* Fixed position */
+    bottom: 3%; /* Lower the button */
+    transform: translateY(50%); /* Keeps alignment */
+}
+
+.shop-btn:hover {
+    background-color: #005d37;
+}
