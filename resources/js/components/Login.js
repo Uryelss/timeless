@@ -11,10 +11,13 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost/api/login", {
-                email,
-                password,
-            });
+            const response = await axios.post(
+                "http://127.0.0.1:8000/api/login",
+                {
+                    email,
+                    password,
+                }
+            );
             localStorage.setItem("token", response.data.token);
             window.location.href = "/dashboard"; // Redirect to a dashboard or home page
         } catch (err) {

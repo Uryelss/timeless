@@ -3,9 +3,9 @@
 return [
 
     /*
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     | Authentication Defaults
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     |
     | This option controls the default authentication "guard" and password
     | reset options for your application. You may change these defaults
@@ -19,9 +19,9 @@ return [
     ],
 
     /*
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     | Authentication Guards
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     |
     | Next, you may define every authentication guard for your application.
     | Of course, a great default configuration has been defined for you
@@ -31,16 +31,15 @@ return [
     | users are actually retrieved out of your database or other storage
     | mechanisms used by this application to persist your user's data.
     |
-    | Supported: "session"
+    | Supported: "session", "passport"
     |
     */
 
     'guards' => [
         'web' => [
-            'driver' => 'passport',  // Use session driver for web guard
+            'driver' => 'session',  // Use session driver for web guard
             'provider' => 'users',
         ],
-
         'api' => [
             'driver' => 'passport',  // Use passport for API authentication
             'provider' => 'users',
@@ -49,9 +48,9 @@ return [
     ],
 
     /*
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     | User Providers
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     |
     | All authentication drivers have a user provider. This defines how the
     | users are actually retrieved out of your database or other storage
@@ -73,9 +72,9 @@ return [
     ],
 
     /*
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     | Resetting Passwords
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     |
     | You may specify multiple password reset configurations if you have more
     | than one user table or model in the application and you want to have
@@ -97,9 +96,9 @@ return [
     ],
 
     /*
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     | Password Confirmation Timeout
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     |
     | Here you may define the amount of seconds before a password confirmation
     | times out and the user is prompted to re-enter their password via the
