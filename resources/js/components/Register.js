@@ -41,10 +41,7 @@ const Register = () => {
 
         try {
             // Make POST request to backend API
-            const response = await axios.post(
-                "http://127.0.0.1:8000/api/register",
-                data
-            );
+            const response = await axios.post("/api/register", data);
             console.log(response.data);
 
             // Set success message

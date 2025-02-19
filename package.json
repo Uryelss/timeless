@@ -24,6 +24,7 @@
         "sass-loader": "^11.0.1"
     },
     "dependencies": {
+        "lucide-react": "^0.475.0",
         "react-router-dom": "^7.1.5"
     }
 }

@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import AdminLayout from "./AdminLayout";
 
 const Dashboard = () => {
     const [user, setUser] = useState(null);
-    const history = useHistory();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem("auth_token");
 
         if (!token) {
-            history.push("/login"); // Redirect to login if no token
+            navigate("/login"); // Redirect if no token
+            return;
         }
 
-        // Fetch user data with the token (optional: fetch more user data from API)
         fetch("http://127.0.0.1:8000/api/user", {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -22,23 +23,24 @@ const Dashboard = () => {
             .then((data) => setUser(data.user))
             .catch((error) => {
                 console.error("Error fetching user data", error);
-                history.push("/login");
+                navigate("/login"); // Redirect if error occurs
             });
-    }, [history]);
+    }, [navigate]);
 
     return (
-        <div className="dashboard-container">
-            <h2>Dashboard</h2>
-            {user ? (
-                <div>
-                    <h3>Welcome, {user.first_name}!</h3>
-                    {/* Display user data */}
-                    <p>Email: {user.email}</p>
-                </div>
-            ) : (
-                <p>Loading...</p>
-            )}
-        </div>
+        <AdminLayout>
+            <div className="dashboard-container">
+                <h2>Dashboard</h2>
+                {user ? (
+                    <div>
+                        <h3>Welcome, {user.first_name}!</h3>
+                        <p>Email: {user.email}</p>
+                    </div>
+                ) : (
+                    <p>Loading...</p>
+                )}
+            </div>
+        </AdminLayout>
     );
 };
 

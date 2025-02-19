@@ -1,0 +1,55 @@
+.product-page {
+    padding: 20px;
+
+    .form-card {
+        padding: 20px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        margin-bottom: 20px;
+
+        form {
+            display: grid;
+            grid-gap: 10px;
+
+            input {
+                padding: 10px;
+                font-size: 14px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            button {
+                padding: 10px;
+                background-color: #006039;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+        }
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        button {
+            padding: 5px 10px;
+            background-color: #ff8c00;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    }
+}

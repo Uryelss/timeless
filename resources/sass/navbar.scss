@@ -1,0 +1,42 @@
+.navbar {
+    background-color: #ffff;
+    color: rgb(0, 0, 0);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 20px;
+    height: 70px; // Fixed height for the navbar
+
+    .navbar-left {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+
+        .navbar-logo {
+            width: 250px;
+            height: 200px;
+            margin-right: 25px;
+            position: relative;
+            top: -90px;
+        }
+    }
+
+    .navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        i {
+            font-size: 22px;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+            top: -75px; // Move icons up slightly
+
+            &:hover {
+                color: #fffdd0;
+            }
+        }
+    }
+}
