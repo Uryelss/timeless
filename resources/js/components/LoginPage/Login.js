@@ -17,19 +17,32 @@ const Login = () => {
                 "http://localhost:8000/api/login",
                 form
             );
+            console.log("API Response:", response.data);
+
             const { user, token } = response.data;
 
-            // Store token in localStorage
+            // Store token, email, and role in localStorage
             localStorage.setItem("token", token);
-            localStorage.setItem("role", user.role);
+            localStorage.setItem("email", user.email);
+            localStorage.setItem("role", user.role); // Store role
+
+            console.log("Stored Role:", localStorage.getItem("role"));
 
             // Redirect based on role
             if (user.role === "admin") {
+                console.log("Redirecting to Admin Dashboard");
                 navigate("/admin-dashboard");
-            } else {
+            } else if (user.role === "user") {
+                console.log("Redirecting to User Dashboard");
                 navigate("/user-dashboard");
+            } else {
+                alert("Unauthorized access!");
             }
         } catch (error) {
+            console.error(
+                "Login Error:",
+                error.response?.data || error.message
+            );
             alert("Login failed! Check your credentials.");
         }
     };

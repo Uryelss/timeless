@@ -3,6 +3,7 @@ import axios from "axios";
 
 const Products = () => {
     const [products, setProducts] = useState([]);
+    const [archivedProducts, setArchivedProducts] = useState([]);
     const [formData, setFormData] = useState({
         product_image: null,
         product_name: "",
@@ -32,43 +33,78 @@ const Products = () => {
         }
     };
 
+    const fetchArchivedProducts = async () => {
+        try {
+            const response = await axios.get(
+                "http://localhost:8000/api/products/archived"
+            );
+            if (response.status === 200) {
+                setArchivedProducts(response.data);
+            } else {
+                alert("Failed to fetch archived products!");
+            }
+        } catch (error) {
+            console.error("Error fetching archived products:", error);
+        }
+    };
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleFileChange = (e) => {
-        setFormData({ ...formData, product_image: e.target.files[0] });
+        if (e.target.files.length > 0) {
+            setFormData({ ...formData, product_image: e.target.files[0] });
+        }
     };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         const formDataToSend = new FormData();
-        for (const key in formData) {
-            formDataToSend.append(key, formData[key]);
-        }
+        formDataToSend.append("product_image", formData.product_image);
+        formDataToSend.append("product_name", formData.product_name);
+        formDataToSend.append("price", formData.price);
+        formDataToSend.append("category", formData.category);
+        formDataToSend.append("brand", formData.brand);
+        formDataToSend.append("movement", formData.movement);
+        formDataToSend.append("strap_material", formData.strap_material);
+        formDataToSend.append("gender", formData.gender);
+        formDataToSend.append("size", formData.size);
 
         try {
+            let response;
             if (editingProduct) {
-                await axios.post(
-                    `http://localhost:8000/api/products/${editingProduct.id}?_method=PUT`,
+                response = await axios.post(
+                    `http://localhost:8000/api/products/${editingProduct.id}`,
                     formDataToSend,
-                    {
-                        headers: { "Content-Type": "multipart/form-data" },
-                    }
+                    { headers: { "Content-Type": "multipart/form-data" } }
                 );
             } else {
-                await axios.post(
+                response = await axios.post(
                     "http://localhost:8000/api/products",
                     formDataToSend,
-                    {
-                        headers: { "Content-Type": "multipart/form-data" },
-                    }
+                    { headers: { "Content-Type": "multipart/form-data" } }
                 );
             }
-            fetchProducts();
-            resetForm();
+
+            console.log("Response:", response); // <-- Log response
+
+            if (response.status === 200) {
+                alert(editingProduct ? "Product Updated!" : "Product Added!");
+                fetchProducts();
+                resetForm();
+            } else {
+                alert("Failed to save product!");
+            }
         } catch (error) {
-            console.error("Error submitting product:", error);
+            console.error(
+                "Error saving product:",
+                error.response?.data || error
+            );
+            alert(
+                "Error saving product: " +
+                    (error.response?.data?.message || error.message)
+            );
         }
     };
 
@@ -96,8 +132,22 @@ const Products = () => {
         try {
             await axios.delete(`http://localhost:8000/api/products/${id}`);
             fetchProducts();
+            fetchArchivedProducts();
         } catch (error) {
             console.error("Error deleting product:", error);
+        }
+    };
+
+    const restoreProduct = async (id) => {
+        try {
+            await axios.post(
+                `http://localhost:8000/api/products/${id}/restore`
+            );
+            alert("Product restored successfully!");
+            fetchProducts();
+            fetchArchivedProducts();
+        } catch (error) {
+            console.error("Error restoring product:", error);
         }
     };
 
@@ -105,7 +155,11 @@ const Products = () => {
         <div>
             <h2>Product Management</h2>
             <button onClick={resetForm}>Add Product</button>
+            <button onClick={fetchArchivedProducts}>
+                View Archived Products
+            </button>
 
+            {/* Product Form */}
             <form onSubmit={handleSubmit} encType="multipart/form-data">
                 <input
                     type="file"
@@ -182,6 +236,7 @@ const Products = () => {
                 </button>
             </form>
 
+            {/* Product List */}
             <table>
                 <thead>
                     <tr>
@@ -205,8 +260,8 @@ const Products = () => {
                             <td>
                                 <img
                                     src={`http://localhost:8000/storage/${product.product_image}`}
+                                    alt={product.product_name}
                                     width="50"
-                                    alt="product"
                                 />
                             </td>
                             <td>{product.product_name}</td>

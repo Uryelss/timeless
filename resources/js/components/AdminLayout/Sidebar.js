@@ -13,20 +13,37 @@ const Sidebar = () => {
                 <i className="fa-solid fa-chart-line"></i> Dashboard
             </div>
 
-            <div className="menu-item" onClick={() => navigate("/products")}>
+            {/* Update links to use full URL */}
+            <div
+                className="menu-item"
+                onClick={() =>
+                    (window.location.href =
+                        "http://localhost:8000/Admin-products")
+                }
+            >
                 <i className="fa-solid fa-cart-shopping"></i> Product
             </div>
 
-            <div className="menu-item" onClick={() => navigate("/orders")}>
+            <div
+                className="menu-item"
+                onClick={() =>
+                    (window.location.href = "http://localhost:8000/Admin-order")
+                }
+            >
                 <i className="fa-solid fa-bag-shopping"></i> Order
+            </div>
+
+            <div
+                className="menu-item"
+                onClick={() =>
+                    (window.location.href = "http://localhost:8000/Admin-user")
+                }
+            >
+                <i className="fa-solid fa-user"></i> User
             </div>
 
             <div className="menu-item" onClick={() => navigate("/customers")}>
                 <i className="fa-solid fa-users"></i> Customer
-            </div>
-
-            <div className="menu-item" onClick={() => navigate("/users")}>
-                <i className="fa-solid fa-user"></i> User
             </div>
 
             <div className="menu-item" onClick={() => navigate("/inventory")}>

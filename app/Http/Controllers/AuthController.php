@@ -8,12 +8,11 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Profile;
-
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
     // REGISTER FUNCTION
-
     public function register(Request $request)
     {
         $request->validate([
@@ -27,7 +26,12 @@ class AuthController extends Controller
         ]);
 
         // Assign role
-        $role = Role::where('role_name', str_contains(strtolower($request->email), '@admin.com') ? 'admin' : 'user')->first();
+        $isAdmin = strpos(strtolower($request->email), '@admin.com') !== false;
+        $role = Role::where('role_name', $isAdmin ? 'admin' : 'user')->first();
+
+        if (!$role) {
+            return response()->json(['error' => 'Role not found'], 500);
+        }
 
         // Create user
         $user = User::create([
@@ -46,7 +50,7 @@ class AuthController extends Controller
             'suffix' => $request->suffix,
         ]);
 
-        // Generate authentication token
+        // Generate authentication token (Laravel 7 Passport)
         $token = $user->createToken('AuthToken')->accessToken;
 
         return response()->json([
@@ -55,28 +59,38 @@ class AuthController extends Controller
             'token' => $token,
         ], 201);
     }
-    // LOGIN FUNCTION
 
+    // LOGIN FUNCTION
     public function login(Request $request)
     {
+        // Validate input
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required|string|min:6',
+            'password' => 'required'
         ]);
 
+        // Find user by email
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Login failed! Check your credentials.'], 401);
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
         }
 
-        // Ensure Passport authentication works properly
-        $token = $user->createToken('AuthToken')->accessToken;
+        // Check if password matches
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json(['error' => 'Invalid credentials'], 401);
+        }
+
+        // Generate authentication token (Laravel 7 Passport)
+        $token = $user->createToken('authToken')->accessToken;
 
         return response()->json([
-            'message' => 'Login successful!',
-            'user' => $user,
-            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'email' => $user->email,
+                'role' => $user->role->role_name // Ensure the role is returned
+            ],
+            'token' => $token
         ]);
     }
 }

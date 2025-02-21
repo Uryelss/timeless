@@ -17,6 +17,7 @@ class Profile extends Model
         'suffix',
         'phone',
         'profile_image'
+
     ];
 
     public function user()

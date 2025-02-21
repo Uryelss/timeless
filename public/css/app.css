@@ -12071,3 +12071,104 @@ textarea.form-control-lg {
 .admin-dashboard button:hover {
   background-color: #a37e2c;
 }
+
+.admin-container {
+  display: flex;
+}
+
+.product-management {
+  padding: 20px;
+  width: 100%;
+}
+
+.product-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.product-actions .search-bar {
+  padding: 8px;
+  width: 300px;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+.product-actions .add-product {
+  width: 266px;
+  height: 46px;
+  background: #007545;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.83);
+  border-radius: 9px;
+  border: 1px solid black;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+.product-table th,
+.product-table td {
+  border: 1px solid black;
+  padding: 10px;
+  text-align: center;
+}
+.product-table th {
+  background: #f2f2f2;
+}
+.product-table .product-image {
+  width: 50px;
+  height: 50px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 5px;
+}
+.product-table .action-icons {
+  font-size: 20px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  color: black;
+  word-wrap: break-word;
+}
+.product-table .action-icons .edit-icon {
+  color: blue;
+  cursor: pointer;
+  margin-right: 10px;
+}
+.product-table .action-icons .archive-icon {
+  color: red;
+  cursor: pointer;
+}
+
+.add-product-form {
+  width: 1163px;
+  height: 716px;
+  background: white;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.55);
+  border: 1px solid black;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.add-product-form .button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.add-product-form .button-group .cancel-button,
+.add-product-form .button-group .save-button {
+  width: 216px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid black;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+.add-product-form .button-group .save-button {
+  background: #006039;
+  color: white;
+}
