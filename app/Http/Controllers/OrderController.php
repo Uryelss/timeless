@@ -10,36 +10,37 @@ class OrderController extends Controller
     // Get all orders
     public function index()
     {
-        $orders = Order::all(); // Fetch all orders from the database
+        $orders = Order::all();
+
+        // Ensure items are decoded from JSON to array before sending
+        foreach ($orders as $order) {
+            $order->items = json_decode($order->items, true);
+        }
+
         return response()->json($orders);
     }
 
 
-    // Store a new order
+    // Store new order (checkout simulation)
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'customer_name' => 'required|string',
-            'items' => 'required|array',
-            'priority' => 'required|string',
-            'order_status' => 'required|string',
-            'total_amount' => 'required|numeric',
-            'customer_details' => 'nullable|json',
-            'payment_information' => 'nullable|json',
+        $order = Order::create([
+            'customer_name' => $request->customer_name,
+            'items' => json_encode($request->items),
+            'priority' => $request->priority,
+            'total_amount' => $request->total_amount,
         ]);
 
-        $order = Order::create($validatedData);
-
-        return response()->json($order, 201);
+        return response()->json(['message' => 'Order placed successfully', 'order' => $order]);
     }
 
-    // Update order
+    // Update order status
     public function update(Request $request, $id)
     {
         $order = Order::find($id);
         if (!$order) return response()->json(['error' => 'Order not found'], 404);
 
-        $order->update($request->all());
+        $order->update(['order_status' => $request->order_status]);
         return response()->json(['message' => 'Order updated successfully']);
     }
 

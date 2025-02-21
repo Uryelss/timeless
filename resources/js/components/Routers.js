@@ -12,7 +12,10 @@ import User from "./AdminPage/User";
 import Order from "./AdminPage/Order";
 
 //sample for checkout
-import CheckoutPage from "./checkoutpage";
+import Checkout from "./checkout";
+
+//homepage
+import Home from "./UserHomePage/HomePage";
 
 const App = () => {
     return (
@@ -24,7 +27,8 @@ const App = () => {
                 <Route path="/Admin-products" element={<Products />} />
                 <Route path="/Admin-user" element={<User />} />
                 <Route path="/Admin-order" element={<Order />} />
-                <Route path="/checkout" element={<CheckoutPage />} />{" "}
+                <Route path="/sample" element={<Checkout />} />
+                <Route path="/homepage" element={<Home />} />
             </Routes>
         </Router>
     );
