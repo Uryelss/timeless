@@ -79218,14 +79218,23 @@ var UserPage = function UserPage() {
     users = _useState2[0],
     setUsers = _useState2[1];
   var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      id: null,
       username: "",
       password: "",
       email: "",
-      role: "user"
+      role_id: "1" // Default to User role
     }),
     _useState4 = _slicedToArray(_useState3, 2),
     formData = _useState4[0],
     setFormData = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState6 = _slicedToArray(_useState5, 2),
+    isEditing = _useState6[0],
+    setIsEditing = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState8 = _slicedToArray(_useState7, 2),
+    showForm = _useState8[0],
+    setShowForm = _useState8[1];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchUsers();
   }, []);
@@ -79235,16 +79244,23 @@ var UserPage = function UserPage() {
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            _context.next = 2;
+            _context.prev = 0;
+            _context.next = 3;
             return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("/api/users");
-          case 2:
+          case 3:
             response = _context.sent;
             setUsers(response.data);
-          case 4:
+            _context.next = 10;
+            break;
+          case 7:
+            _context.prev = 7;
+            _context.t0 = _context["catch"](0);
+            console.error("Error fetching users:", _context.t0);
+          case 10:
           case "end":
             return _context.stop();
         }
-      }, _callee);
+      }, _callee, null, [[0, 7]]);
     }));
     return function fetchUsers() {
       return _ref.apply(this, arguments);
@@ -79252,30 +79268,105 @@ var UserPage = function UserPage() {
   }();
   var handleSubmit = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(e) {
+      var payload, _error$response;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             e.preventDefault();
-            _context2.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("/api/users", formData);
-          case 3:
+            _context2.prev = 1;
+            payload = _objectSpread({
+              username: formData.username,
+              email: formData.email,
+              role_id: formData.role_id
+            }, formData.password && {
+              password: formData.password
+            });
+            console.log("Sending update request with:", payload); // Debugging log
+            _context2.next = 6;
+            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].put("/api/users/".concat(formData.id), {
+              username: formData.username,
+              email: formData.email,
+              role_id: 1 // Hardcoded to test
+            });
+          case 6:
+            alert("User updated successfully!");
             fetchUsers();
-          case 4:
+            closeForm();
+            _context2.next = 15;
+            break;
+          case 11:
+            _context2.prev = 11;
+            _context2.t0 = _context2["catch"](1);
+            console.error("Error saving user:", ((_error$response = _context2.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context2.t0);
+            alert("Failed to update user. Check console for details.");
+          case 15:
           case "end":
             return _context2.stop();
         }
-      }, _callee2);
+      }, _callee2, null, [[1, 11]]);
     }));
     return function handleSubmit(_x) {
       return _ref2.apply(this, arguments);
     };
   }();
+  var handleEdit = function handleEdit(user) {
+    setFormData({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role_id: user.role_id,
+      password: ""
+    });
+    setIsEditing(true);
+    setShowForm(true);
+  };
+  var handleArchive = /*#__PURE__*/function () {
+    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(id) {
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
+          case 0:
+            if (!window.confirm("Are you sure you want to archive this user?")) {
+              _context3.next = 10;
+              break;
+            }
+            _context3.prev = 1;
+            _context3.next = 4;
+            return axios__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"]("/api/users/".concat(id));
+          case 4:
+            fetchUsers();
+            _context3.next = 10;
+            break;
+          case 7:
+            _context3.prev = 7;
+            _context3.t0 = _context3["catch"](1);
+            console.error("Error archiving user:", _context3.t0);
+          case 10:
+          case "end":
+            return _context3.stop();
+        }
+      }, _callee3, null, [[1, 7]]);
+    }));
+    return function handleArchive(_x2) {
+      return _ref3.apply(this, arguments);
+    };
+  }();
+  var closeForm = function closeForm() {
+    setIsEditing(false);
+    setFormData({
+      id: null,
+      username: "",
+      password: "",
+      email: "",
+      role_id: "1"
+    });
+    setShowForm(false);
+  };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
       children: "User Management"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
       onClick: function onClick() {
-        return document.getElementById("userForm").style.display = "block";
+        return setShowForm(true);
       },
       children: "Add User"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("table", {
@@ -79308,16 +79399,19 @@ var UserPage = function UserPage() {
               children: user.email
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
               children: user.role
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+            }), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
               children: user.created_at ? new Date(user.created_at).toLocaleString() : "N/A"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
               children: user.updated_at ? new Date(user.updated_at).toLocaleString() : "N/A"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+                onClick: function onClick() {
+                  return handleEdit(user);
+                },
                 children: "Edit"
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
                 onClick: function onClick() {
-                  return axios__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"]("/api/users/".concat(user.id)).then(fetchUsers);
+                  return handleArchive(user.id);
                 },
                 children: "Archive"
               })]
@@ -79325,18 +79419,15 @@ var UserPage = function UserPage() {
           }, user.id);
         })
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-      id: "userForm",
-      style: {
-        display: "none"
-      },
+    }), showForm && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h3", {
-        children: "Add User"
+        children: isEditing ? "Edit User" : "Add User"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("form", {
         onSubmit: handleSubmit,
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
           type: "text",
           placeholder: "Username",
+          value: formData.username,
           onChange: function onChange(e) {
             return setFormData(_objectSpread(_objectSpread({}, formData), {}, {
               username: e.target.value
@@ -79345,16 +79436,17 @@ var UserPage = function UserPage() {
           required: true
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
           type: "password",
-          placeholder: "Password",
+          placeholder: "Password (Leave blank to keep current)",
+          value: formData.password,
           onChange: function onChange(e) {
             return setFormData(_objectSpread(_objectSpread({}, formData), {}, {
               password: e.target.value
             }));
-          },
-          required: true
+          }
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
           type: "email",
           placeholder: "Email",
+          value: formData.email,
           onChange: function onChange(e) {
             return setFormData(_objectSpread(_objectSpread({}, formData), {}, {
               email: e.target.value
@@ -79362,21 +79454,26 @@ var UserPage = function UserPage() {
           },
           required: true
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
+          value: formData.role_id,
           onChange: function onChange(e) {
             return setFormData(_objectSpread(_objectSpread({}, formData), {}, {
-              role: e.target.value
+              role_id: e.target.value
             }));
           },
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: "user",
+            value: "1",
             children: "User"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: "admin",
+            value: "2",
             children: "Admin"
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
           type: "submit",
-          children: "Save"
+          children: isEditing ? "Update" : "Save"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+          type: "button",
+          onClick: closeForm,
+          children: "Cancel"
         })]
       })]
     })]

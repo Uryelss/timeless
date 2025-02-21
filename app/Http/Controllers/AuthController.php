@@ -6,10 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Role;
+use App\Models\Profile;
+
 
 class AuthController extends Controller
 {
     // REGISTER FUNCTION
+
     public function register(Request $request)
     {
         $request->validate([
@@ -22,18 +26,24 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        // Role assignment (case-insensitive check for '@admin.com')
-        $role = str_contains(strtolower($request->email), '@admin.com') ? 'admin' : 'user';
+        // Assign role
+        $role = Role::where('role_name', str_contains(strtolower($request->email), '@admin.com') ? 'admin' : 'user')->first();
 
+        // Create user
         $user = User::create([
             'username' => $request->username,
             'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role_id' => $role->id,
+        ]);
+
+        // Create user profile
+        Profile::create([
+            'user_id' => $user->id,
             'first_name' => $request->first_name,
             'middle_name' => $request->middle_name,
             'last_name' => $request->last_name,
             'suffix' => $request->suffix,
-            'password' => Hash::make($request->password),
-            'role' => $role,
         ]);
 
         // Generate authentication token
@@ -45,7 +55,6 @@ class AuthController extends Controller
             'token' => $token,
         ], 201);
     }
-
     // LOGIN FUNCTION
 
     public function login(Request $request)

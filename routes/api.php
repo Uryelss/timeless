@@ -36,11 +36,10 @@ Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
 
 //ADMIN USER THAT USES CRUD
-Route::get('/users', [UserController::class, 'index']);
-Route::post('/users', [UserController::class, 'store']);
-Route::put('/users/{id}', [UserController::class, 'update']);
-Route::delete('/users/{id}', [UserController::class, 'destroy']);
-
+Route::get('/users', [UserController::class, 'index']); // Fetch users
+Route::post('/users', [UserController::class, 'store']); // Add user
+Route::put('/users/{id}', [UserController::class, 'update']); // Update user
+Route::delete('/users/{id}', [UserController::class, 'destroy']); // Archive user
 
 
 //ADMIN ORDER THAT USES CRUD
@@ -50,5 +49,5 @@ Route::delete('/users/{id}', [UserController::class, 'destroy']);
 Route::get('/orders', [OrderController::class, 'index']);
 Route::post('/orders', [OrderController::class, 'store']);
 Route::get('/orders/{id}', [OrderController::class, 'show']);
-Route::put('/orders/{id}', [OrderController::class, 'update']);
+Route::put('/users/{id}', [UserController::class, 'update']);
 Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
