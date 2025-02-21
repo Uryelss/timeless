@@ -11966,3 +11966,108 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #006039;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  font-family: "Montserrat", sans-serif;
+}
+.sidebar .menu-title,
+.sidebar .tools-title {
+  font-size: 15px;
+  font-weight: 400;
+  word-wrap: break-word;
+  margin-bottom: 10px;
+}
+.sidebar .menu-title {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 5px;
+}
+.sidebar .menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.sidebar .menu-item i {
+  font-size: 18px;
+}
+.sidebar .menu-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+.sidebar .tools-title {
+  margin-top: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 5px;
+}
+.sidebar .dropdown {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+.sidebar .dropdown:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+.sidebar .submenu {
+  display: none;
+  flex-direction: column;
+  padding-left: 20px;
+}
+.sidebar .submenu.open {
+  display: flex;
+}
+.sidebar .submenu .submenu-item {
+  padding: 8px 0;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+}
+.sidebar .submenu .submenu-item:hover {
+  color: #a37e2c;
+}
+
+.admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+.admin-dashboard h2, .admin-dashboard .h2 {
+  font-family: "Montserrat", sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+}
+.admin-dashboard button {
+  background-color: #006039;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.3s ease;
+}
+.admin-dashboard button:hover {
+  background-color: #a37e2c;
+}

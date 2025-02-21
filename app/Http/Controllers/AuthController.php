@@ -2,29 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class AuthController extends Controller
 {
-
-    //REGISTER FUNCTION
+    // REGISTER FUNCTION
     public function register(Request $request)
     {
         $request->validate([
-            'username' => 'required|string', // ✅ Ensure validation includes username
+            'username' => 'required|string|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'first_name' => 'required|string',
             'middle_name' => 'nullable|string',
             'last_name' => 'required|string',
             'suffix' => 'nullable|string',
-            'password' => 'required|string|min:6|confirmed', // ✅ 'confirmed' checks against 'password_confirmation'
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
-
-        $role = str_contains($request->email, '@admin.com') ? 'admin' : 'user';
+        // Role assignment (case-insensitive check for '@admin.com')
+        $role = str_contains(strtolower($request->email), '@admin.com') ? 'admin' : 'user';
 
         $user = User::create([
             'username' => $request->username,
@@ -37,30 +36,38 @@ class AuthController extends Controller
             'role' => $role,
         ]);
 
+        // Generate authentication token
+        $token = $user->createToken('AuthToken')->accessToken;
 
-
-        return response()->json(['message' => 'User registered successfully!'], 201);
+        return response()->json([
+            'message' => 'User registered successfully!',
+            'user' => $user,
+            'token' => $token,
+        ], 201);
     }
 
+    // LOGIN FUNCTION
 
-    //LOGIN FUNCTION 
     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required|string',
+            'password' => 'required|string|min:6',
         ]);
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $user = Auth::user();
-            $token = $user->createToken('AuthToken')->accessToken;
+        $user = User::where('email', $request->email)->first();
 
-            return response()->json([
-                'user' => $user,
-                'token' => $token,
-            ]);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Login failed! Check your credentials.'], 401);
         }
 
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        // Ensure Passport authentication works properly
+        $token = $user->createToken('AuthToken')->accessToken;
+
+        return response()->json([
+            'message' => 'Login successful!',
+            'user' => $user,
+            'token' => $token,
+        ]);
     }
 }

@@ -1,0 +1,86 @@
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #006039;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    font-family: "Montserrat", sans-serif;
+
+    .menu-title,
+    .tools-title {
+        font-size: 15px;
+        font-weight: 400;
+        word-wrap: break-word;
+        margin-bottom: 10px;
+    }
+
+    .menu-title {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding-bottom: 5px;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.3s ease;
+
+        i {
+            font-size: 18px;
+        }
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+    }
+
+    .tools-title {
+        margin-top: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding-bottom: 5px;
+    }
+
+    .dropdown {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        padding: 10px;
+        font-size: 15px;
+        font-weight: 500;
+        transition: background 0.3s ease;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+    }
+
+    .submenu {
+        display: none;
+        flex-direction: column;
+        padding-left: 20px;
+
+        &.open {
+            display: flex;
+        }
+
+        .submenu-item {
+            padding: 8px 0;
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+
+            &:hover {
+                color: #a37e2c;
+            }
+        }
+    }
+}
