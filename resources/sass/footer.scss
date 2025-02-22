@@ -1,0 +1,99 @@
+.footer {
+    background-color: #007545;
+    color: white;
+    display: flex;
+    justify-content: flex-start; /* Align content to the left */
+    align-items: center; /* Vertically center the content */
+    padding: 0 30px; /* Adjusted for no extra space */
+    height: 115px; /* Set fixed height */
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    flex-shrink: 0;
+
+    /* TIMELESS Text */
+    .footer-logo {
+        font-family: "Montserrat Subrayada", sans-serif;
+        font-size: 70px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        line-height: 1;
+        margin: 0;
+        white-space: nowrap;
+        flex-grow: 0; /* Prevent the logo from taking too much space */
+        text-align: left;
+    }
+
+    /* Right Section: Support Links */
+    .footer-right {
+        max-width: 230px;
+        margin-left: auto; /* Push to the right */
+        padding-bottom: 0;
+        justify-content: center;
+        align-self: flex-end;
+    }
+
+    h3 {
+        font-family: "Montserrat", sans-serif;
+        font-weight: bold;
+        font-size: 17px;
+        margin-bottom: 5px;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 0;
+
+        li {
+            margin-bottom: 3px;
+
+            a {
+                text-decoration: none;
+                color: white;
+                font-size: 13px;
+                transition: color 0.3s;
+
+                &:hover {
+                    color: #a37e2c;
+                }
+            }
+        }
+    }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .footer {
+        padding: 0 20px;
+        height: 80px; /* Fixed height for larger screens */
+    }
+
+    .footer-logo {
+        font-size: 50px;
+    }
+
+    .footer-right {
+        padding-bottom: 5px;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer {
+        flex-direction: row; /* Keep the content in a row */
+        justify-content: flex-start; /* Ensure the logo stays to the left */
+        align-items: center;
+        height: 80px; /* Fixed height */
+        padding: 0 20px;
+    }
+
+    .footer-logo {
+        font-size: 45px;
+    }
+
+    .footer-right {
+        margin-left: auto; /* Push links to the right */
+        margin-top: 0;
+    }
+}
