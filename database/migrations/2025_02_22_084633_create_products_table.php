@@ -8,7 +8,8 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->id();
+            $table->id(); // Auto Increment ID
+            $table->string('product_image'); // Store Image Path
             $table->string('product_name');
             $table->decimal('price', 10, 2);
             $table->string('category');
@@ -17,7 +18,7 @@ return new class extends Migration {
             $table->string('strap_material');
             $table->string('gender');
             $table->string('size');
-            $table->string('product_image');
+            $table->softDeletes(); // Soft Delete Feature
             $table->timestamps();
         });
     }

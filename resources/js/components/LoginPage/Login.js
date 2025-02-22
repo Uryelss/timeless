@@ -15,34 +15,24 @@ const Login = () => {
         try {
             const response = await axios.post(
                 "http://localhost:8000/api/login",
-                form
+                {
+                    email: form.email,
+                    password: form.password, // Make sure you send password and email
+                }
             );
-            console.log("API Response:", response.data);
-
             const { user, token } = response.data;
 
-            // Store token, email, and role in localStorage
+            // Store token in localStorage
             localStorage.setItem("token", token);
-            localStorage.setItem("email", user.email);
-            localStorage.setItem("role", user.role); // Store role
-
-            console.log("Stored Role:", localStorage.getItem("role"));
+            localStorage.setItem("role", user.role); // Store the role
 
             // Redirect based on role
             if (user.role === "admin") {
-                console.log("Redirecting to Admin Dashboard");
-                navigate("/admin-dashboard");
-            } else if (user.role === "user") {
-                console.log("Redirecting to User Dashboard");
-                navigate("/user-dashboard");
+                navigate("/admin-dashboard"); // Redirect to admin dashboard
             } else {
-                alert("Unauthorized access!");
+                navigate("/user-dashboard"); // Redirect to user dashboard
             }
         } catch (error) {
-            console.error(
-                "Login Error:",
-                error.response?.data || error.message
-            );
             alert("Login failed! Check your credentials.");
         }
     };

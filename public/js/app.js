@@ -78544,7 +78544,7 @@ var Sidebar = function Sidebar() {
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
       className: "menu-item",
       onClick: function onClick() {
-        return window.location.href = "http://localhost:8000/Admin-products";
+        return window.location.href = "http://localhost:8000/Admin-product";
       },
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
         className: "fa-solid fa-cart-shopping"
@@ -79196,10 +79196,10 @@ var OrderPage = function OrderPage() {
 
 /***/ }),
 
-/***/ "./resources/js/components/AdminPage/Products.js":
-/*!*******************************************************!*\
-  !*** ./resources/js/components/AdminPage/Products.js ***!
-  \*******************************************************/
+/***/ "./resources/js/components/AdminPage/Product.js":
+/*!******************************************************!*\
+  !*** ./resources/js/components/AdminPage/Product.js ***!
+  \******************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -79229,7 +79229,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
-var Products = function Products() {
+var ProductManagement = function ProductManagement() {
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
     products = _useState2[0],
@@ -79238,26 +79238,29 @@ var Products = function Products() {
     _useState4 = _slicedToArray(_useState3, 2),
     archivedProducts = _useState4[0],
     setArchivedProducts = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
-      product_image: null,
-      product_name: "",
-      price: "",
-      category: "",
-      brand: "",
-      movement: "",
-      strap_material: "",
-      gender: "",
-      size: ""
-    }),
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({}),
     _useState6 = _slicedToArray(_useState5, 2),
     formData = _useState6[0],
     setFormData = _useState6[1];
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState8 = _slicedToArray(_useState7, 2),
-    editingProduct = _useState8[0],
-    setEditingProduct = _useState8[1];
+    showForm = _useState8[0],
+    setShowForm = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState10 = _slicedToArray(_useState9, 2),
+    editMode = _useState10[0],
+    setEditMode = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState12 = _slicedToArray(_useState11, 2),
+    editId = _useState12[0],
+    setEditId = _useState12[1];
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState14 = _slicedToArray(_useState13, 2),
+    showArchived = _useState14[0],
+    setShowArchived = _useState14[1];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchProducts();
+    fetchArchivedProducts();
   }, []);
   var fetchProducts = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -79265,23 +79268,16 @@ var Products = function Products() {
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
-            _context.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/products");
-          case 3:
+            _context.next = 2;
+            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("/api/products");
+          case 2:
             response = _context.sent;
             setProducts(response.data);
-            _context.next = 10;
-            break;
-          case 7:
-            _context.prev = 7;
-            _context.t0 = _context["catch"](0);
-            console.error("Error fetching products:", _context.t0);
-          case 10:
+          case 4:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[0, 7]]);
+      }, _callee);
     }));
     return function fetchProducts() {
       return _ref.apply(this, arguments);
@@ -79293,27 +79289,16 @@ var Products = function Products() {
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.prev = 0;
-            _context2.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/products/archived");
-          case 3:
+            _context2.next = 2;
+            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("/api/products/archived");
+          case 2:
             response = _context2.sent;
-            if (response.status === 200) {
-              setArchivedProducts(response.data);
-            } else {
-              alert("Failed to fetch archived products!");
-            }
-            _context2.next = 10;
-            break;
-          case 7:
-            _context2.prev = 7;
-            _context2.t0 = _context2["catch"](0);
-            console.error("Error fetching archived products:", _context2.t0);
-          case 10:
+            setArchivedProducts(response.data);
+          case 4:
           case "end":
             return _context2.stop();
         }
-      }, _callee2, null, [[0, 7]]);
+      }, _callee2);
     }));
     return function fetchArchivedProducts() {
       return _ref2.apply(this, arguments);
@@ -79323,124 +79308,97 @@ var Products = function Products() {
     setFormData(_objectSpread(_objectSpread({}, formData), {}, _defineProperty({}, e.target.name, e.target.value)));
   };
   var handleFileChange = function handleFileChange(e) {
-    if (e.target.files.length > 0) {
-      setFormData(_objectSpread(_objectSpread({}, formData), {}, {
-        product_image: e.target.files[0]
-      }));
-    }
+    setFormData(_objectSpread(_objectSpread({}, formData), {}, {
+      product_image: e.target.files[0]
+    }));
   };
   var handleSubmit = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(e) {
-      var formDataToSend, response, _error$response, _error$response2;
+      var formDataObject;
       return _regeneratorRuntime().wrap(function _callee3$(_context3) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
             e.preventDefault();
-            formDataToSend = new FormData();
-            formDataToSend.append("product_image", formData.product_image);
-            formDataToSend.append("product_name", formData.product_name);
-            formDataToSend.append("price", formData.price);
-            formDataToSend.append("category", formData.category);
-            formDataToSend.append("brand", formData.brand);
-            formDataToSend.append("movement", formData.movement);
-            formDataToSend.append("strap_material", formData.strap_material);
-            formDataToSend.append("gender", formData.gender);
-            formDataToSend.append("size", formData.size);
-            _context3.prev = 11;
-            if (!editingProduct) {
-              _context3.next = 18;
+            formDataObject = new FormData();
+            Object.keys(formData).forEach(function (key) {
+              formDataObject.append(key, formData[key]);
+            });
+            if (!editMode) {
+              _context3.next = 9;
               break;
             }
-            _context3.next = 15;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("http://localhost:8000/api/products/".concat(editingProduct.id), formDataToSend, {
+            formDataObject.append("_method", "PUT");
+            _context3.next = 7;
+            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("/api/products/".concat(editId), formDataObject, {
               headers: {
                 "Content-Type": "multipart/form-data"
               }
-            });
-          case 15:
-            response = _context3.sent;
-            _context3.next = 21;
-            break;
-          case 18:
-            _context3.next = 20;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("http://localhost:8000/api/products", formDataToSend, {
-              headers: {
-                "Content-Type": "multipart/form-data"
-              }
-            });
-          case 20:
-            response = _context3.sent;
-          case 21:
-            console.log("Response:", response); // <-- Log response
-
-            if (response.status === 200) {
-              alert(editingProduct ? "Product Updated!" : "Product Added!");
+            }).then(function () {
+              setShowForm(false);
+              setEditMode(false);
+              setEditId(null);
               fetchProducts();
-              resetForm();
-            } else {
-              alert("Failed to save product!");
-            }
-            _context3.next = 29;
+            })["catch"](function (error) {
+              console.error("Error updating product:", error);
+            });
+          case 7:
+            _context3.next = 11;
             break;
-          case 25:
-            _context3.prev = 25;
-            _context3.t0 = _context3["catch"](11);
-            console.error("Error saving product:", ((_error$response = _context3.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context3.t0);
-            alert("Error saving product: " + (((_error$response2 = _context3.t0.response) === null || _error$response2 === void 0 || (_error$response2 = _error$response2.data) === null || _error$response2 === void 0 ? void 0 : _error$response2.message) || _context3.t0.message));
-          case 29:
+          case 9:
+            _context3.next = 11;
+            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("/api/products", formDataObject, {
+              headers: {
+                "Content-Type": "multipart/form-data"
+              }
+            }).then(function () {
+              setShowForm(false);
+              setEditMode(false);
+              setEditId(null);
+              fetchProducts();
+            })["catch"](function (error) {
+              console.error("Error adding product:", error);
+            });
+          case 11:
           case "end":
             return _context3.stop();
         }
-      }, _callee3, null, [[11, 25]]);
+      }, _callee3);
     }));
     return function handleSubmit(_x) {
       return _ref3.apply(this, arguments);
     };
   }();
-  var resetForm = function resetForm() {
-    setFormData({
-      product_image: null,
-      product_name: "",
-      price: "",
-      category: "",
-      brand: "",
-      movement: "",
-      strap_material: "",
-      gender: "",
-      size: ""
-    });
-    setEditingProduct(null);
-  };
   var handleEdit = function handleEdit(product) {
-    setEditingProduct(product);
-    setFormData(_objectSpread(_objectSpread({}, product), {}, {
-      product_image: null
-    }));
+    setFormData({
+      product_name: product.product_name,
+      price: product.price,
+      category: product.category,
+      brand: product.brand,
+      movement: product.movement,
+      strap_material: product.strap_material,
+      gender: product.gender,
+      size: product.size
+    });
+    setEditId(product.id);
+    setEditMode(true);
+    setShowForm(true);
   };
-  var handleDelete = /*#__PURE__*/function () {
+  var handleArchive = /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(id) {
       return _regeneratorRuntime().wrap(function _callee4$(_context4) {
         while (1) switch (_context4.prev = _context4.next) {
           case 0:
-            _context4.prev = 0;
-            _context4.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"]("http://localhost:8000/api/products/".concat(id));
-          case 3:
+            _context4.next = 2;
+            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].put("/api/products/archive/".concat(id));
+          case 2:
             fetchProducts();
-            fetchArchivedProducts();
-            _context4.next = 10;
-            break;
-          case 7:
-            _context4.prev = 7;
-            _context4.t0 = _context4["catch"](0);
-            console.error("Error deleting product:", _context4.t0);
-          case 10:
+          case 3:
           case "end":
             return _context4.stop();
         }
-      }, _callee4, null, [[0, 7]]);
+      }, _callee4);
     }));
-    return function handleDelete(_x2) {
+    return function handleArchive(_x2) {
       return _ref4.apply(this, arguments);
     };
   }();
@@ -79451,22 +79409,20 @@ var Products = function Products() {
           case 0:
             _context5.prev = 0;
             _context5.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("http://localhost:8000/api/products/".concat(id, "/restore"));
+            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].put("/api/products/restore/".concat(id));
           case 3:
-            alert("Product restored successfully!");
-            fetchProducts();
-            fetchArchivedProducts();
-            _context5.next = 11;
+            fetchArchivedProducts(); // Refresh archived products
+            _context5.next = 9;
             break;
-          case 8:
-            _context5.prev = 8;
+          case 6:
+            _context5.prev = 6;
             _context5.t0 = _context5["catch"](0);
             console.error("Error restoring product:", _context5.t0);
-          case 11:
+          case 9:
           case "end":
             return _context5.stop();
         }
-      }, _callee5, null, [[0, 8]]);
+      }, _callee5, null, [[0, 6]]);
     }));
     return function restoreProduct(_x3) {
       return _ref5.apply(this, arguments);
@@ -79476,78 +79432,81 @@ var Products = function Products() {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
       children: "Product Management"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-      onClick: resetForm,
-      children: "Add Product"
+      onClick: function onClick() {
+        return setShowForm(!showForm);
+      },
+      children: showForm ? "Close Form" : "Add Product"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-      onClick: fetchArchivedProducts,
-      children: "View Archived Products"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("form", {
+      onClick: function onClick() {
+        return setShowArchived(!showArchived);
+      },
+      children: showArchived ? "Show Active Products" : "Show Archived Products"
+    }), showForm && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("form", {
       onSubmit: handleSubmit,
-      encType: "multipart/form-data",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
         type: "file",
         name: "product_image",
         onChange: handleFileChange,
-        required: !editingProduct
+        required: !editMode
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
         type: "text",
         name: "product_name",
         placeholder: "Product Name",
-        value: formData.product_name,
         onChange: handleChange,
+        value: formData.product_name || "",
         required: true
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "text",
+        type: "number",
         name: "price",
         placeholder: "Price",
-        value: formData.price,
         onChange: handleChange,
+        value: formData.price || "",
         required: true
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
         type: "text",
         name: "category",
         placeholder: "Category",
-        value: formData.category,
         onChange: handleChange,
+        value: formData.category || "",
         required: true
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
         type: "text",
         name: "brand",
         placeholder: "Brand",
-        value: formData.brand,
         onChange: handleChange,
+        value: formData.brand || "",
         required: true
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
         type: "text",
         name: "movement",
         placeholder: "Movement",
-        value: formData.movement,
         onChange: handleChange,
+        value: formData.movement || "",
         required: true
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
         type: "text",
         name: "strap_material",
         placeholder: "Strap Material",
-        value: formData.strap_material,
         onChange: handleChange,
+        value: formData.strap_material || "",
         required: true
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
         type: "text",
         name: "gender",
         placeholder: "Gender",
-        value: formData.gender,
         onChange: handleChange,
+        value: formData.gender || "",
         required: true
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
         type: "text",
         name: "size",
         placeholder: "Size",
-        value: formData.size,
         onChange: handleChange,
+        value: formData.size || "",
         required: true
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
         type: "submit",
-        children: editingProduct ? "Update Product" : "Add Product"
+        children: editMode ? "Update Product" : "Save Product"
       })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("table", {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("thead", {
@@ -79555,9 +79514,9 @@ var Products = function Products() {
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
             children: "ID"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Image"
+            children: "Product Image"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Name"
+            children: "Product Name"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
             children: "Price"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
@@ -79577,14 +79536,14 @@ var Products = function Products() {
           })]
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("tbody", {
-        children: products.map(function (product) {
+        children: (showArchived ? archivedProducts : products).map(function (product) {
           return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
               children: product.id
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-                src: "http://localhost:8000/storage/".concat(product.product_image),
-                alt: product.product_name,
+                src: "/storage/".concat(product.product_image),
+                alt: "",
                 width: "50"
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
@@ -79611,9 +79570,9 @@ var Products = function Products() {
                 children: "Edit"
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
                 onClick: function onClick() {
-                  return handleDelete(product.id);
+                  return showArchived ? restoreProduct(product.id) : handleArchive(product.id);
                 },
-                children: "Archive"
+                children: showArchived ? "Restore" : "Archive"
               })]
             })]
           }, product.id);
@@ -79622,7 +79581,7 @@ var Products = function Products() {
     })]
   });
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Products);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ProductManagement);
 
 /***/ }),
 
@@ -79979,46 +79938,40 @@ var Login = function Login() {
   };
   var handleSubmit = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
-      var response, _response$data, user, token, _error$response;
+      var response, _response$data, user, token;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             e.preventDefault();
             _context.prev = 1;
             _context.next = 4;
-            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/login", form);
+            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/login", {
+              email: form.email,
+              password: form.password // Make sure you send password and email
+            });
           case 4:
             response = _context.sent;
-            console.log("API Response:", response.data);
-            _response$data = response.data, user = _response$data.user, token = _response$data.token; // Store token, email, and role in localStorage
+            _response$data = response.data, user = _response$data.user, token = _response$data.token; // Store token in localStorage
             localStorage.setItem("token", token);
-            localStorage.setItem("email", user.email);
-            localStorage.setItem("role", user.role); // Store role
-
-            console.log("Stored Role:", localStorage.getItem("role"));
+            localStorage.setItem("role", user.role); // Store the role
 
             // Redirect based on role
             if (user.role === "admin") {
-              console.log("Redirecting to Admin Dashboard");
-              navigate("/admin-dashboard");
-            } else if (user.role === "user") {
-              console.log("Redirecting to User Dashboard");
-              navigate("/user-dashboard");
+              navigate("/admin-dashboard"); // Redirect to admin dashboard
             } else {
-              alert("Unauthorized access!");
+              navigate("/user-dashboard"); // Redirect to user dashboard
             }
-            _context.next = 18;
+            _context.next = 14;
             break;
-          case 14:
-            _context.prev = 14;
+          case 11:
+            _context.prev = 11;
             _context.t0 = _context["catch"](1);
-            console.error("Login Error:", ((_error$response = _context.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context.t0.message);
             alert("Login failed! Check your credentials.");
-          case 18:
+          case 14:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[1, 14]]);
+      }, _callee, null, [[1, 11]]);
     }));
     return function handleSubmit(_x) {
       return _ref.apply(this, arguments);
@@ -80223,9 +80176,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _LoginPage_Login__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./LoginPage/Login */ "./resources/js/components/LoginPage/Login.js");
 /* harmony import */ var _RegisterPage_Register__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./RegisterPage/Register */ "./resources/js/components/RegisterPage/Register.js");
 /* harmony import */ var _AdminPage_AdminDashboard__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./AdminPage/AdminDashboard */ "./resources/js/components/AdminPage/AdminDashboard.js");
-/* harmony import */ var _AdminPage_Products__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./AdminPage/Products */ "./resources/js/components/AdminPage/Products.js");
-/* harmony import */ var _AdminPage_User__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./AdminPage/User */ "./resources/js/components/AdminPage/User.js");
-/* harmony import */ var _AdminPage_Order__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./AdminPage/Order */ "./resources/js/components/AdminPage/Order.js");
+/* harmony import */ var _AdminPage_User__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./AdminPage/User */ "./resources/js/components/AdminPage/User.js");
+/* harmony import */ var _AdminPage_Order__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./AdminPage/Order */ "./resources/js/components/AdminPage/Order.js");
+/* harmony import */ var _AdminPage_Product__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./AdminPage/Product */ "./resources/js/components/AdminPage/Product.js");
 /* harmony import */ var _checkout__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./checkout */ "./resources/js/components/checkout.js");
 /* harmony import */ var _UserHomePage_HomePage__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./UserHomePage/HomePage */ "./resources/js/components/UserHomePage/HomePage.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
@@ -80260,20 +80213,20 @@ var App = function App() {
         path: "/Admin-dashboard",
         element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_AdminPage_AdminDashboard__WEBPACK_IMPORTED_MODULE_4__["default"], {})
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_12__.Route, {
-        path: "/Admin-products",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_AdminPage_Products__WEBPACK_IMPORTED_MODULE_5__["default"], {})
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_12__.Route, {
         path: "/Admin-user",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_AdminPage_User__WEBPACK_IMPORTED_MODULE_6__["default"], {})
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_AdminPage_User__WEBPACK_IMPORTED_MODULE_5__["default"], {})
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_12__.Route, {
         path: "/Admin-order",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_AdminPage_Order__WEBPACK_IMPORTED_MODULE_7__["default"], {})
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_AdminPage_Order__WEBPACK_IMPORTED_MODULE_6__["default"], {})
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_12__.Route, {
         path: "/sample",
         element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_checkout__WEBPACK_IMPORTED_MODULE_8__["default"], {})
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_12__.Route, {
         path: "/homepage",
         element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_UserHomePage_HomePage__WEBPACK_IMPORTED_MODULE_9__["default"], {})
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_12__.Route, {
+        path: "/Admin-product",
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_AdminPage_Product__WEBPACK_IMPORTED_MODULE_7__["default"], {})
       })]
     })
   });

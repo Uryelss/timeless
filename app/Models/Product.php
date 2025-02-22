@@ -11,6 +11,7 @@ class Product extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'product_image',
         'product_name',
         'price',
         'category',
@@ -18,9 +19,6 @@ class Product extends Model
         'movement',
         'strap_material',
         'gender',
-        'size',
-        'product_image'
+        'size'
     ];
-
-    protected $dates = ['deleted_at'];
 }

@@ -7,9 +7,9 @@ import Register from "./RegisterPage/Register";
 
 //ADMIN PAGE
 import AdminDashboard from "./AdminPage/AdminDashboard";
-import Products from "./AdminPage/Products";
 import User from "./AdminPage/User";
 import Order from "./AdminPage/Order";
+import Products from "./AdminPage/Product";
 
 //sample for checkout
 import Checkout from "./checkout";
@@ -24,11 +24,11 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/Admin-dashboard" element={<AdminDashboard />} />
-                <Route path="/Admin-products" element={<Products />} />
                 <Route path="/Admin-user" element={<User />} />
                 <Route path="/Admin-order" element={<Order />} />
                 <Route path="/sample" element={<Checkout />} />
                 <Route path="/homepage" element={<Home />} />
+                <Route path="/Admin-product" element={<Products />} />
             </Routes>
         </Router>
     );

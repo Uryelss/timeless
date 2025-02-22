@@ -18,7 +18,7 @@ const Sidebar = () => {
                 className="menu-item"
                 onClick={() =>
                     (window.location.href =
-                        "http://localhost:8000/Admin-products")
+                        "http://localhost:8000/Admin-product")
                 }
             >
                 <i className="fa-solid fa-cart-shopping"></i> Product

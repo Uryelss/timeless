@@ -29,10 +29,4 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profile::class);
     }
-
-    // Mutator to hash passwords when creating users
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = Hash::make($value);
-    }
 }

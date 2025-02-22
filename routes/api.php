@@ -16,12 +16,14 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // Product Management Routes
+// Product Management Routes
 Route::get('/products', [ProductController::class, 'index']);
 Route::post('/products', [ProductController::class, 'store']);
 Route::put('/products/{id}', [ProductController::class, 'update']);
-Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+Route::put('/products/archive/{id}', [ProductController::class, 'archive']);  // Change DELETE to PUT for archive
+
 Route::get('/products/archived', [ProductController::class, 'archived']);
-Route::post('/products/{id}/restore', [ProductController::class, 'restore']);
+Route::put('/products/restore/{id}', [ProductController::class, 'restore']);
 
 // User Management Routes
 Route::get('/users', [UserController::class, 'index']);

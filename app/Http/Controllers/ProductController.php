@@ -2,40 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    // Fetch active products
+    // Fetch All Products (Not Archived)
     public function index()
     {
         return response()->json(Product::whereNull('deleted_at')->get());
     }
 
-    // Store a new product
+    // Store New Product
     public function store(Request $request)
     {
         $request->validate([
-            'product_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'product_image' => 'required|image|mimes:jpeg,png,jpg,gif',
             'product_name' => 'required|string|max:255',
             'price' => 'required|numeric',
-            'category' => 'required|string|max:255',
-            'brand' => 'required|string|max:255',
-            'movement' => 'required|string|max:255',
-            'strap_material' => 'required|string|max:255',
-            'gender' => 'required|string|max:255',
-            'size' => 'required|string|max:255',
+            'category' => 'required|string',
+            'brand' => 'required|string',
+            'movement' => 'required|string',
+            'strap_material' => 'required|string',
+            'gender' => 'required|string',
+            'size' => 'required|string',
         ]);
 
         if ($request->hasFile('product_image')) {
-            $imagePath = $request->file('product_image')->store('products', 'public');
+            $imagePath = $request->file('product_image')->store('product_images', 'public');
         } else {
-            return response()->json(['message' => 'Product image is required!'], 400);
+            return response()->json(['error' => 'Image upload failed'], 400);
         }
 
-        $product = new Product([
+        $product = Product::create([
             'product_image' => $imagePath,
             'product_name' => $request->product_name,
             'price' => $request->price,
@@ -47,64 +47,60 @@ class ProductController extends Controller
             'size' => $request->size,
         ]);
 
-        if ($product->save()) {
-            return response()->json(['message' => 'Product saved successfully!'], 200);
-        }
-
-        return response()->json(['message' => 'Failed to save product!'], 500);
+        return response()->json(['message' => 'Product added successfully', 'product' => $product]);
     }
 
-    // Update a product
+    // Update Product
     public function update(Request $request, $id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
+        if (!$product) return response()->json(['error' => 'Product not found'], 404);
 
-        $request->validate([
-            'product_name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'category' => 'required|string',
-            'brand' => 'required|string',
-            'movement' => 'nullable|string',
-            'strap_material' => 'nullable|string',
-            'gender' => 'required|string',
-            'size' => 'required|string',
-            'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-
-        // Handle image update
+        // If there is an image file in the request, replace the existing one
         if ($request->hasFile('product_image')) {
-            // Delete old image if exists
-            if ($product->product_image) {
-                Storage::disk('public')->delete($product->product_image);
-            }
-            $imagePath = $request->file('product_image')->store('uploads', 'public');
+            Storage::disk('public')->delete($product->product_image);  // Delete old image
+            $imagePath = $request->file('product_image')->store('product_images', 'public');  // Store new image
             $product->product_image = $imagePath;
         }
 
-        // Update product details
-        $product->update($request->except('product_image'));
+        // Update the rest of the fields
+        $product->update([
+            'product_name' => $request->product_name,
+            'price' => $request->price,
+            'category' => $request->category,
+            'brand' => $request->brand,
+            'movement' => $request->movement,
+            'strap_material' => $request->strap_material,
+            'gender' => $request->gender,
+            'size' => $request->size,
+        ]);
 
-        return response()->json(['message' => 'Product updated successfully', 'product' => $product]);
+        return response()->json(['message' => 'Product updated successfully']);
     }
 
-    // Soft delete (archive) a product
-    public function destroy($id)
+    // Soft Delete (Move to Archive)
+    public function archive($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
+        if (!$product) return response()->json(['error' => 'Product not found'], 404);
+
         $product->delete();
         return response()->json(['message' => 'Product archived successfully']);
     }
 
-    // Fetch archived (soft deleted) products
+    // Fetch Archived Products
     public function archived()
     {
         return response()->json(Product::onlyTrashed()->get());
     }
 
-    // Restore archived product
+
+    // Restore Archived Product
     public function restore($id)
     {
-        $product = Product::onlyTrashed()->findOrFail($id);
+        $product = Product::onlyTrashed()->find($id);
+        if (!$product) return response()->json(['error' => 'Product not found'], 404);
+
         $product->restore();
         return response()->json(['message' => 'Product restored successfully']);
     }

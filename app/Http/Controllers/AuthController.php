@@ -37,7 +37,7 @@ class AuthController extends Controller
         $user = User::create([
             'username' => $request->username,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($request->password),  // Ensure password is hashed
             'role_id' => $role->id,
         ]);
 
@@ -60,35 +60,39 @@ class AuthController extends Controller
         ], 201);
     }
 
-    // LOGIN FUNCTION
+
     public function login(Request $request)
     {
-        // Validate input
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required|string',
         ]);
 
-        // Find user by email
-        $user = User::where('email', $request->email)->first();
+        // Retrieve the user by email
+        $user = User::with('role')->where('email', $request->email)->first();
 
+        // If user not found, return error
         if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
         // Check if password matches
         if (!Hash::check($request->password, $user->password)) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        // Generate authentication token (Laravel 7 Passport)
-        $token = $user->createToken('authToken')->accessToken;
+        // Get the role from the user
+        $roleName = $user->role ? $user->role->role_name : 'user'; // Default to 'user' if no role
 
+        // Generate authentication token (Laravel Passport)
+        $token = $user->createToken('AuthToken')->accessToken;
+
+        // Return user data and token
         return response()->json([
             'user' => [
                 'id' => $user->id,
                 'email' => $user->email,
-                'role' => $user->role->role_name // Ensure the role is returned
+                'role' => $roleName  // Return role to frontend
             ],
             'token' => $token
         ]);
