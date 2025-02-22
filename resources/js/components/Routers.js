@@ -17,6 +17,8 @@ import Checkout from "./checkout";
 //homepage
 import Home from "./UserHomePage/HomePage";
 
+import LoginLayout from "./LoginPage/LoginLayout";
+
 const App = () => {
     return (
         <Router>
@@ -29,6 +31,7 @@ const App = () => {
                 <Route path="/sample" element={<Checkout />} />
                 <Route path="/homepage" element={<Home />} />
                 <Route path="/Admin-product" element={<Products />} />
+                <Route path="/loginsample" element={<LoginLayout />} />
             </Routes>
         </Router>
     );

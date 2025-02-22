@@ -13,7 +13,6 @@ const Sidebar = () => {
                 <i className="fa-solid fa-chart-line"></i> Dashboard
             </div>
 
-            {/* Update links to use full URL */}
             <div
                 className="menu-item"
                 onClick={() =>

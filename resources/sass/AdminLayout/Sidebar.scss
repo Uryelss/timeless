@@ -7,6 +7,11 @@
     flex-direction: column;
     padding: 20px;
     font-family: "Montserrat", sans-serif;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: width 0.3s ease;
+    z-index: 10; /* Make sure it's above the content */
 
     .menu-title,
     .tools-title {
@@ -30,6 +35,7 @@
         font-weight: 500;
         cursor: pointer;
         transition: background 0.3s ease;
+        border-radius: 5px;
 
         i {
             font-size: 18px;
@@ -37,7 +43,6 @@
 
         &:hover {
             background: rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
         }
     }
 
@@ -56,10 +61,10 @@
         font-size: 15px;
         font-weight: 500;
         transition: background 0.3s ease;
+        border-radius: 5px;
 
         &:hover {
             background: rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
         }
     }
 
@@ -67,6 +72,7 @@
         display: none;
         flex-direction: column;
         padding-left: 20px;
+        margin-top: 10px;
 
         &.open {
             display: flex;
@@ -77,10 +83,27 @@
             font-size: 14px;
             font-weight: 400;
             cursor: pointer;
+            border-radius: 5px;
 
             &:hover {
                 color: #a37e2c;
             }
+        }
+    }
+
+    @media (max-width: 768px) {
+        width: 200px;
+
+        .submenu {
+            padding-left: 10px;
+        }
+
+        .menu-item {
+            font-size: 14px;
+        }
+
+        .submenu-item {
+            font-size: 13px;
         }
     }
 }

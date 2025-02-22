@@ -1,110 +1,134 @@
-.admin-container {
-    display: flex;
-}
+/* ProductManagement.scss */
 
-.product-management {
+.product-management-container {
     padding: 20px;
-    width: 100%;
 }
 
-.product-actions {
+.product-management-buttons {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
-
-    .search-bar {
-        padding: 8px;
-        width: 300px;
-        border: 1px solid black;
-        border-radius: 5px;
-    }
-
-    .add-product {
-        width: 266px;
-        height: 46px;
-        background: #007545;
-        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.83);
-        border-radius: 9px;
-        border: 1px solid black;
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-    }
+    margin-bottom: 20px;
 }
 
-.product-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-
-    th,
-    td {
-        border: 1px solid black;
-        padding: 10px;
-        text-align: center;
-    }
-
-    th {
-        background: #f2f2f2;
-    }
-
-    .product-image {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-        border-radius: 5px;
-    }
-
-    .action-icons {
-        font-size: 20px;
-        font-family: "Montserrat", sans-serif;
-        font-weight: 700;
-        color: black;
-        word-wrap: break-word;
-
-        .edit-icon {
-            color: blue;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-
-        .archive-icon {
-            color: red;
-            cursor: pointer;
-        }
-    }
-}
-
-.add-product-form {
-    width: 1163px;
-    height: 716px;
-    background: white;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.55);
-    border: 1px solid black;
-    padding: 20px;
+.product-management-form {
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
 
-    .button-group {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
+.product-management-form input,
+.product-management-form button {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
 
-        .cancel-button,
-        .save-button {
-            width: 216px;
-            height: 44px;
-            border-radius: 10px;
-            border: 1px solid black;
-            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-            cursor: pointer;
-        }
+.product-management-form input[type="file"] {
+    padding: 5px;
+}
 
-        .save-button {
-            background: #006039;
-            color: white;
-        }
-    }
+.product-management-form button {
+    background-color: #006039;
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+
+.product-management-form button:hover {
+    background-color: #00502d;
+}
+
+.checkbox-container {
+    margin-bottom: 20px;
+}
+
+.checkbox-container input {
+    margin-right: 10px;
+}
+
+.confirmation-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 10px;
+    text-align: left;
+}
+
+.styled-table th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+.styled-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.danger-status {
+    color: red;
+    font-weight: bold;
+}
+
+.action-button {
+    padding: 5px 10px;
+    background-color: #ff5c5c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.action-button:hover {
+    background-color: #ff2a2a;
+}
+.content {
+    margin-left: 250px; /* Offset content by sidebar width */
+    padding: 20px;
+    flex-grow: 1;
+    background-color: #f9f9f9;
+    overflow-x: auto;
+}
+
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.add-product-btn {
+    background-color: #006039;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.add-product-btn:hover {
+    background-color: #004d30;
 }
