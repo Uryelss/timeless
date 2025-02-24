@@ -1,0 +1,74 @@
+.filter-box {
+    width: 220px; /* Fixed width */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    top: 100px; /* Sticks below navbar */
+    left: 40px;
+    height: calc(100vh - 120px); /* Takes up most of the viewport height */
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+/* Scrollable content inside filter box */
+.filter-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: calc(100vh - 180px); /* Prevents overflowing */
+}
+
+/* Filter Groups */
+.filter-group {
+    margin-bottom: 15px;
+
+    h4 {
+        font-size: 14px;
+        font-weight: bold;
+        color: #555;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+    }
+
+    label {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 6px;
+        cursor: pointer;
+    }
+
+    input[type="checkbox"] {
+        margin-right: 10px;
+        width: 16px;
+        height: 16px;
+        accent-color: #136945;
+    }
+}
+
+/* Apply Button (Stays at Bottom) */
+.apply-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #136945;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: background 0.3s ease;
+    text-align: center;
+    margin-top: auto;
+
+    &:hover {
+        background-color: #0f5538;
+    }
+}
+
+

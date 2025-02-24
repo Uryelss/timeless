@@ -1,19 +1,17 @@
 import React from "react";
-import Navbar from "../UserHomePage/Navbar";
-import Footer from "../UserHomePage/Footer";
+import Navbar from "../Userlayout/Navbar"; // Import Navbar
+import Footer from "../Userlayout/Footer"; // Import Footer
 
-const Home = () => {
+export default function Home() {
     return (
         <div className="home">
-            <Navbar />
+            <Navbar /> {/* Navbar */}
             <div className="hero-section">
-                <h1>Welcome to My Store</h1>
-                <p>Discover the best deals on watches.</p>
-                <button>Shop Now</button>
+                  <div className="hero-text">
+                    <button className="shop-btn">SHOP NOW</button>
+                </div>
             </div>
-            <Footer />
+            <Footer /> {/* Footer */}
         </div>
     );
-};
-
-export default Home;
+}

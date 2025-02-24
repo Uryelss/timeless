@@ -1,0 +1,32 @@
+/* Collection Banner */
+.collection-banner {
+    width: 100%;
+    max-width: 1200px; /* Keeps it centered */
+    height: 200px;
+    margin: 20px auto 0; /* Adds space from navbar */
+    background-image: url('/images/Rolex Day-Date.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+    border-radius: 10px; /* Optional: adds soft edges */
+}
+
+/* Center Banner Text */
+.collection-banner h1 {
+    font-size: 50px;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
+    color: white;
+    background: linear-gradient(to right, #ffffff, #cccccc);
+}

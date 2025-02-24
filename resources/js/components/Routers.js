@@ -16,20 +16,22 @@ import Checkout from "./checkout";
 
 //homepage
 import Home from "./UserHomePage/HomePage";
-
+import Collection from "./UserHomePage/Collection";
 import LoginLayout from "./LoginPage/LoginLayout";
+
 
 const App = () => {
     return (
         <Router>
             <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/collection" element={<Collection />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/Admin-dashboard" element={<AdminDashboard />} />
                 <Route path="/Admin-user" element={<User />} />
                 <Route path="/Admin-order" element={<Order />} />
                 <Route path="/sample" element={<Checkout />} />
-                <Route path="/homepage" element={<Home />} />
                 <Route path="/Admin-product" element={<Products />} />
                 <Route path="/loginsample" element={<LoginLayout />} />
             </Routes>

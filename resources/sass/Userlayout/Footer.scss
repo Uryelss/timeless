@@ -1,0 +1,99 @@
+/* Footer Container */
+.Userlayout-footer {
+    background-color: #136945;
+    color: white;
+    display: flex;
+    justify-content: space-between; /* Keep items on opposite sides */
+    align-items: center;
+    padding: 20px 100px;
+    height: 170px;
+    width: 100%;
+    position: relative;
+    bottom: 0;
+    left: 0;
+}
+
+/* TIMELESS Logo - Fully Left */
+.Userlayout-footer-logo {
+    font-family: "Montserrat Subrayada", sans-serif;
+    font-size: 100px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1;
+    white-space: nowrap;
+    text-align: left;
+    flex-grow: 1;  /* Takes available space */
+    max-width: 55%;
+}
+
+/* Right Section: Support Links */
+.Userlayout-footer-right {
+    max-width: 230px;
+    text-align: right;
+}
+
+h3 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0;
+
+    li {
+        margin-bottom: 3px;
+
+        a {
+            text-decoration: none;
+            color: white;
+            font-size: 13px;
+            transition: color 0.3s;
+
+            &:hover {
+                color: #a37e2c; /* Gold hover effect */
+            }
+        }
+    }
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .Userlayout-footer {
+        padding: 20px 50px;
+        height: 120px;
+    }
+
+    .Userlayout-footer-logo {
+        font-size: 50px;
+    }
+
+    .Userlayout-footer-right {
+        padding-bottom: 5px;
+    }
+}
+
+@media (max-width: 768px) {
+    .Userlayout-footer {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        height: auto;
+        padding: 20px 30px;
+    }
+
+    .Userlayout-footer-logo {
+        font-size: 45px;
+    }
+
+    .Userlayout-footer-right {
+        align-items: center;
+        text-align: center;
+        margin-top: 20px;
+    }
+}
