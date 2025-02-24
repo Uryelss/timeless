@@ -4,14 +4,17 @@ const Table = ({
     products,
     handleEdit,
     handleArchive,
+    restoreProduct,
     handleSelectProduct,
     selectedProducts,
+    showArchived,
 }) => {
     return (
         <div className="table-container">
             <table className="styled-table">
                 <thead>
                     <tr>
+                        <th></th> {/* Empty space for checkbox */}
                         <th>Action</th>
                         <th>ID</th>
                         <th>Product (Image)</th>
@@ -36,21 +39,37 @@ const Table = ({
                                         handleSelectProduct(item.id)
                                     }
                                 />
-                                {/* Edit Icon */}
-                                <button
-                                    className="action-button"
-                                    onClick={() => handleEdit(item)} // Trigger edit function
-                                >
-                                    <i className="fa-solid fa-pen-to-square"></i>
-                                </button>
+                            </td>
+                            <td>
+                                {showArchived ? (
+                                    // Restore icon if viewing archived products
+                                    <button
+                                        className="action-button"
+                                        onClick={() => restoreProduct(item.id)}
+                                    >
+                                        <i className="fa-solid fa-arrows-rotate"></i>
+                                    </button>
+                                ) : (
+                                    <>
+                                        {/* Edit Icon */}
+                                        <button
+                                            className="action-button"
+                                            onClick={() => handleEdit(item)} // Trigger edit function
+                                        >
+                                            <i className="fa-solid fa-pen-to-square"></i>
+                                        </button>
 
-                                {/* Archive Icon */}
-                                <button
-                                    className="action-button"
-                                    onClick={() => handleArchive(item.id)} // Trigger archive function
-                                >
-                                    <i className="fa-solid fa-box-archive"></i>
-                                </button>
+                                        {/* Archive Icon */}
+                                        <button
+                                            className="action-button"
+                                            onClick={() =>
+                                                handleArchive(item.id)
+                                            } // Trigger archive function
+                                        >
+                                            <i className="fa-solid fa-box-archive"></i>
+                                        </button>
+                                    </>
+                                )}
                             </td>
                             <td>{item.id}</td>
                             <td>

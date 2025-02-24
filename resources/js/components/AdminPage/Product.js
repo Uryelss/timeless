@@ -19,11 +19,13 @@ const ProductManagement = () => {
         fetchArchivedProducts();
     }, []);
 
+    // Fetch active products
     const fetchProducts = async () => {
         const response = await axios.get("/api/products");
         setProducts(response.data);
     };
 
+    // Fetch archived products
     const fetchArchivedProducts = async () => {
         const response = await axios.get("/api/products/archived");
         setArchivedProducts(response.data);
@@ -123,11 +125,6 @@ const ProductManagement = () => {
         }
     };
 
-    const handleArchiveSelected = () => {
-        selectedProducts.forEach((id) => handleArchive(id));
-        setSelectedProducts([]);
-    };
-
     return (
         <div className="admin-page">
             <Sidebar />
@@ -140,13 +137,15 @@ const ProductManagement = () => {
                     >
                         {showForm ? "Close Form" : "Add Product"}
                     </button>
+                    <button
+                        onClick={() => setShowArchived(!showArchived)}
+                        className="view-archived-btn"
+                    >
+                        {showArchived
+                            ? "View Active Products"
+                            : "View Archived Products"}
+                    </button>
                 </div>
-
-                <button onClick={() => setShowArchived(!showArchived)}>
-                    {showArchived
-                        ? "Show Active Products"
-                        : "Show Archived Products"}
-                </button>
 
                 {showForm && (
                     <form onSubmit={handleSubmit}>
@@ -247,8 +246,10 @@ const ProductManagement = () => {
                     products={showArchived ? archivedProducts : products}
                     handleEdit={handleEdit}
                     handleArchive={handleArchive}
+                    restoreProduct={restoreProduct}
                     handleSelectProduct={handleSelectProduct}
                     selectedProducts={selectedProducts}
+                    showArchived={showArchived}
                 />
             </div>
         </div>

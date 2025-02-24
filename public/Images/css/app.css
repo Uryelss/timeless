@@ -12144,7 +12144,7 @@ textarea.form-control-lg {
 }
 
 .styled-table th {
-  background-color: #1fbc1f;
+  background-color: #f2f2f2;
   color: #333;
   font-weight: bold;
 }
@@ -12429,40 +12429,44 @@ textarea.form-control-lg {
 
 .register-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
   min-height: 100vh;
   width: 100%;
   position: relative;
 }
 
+/* Left section with fixed position */
 .register-left {
   position: fixed;
   top: 0;
   left: 0;
   width: 50%;
   height: 100%;
-  background-image: url("/Images/login.png"); /* Use the correct image path */
+  background-image: url("C:YAPEpublicImageslogin.png");
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 }
 
+/* Right section with form */
 .register-right {
   position: fixed;
   top: 0;
   right: 0;
-  width: 50%;
-  height: 100vh;
+  width: 50%; /* Ensures it covers the right side */
+  height: 100vh; /* Takes the full height */
   background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 47px;
   box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  overflow-y: auto;
 }
 
+/* Form container */
 .register-box {
   width: 100%;
   max-width: 1000px;
@@ -12472,12 +12476,14 @@ textarea.form-control-lg {
   text-align: left;
 }
 
+/* Heading */
 .register-box h2, .register-box .h2 {
   font-size: 2rem;
   color: #333;
   margin-bottom: 30px;
 }
 
+/* Two-column layout for form inputs */
 .input-group {
   display: flex;
   justify-content: space-between;
@@ -12487,7 +12493,7 @@ textarea.form-control-lg {
 
 .input-group input,
 .input-group select {
-  width: 48%;
+  width: 48%; /* Two columns with enough space */
   padding: 15px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
@@ -12505,23 +12511,26 @@ textarea.form-control-lg {
   background-color: #fff;
 }
 
+/* Center the Register Button */
 .register-box button {
-  width: 100%;
-  padding: 15px;
+  width: 200px; /* Set a fixed width for the button */
+  padding: 12px 20px; /* Adjust padding to make the button smaller */
   background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 12px;
-  font-size: 1rem;
+  font-size: 1rem; /* Regular font size */
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: 20px;
+  margin: 20px auto 0; /* Center the button horizontally */
+  display: block; /* Ensure it behaves as a block element */
 }
 
 .register-box button:hover {
   background-color: #388e3c;
 }
 
+/* Error and success messages */
 .error-message {
   color: red;
   font-size: 16px;
@@ -12544,6 +12553,7 @@ textarea.form-control-lg {
   color: #555;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
   .register-container {
     flex-direction: column;
@@ -12558,7 +12568,7 @@ textarea.form-control-lg {
   }
   .input-group input,
   .input-group select {
-    width: 100%;
+    width: 100%; /* Make inputs and select full-width on smaller screens */
   }
 }
 @media (max-width: 790px) {
@@ -12569,7 +12579,7 @@ textarea.form-control-lg {
     font-size: 1.4rem;
   }
   .register-box button {
-    font-size: 0.9rem;
+    font-size: 0.9rem; /* Smaller button font size for mobile */
   }
   .register-box input,
   .register-box select {
@@ -12578,193 +12588,5 @@ textarea.form-control-lg {
   }
   .login-text p {
     font-size: 12px;
-  }
-}
-.login-container {
-  display: flex;
-  justify-content: space-between;
-  min-height: 100vh;
-  width: 100%;
-  position: relative;
-}
-
-/* Left section with fixed position */
-.login-left {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 50%;
-  height: 100%;
-  background-image: url("/Images/login.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-/* Right section with form */
-.login-right {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 50%;
-  height: 100vh;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 30px;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-/* Form container */
-.login-box {
-  width: 100%;
-  max-width: 400px;
-  padding: 40px 30px;
-  background-color: white;
-  border-radius: 12px;
-  text-align: left;
-}
-
-/* Heading */
-.login-box h2, .login-box .h2 {
-  font-size: 2rem;
-  color: #333;
-  margin-bottom: 30px;
-}
-
-/* Styling for the email input field */
-.input-group input {
-  padding: 15px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 12px; /* Set consistent border-radius */
-  font-size: 1rem;
-  box-sizing: border-box;
-  background-color: #f9f9f9;
-  width: 100%; /* Make the input take full width */
-  transition: border-color 0.3s ease;
-}
-
-.input-group input:focus {
-  border-color: #4caf50;
-  outline: none;
-  background-color: #fff;
-}
-
-/* Password input group */
-.password-group {
-  position: relative;
-  width: 100%; /* Ensure it spans the full width */
-  margin-bottom: 25px; /* Add some space between inputs */
-}
-
-.password-group input {
-  padding: 15px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 12px; /* Set consistent border-radius */
-  font-size: 1rem;
-  box-sizing: border-box;
-  background-color: #f9f9f9;
-  width: 100%; /* Make the input take full width */
-  transition: border-color 0.3s ease;
-}
-
-.password-group input:focus {
-  border-color: #4caf50;
-  outline: none;
-  background-color: #fff;
-}
-
-.password-group .fa-eye,
-.password-group .fa-eye-slash {
-  position: absolute;
-  right: 15px; /* Increase spacing between the icon and right edge */
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #4a4a4a;
-  font-size: 1.2rem; /* Adjust icon size */
-}
-
-.login-box button {
-  width: 100%;
-  padding: 12px 20px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin: 20px auto 0;
-  display: block;
-}
-
-.login-box button:hover {
-  background-color: #388e3c;
-}
-
-.register-link {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.register-link a {
-  color: #4caf50;
-  font-size: 1rem;
-  text-decoration: none;
-}
-
-.register-link a:hover {
-  text-decoration: underline;
-}
-
-.error-message {
-  color: red;
-  font-size: 16px;
-  margin-top: 15px;
-}
-
-.success-message {
-  color: green;
-  font-size: 16px;
-  margin-top: 15px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .login-container {
-    flex-direction: column;
-  }
-  .login-left,
-  .login-right {
-    width: 100%;
-  }
-  .login-box {
-    width: 90%;
-    max-width: 800px;
-  }
-  .input-group input {
-    width: 100%;
-  }
-}
-@media (max-width: 790px) {
-  .login-box {
-    padding: 30px;
-  }
-  .login-box h2, .login-box .h2 {
-    font-size: 1.4rem;
-  }
-  .login-box button {
-    font-size: 0.9rem;
-  }
-  .login-box input {
-    padding: 14px;
-    font-size: 1rem;
   }
 }

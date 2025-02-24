@@ -9,7 +9,10 @@ const Sidebar = () => {
         <div className="sidebar">
             <div className="menu-title">MENU</div>
 
-            <div className="menu-item" onClick={() => navigate("/dashboard")}>
+            <div
+                className="menu-item"
+                onClick={() => navigate("/Admin-dashboard")}
+            >
                 <i className="fa-solid fa-chart-line"></i> Dashboard
             </div>
 

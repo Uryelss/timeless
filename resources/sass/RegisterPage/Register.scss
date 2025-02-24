@@ -1,0 +1,161 @@
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+}
+
+.register-left {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background-image: url("/Images/login.png"); /* Use the correct image path */
+    background-size: cover;
+    background-position: center;
+}
+
+.register-right {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100vh;
+    background-color: white;
+    padding: 47px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.register-box {
+    width: 100%;
+    max-width: 1000px;
+    padding: 40px 30px;
+    background-color: white;
+    border-radius: 12px;
+    text-align: left;
+}
+
+.register-box h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.input-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.input-group input,
+.input-group select {
+    width: 48%;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: #4caf50;
+    outline: none;
+    background-color: #fff;
+}
+
+.register-box button {
+    width: 100%;
+    padding: 15px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+.register-box button:hover {
+    background-color: #388e3c;
+}
+
+.error-message {
+    color: red;
+    font-size: 16px;
+    margin-top: 15px;
+}
+
+.success-message {
+    color: green;
+    font-size: 16px;
+    margin-top: 15px;
+}
+
+.login-text {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.login-text p {
+    font-size: 20px;
+    color: #555;
+}
+
+@media (max-width: 768px) {
+    .register-container {
+        flex-direction: column;
+    }
+
+    .register-left,
+    .register-right {
+        width: 100%;
+    }
+
+    .register-box {
+        width: 90%;
+        max-width: 800px;
+    }
+
+    .input-group input,
+    .input-group select {
+        width: 100%;
+    }
+}
+
+@media (max-width: 790px) {
+    .register-box {
+        padding: 30px;
+    }
+
+    .register-box h2 {
+        font-size: 1.4rem;
+    }
+
+    .register-box button {
+        font-size: 0.9rem;
+    }
+
+    .register-box input,
+    .register-box select {
+        padding: 14px;
+        font-size: 1rem;
+    }
+
+    .login-text p {
+        font-size: 12px;
+    }
+}

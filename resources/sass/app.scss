@@ -6,10 +6,16 @@
 
 // Bootstrap
 @import "~bootstrap/scss/bootstrap";
+//layout-admin
 @import "AdminLayout/Sidebar.scss";
 @import "AdminLayout/Table.scss";
-
+//page admin
 @import "AdminPage/AdminDashboard.scss";
 @import "AdminPage/AdminProduct.scss";
 
 @import "Loginlayout.scss";
+
+//register page
+@import "RegisterPage/Register.scss";
+//login page
+@import "LoginPage/Login.scss";
