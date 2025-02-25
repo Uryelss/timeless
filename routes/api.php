@@ -19,10 +19,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/products', [ProductController::class, 'index']); // ✅ Get products
     Route::post('/products/store', [ProductController::class, 'store']); // ✅ Store new product
     Route::get('/products/create', [ProductController::class, 'create']); // ✅ Fetch dropdowns
-    Route::put('/products/{id}', [ProductController::class, 'update']);
-    Route::delete('/products/{id}/archive', [ProductController::class, 'archive']); // ✅ Archive product
-    Route::get('/products/archived', [ProductController::class, 'archivedProducts']);
-    Route::put('/products/{id}/restore', [ProductController::class, 'restore']);
+    Route::put('/products/{id}', [ProductController::class, 'update']); // ✅ Update product
 });
 
 // Admin-only routes

@@ -12,8 +12,6 @@ use App\Models\Gender;
 use App\Models\Size;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
-
 
 class ProductController extends Controller
 {
@@ -50,7 +48,6 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
-            'product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'brand_id' => 'required|exists:brands,id',
             'category_id' => 'required|exists:categories,id',
             'movement_id' => 'required|exists:movements,id',
@@ -58,6 +55,8 @@ class ProductController extends Controller
             'gender_id' => 'required|exists:genders,id',
             'size_id' => 'required|exists:sizes,id',
             'price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:1', // ✅ Ensure quantity is required
+            'product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -65,12 +64,11 @@ class ProductController extends Controller
         }
 
         try {
-            // ✅ Store file properly
             $imagePath = $request->file('product_image')->store('products', 'public');
 
             $product = Product::create([
                 'product_name' => $request->product_name,
-                'product_image' => $imagePath, // ✅ Correctly stored path
+                'product_image' => $imagePath,
                 'brand_id' => $request->brand_id,
                 'category_id' => $request->category_id,
                 'movement_id' => $request->movement_id,
@@ -78,25 +76,25 @@ class ProductController extends Controller
                 'gender_id' => $request->gender_id,
                 'size_id' => $request->size_id,
                 'price' => $request->price,
+                'quantity' => $request->quantity, // ✅ Save quantity
             ]);
 
-            return response()->json([
-                'message' => 'Product added successfully',
-                'product' => $product
-            ], 201);
+            return response()->json(['message' => 'Product added successfully', 'product' => $product], 201);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Failed to add product',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['message' => 'Failed to add product', 'error' => $e->getMessage()], 500);
         }
     }
+
+    //updatee
     public function update(Request $request, $id)
     {
-        // Fetch the product
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
 
-        // Validate input
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+
+        // ✅ Validate fields (image is now optional)
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
             'brand_id' => 'required|exists:brands,id',
@@ -106,47 +104,40 @@ class ProductController extends Controller
             'gender_id' => 'required|exists:genders,id',
             'size_id' => 'required|exists:sizes,id',
             'price' => 'required|numeric|min:0',
-            'quantity' => 'nullable|integer|min:1', // ✅ Allow nullable
+            'quantity' => 'required|integer|min:1',
+            'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // ✅ Image is optional
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        // Update product
-        $product->update($request->all());
+        try {
+            // ✅ Check if a new image is uploaded
+            if ($request->hasFile('product_image')) {
+                // Delete the old image if it exists
+                Storage::delete($product->product_image);
+                // Store new image
+                $imagePath = $request->file('product_image')->store('products', 'public');
+                $product->product_image = $imagePath;
+            }
 
-        return response()->json(['message' => 'Product updated successfully', 'product' => $product], 200);
-    }
+            // ✅ Update product details
+            $product->update([
+                'product_name' => $request->product_name,
+                'brand_id' => $request->brand_id,
+                'category_id' => $request->category_id,
+                'movement_id' => $request->movement_id,
+                'strap_material_id' => $request->strap_material_id,
+                'gender_id' => $request->gender_id,
+                'size_id' => $request->size_id,
+                'price' => $request->price,
+                'quantity' => $request->quantity,
+            ]);
 
-
-
-    public function archive($id)
-    {
-        $product = Product::findOrFail($id);
-        $product->delete(); // ✅ Soft delete
-
-        return response()->json(['message' => 'Product archived successfully'], 200);
-    }
-    public function archivedProducts()
-    {
-        $archivedProducts = Product::onlyTrashed()->with([
-            'brand',
-            'category',
-            'movement',
-            'strapMaterial',
-            'gender',
-            'size'
-        ])->get();
-
-        return response()->json($archivedProducts, 200);
-    }
-
-    public function restore($id)
-    {
-        $product = Product::onlyTrashed()->findOrFail($id);
-        $product->restore(); // ✅ Restore product
-
-        return response()->json(['message' => 'Product restored successfully'], 200);
+            return response()->json(['message' => 'Product updated successfully', 'product' => $product], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to update product', 'error' => $e->getMessage()], 500);
+        }
     }
 }

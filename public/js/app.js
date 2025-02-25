@@ -75225,27 +75225,125 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 var AddProduct = function AddProduct() {
   var _dropdownData$brands;
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      product_name: "",
+      product_image: null,
+      brand_id: "",
+      category_id: "",
+      movement_id: "",
+      strap_material_id: "",
+      gender_id: "",
+      size_id: "",
+      price: ""
+    }),
     _useState2 = _slicedToArray(_useState, 2),
-    isEditing = _useState2[0],
-    setIsEditing = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    productData = _useState2[0],
+    setProductData = _useState2[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      brands: [],
+      categories: [],
+      movements: [],
+      strapMaterials: [],
+      genders: [],
+      sizes: []
+    }),
     _useState4 = _slicedToArray(_useState3, 2),
-    editProduct = _useState4[0],
-    setEditProduct = _useState4[1];
-  var openEditModal = function openEditModal(product) {
-    var _product$brand, _product$category, _product$movement, _product$strap_materi, _product$gender, _product$size;
-    setEditProduct(_objectSpread(_objectSpread({}, product), {}, {
-      brand_id: ((_product$brand = product.brand) === null || _product$brand === void 0 ? void 0 : _product$brand.id) || "",
-      category_id: ((_product$category = product.category) === null || _product$category === void 0 ? void 0 : _product$category.id) || "",
-      movement_id: ((_product$movement = product.movement) === null || _product$movement === void 0 ? void 0 : _product$movement.id) || "",
-      strap_material_id: ((_product$strap_materi = product.strap_material) === null || _product$strap_materi === void 0 ? void 0 : _product$strap_materi.id) || "",
-      gender_id: ((_product$gender = product.gender) === null || _product$gender === void 0 ? void 0 : _product$gender.id) || "",
-      size_id: ((_product$size = product.size) === null || _product$size === void 0 ? void 0 : _product$size.id) || ""
-    }));
-    setIsEditing(true);
+    dropdownData = _useState4[0],
+    setDropdownData = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState6 = _slicedToArray(_useState5, 2),
+    products = _useState6[0],
+    setProducts = _useState6[1]; // Store added products for the table
+
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    fetchProducts(); // Fetch products on page load
+    fetchDropdownData(); // Fetch dropdown data on page load
+  }, []);
+
+  // Fetch dropdown filter options (brands, categories, etc.)
+  var fetchDropdownData = function fetchDropdownData() {
+    axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/products/create", {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function (response) {
+      setDropdownData(response.data);
+    })["catch"](function (error) {
+      return console.error("Error fetching dropdown data:", error);
+    });
   };
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+
+  // Fetch all products
+  var fetchProducts = function fetchProducts() {
+    axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/products", {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function (response) {
+      setProducts(response.data);
+    })["catch"](function (error) {
+      return console.error("Error fetching products:", error);
+    });
+  };
+
+  // Handle image file selection
+  var handleFileChange = function handleFileChange(e) {
+    setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+      product_image: e.target.files[0]
+    }));
+  };
+
+  // Handle adding a new product
+  var handleSubmit = function handleSubmit(e) {
+    e.preventDefault();
+    var formData = new FormData();
+    for (var key in productData) {
+      if (key === "product_image" && productData[key] === null && !editMode) {
+        alert("Please select an image.");
+        return; // ✅ Prevent adding a product without an image
+      }
+      if (!(key === "product_image" && productData[key] === null)) {
+        formData.append(key, productData[key]);
+      }
+    }
+    if (!productData.quantity) {
+      alert("Quantity is required."); // ✅ Prevent empty quantity
+      return;
+    }
+    if (editMode) {
+      axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("http://localhost:8000/api/products/".concat(currentProductId, "?_method=PUT"), formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: "Bearer ".concat(localStorage.getItem("token"))
+        }
+      }).then(function () {
+        alert("Product updated successfully!");
+        fetchProducts();
+        resetForm();
+      })["catch"](function (error) {
+        console.error("Error updating product:", error);
+        alert("Failed to update product.");
+      });
+    } else {
+      axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("http://localhost:8000/api/products/store", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: "Bearer ".concat(localStorage.getItem("token"))
+        }
+      }).then(function () {
+        alert("Product added successfully!");
+        fetchProducts();
+        resetForm();
+      })["catch"](function (error) {
+        console.error("Error adding product:", error);
+        alert("Failed to add product.");
+      });
+    }
+  };
+
+  // ✅ Reset form after adding/updating
+  var resetForm = function resetForm() {
+    setProductData({
       product_name: "",
       product_image: null,
       brand_id: "",
@@ -75256,163 +75354,52 @@ var AddProduct = function AddProduct() {
       size_id: "",
       price: "",
       quantity: ""
-    }),
-    _useState6 = _slicedToArray(_useState5, 2),
-    productData = _useState6[0],
-    setProductData = _useState6[1];
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
-      brands: [],
-      categories: [],
-      movements: [],
-      strapMaterials: [],
-      genders: [],
-      sizes: []
-    }),
+    });
+    setEditMode(false);
+    setCurrentProductId(null);
+  };
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState8 = _slicedToArray(_useState7, 2),
-    dropdownData = _useState8[0],
-    setDropdownData = _useState8[1];
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    editMode = _useState8[0],
+    setEditMode = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState10 = _slicedToArray(_useState9, 2),
-    products = _useState10[0],
-    setProducts = _useState10[1]; // ✅ Active products state
+    currentProductId = _useState10[0],
+    setCurrentProductId = _useState10[1];
 
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-    _useState12 = _slicedToArray(_useState11, 2),
-    archivedProducts = _useState12[0],
-    setArchivedProducts = _useState12[1]; // ✅ Add this for archived products
+  // Handle updating a product quantity
+  var handleEdit = function handleEdit(product) {
+    var _product$brand, _product$category, _product$movement, _product$strap_materi, _product$gender, _product$size;
+    setProductData({
+      product_name: product.product_name,
+      product_image: null,
+      // Image is not updated immediately
+      brand_id: (_product$brand = product.brand) === null || _product$brand === void 0 ? void 0 : _product$brand.id,
+      category_id: (_product$category = product.category) === null || _product$category === void 0 ? void 0 : _product$category.id,
+      movement_id: (_product$movement = product.movement) === null || _product$movement === void 0 ? void 0 : _product$movement.id,
+      strap_material_id: (_product$strap_materi = product.strap_material) === null || _product$strap_materi === void 0 ? void 0 : _product$strap_materi.id,
+      gender_id: (_product$gender = product.gender) === null || _product$gender === void 0 ? void 0 : _product$gender.id,
+      size_id: (_product$size = product.size) === null || _product$size === void 0 ? void 0 : _product$size.id,
+      price: product.price,
+      quantity: product.quantity
+    });
+    setCurrentProductId(product.id);
+    setEditMode(true);
+  };
 
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    fetchProducts(); // ✅ Fetch both active and archived products
-  }, []);
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    fetchProducts(); // ✅ Fetch products when page loads
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/products/create", {
-      headers: {
-        Authorization: "Bearer ".concat(localStorage.getItem("token"))
-      }
-    }).then(function (response) {
-      console.log("Dropdown Data:", response.data); // ✅ Debugging
-      setDropdownData(response.data);
-    })["catch"](function (error) {
-      return console.error("Error fetching dropdown data:", error);
-    });
-  }, []);
-  var fetchProducts = function fetchProducts() {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/products", {
-      headers: {
-        Authorization: "Bearer ".concat(localStorage.getItem("token"))
-      }
-    }).then(function (response) {
-      console.log("Fetched Products:", response.data);
-      setProducts(response.data); // ✅ Active products
-    })["catch"](function (error) {
-      return console.error("Error fetching products:", error);
-    });
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/products/archived", {
-      headers: {
-        Authorization: "Bearer ".concat(localStorage.getItem("token"))
-      }
-    }).then(function (response) {
-      console.log("Fetched Archived Products:", response.data);
-      setArchivedProducts(response.data); // ✅ Store archived products
-    })["catch"](function (error) {
-      return console.error("Error fetching archived products:", error);
-    });
-  };
-  var handleFileChange = function handleFileChange(e) {
-    setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-      product_image: e.target.files[0]
-    }));
-  };
-  var handleSubmit = function handleSubmit(e) {
-    e.preventDefault();
-    var formData = new FormData();
-    for (var key in productData) {
-      formData.append(key, productData[key]);
-    }
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("http://localhost:8000/api/products/store", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: "Bearer ".concat(localStorage.getItem("token")) // ✅ Add Token
-      }
-    }).then(function () {
-      alert("Product added successfully!");
-      fetchProducts(); // Refresh product table
-      setProductData({
-        product_name: "",
-        product_image: null,
-        brand_id: "",
-        category_id: "",
-        movement_id: "",
-        strap_material_id: "",
-        gender_id: "",
-        size_id: "",
-        price: "",
-        quantity: ""
+  // Handle archiving a product
+  var handleArchive = function handleArchive(productId) {
+    if (window.confirm("Are you sure you want to archive this product?")) {
+      axios__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"]("http://localhost:8000/api/products/".concat(productId), {
+        headers: {
+          Authorization: "Bearer ".concat(localStorage.getItem("token"))
+        }
+      }).then(function () {
+        return fetchProducts();
+      })["catch"](function (error) {
+        return console.error("Error archiving product:", error);
       });
-    })["catch"](function (error) {
-      var _error$response;
-      console.error("Error adding product:", error);
-      alert("Error: " + (((_error$response = error.response) === null || _error$response === void 0 || (_error$response = _error$response.data) === null || _error$response === void 0 ? void 0 : _error$response.message) || "Failed to add product"));
-    });
-  };
-
-  // ✅ Move handleEdit function outside handleSubmit
-  var handleUpdate = function handleUpdate() {
-    var _editProduct$brand, _editProduct$category, _editProduct$movement, _editProduct$strap_ma, _editProduct$gender, _editProduct$size;
-    if (!editProduct) return;
-    var updatedProduct = {
-      product_name: editProduct.product_name,
-      brand_id: (_editProduct$brand = editProduct.brand) === null || _editProduct$brand === void 0 ? void 0 : _editProduct$brand.id,
-      category_id: (_editProduct$category = editProduct.category) === null || _editProduct$category === void 0 ? void 0 : _editProduct$category.id,
-      movement_id: (_editProduct$movement = editProduct.movement) === null || _editProduct$movement === void 0 ? void 0 : _editProduct$movement.id,
-      strap_material_id: (_editProduct$strap_ma = editProduct.strap_material) === null || _editProduct$strap_ma === void 0 ? void 0 : _editProduct$strap_ma.id,
-      gender_id: (_editProduct$gender = editProduct.gender) === null || _editProduct$gender === void 0 ? void 0 : _editProduct$gender.id,
-      size_id: (_editProduct$size = editProduct.size) === null || _editProduct$size === void 0 ? void 0 : _editProduct$size.id,
-      price: parseFloat(editProduct.price),
-      quantity: parseInt(editProduct.quantity)
-    };
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].put("http://localhost:8000/api/products/".concat(editProduct.id), updatedProduct, {
-      headers: {
-        Authorization: "Bearer ".concat(localStorage.getItem("token"))
-      }
-    }).then(function () {
-      alert("Product updated successfully!");
-      setIsEditing(false);
-      fetchProducts(); // Refresh the product list
-    })["catch"](function (error) {
-      var _error$response2;
-      console.error("Error updating product:", error);
-      alert("Update failed: " + ((_error$response2 = error.response) !== null && _error$response2 !== void 0 && (_error$response2 = _error$response2.data) !== null && _error$response2 !== void 0 && _error$response2.errors ? JSON.stringify(error.response.data.errors) : "Unknown error"));
-    });
-  };
-
-  // ✅ Move handleArchive function outside handleSubmit
-  var handleArchive = function handleArchive(id) {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"]["delete"]("http://localhost:8000/api/products/".concat(id, "/archive"), {
-      headers: {
-        Authorization: "Bearer ".concat(localStorage.getItem("token"))
-      }
-    }).then(function () {
-      alert("Product archived successfully!");
-      fetchProducts();
-    })["catch"](function (error) {
-      return console.error("Error archiving product:", error);
-    });
-  };
-
-  // ✅ Move handleRestore function outside handleSubmit
-  var handleRestore = function handleRestore(id) {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].put("http://localhost:8000/api/products/".concat(id, "/restore"), {}, {
-      headers: {
-        Authorization: "Bearer ".concat(localStorage.getItem("token"))
-      }
-    }).then(function () {
-      alert("Product restored successfully!");
-      fetchProducts(); // ✅ Refresh product list after restoring
-    })["catch"](function (error) {
-      return console.error("Error restoring product:", error);
-    });
+    }
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
@@ -75433,7 +75420,7 @@ var AddProduct = function AddProduct() {
         type: "file",
         onChange: handleFileChange,
         accept: "image/*",
-        required: true
+        required: !editMode // ✅ Required only when adding, not when updating
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
         type: "number",
         placeholder: "Price",
@@ -75441,6 +75428,16 @@ var AddProduct = function AddProduct() {
         onChange: function onChange(e) {
           return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
             price: e.target.value
+          }));
+        },
+        required: true
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+        type: "number",
+        placeholder: "Quantity",
+        value: productData.quantity,
+        onChange: function onChange(e) {
+          return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+            quantity: e.target.value
           }));
         },
         required: true
@@ -75551,7 +75548,7 @@ var AddProduct = function AddProduct() {
         })]
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
         type: "submit",
-        children: "Add Product"
+        children: editMode ? "Update Product" : "Add Product"
       })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
       children: "Product List"
@@ -75568,8 +75565,6 @@ var AddProduct = function AddProduct() {
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
             children: "Price"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Quantity"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
             children: "Brand"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
             children: "Category"
@@ -75581,6 +75576,8 @@ var AddProduct = function AddProduct() {
             children: "Gender"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
             children: "Size"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Quantity"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
             children: "Actions"
           })]
@@ -75602,8 +75599,6 @@ var AddProduct = function AddProduct() {
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
               children: ["$", product.price]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: product.quantity
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
               children: (_product$brand2 = product.brand) === null || _product$brand2 === void 0 ? void 0 : _product$brand2.name
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
               children: (_product$category2 = product.category) === null || _product$category2 === void 0 ? void 0 : _product$category2.name
@@ -75615,235 +75610,23 @@ var AddProduct = function AddProduct() {
               children: (_product$gender2 = product.gender) === null || _product$gender2 === void 0 ? void 0 : _product$gender2.name
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
               children: (_product$size2 = product.size) === null || _product$size2 === void 0 ? void 0 : _product$size2.name
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: product.quantity
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("button", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
                 onClick: function onClick() {
-                  return openEditModal(product);
+                  return handleEdit(product);
                 },
-                children: [" ", "Update", " "]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("button", {
+                children: "Edit"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
                 onClick: function onClick() {
                   return handleArchive(product.id);
                 },
-                children: [" ", "Archive", " "]
+                children: "Archive"
               })]
             })]
           }, product.id);
         })
-      })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-      children: "Archived Products"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("table", {
-      border: "1",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("thead", {
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "ID"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Image"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Name"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Price"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Quantity"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Brand"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Category"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Movement"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Strap Material"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Gender"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Size"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Actions"
-          })]
-        })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("tbody", {
-        children: archivedProducts.length > 0 ? archivedProducts.map(function (product) {
-          var _product$brand3, _product$category3, _product$movement3, _product$strap_materi3, _product$gender3, _product$size3;
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: product.id
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-                src: "http://localhost:8000/storage/".concat(product.product_image),
-                alt: product.product_name,
-                width: "50"
-              })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: product.product_name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
-              children: ["$", product.price]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: product.quantity
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$brand3 = product.brand) === null || _product$brand3 === void 0 ? void 0 : _product$brand3.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$category3 = product.category) === null || _product$category3 === void 0 ? void 0 : _product$category3.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$movement3 = product.movement) === null || _product$movement3 === void 0 ? void 0 : _product$movement3.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: ((_product$strap_materi3 = product.strap_material) === null || _product$strap_materi3 === void 0 ? void 0 : _product$strap_materi3.name) || "N/A"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$gender3 = product.gender) === null || _product$gender3 === void 0 ? void 0 : _product$gender3.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$size3 = product.size) === null || _product$size3 === void 0 ? void 0 : _product$size3.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-                onClick: function onClick() {
-                  return handleRestore(product.id);
-                },
-                children: "Restore"
-              })
-            })]
-          }, product.id);
-        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("tr", {
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-            colSpan: "4",
-            children: "No archived products"
-          })
-        })
-      })]
-    }), isEditing && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-      className: "modal",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-        children: "Edit Product"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "text",
-        placeholder: "Product Name",
-        value: editProduct.product_name,
-        onChange: function onChange(e) {
-          return setEditProduct(_objectSpread(_objectSpread({}, editProduct), {}, {
-            product_name: e.target.value
-          }));
-        }
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "number",
-        placeholder: "Price",
-        value: editProduct.price,
-        onChange: function onChange(e) {
-          return setEditProduct(_objectSpread(_objectSpread({}, editProduct), {}, {
-            price: e.target.value
-          }));
-        }
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "number",
-        placeholder: "Quantity",
-        value: editProduct.quantity,
-        onChange: function onChange(e) {
-          return setEditProduct(_objectSpread(_objectSpread({}, editProduct), {}, {
-            quantity: e.target.value
-          }));
-        }
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        value: editProduct.brand_id,
-        onChange: function onChange(e) {
-          return setEditProduct(_objectSpread(_objectSpread({}, editProduct), {}, {
-            brand_id: e.target.value
-          }));
-        },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "",
-          children: "Select Brand"
-        }), dropdownData.brands.map(function (brand) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: brand.id,
-            children: brand.name
-          }, brand.id);
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        value: editProduct.category_id,
-        onChange: function onChange(e) {
-          return setEditProduct(_objectSpread(_objectSpread({}, editProduct), {}, {
-            category_id: e.target.value
-          }));
-        },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "",
-          children: "Select Category"
-        }), dropdownData.categories.map(function (category) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: category.id,
-            children: category.name
-          }, category.id);
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        value: editProduct.movement_id,
-        onChange: function onChange(e) {
-          return setEditProduct(_objectSpread(_objectSpread({}, editProduct), {}, {
-            movement_id: e.target.value
-          }));
-        },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "",
-          children: "Select Movement"
-        }), dropdownData.movements.map(function (movement) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: movement.id,
-            children: movement.name
-          }, movement.id);
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        value: editProduct.strap_material_id,
-        onChange: function onChange(e) {
-          return setEditProduct(_objectSpread(_objectSpread({}, editProduct), {}, {
-            strap_material_id: e.target.value
-          }));
-        },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "",
-          children: "Select Strap Material"
-        }), dropdownData.strapMaterials.map(function (strap) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: strap.id,
-            children: strap.name
-          }, strap.id);
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        value: editProduct.gender_id,
-        onChange: function onChange(e) {
-          return setEditProduct(_objectSpread(_objectSpread({}, editProduct), {}, {
-            gender_id: e.target.value
-          }));
-        },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "",
-          children: "Select Gender"
-        }), dropdownData.genders.map(function (gender) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: gender.id,
-            children: gender.name
-          }, gender.id);
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        value: editProduct.size_id,
-        onChange: function onChange(e) {
-          return setEditProduct(_objectSpread(_objectSpread({}, editProduct), {}, {
-            size_id: e.target.value
-          }));
-        },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "",
-          children: "Select Size"
-        }), dropdownData.sizes.map(function (size) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: size.id,
-            children: size.name
-          }, size.id);
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-        onClick: handleUpdate,
-        children: "Save Changes"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-        onClick: function onClick() {
-          return setIsEditing(false);
-        },
-        children: "Cancel"
       })]
     })]
   });
