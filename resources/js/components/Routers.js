@@ -18,6 +18,8 @@ import Checkout from "./checkout";
 import Home from "./UserHomePage/HomePage";
 import Collection from "./UserHomePage/Collection";
 import LoginLayout from "./LoginPage/LoginLayout";
+import AboutUs from "./UserHomePage/Aboutus";
+import ProductOverview from "./Collectionlayout/ProductOverview";
 
 
 const App = () => {
@@ -26,6 +28,8 @@ const App = () => {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/collection" element={<Collection />} />
+                <Route path="/aboutus" element={<AboutUs />} />
+                <Route path="/product/:id" element={<ProductOverview />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/Admin-dashboard" element={<AdminDashboard />} />

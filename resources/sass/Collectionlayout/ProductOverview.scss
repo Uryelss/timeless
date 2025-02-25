@@ -1,0 +1,129 @@
+.product-overview {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+
+    .back-button {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        margin-bottom: 10px;
+    }
+
+    .product-container {
+        display: flex;
+        gap: 40px;
+
+        .image-section {
+            flex: 1;
+
+            .main-image {
+                width: 100%;
+                max-width: 400px;
+                border-radius: 8px;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .thumbnails {
+                display: flex;
+                gap: 10px;
+                margin-top: 10px;
+
+                img {
+                    width: 80px;
+                    height: 80px;
+                    object-fit: cover;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    transition: transform 0.2s ease-in-out;
+
+                    &:hover,
+                    &.active {
+                        transform: scale(1.1);
+                        border: 2px solid #000;
+                    }
+                }
+            }
+        }
+
+        .details-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            h2 {
+                font-size: 22px;
+                font-weight: bold;
+            }
+
+            .rating {
+                font-size: 18px;
+                color: gold;
+            }
+
+            .price {
+                font-size: 24px;
+                font-weight: bold;
+                color: #333;
+            }
+
+            .size-options {
+                display: flex;
+                gap: 10px;
+
+                button {
+                    padding: 8px 12px;
+                    border: 1px solid #ccc;
+                    background: white;
+                    cursor: pointer;
+                    border-radius: 4px;
+
+                    &.selected {
+                        background: black;
+                        color: white;
+                    }
+                }
+            }
+
+            .add-to-cart,
+            .buy-now {
+                padding: 12px;
+                font-size: 16px;
+                cursor: pointer;
+                border-radius: 4px;
+                text-transform: uppercase;
+                font-weight: bold;
+            }
+
+            .add-to-cart {
+                background: green;
+                color: white;
+                border: none;
+            }
+
+            .buy-now {
+                background: black;
+                color: white;
+                border: none;
+            }
+        }
+    }
+
+    .product-details {
+        margin-top: 20px;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+
+        h3 {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        p {
+            font-size: 16px;
+            color: #555;
+        }
+    }
+}

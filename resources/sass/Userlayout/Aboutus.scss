@@ -1,0 +1,36 @@
+.about-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 20px;
+  }
+  
+  .about-section {
+    background: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 70%;
+    text-align: center;
+    border-radius: 10px;
+  
+    .logo {
+      width: 150px;
+      display: block;
+      margin: 0 auto 20px;
+    }
+  
+    .about-image {
+      width: 60%;
+      display: block;
+      margin: 0 auto 20px;
+      border-radius: 8px;
+    }
+  
+    .text {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #333;
+    }
+  }
+  

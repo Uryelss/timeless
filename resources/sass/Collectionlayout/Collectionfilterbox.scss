@@ -1,14 +1,13 @@
 .filter-box {
-    width: 220px; /* Fixed width */
-    padding: 20px;
+    width: 180px; /* Reduced width */
+    padding: 15px; /* Reduced padding */
     border: 1px solid #ccc;
     border-radius: 10px;
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: relative;
-    top: 100px; /* Sticks below navbar */
-    left: 40px;
-    height: calc(100vh - 120px); /* Takes up most of the viewport height */
+    top: 10px; /* Sticks below navbar */
+    height: calc(100vh - 140px); /* Reduced height */
     display: flex;
     flex-direction: column;
     z-index: 1000;
@@ -18,34 +17,34 @@
 .filter-content {
     flex-grow: 1;
     overflow-y: auto;
-    max-height: calc(100vh - 180px); /* Prevents overflowing */
+    max-height: calc(100vh - 200px); /* Adjusted max-height */
 }
 
 /* Filter Groups */
 .filter-group {
-    margin-bottom: 15px;
+    margin-bottom: 12px; /* Reduced margin */
 
     h4 {
-        font-size: 14px;
+        font-size: 12px; /* Reduced font size */
         font-weight: bold;
         color: #555;
-        margin-bottom: 8px;
+        margin-bottom: 6px; /* Reduced margin */
         text-transform: uppercase;
     }
 
     label {
         display: flex;
         align-items: center;
-        font-size: 14px;
+        font-size: 12px; /* Reduced font size */
         color: #666;
-        margin-bottom: 6px;
+        margin-bottom: 4px; /* Reduced margin */
         cursor: pointer;
     }
 
     input[type="checkbox"] {
-        margin-right: 10px;
-        width: 16px;
-        height: 16px;
+        margin-right: 8px; /* Reduced margin */
+        width: 14px; /* Reduced size */
+        height: 14px; /* Reduced size */
         accent-color: #136945;
     }
 }
@@ -53,13 +52,13 @@
 /* Apply Button (Stays at Bottom) */
 .apply-button {
     width: 100%;
-    padding: 12px;
+    padding: 10px; /* Reduced padding */
     background-color: #136945;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px; /* Reduced font size */
     font-weight: bold;
     text-transform: uppercase;
     transition: background 0.3s ease;
@@ -70,5 +69,4 @@
         background-color: #0f5538;
     }
 }
-
 

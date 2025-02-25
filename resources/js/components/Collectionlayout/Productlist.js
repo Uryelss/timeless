@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const products = [
     {
@@ -7,7 +8,7 @@ const products = [
         description: "A timeless design with a leather strap and silver dial.",
         rating: 4.5,
         price: "$120",
-        image: "/images/elegant-classic-watch.png", // Path to image in public folder
+        image: "/images/elegant-classic-watch.png",
     },
     {
         id: 2,
@@ -15,7 +16,7 @@ const products = [
         description: "Sleek and modern design with a black dial and stainless steel strap.",
         rating: 4.7,
         price: "$150",
-        image: "/images/modern-minimalist-watch.png", // Path to image in public folder
+        image: "/images/modern-minimalist-watch.png",
     },
     {
         id: 3,
@@ -23,19 +24,41 @@ const products = [
         description: "A vintage-inspired watch with a brown leather strap and gold accents.",
         rating: 4.3,
         price: "$100",
-        image: "/images/vintage-retro-watch.png", // Path to image in public folder
+        image: "/images/vintage-retro-watch.png",
     },
-    // Add more products as needed
+
+    {
+        id: 4,
+        title: "Vintage Retro Watch",
+        description: "A vintage-inspired watch with a brown leather strap and gold accents.",
+        rating: 4.3,
+        price: "$100",
+        image: "/images/vintage-retro-watch.png",
+    },
+
+    {
+        id: 5,
+        title: "Vintage Retro Watch",
+        description: "A vintage-inspired watch with a brown leather strap and gold accents.",
+        rating: 4.3,
+        price: "$100",
+        image: "/images/vintage-retro-watch.png",
+    },
+
+    
+
 ];
 
 const ProductList = () => {
     return (
         <div className="product-list">
-            <h2>Table Watches</h2>
+            <h2>Watches</h2>
             <div className="products">
                 {products.map((product) => (
                     <div key={product.id} className="product-card">
-                        <img src={product.image} alt={product.title} />
+                        <Link to={`/product/${product.id}`}>
+                            <img src={product.image} alt={product.title} />
+                        </Link>
                         <h3>{product.title}</h3>
                         <p>{product.description}</p>
                         <p><strong>Rating:</strong> {product.rating}/5</p>

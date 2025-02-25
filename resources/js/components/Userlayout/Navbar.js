@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-
 const Navbar = () => {
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen(!isDropdownOpen);
+    };
+
     return (
         <nav className="navbar">
             {/* Left Side: Logo */}
@@ -16,26 +21,32 @@ const Navbar = () => {
                     <Link to="/">HOME</Link>
                 </li>
                 <li>
-                    <Link to="/about">ABOUT</Link>
+                    <Link to="/aboutus">ABOUT</Link>
                 </li>
                 <li>
                     <Link to="/collection">COLLECTION</Link>
                 </li>
-                <li>
-                    <Link to="/categories">
+                <li 
+                    className="dropdown"
+                    onClick={toggleDropdown} // Now toggles on click
+                >
+                    <Link to="#">
                         CATEGORIES <i className="fa-solid fa-caret-down"></i>
                     </Link>
+                    {isDropdownOpen && (
+                        <ul className="dropdown-menu">
+                            <li><Link to="/categories/luxury">Luxury Watches</Link></li>
+                            <li><Link to="/categories/smart">Smart Watches</Link></li>
+                            <li><Link to="/categories/fashion">Fashion Watches</Link></li>
+                        </ul>
+                    )}
                 </li>
             </ul>
 
             {/* Right Side: Search Bar & Icons */}
             <div className="navbar-right">
                 <div className="search-container">
-                    <input
-                        type="text"
-                        className="search-bar"
-                        placeholder="Search..."
-                    />
+                    <input type="text" className="search-bar" placeholder="Search..." />
                     <i className="fa-solid fa-magnifying-glass"></i>
                 </div>
                 <div className="icons">
@@ -49,3 +60,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
