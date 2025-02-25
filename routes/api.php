@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminSettingsController;
 
 // Public routes
 Route::post('register', [UsersController::class, 'register']);
@@ -16,4 +17,9 @@ Route::middleware(['auth:api', 'role:admin'])->group(function () {
 // Protected user route (accessible to all authenticated users)
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/user-dashboard', [UsersController::class, 'userDashboard']);
+    Route::get('/admin-settings', [AdminSettingsController::class, 'index']);
+
+    // Add filter options
+
+    Route::post('/add-filter/{type}', [AdminSettingsController::class, 'addFilter']);
 });
