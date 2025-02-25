@@ -140,4 +140,45 @@ class ProductController extends Controller
             return response()->json(['message' => 'Failed to update product', 'error' => $e->getMessage()], 500);
         }
     }
+
+
+
+
+    //archive
+
+    public function archive($id)
+    {
+        $product = Product::findOrFail($id);
+
+        if ($product->trashed()) {
+            return response()->json(['message' => 'Product is already archived'], 400);
+        }
+
+        $product->delete(); // ✅ Soft delete
+
+        return response()->json(['message' => 'Product archived successfully'], 200);
+    }
+
+
+    public function archivedProducts()
+    {
+        $archivedProducts = Product::onlyTrashed()->with([
+            'brand',
+            'category',
+            'movement',
+            'strapMaterial',
+            'gender',
+            'size'
+        ])->get();
+
+        return response()->json($archivedProducts, 200);
+    }
+
+    public function restore($id)
+    {
+        $product = Product::onlyTrashed()->findOrFail($id);
+        $product->restore(); // ✅ Restore product
+
+        return response()->json(['message' => 'Product restored successfully'], 200);
+    }
 }

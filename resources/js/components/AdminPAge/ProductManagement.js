@@ -173,24 +173,73 @@ const AddProduct = () => {
         setCurrentProductId(product.id);
         setEditMode(true);
     };
+    const [archivedProducts, setArchivedProducts] = useState([]); // ✅ Store archived products
 
     // Handle archiving a product
     const handleArchive = (productId) => {
-        if (window.confirm("Are you sure you want to archive this product?")) {
-            axios
-                .delete(`http://localhost:8000/api/products/${productId}`, {
+        axios
+            .put(
+                `http://localhost:8000/api/products/${productId}/archive`, // ✅ Use PUT
+                {},
+                {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem(
                             "token"
                         )}`,
                     },
-                })
-                .then(() => fetchProducts())
-                .catch((error) =>
-                    console.error("Error archiving product:", error)
-                );
-        }
+                }
+            )
+            .then(() => {
+                alert("Product archived successfully!");
+                fetchProducts(); // ✅ Refresh product list
+                fetchArchivedProducts(); // ✅ Refresh archived list
+            })
+            .catch((error) => {
+                console.error("Error archiving product:", error);
+                alert("Failed to archive product.");
+            });
     };
+
+    // ✅ Move handleRestore function outside handleSubmit
+    const handleRestore = (productId) => {
+        axios
+            .put(
+                `http://localhost:8000/api/products/${productId}/restore`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                }
+            )
+            .then(() => {
+                alert("Product restored successfully!");
+                fetchProducts(); // ✅ Refresh active products
+                fetchArchivedProducts(); // ✅ Refresh archived list
+            })
+            .catch((error) => {
+                console.error("Error restoring product:", error);
+                alert("Failed to restore product.");
+            });
+    };
+
+    const fetchArchivedProducts = () => {
+        axios
+            .get("http://localhost:8000/api/products/archived", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
+            .then((response) => {
+                setArchivedProducts(response.data); // ✅ Store archived products
+            })
+            .catch((error) =>
+                console.error("Error fetching archived products:", error)
+            );
+    };
+
     return (
         <div>
             <h2>Add New Product</h2>
@@ -352,7 +401,6 @@ const AddProduct = () => {
                     {editMode ? "Update Product" : "Add Product"}
                 </button>
             </form>
-
             <h2>Product List</h2>
             <table border="1">
                 <thead>
@@ -395,16 +443,87 @@ const AddProduct = () => {
                                 <button onClick={() => handleEdit(product)}>
                                     Edit
                                 </button>
-                                <button
-                                    onClick={() => handleArchive(product.id)}
-                                >
-                                    Archive
-                                </button>
+                                {!product.is_archived ? (
+                                    <button
+                                        onClick={() =>
+                                            handleArchive(product.id)
+                                        }
+                                    >
+                                        Archive
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() =>
+                                            handleRestore(product.id)
+                                        }
+                                    >
+                                        Restore
+                                    </button>
+                                )}
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+            <button onClick={fetchArchivedProducts}>
+                View Archived Products
+            </button>
+
+            <h2>Archived Products</h2>
+            {archivedProducts.length === 0 ? (
+                <p>No archived products found.</p>
+            ) : (
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Brand</th>
+                            <th>Category</th>
+                            <th>Movement</th>
+                            <th>Strap Material</th>
+                            <th>Gender</th>
+                            <th>Size</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {archivedProducts.map((product) => (
+                            <tr key={product.id}>
+                                <td>{product.id}</td>
+                                <td>
+                                    <img
+                                        src={`http://localhost:8000/storage/${product.product_image}`}
+                                        alt={product.product_name}
+                                        width="50"
+                                    />
+                                </td>
+                                <td>{product.product_name}</td>
+                                <td>${product.price}</td>
+                                <td>{product.quantity}</td>
+                                <td>{product.brand?.name}</td>
+                                <td>{product.category?.name}</td>
+                                <td>{product.movement?.name}</td>
+                                <td>{product.strapMaterial?.name}</td>
+                                <td>{product.gender?.name}</td>
+                                <td>{product.size?.name}</td>
+                                <td>
+                                    <button
+                                        onClick={() =>
+                                            handleRestore(product.id)
+                                        }
+                                    >
+                                        Restore
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
         </div>
     );
 };

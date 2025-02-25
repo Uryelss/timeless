@@ -22,6 +22,11 @@ class Product extends Model
         'price',
         'quantity'
     ];
+    protected $casts = [
+        'is_archived' => 'boolean',
+    ];
+    protected $dates = ['deleted_at']; // ✅ Track soft deletes
+
 
 
     // Relationships
