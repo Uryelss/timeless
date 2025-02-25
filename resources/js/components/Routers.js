@@ -8,6 +8,7 @@ import ProtectedRoute from "./USERS/ProtectRoute"; // Correct import for Protect
 
 import AdminDashboard from "./AdminPage/Dashboard";
 import AdminSettings from "./AdminPAge/AdminSettings";
+import ProductManagement from "./AdminPage/ProductManagement"; // Import Product Management page
 
 import UserPage from "./UserPage/Homepage";
 
@@ -35,6 +36,16 @@ const App = () => {
                     element={
                         <ProtectedRoute allowedRoles={["admin"]}>
                             <AdminSettings />
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* ✅ Protect Product Management */}
+                <Route
+                    path="/product-management"
+                    element={
+                        <ProtectedRoute allowedRoles={["admin"]}>
+                            <ProductManagement />
                         </ProtectedRoute>
                     }
                 />

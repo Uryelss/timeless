@@ -13,33 +13,25 @@ use Illuminate\Support\Facades\Log;
 
 class AdminSettingsController extends Controller
 {
-    // Get all filters (brands, categories, etc.)
+    // ✅ Fetch all available filters
     public function index()
     {
-        $brands = Brand::all();
-        $categories = Category::all();
-        $movements = Movement::all();
-        $strapMaterials = StrapMaterial::all();
-        $genders = Gender::all();
-        $sizes = Size::all();
-
         return response()->json([
-            'brands' => $brands,
-            'categories' => $categories,
-            'movements' => $movements,
-            'strap_materials' => $strapMaterials,
-            'genders' => $genders,
-            'sizes' => $sizes,
+            'brands' => Brand::orderBy('name')->get(),
+            'categories' => Category::orderBy('name')->get(),
+            'movements' => Movement::orderBy('name')->get(),
+            'strapMaterials' => StrapMaterial::orderBy('name')->get(),
+            'genders' => Gender::orderBy('name')->get(),
+            'sizes' => Size::orderBy('name')->get(),
         ]);
     }
 
-    // Add a new filter (brand, category, etc.)
+    // ✅ Add a new filter (brand, category, etc.)
     public function addFilter(Request $request, $type)
     {
-        $request->validate(['name' => 'required|string']);
+        $request->validate(['name' => 'required|string|unique:brands,name']);
 
-        // Log the request data to ensure it's being passed correctly
-        Log::info($request->all());
+        Log::info("Adding new $type: " . $request->name);
 
         $model = $this->getModel($type);
 
@@ -48,30 +40,24 @@ class AdminSettingsController extends Controller
             $filter->name = $request->name;
             $filter->save();
 
-            return response()->json(['message' => ucfirst($type) . ' added successfully.']);
+            return response()->json(['message' => ucfirst($type) . ' added successfully.'], 201);
         }
 
         return response()->json(['error' => 'Invalid filter type'], 400);
     }
 
-    // Return the model for each filter type
+    // ✅ Get the correct model for filter type
     private function getModel($type)
     {
-        switch ($type) {
-            case 'brand':
-                return Brand::class;
-            case 'category':
-                return Category::class;
-            case 'movement':
-                return Movement::class;
-            case 'strap-material':
-                return StrapMaterial::class;
-            case 'gender':
-                return Gender::class;
-            case 'size':
-                return Size::class;
-            default:
-                return null;
-        }
+        $models = [
+            'brand' => Brand::class,
+            'category' => Category::class,
+            'movement' => Movement::class,
+            'strap-material' => StrapMaterial::class,
+            'gender' => Gender::class,
+            'size' => Size::class,
+        ];
+
+        return $models[$type] ?? null;
     }
 }
