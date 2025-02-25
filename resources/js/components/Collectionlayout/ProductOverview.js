@@ -16,9 +16,10 @@ const products = [
             "/images/mk-watch1.png",
             "/images/mk-watch2.png",
             "/images/mk-watch3.png",
-            "/images/mk-watch4.png"
+            "/images/mk-watch4.png",
         ],
-        description: "A luxury watch with a stunning design and premium features."
+        description:
+            "A luxury watch with a stunning design and premium features.",
     },
     {
         id: 2,
@@ -30,9 +31,9 @@ const products = [
             "/images/mk-watch1.png",
             "/images/mk-watch2.png",
             "/images/mk-watch3.png",
-            "/images/mk-watch4.png"
+            "/images/mk-watch4.png",
         ],
-        description: "A sleek and modern timepiece perfect for any occasion."
+        description: "A sleek and modern timepiece perfect for any occasion.",
     },
     {
         id: 3,
@@ -44,10 +45,10 @@ const products = [
             "/images/mk-watch1.png",
             "/images/mk-watch2.png",
             "/images/mk-watch3.png",
-            "/images/mk-watch4.png"
+            "/images/mk-watch4.png",
         ],
-        description: "A timeless silver watch with a durable build."
-    }
+        description: "A timeless silver watch with a durable build.",
+    },
 ];
 
 const ProductOverview = () => {
@@ -72,21 +73,29 @@ const ProductOverview = () => {
             <CollectionNavbar />
 
             {/* Back Button */}
-            <button className="back-button" onClick={() => navigate(-1)}>← Back</button>
+            <button className="back-button" onClick={() => navigate(-1)}>
+                ← Back
+            </button>
 
             {/* Product Display Section */}
             <div className="product-container">
                 {/* Image Section */}
                 <div className="image-section">
-                    <img className="main-image" src={selectedImage} alt={product.title} />
+                    <img
+                        className="main-image"
+                        src={selectedImage}
+                        alt={product.title}
+                    />
                     <div className="thumbnails">
                         {product.images.map((img, index) => (
-                            <img 
-                                key={index} 
-                                src={img} 
-                                alt="Thumbnail" 
-                                onClick={() => setSelectedImage(img)} 
-                                className={selectedImage === img ? "active" : ""}
+                            <img
+                                key={index}
+                                src={img}
+                                alt="Thumbnail"
+                                onClick={() => setSelectedImage(img)}
+                                className={
+                                    selectedImage === img ? "active" : ""
+                                }
                             />
                         ))}
                     </div>
@@ -96,15 +105,19 @@ const ProductOverview = () => {
                 <div className="details-section">
                     <h2>{product.title}</h2>
                     <p className="rating">★★★★★</p>
-                    <p className="price"><strong>{product.price}</strong></p>
+                    <p className="price">
+                        <strong>{product.price}</strong>
+                    </p>
 
                     {/* Size Options */}
                     <div className="size-options">
                         <p>Size (mm)</p>
                         {product.sizes.map((size) => (
-                            <button 
-                                key={size} 
-                                className={selectedSize === size ? "selected" : ""} 
+                            <button
+                                key={size}
+                                className={
+                                    selectedSize === size ? "selected" : ""
+                                }
                                 onClick={() => setSelectedSize(size)}
                             >
                                 {size}
@@ -135,5 +148,3 @@ const ProductOverview = () => {
 };
 
 export default ProductOverview;
-
-

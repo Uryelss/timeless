@@ -5,12 +5,19 @@ import CollectionFooter from "../Collectionlayout/CollectionFooter"; // Import C
 import ProductList from "../Collectionlayout/Productlist"; // Import the ProductList component
 import CollectionBanner from "../Collectionlayout/CollectionBanner";
 
-export default function Collection() {  
+export default function Collection() {
     return (
         <div>
             <CollectionNavbar /> {/* Collection Navbar */}
             <CollectionBanner /> {/* Collection Banner */}
-            <div className="collection-container" style={{ display: 'grid', gridTemplateColumns: '0px 1fr', gap: '0px' }}>
+            <div
+                className="collection-container"
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "200px 1fr", // Adjusted grid template columns
+                    gap: "10px", // Adjusted gap
+                }}
+            >
                 <div>
                     <Collectionfilterbox /> {/* Collection Filter Box */}
                 </div>
