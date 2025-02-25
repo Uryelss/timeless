@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes; // ✅ Import SoftDeletes
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes; // ✅ Use SoftDeletes
 
     protected $fillable = [
         'product_name',
@@ -19,7 +20,9 @@ class Product extends Model
         'gender_id',
         'size_id',
         'price',
+        'quantity'
     ];
+
 
     // Relationships
     public function brand()
@@ -39,9 +42,8 @@ class Product extends Model
 
     public function strapMaterial()
     {
-        return $this->belongsTo(StrapMaterial::class, 'strap_material_id');
+        return $this->belongsTo(StrapMaterial::class);
     }
-
 
     public function gender()
     {

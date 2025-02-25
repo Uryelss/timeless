@@ -4,13 +4,13 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Register from "./USERS/Register";
 import Login from "./USERS/Login";
-import ProtectedRoute from "./USERS/ProtectRoute"; // Correct import for ProtectedRoute
+import ProtectedRoute from "./USERS/ProtectRoute";
 
 import AdminDashboard from "./AdminPage/Dashboard";
-import AdminSettings from "./AdminPAge/AdminSettings";
-import ProductManagement from "./AdminPage/ProductManagement"; // Import Product Management page
+import AdminSettings from "./AdminPage/AdminSettings";
+import ProductManagement from "./AdminPage/ProductManagement";
 
-import UserPage from "./UserPage/Homepage";
+import Homepage from "./UserPage/Homepage"; // ✅ Import correctly
 
 const App = () => {
     return (
@@ -18,9 +18,8 @@ const App = () => {
             <Routes>
                 <Route path="/Register" element={<Register />} />
                 <Route path="/Login" element={<Login />} />
-                <Route path="/Homepage" element={<UserPage />} />
-
-                {/* Protect Admin Dashboard */}
+                <Route path="/Homepage" element={<Homepage />} />{" "}
+                {/* ✅ Fix: Replace UserPage with Homepage */}
                 <Route
                     path="/admin-dashboard"
                     element={
@@ -29,8 +28,6 @@ const App = () => {
                         </ProtectedRoute>
                     }
                 />
-
-                {/* Protect Admin Settings */}
                 <Route
                     path="/admin-settings"
                     element={
@@ -39,8 +36,6 @@ const App = () => {
                         </ProtectedRoute>
                     }
                 />
-
-                {/* ✅ Protect Product Management */}
                 <Route
                     path="/product-management"
                     element={
