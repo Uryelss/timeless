@@ -11966,3 +11966,335 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+.login-container {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+.login-container .background-image {
+  width: 55%;
+  height: 100%;
+  background: url("/Images/time.png") no-repeat center;
+  background-size: cover;
+}
+.login-container .login-card {
+  width: 50%;
+  height: 100%;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40px;
+  border-radius: 22px;
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.2);
+}
+.login-container .login-card h2, .login-container .login-card .h2 {
+  font-size: 34px;
+  margin-top: 40px;
+  margin-bottom: 60px;
+  color: #006666;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+.login-container .login-card .input-box {
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 20px;
+  position: relative;
+}
+.login-container .login-card .input-box input {
+  width: 100%;
+  padding: 12px 15px;
+  height: 50px;
+  border: 2px solid #006666;
+  border-radius: 12px;
+  font-size: 1rem;
+  color: #000000;
+  outline: none;
+  transition: border-color 0.3s;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+.login-container .login-card .input-box input::-moz-placeholder {
+  color: #000000;
+  opacity: 0.7;
+}
+.login-container .login-card .input-box input::placeholder {
+  color: #000000;
+  opacity: 0.7;
+}
+.login-container .login-card .input-box input:focus {
+  border-color: #003333;
+}
+.login-container .login-card .input-box.password-container {
+  position: relative;
+}
+.login-container .login-card .input-box.password-container .password-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #000000;
+  cursor: pointer;
+}
+.login-container .login-card .forgot-password {
+  width: 100%;
+  max-width: 900px;
+  text-align: right;
+  color: #006666;
+  text-decoration: none;
+  margin-top: -15px;
+  margin-bottom: 20px;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+.login-container .login-card .forgot-password:hover {
+  text-decoration: underline;
+}
+.login-container .login-card button {
+  width: 300px;
+  margin: 10px auto;
+  display: block;
+  padding: 12px;
+  background-color: #006666;
+  color: white;
+  border: none;
+  border-radius: 24px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 102, 102, 0.3);
+  font-family: "Helvetica", Arial, sans-serif;
+}
+.login-container .login-card button:hover {
+  background-color: #003333;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 25px rgba(0, 102, 102, 0.5);
+  transform: translateY(-2px);
+}
+.login-container .login-card .signup-section {
+  margin-top: 20px;
+  text-align: center;
+}
+.login-container .login-card .signup-section p {
+  color: #006666;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+.login-container .login-card .signup-section p a {
+  color: #006666;
+  text-decoration: none;
+  font-weight: bold;
+}
+.login-container .login-card .signup-section p a:hover {
+  text-decoration: underline;
+}
+.login-container .login-card .error {
+  color: #ff3333;
+  text-align: center;
+  margin-top: 15px;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+  .login-container .background-image {
+    width: 100%;
+    height: 30%;
+  }
+  .login-container .login-card {
+    width: 100%;
+    height: 70%;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  }
+  .login-container .login-card .input-box,
+  .login-container .login-card .forgot-password {
+    max-width: 100%;
+  }
+  .login-container .login-card button {
+    width: 80%;
+  }
+}
+.register-container {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+.register-container .background-image {
+  width: 50%;
+  height: 100%;
+  background: url("/Images/time.png") no-repeat center;
+  background-size: cover;
+}
+.register-container .register-card {
+  width: 55%;
+  height: 100%;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40px;
+  border-radius: 22px;
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.2);
+}
+.register-container .register-card h2, .register-container .register-card .h2 {
+  color: #006666;
+  font-size: 34px;
+  color: #006666;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+.register-container .register-card form {
+  width: 100%;
+  max-width: 650px;
+}
+.register-container .register-card form .form-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+.register-container .register-card form .form-row .input-box {
+  flex: 1;
+  position: relative;
+}
+.register-container .register-card form .form-row .input-box input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #006666;
+  border-radius: 12px;
+  font-size: 1rem;
+  color: #000000;
+  outline: none;
+  transition: border-color 0.3s;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+.register-container .register-card form .form-row .input-box input::-moz-placeholder {
+  color: #000000;
+  opacity: 0.7;
+}
+.register-container .register-card form .form-row .input-box input::placeholder {
+  color: #000000;
+  opacity: 0.7;
+}
+.register-container .register-card form .form-row .input-box input:focus {
+  border-color: #003333;
+}
+.register-container .register-card form .form-row .input-box.password-container {
+  position: relative;
+}
+.register-container .register-card form .form-row .input-box.password-container .password-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #000000;
+  cursor: pointer;
+}
+.register-container .register-card form .form-row .suffix-select {
+  flex: 1;
+  position: relative;
+}
+.register-container .register-card form .form-row .suffix-select select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #006666;
+  border-radius: 12px;
+  font-size: 1rem;
+  color: #000000;
+  background: white;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  cursor: pointer;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+.register-container .register-card form .form-row .suffix-select select:focus {
+  border-color: #003333;
+  outline: none;
+}
+.register-container .register-card form .form-row .suffix-select .suffix-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #006666;
+  pointer-events: none;
+}
+.register-container .register-card form button {
+  width: 300px;
+  margin: 20px auto;
+  display: block;
+  padding: 12px;
+  background-color: #006666;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 102, 102, 0.3);
+  font-family: "Helvetica", Arial, sans-serif;
+}
+.register-container .register-card form button:hover {
+  background-color: #003333;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 0 25px rgba(0, 102, 102, 0.5);
+  transform: translateY(-2px);
+}
+.register-container .register-card .signup-section {
+  margin-top: 20px;
+  text-align: center;
+}
+.register-container .register-card .signup-section p {
+  color: #006666;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+.register-container .register-card .signup-section p a {
+  color: #006666;
+  text-decoration: none;
+  font-weight: bold;
+}
+.register-container .register-card .signup-section p a:hover {
+  text-decoration: underline;
+}
+.register-container .register-card .error {
+  color: #ff3333;
+  text-align: center;
+  margin-top: 15px;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+
+@media (max-width: 768px) {
+  .register-container {
+    flex-direction: column;
+  }
+  .register-container .background-image {
+    width: 100%;
+    height: 30%;
+  }
+  .register-container .register-card {
+    width: 100%;
+    height: 70%;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  }
+}
