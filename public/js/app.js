@@ -74804,6 +74804,264 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
+/***/ "./resources/js/components/AdminLayout/ProductTable.js":
+/*!*************************************************************!*\
+  !*** ./resources/js/components/AdminLayout/ProductTable.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+
+
+var ProductTable = function ProductTable(_ref) {
+  var products = _ref.products,
+    handleEdit = _ref.handleEdit,
+    handleArchive = _ref.handleArchive,
+    handleArchiveAll = _ref.handleArchiveAll,
+    handleRestore = _ref.handleRestore,
+    fetchProducts = _ref.fetchProducts,
+    fetchArchivedProducts = _ref.fetchArchivedProducts,
+    isArchived = _ref.isArchived,
+    selectedProducts = _ref.selectedProducts,
+    setSelectedProducts = _ref.setSelectedProducts;
+  var handleCheckboxChange = function handleCheckboxChange(productId) {
+    setSelectedProducts(function (prev) {
+      return prev.includes(productId) ? prev.filter(function (id) {
+        return id !== productId;
+      }) : [].concat(_toConsumableArray(prev), [productId]);
+    });
+  };
+  var handleIconClick = function handleIconClick(action, productId) {
+    if (action === "edit") handleEdit(products.find(function (p) {
+      return p.id === productId;
+    }));else if (action === "archive") handleArchive(productId);else if (action === "restore") handleRestore(productId, fetchProducts, fetchArchivedProducts);
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+    className: "product-table-container",
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("table", {
+      className: "product-table",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("thead", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Action"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "ID"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Product"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Product Name"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Price"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Quantity"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Category"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Brand"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Movement"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Strap Material"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Gender"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Size"
+          })]
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("tbody", {
+        children: products.length === 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("tr", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
+            colSpan: "12",
+            className: "no-data",
+            children: ["No ", isArchived ? "archived" : "active", " products found."]
+          })
+        }) : products.map(function (product) {
+          var _product$category, _product$brand, _product$movement, _product$strap_materi, _product$gender, _product$size;
+          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
+              className: "actions",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                type: "checkbox",
+                checked: selectedProducts.includes(product.id),
+                onChange: function onChange() {
+                  return handleCheckboxChange(product.id);
+                },
+                className: "action-checkbox"
+              }), !isArchived ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+                  className: "fa-solid fa-pen-to-square action-icon",
+                  onClick: function onClick() {
+                    return handleIconClick("edit", product.id);
+                  },
+                  title: "Edit"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+                  className: "fa-solid fa-box-archive action-icon",
+                  onClick: function onClick() {
+                    return handleIconClick("archive", product.id);
+                  },
+                  title: "Archive"
+                })]
+              }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+                onClick: function onClick() {
+                  return handleIconClick("restore", product.id);
+                },
+                className: "restore-btn",
+                children: "Restore"
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: product.id
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                src: "http://localhost:8000/storage/".concat(product.product_image),
+                alt: product.product_name,
+                width: "50"
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: product.product_name
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
+              children: ["\u20B1", product.price]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: product.quantity
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              className: "category-column",
+              children: ((_product$category = product.category) === null || _product$category === void 0 ? void 0 : _product$category.name) || "N/A"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: ((_product$brand = product.brand) === null || _product$brand === void 0 ? void 0 : _product$brand.name) || "N/A"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: ((_product$movement = product.movement) === null || _product$movement === void 0 ? void 0 : _product$movement.name) || "N/A"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: ((_product$strap_materi = product.strap_material) === null || _product$strap_materi === void 0 ? void 0 : _product$strap_materi.name) || "N/A"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: ((_product$gender = product.gender) === null || _product$gender === void 0 ? void 0 : _product$gender.name) || "N/A"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: ((_product$size = product.size) === null || _product$size === void 0 ? void 0 : _product$size.name) || "N/A"
+            })]
+          }, product.id);
+        })
+      })]
+    })
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ProductTable);
+
+/***/ }),
+
+/***/ "./resources/js/components/AdminLayout/Sidebar.js":
+/*!********************************************************!*\
+  !*** ./resources/js/components/AdminLayout/Sidebar.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+
+
+
+var Sidebar = function Sidebar() {
+  var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_2__.useNavigate)();
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    className: "sidebar",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      className: "menu-title",
+      children: "MENU"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      className: "menu-item",
+      onClick: function onClick() {
+        return navigate("/Admin-dashboard");
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+        className: "fa-solid fa-chart-line"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+        children: "Dashboard"
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      className: "menu-item",
+      onClick: function onClick() {
+        return navigate("/Admin-product");
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+        className: "fa-solid fa-cart-shopping"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+        children: "Product"
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      className: "menu-item",
+      onClick: function onClick() {
+        return navigate("/Admin-order");
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+        className: "fa-solid fa-bag-shopping"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+        children: "Order"
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      className: "menu-item",
+      onClick: function onClick() {
+        return navigate("/Admin-user");
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+        className: "fa-solid fa-user"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+        children: "User"
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      className: "menu-item",
+      onClick: function onClick() {
+        return navigate("/customers");
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+        className: "fa-solid fa-users"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+        children: "Customer"
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      className: "menu-item",
+      onClick: function onClick() {
+        return navigate("/inventory");
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+        className: "fa-solid fa-box-open"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+        children: "Inventory"
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      className: "tools-title",
+      children: "TOOLS"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      className: "menu-item",
+      onClick: function onClick() {
+        return navigate("/admin-settings");
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+        className: "fa-solid fa-gears"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+        children: "Admin Settings"
+      })]
+    })]
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Sidebar);
+
+/***/ }),
+
 /***/ "./resources/js/components/AdminPage/AdminSettings.js":
 /*!************************************************************!*\
   !*** ./resources/js/components/AdminPage/AdminSettings.js ***!
@@ -75084,8 +75342,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var _AdminLayout_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminLayout/Sidebar */ "./resources/js/components/AdminLayout/Sidebar.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
@@ -75096,6 +75355,7 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+
 
 
 
@@ -75128,31 +75388,26 @@ var AdminDashboard = function AdminDashboard() {
             setLoading(false);
             return _context.abrupt("return");
           case 6:
-            // Log token to ensure it's retrieved correctly
             console.log("Token:", token);
             _context.next = 9;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/admin-dashboard", {
+            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("http://localhost:8000/api/admin-dashboard", {
               headers: {
-                Authorization: "Bearer ".concat(token) // Send token in request header
+                Authorization: "Bearer ".concat(token)
               }
             });
           case 9:
             response = _context.sent;
-            // Log the response to check its structure
             console.log("Admin data response:", response.data);
-
-            // Set the response data to state
-            setAdminData(response.data.adminData); // Store the admin data (user_count, pending_requests)
-            setLoading(false); // Stop loading after data is fetched
+            setAdminData(response.data.adminData);
+            setLoading(false);
             _context.next = 20;
             break;
           case 15:
             _context.prev = 15;
             _context.t0 = _context["catch"](0);
-            // Log the error response to understand what went wrong
             console.log("Error fetching admin data:", _context.t0.response ? _context.t0.response.data : _context.t0.message);
             setError("Failed to fetch admin data.");
-            setLoading(false); // Stop loading on error
+            setLoading(false);
           case 20:
           case "end":
             return _context.stop();
@@ -75163,30 +75418,32 @@ var AdminDashboard = function AdminDashboard() {
       return _ref.apply(this, arguments);
     };
   }();
-
-  // Call getAdminData when the component mounts
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    getAdminData(); // Fetch data on mount
+    getAdminData();
   }, []);
-  if (loading) {
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-      children: "Loading..."
-    });
-  }
-  if (error) {
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-      children: error
-    });
-  }
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h1", {
-      children: "Admin Dashboard"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("h3", {
-        children: ["User Count: ", adminData.user_count]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("h3", {
-        children: ["Pending Requests: ", adminData.pending_requests]
-      })]
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+    className: "admin-dashboard-container",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_AdminLayout_Sidebar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+      className: "dashboard-content",
+      children: loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        className: "loading",
+        children: "Loading..."
+      }) : error ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        className: "error",
+        children: error
+      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        className: "centered-content",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
+          children: "Admin Dashboard"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "data-section",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("h3", {
+            children: ["User Count: ", adminData.user_count]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("h3", {
+            children: ["Pending Requests: ", adminData.pending_requests]
+          })]
+        })]
+      })
     })]
   });
 };
@@ -75206,8 +75463,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var _AdminLayout_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminLayout/Sidebar */ "./resources/js/components/AdminLayout/Sidebar.js");
+/* harmony import */ var _AdminLayout_ProductTable__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../AdminLayout/ProductTable */ "./resources/js/components/AdminLayout/ProductTable.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
@@ -75223,8 +75482,9 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
-var AddProduct = function AddProduct() {
-  var _dropdownData$brands;
+
+
+var AdminProduct = function AdminProduct() {
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
       product_name: "",
       product_image: null,
@@ -75234,7 +75494,8 @@ var AddProduct = function AddProduct() {
       strap_material_id: "",
       gender_id: "",
       size_id: "",
-      price: ""
+      price: "",
+      quantity: ""
     }),
     _useState2 = _slicedToArray(_useState, 2),
     productData = _useState2[0],
@@ -75253,95 +75514,121 @@ var AddProduct = function AddProduct() {
   var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState6 = _slicedToArray(_useState5, 2),
     products = _useState6[0],
-    setProducts = _useState6[1]; // Store added products for the table
-
+    setProducts = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState8 = _slicedToArray(_useState7, 2),
+    archivedProducts = _useState8[0],
+    setArchivedProducts = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState10 = _slicedToArray(_useState9, 2),
+    filteredProducts = _useState10[0],
+    setFilteredProducts = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState12 = _slicedToArray(_useState11, 2),
+    showModal = _useState12[0],
+    setShowModal = _useState12[1];
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState14 = _slicedToArray(_useState13, 2),
+    editMode = _useState14[0],
+    setEditMode = _useState14[1];
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState16 = _slicedToArray(_useState15, 2),
+    currentProductId = _useState16[0],
+    setCurrentProductId = _useState16[1];
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState18 = _slicedToArray(_useState17, 2),
+    viewArchived = _useState18[0],
+    setViewArchived = _useState18[1];
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    _useState20 = _slicedToArray(_useState19, 2),
+    searchQuery = _useState20[0],
+    setSearchQuery = _useState20[1];
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState22 = _slicedToArray(_useState21, 2),
+    selectedProducts = _useState22[0],
+    setSelectedProducts = _useState22[1];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    fetchProducts(); // Fetch products on page load
-    fetchDropdownData(); // Fetch dropdown data on page load
+    fetchProducts();
+    fetchDropdownData();
+    fetchArchivedProducts();
   }, []);
-
-  // Fetch dropdown filter options (brands, categories, etc.)
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var filtered = (viewArchived ? archivedProducts : products).filter(function (product) {
+      return product.product_name.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+    setFilteredProducts(filtered);
+  }, [products, archivedProducts, viewArchived, searchQuery]);
   var fetchDropdownData = function fetchDropdownData() {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/products/create", {
+    axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/products/create", {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (response) {
-      setDropdownData(response.data);
+      return setDropdownData(response.data);
     })["catch"](function (error) {
       return console.error("Error fetching dropdown data:", error);
     });
   };
-
-  // Fetch all products
   var fetchProducts = function fetchProducts() {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/products", {
+    axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/products", {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (response) {
-      setProducts(response.data);
+      return setProducts(response.data);
     })["catch"](function (error) {
       return console.error("Error fetching products:", error);
     });
   };
-
-  // Handle image file selection
+  var fetchArchivedProducts = function fetchArchivedProducts() {
+    axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/products/archived", {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function (response) {
+      return setArchivedProducts(response.data);
+    })["catch"](function (error) {
+      return console.error("Error fetching archived products:", error);
+    });
+  };
   var handleFileChange = function handleFileChange(e) {
     setProductData(_objectSpread(_objectSpread({}, productData), {}, {
       product_image: e.target.files[0]
     }));
   };
-
-  // Handle adding a new product
   var handleSubmit = function handleSubmit(e) {
     e.preventDefault();
     var formData = new FormData();
     for (var key in productData) {
       if (key === "product_image" && productData[key] === null && !editMode) {
         alert("Please select an image.");
-        return; // ✅ Prevent adding a product without an image
+        return;
       }
       if (!(key === "product_image" && productData[key] === null)) {
         formData.append(key, productData[key]);
       }
     }
     if (!productData.quantity) {
-      alert("Quantity is required."); // ✅ Prevent empty quantity
+      alert("Quantity is required.");
       return;
     }
-    if (editMode) {
-      axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("http://localhost:8000/api/products/".concat(currentProductId, "?_method=PUT"), formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: "Bearer ".concat(localStorage.getItem("token"))
-        }
-      }).then(function () {
-        alert("Product updated successfully!");
-        fetchProducts();
-        resetForm();
-      })["catch"](function (error) {
-        console.error("Error updating product:", error);
-        alert("Failed to update product.");
-      });
-    } else {
-      axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("http://localhost:8000/api/products/store", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: "Bearer ".concat(localStorage.getItem("token"))
-        }
-      }).then(function () {
-        alert("Product added successfully!");
-        fetchProducts();
-        resetForm();
-      })["catch"](function (error) {
-        console.error("Error adding product:", error);
-        alert("Failed to add product.");
-      });
-    }
+    var url = editMode ? "http://localhost:8000/api/products/".concat(currentProductId, "?_method=PUT") : "http://localhost:8000/api/products/store";
+    axios__WEBPACK_IMPORTED_MODULE_4__["default"].post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function () {
+      alert(editMode ? "Product updated successfully!" : "Product added successfully!");
+      fetchProducts();
+      fetchArchivedProducts();
+      resetForm();
+      setShowModal(false);
+    })["catch"](function (error) {
+      console.error("Error:", error);
+      alert("Failed to ".concat(editMode ? "update" : "add", " product."));
+    });
   };
-
-  // ✅ Reset form after adding/updating
   var resetForm = function resetForm() {
     setProductData({
       product_name: "",
@@ -75358,22 +75645,11 @@ var AddProduct = function AddProduct() {
     setEditMode(false);
     setCurrentProductId(null);
   };
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
-    _useState8 = _slicedToArray(_useState7, 2),
-    editMode = _useState8[0],
-    setEditMode = _useState8[1];
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
-    _useState10 = _slicedToArray(_useState9, 2),
-    currentProductId = _useState10[0],
-    setCurrentProductId = _useState10[1];
-
-  // Handle updating a product quantity
   var handleEdit = function handleEdit(product) {
     var _product$brand, _product$category, _product$movement, _product$strap_materi, _product$gender, _product$size;
     setProductData({
       product_name: product.product_name,
       product_image: null,
-      // Image is not updated immediately
       brand_id: (_product$brand = product.brand) === null || _product$brand === void 0 ? void 0 : _product$brand.id,
       category_id: (_product$category = product.category) === null || _product$category === void 0 ? void 0 : _product$category.id,
       movement_id: (_product$movement = product.movement) === null || _product$movement === void 0 ? void 0 : _product$movement.id,
@@ -75385,370 +75661,302 @@ var AddProduct = function AddProduct() {
     });
     setCurrentProductId(product.id);
     setEditMode(true);
+    setShowModal(true);
   };
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-    _useState12 = _slicedToArray(_useState11, 2),
-    archivedProducts = _useState12[0],
-    setArchivedProducts = _useState12[1]; // ✅ Store archived products
-
-  // Handle archiving a product
   var handleArchive = function handleArchive(productId) {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].put("http://localhost:8000/api/products/".concat(productId, "/archive"),
-    // ✅ Use PUT
-    {}, {
-      headers: {
-        Authorization: "Bearer ".concat(localStorage.getItem("token"))
-      }
-    }).then(function () {
-      alert("Product archived successfully!");
-      fetchProducts(); // ✅ Refresh product list
-      fetchArchivedProducts(); // ✅ Refresh archived list
-    })["catch"](function (error) {
-      console.error("Error archiving product:", error);
-      alert("Failed to archive product.");
-    });
+    if (window.confirm("Are you sure you want to archive this product?")) {
+      axios__WEBPACK_IMPORTED_MODULE_4__["default"].put("http://localhost:8000/api/products/".concat(productId, "/archive"), {}, {
+        headers: {
+          Authorization: "Bearer ".concat(localStorage.getItem("token"))
+        }
+      }).then(function () {
+        alert("Product archived successfully!");
+        fetchProducts();
+        fetchArchivedProducts();
+      })["catch"](function (error) {
+        console.error("Error archiving product:", error);
+        alert("Failed to archive product.");
+      });
+    }
   };
-
-  // ✅ Move handleRestore function outside handleSubmit
-  var handleRestore = function handleRestore(productId) {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].put("http://localhost:8000/api/products/".concat(productId, "/restore"), {}, {
-      headers: {
-        Authorization: "Bearer ".concat(localStorage.getItem("token"))
-      }
-    }).then(function () {
-      alert("Product restored successfully!");
-      fetchProducts(); // ✅ Refresh active products
-      fetchArchivedProducts(); // ✅ Refresh archived list
-    })["catch"](function (error) {
-      console.error("Error restoring product:", error);
-      alert("Failed to restore product.");
-    });
+  var handleArchiveAll = function handleArchiveAll() {
+    if (selectedProducts.length === 0) {
+      alert("Please select products to archive");
+      return;
+    }
+    if (window.confirm("Are you sure you want to archive all selected products?")) {
+      Promise.all(selectedProducts.map(function (productId) {
+        return axios__WEBPACK_IMPORTED_MODULE_4__["default"].put("http://localhost:8000/api/products/".concat(productId, "/archive"), {}, {
+          headers: {
+            Authorization: "Bearer ".concat(localStorage.getItem("token"))
+          }
+        });
+      })).then(function () {
+        alert("Products archived successfully!");
+        setSelectedProducts([]);
+        fetchProducts();
+        fetchArchivedProducts();
+      })["catch"](function (error) {
+        console.error("Error archiving products:", error);
+        alert("Failed to archive some products.");
+      });
+    }
   };
-  var fetchArchivedProducts = function fetchArchivedProducts() {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/products/archived", {
-      headers: {
-        Authorization: "Bearer ".concat(localStorage.getItem("token"))
-      }
-    }).then(function (response) {
-      setArchivedProducts(response.data); // ✅ Store archived products
-    })["catch"](function (error) {
-      return console.error("Error fetching archived products:", error);
-    });
-  };
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-      children: "Add New Product"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("form", {
-      onSubmit: handleSubmit,
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "text",
-        placeholder: "Product Name",
-        value: productData.product_name,
-        onChange: function onChange(e) {
-          return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-            product_name: e.target.value
-          }));
-        },
-        required: true
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "file",
-        onChange: handleFileChange,
-        accept: "image/*",
-        required: !editMode // ✅ Required only when adding, not when updating
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "number",
-        placeholder: "Price",
-        value: productData.price,
-        onChange: function onChange(e) {
-          return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-            price: e.target.value
-          }));
-        },
-        required: true
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "number",
-        placeholder: "Quantity",
-        value: productData.quantity,
-        onChange: function onChange(e) {
-          return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-            quantity: e.target.value
-          }));
-        },
-        required: true
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        value: productData.brand_id,
-        onChange: function onChange(e) {
-          return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-            brand_id: e.target.value
-          }));
-        },
-        required: true,
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "",
-          children: "Select Brand"
-        }), ((_dropdownData$brands = dropdownData.brands) === null || _dropdownData$brands === void 0 ? void 0 : _dropdownData$brands.map(function (brand) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: brand.id,
-            children: brand.name
-          }, brand.id);
-        })) || /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          disabled: true,
-          children: "No brands available"
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        value: productData.category_id,
-        onChange: function onChange(e) {
-          return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-            category_id: e.target.value
-          }));
-        },
-        required: true,
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "",
-          children: "Select Category"
-        }), dropdownData.categories.map(function (category) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: category.id,
-            children: category.name
-          }, category.id);
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        value: productData.movement_id,
-        onChange: function onChange(e) {
-          return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-            movement_id: e.target.value
-          }));
-        },
-        required: true,
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "",
-          children: "Select Movement"
-        }), dropdownData.movements.map(function (movement) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: movement.id,
-            children: movement.name
-          }, movement.id);
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        value: productData.strap_material_id,
-        onChange: function onChange(e) {
-          return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-            strap_material_id: e.target.value
-          }));
-        },
-        required: true,
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "",
-          children: "Select Strap Material"
-        }), dropdownData.strapMaterials.map(function (strap) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: strap.id,
-            children: strap.name
-          }, strap.id);
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        value: productData.gender_id,
-        onChange: function onChange(e) {
-          return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-            gender_id: e.target.value
-          }));
-        },
-        required: true,
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "",
-          children: "Select Gender"
-        }), dropdownData.genders.map(function (gender) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: gender.id,
-            children: gender.name
-          }, gender.id);
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        value: productData.size_id,
-        onChange: function onChange(e) {
-          return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-            size_id: e.target.value
-          }));
-        },
-        required: true,
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "",
-          children: "Select Size"
-        }), dropdownData.sizes.map(function (size) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-            value: size.id,
-            children: size.name
-          }, size.id);
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-        type: "submit",
-        children: editMode ? "Update Product" : "Add Product"
-      })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-      children: "Product List"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("table", {
-      border: "1",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("thead", {
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "ID"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Image"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Name"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Price"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Brand"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Category"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Movement"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Strap Material"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Gender"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Size"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Quantity"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Actions"
-          })]
-        })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("tbody", {
-        children: products.map(function (product) {
-          var _product$brand2, _product$category2, _product$movement2, _product$strap_materi2, _product$gender2, _product$size2;
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: product.id
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-                src: "http://localhost:8000/storage/".concat(product.product_image),
-                alt: product.product_name,
-                width: "50"
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+    className: "admin-product-container",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminLayout_Sidebar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+      className: "product-content",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h1", {
+        children: "Product Management"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+        className: "product-actions",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          className: "search-and-select",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+            className: "search-container",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("i", {
+              className: "fa-solid fa-magnifying-glass search-icon"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+              type: "text",
+              placeholder: "Search Products...",
+              value: searchQuery,
+              onChange: function onChange(e) {
+                return setSearchQuery(e.target.value);
+              },
+              className: "search-bar"
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+            className: "checkbox-actions",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("label", {
+              className: "select-all-container",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+                type: "checkbox",
+                onChange: function onChange(e) {
+                  if (e.target.checked) {
+                    setSelectedProducts(filteredProducts.map(function (p) {
+                      return p.id;
+                    }));
+                  } else {
+                    setSelectedProducts([]);
+                  }
+                },
+                checked: selectedProducts.length === filteredProducts.length && filteredProducts.length > 0,
+                className: "action-checkbox"
+              }), "Select All"]
+            }), selectedProducts.length === filteredProducts.length && !viewArchived && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+              className: "archive-all-btn",
+              onClick: handleArchiveAll,
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("i", {
+                className: "fa-solid fa-box-archive action-icon"
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: product.product_name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
-              children: ["$", product.price]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$brand2 = product.brand) === null || _product$brand2 === void 0 ? void 0 : _product$brand2.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$category2 = product.category) === null || _product$category2 === void 0 ? void 0 : _product$category2.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$movement2 = product.movement) === null || _product$movement2 === void 0 ? void 0 : _product$movement2.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: ((_product$strap_materi2 = product.strap_material) === null || _product$strap_materi2 === void 0 ? void 0 : _product$strap_materi2.name) || "N/A"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$gender2 = product.gender) === null || _product$gender2 === void 0 ? void 0 : _product$gender2.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$size2 = product.size) === null || _product$size2 === void 0 ? void 0 : _product$size2.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: product.quantity
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+            })]
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          className: "action-buttons",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+            onClick: function onClick() {
+              return setViewArchived(!viewArchived);
+            },
+            children: viewArchived ? "View Active Products" : "View Archived Products"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+            onClick: function onClick() {
+              return setShowModal(true);
+            },
+            children: "Add New Product"
+          })]
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminLayout_ProductTable__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        products: filteredProducts,
+        handleEdit: handleEdit,
+        handleArchive: handleArchive,
+        handleArchiveAll: handleArchiveAll,
+        handleRestore: handleRestore,
+        fetchProducts: fetchProducts,
+        fetchArchivedProducts: fetchArchivedProducts,
+        isArchived: viewArchived,
+        selectedProducts: selectedProducts,
+        setSelectedProducts: setSelectedProducts
+      }), showModal && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+        className: "modal",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          className: "modal-content",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h2", {
+            children: editMode ? "Edit Product" : "Add New Product"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("form", {
+            onSubmit: handleSubmit,
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+              type: "text",
+              placeholder: "Product Name",
+              value: productData.product_name,
+              onChange: function onChange(e) {
+                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                  product_name: e.target.value
+                }));
+              },
+              required: true
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+              type: "file",
+              onChange: handleFileChange,
+              accept: "image/*",
+              required: !editMode
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+              type: "number",
+              placeholder: "Price",
+              value: productData.price,
+              onChange: function onChange(e) {
+                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                  price: e.target.value
+                }));
+              },
+              required: true
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+              type: "number",
+              placeholder: "Quantity",
+              value: productData.quantity,
+              onChange: function onChange(e) {
+                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                  quantity: e.target.value
+                }));
+              },
+              required: true
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+              value: productData.brand_id,
+              onChange: function onChange(e) {
+                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                  brand_id: e.target.value
+                }));
+              },
+              required: true,
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                value: "",
+                children: "Select Brand"
+              }), dropdownData.brands.map(function (brand) {
+                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                  value: brand.id,
+                  children: brand.name
+                }, brand.id);
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+              value: productData.category_id,
+              onChange: function onChange(e) {
+                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                  category_id: e.target.value
+                }));
+              },
+              required: true,
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                value: "",
+                children: "Select Category"
+              }), dropdownData.categories.map(function (category) {
+                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                  value: category.id,
+                  children: category.name
+                }, category.id);
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+              value: productData.movement_id,
+              onChange: function onChange(e) {
+                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                  movement_id: e.target.value
+                }));
+              },
+              required: true,
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                value: "",
+                children: "Select Movement"
+              }), dropdownData.movements.map(function (movement) {
+                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                  value: movement.id,
+                  children: movement.name
+                }, movement.id);
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+              value: productData.strap_material_id,
+              onChange: function onChange(e) {
+                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                  strap_material_id: e.target.value
+                }));
+              },
+              required: true,
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                value: "",
+                children: "Select Strap Material"
+              }), dropdownData.strapMaterials.map(function (strap) {
+                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                  value: strap.id,
+                  children: strap.name
+                }, strap.id);
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+              value: productData.gender_id,
+              onChange: function onChange(e) {
+                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                  gender_id: e.target.value
+                }));
+              },
+              required: true,
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                value: "",
+                children: "Select Gender"
+              }), dropdownData.genders.map(function (gender) {
+                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                  value: gender.id,
+                  children: gender.name
+                }, gender.id);
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+              value: productData.size_id,
+              onChange: function onChange(e) {
+                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                  size_id: e.target.value
+                }));
+              },
+              required: true,
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                value: "",
+                children: "Select Size"
+              }), dropdownData.sizes.map(function (size) {
+                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                  value: size.id,
+                  children: size.name
+                }, size.id);
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+              className: "modal-buttons",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+                type: "submit",
+                children: editMode ? "Update Product" : "Add Product"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+                type: "button",
                 onClick: function onClick() {
-                  return handleEdit(product);
+                  return setShowModal(false);
                 },
-                children: "Edit"
-              }), !product.is_archived ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-                onClick: function onClick() {
-                  return handleArchive(product.id);
-                },
-                children: "Archive"
-              }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-                onClick: function onClick() {
-                  return handleRestore(product.id);
-                },
-                children: "Restore"
+                children: "Cancel"
               })]
             })]
-          }, product.id);
-        })
-      })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-      onClick: fetchArchivedProducts,
-      children: "View Archived Products"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-      children: "Archived Products"
-    }), archivedProducts.length === 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
-      children: "No archived products found."
-    }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("table", {
-      border: "1",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("thead", {
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "ID"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Image"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Name"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Price"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Quantity"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Brand"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Category"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Movement"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Strap Material"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Gender"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Size"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Actions"
           })]
-        })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("tbody", {
-        children: archivedProducts.map(function (product) {
-          var _product$brand3, _product$category3, _product$movement3, _product$strapMateria, _product$gender3, _product$size3;
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: product.id
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-                src: "http://localhost:8000/storage/".concat(product.product_image),
-                alt: product.product_name,
-                width: "50"
-              })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: product.product_name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
-              children: ["$", product.price]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: product.quantity
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$brand3 = product.brand) === null || _product$brand3 === void 0 ? void 0 : _product$brand3.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$category3 = product.category) === null || _product$category3 === void 0 ? void 0 : _product$category3.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$movement3 = product.movement) === null || _product$movement3 === void 0 ? void 0 : _product$movement3.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$strapMateria = product.strapMaterial) === null || _product$strapMateria === void 0 ? void 0 : _product$strapMateria.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$gender3 = product.gender) === null || _product$gender3 === void 0 ? void 0 : _product$gender3.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: (_product$size3 = product.size) === null || _product$size3 === void 0 ? void 0 : _product$size3.name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-                onClick: function onClick() {
-                  return handleRestore(product.id);
-                },
-                children: "Restore"
-              })
-            })]
-          }, product.id);
         })
       })]
     })]
   });
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AddProduct);
+var handleRestore = function handleRestore(productId, fetchProducts, fetchArchivedProducts) {
+  if (window.confirm("Are you sure you want to restore this product?")) {
+    axios__WEBPACK_IMPORTED_MODULE_4__["default"].put("http://localhost:8000/api/products/".concat(productId, "/restore"), {}, {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function () {
+      alert("Product restored successfully!");
+      fetchProducts();
+      fetchArchivedProducts();
+    })["catch"](function (error) {
+      console.error("Error restoring product:", error);
+      alert("Failed to restore product.");
+    });
+  }
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AdminProduct);
 
 /***/ }),
 
@@ -75781,7 +75989,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- // ✅ Import correctly
+ //
 
 var App = function App() {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.BrowserRouter, {
@@ -75808,7 +76016,7 @@ var App = function App() {
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_AdminPage_AdminSettings__WEBPACK_IMPORTED_MODULE_6__["default"], {})
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_11__.Route, {
-        path: "/product-management",
+        path: "/Admin-product",
         element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_USERS_ProtectRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["admin"],
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_9__.jsx)(_AdminPage_ProductManagement__WEBPACK_IMPORTED_MODULE_7__["default"], {})

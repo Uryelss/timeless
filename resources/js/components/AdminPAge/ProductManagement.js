@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Sidebar from "../AdminLayout/Sidebar";
+import ProductTable from "../AdminLayout/ProductTable";
 
-const AddProduct = () => {
+const AdminProduct = () => {
     const [productData, setProductData] = useState({
         product_name: "",
         product_image: null,
@@ -12,6 +14,7 @@ const AddProduct = () => {
         gender_id: "",
         size_id: "",
         price: "",
+        quantity: "",
     });
 
     const [dropdownData, setDropdownData] = useState({
@@ -23,14 +26,32 @@ const AddProduct = () => {
         sizes: [],
     });
 
-    const [products, setProducts] = useState([]); // Store added products for the table
+    const [products, setProducts] = useState([]);
+    const [archivedProducts, setArchivedProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [editMode, setEditMode] = useState(false);
+    const [currentProductId, setCurrentProductId] = useState(null);
+    const [viewArchived, setViewArchived] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedProducts, setSelectedProducts] = useState([]);
 
     useEffect(() => {
-        fetchProducts(); // Fetch products on page load
-        fetchDropdownData(); // Fetch dropdown data on page load
+        fetchProducts();
+        fetchDropdownData();
+        fetchArchivedProducts();
     }, []);
 
-    // Fetch dropdown filter options (brands, categories, etc.)
+    useEffect(() => {
+        const filtered = (viewArchived ? archivedProducts : products).filter(
+            (product) =>
+                product.product_name
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase())
+        );
+        setFilteredProducts(filtered);
+    }, [products, archivedProducts, viewArchived, searchQuery]);
+
     const fetchDropdownData = () => {
         axios
             .get("http://localhost:8000/api/products/create", {
@@ -38,15 +59,12 @@ const AddProduct = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             })
-            .then((response) => {
-                setDropdownData(response.data);
-            })
+            .then((response) => setDropdownData(response.data))
             .catch((error) =>
                 console.error("Error fetching dropdown data:", error)
             );
     };
 
-    // Fetch all products
     const fetchProducts = () => {
         axios
             .get("http://localhost:8000/api/products", {
@@ -54,22 +72,30 @@ const AddProduct = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             })
-            .then((response) => {
-                setProducts(response.data);
-            })
+            .then((response) => setProducts(response.data))
             .catch((error) => console.error("Error fetching products:", error));
     };
 
-    // Handle image file selection
+    const fetchArchivedProducts = () => {
+        axios
+            .get("http://localhost:8000/api/products/archived", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
+            .then((response) => setArchivedProducts(response.data))
+            .catch((error) =>
+                console.error("Error fetching archived products:", error)
+            );
+    };
+
     const handleFileChange = (e) => {
         setProductData({ ...productData, product_image: e.target.files[0] });
     };
 
-    // Handle adding a new product
     const handleSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData();
-
         for (const key in productData) {
             if (
                 key === "product_image" &&
@@ -77,65 +103,45 @@ const AddProduct = () => {
                 !editMode
             ) {
                 alert("Please select an image.");
-                return; // ✅ Prevent adding a product without an image
+                return;
             }
-
             if (!(key === "product_image" && productData[key] === null)) {
                 formData.append(key, productData[key]);
             }
         }
-
         if (!productData.quantity) {
-            alert("Quantity is required."); // ✅ Prevent empty quantity
+            alert("Quantity is required.");
             return;
         }
 
-        if (editMode) {
-            axios
-                .post(
-                    `http://localhost:8000/api/products/${currentProductId}?_method=PUT`,
-                    formData,
-                    {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                            Authorization: `Bearer ${localStorage.getItem(
-                                "token"
-                            )}`,
-                        },
-                    }
-                )
-                .then(() => {
-                    alert("Product updated successfully!");
-                    fetchProducts();
-                    resetForm();
-                })
-                .catch((error) => {
-                    console.error("Error updating product:", error);
-                    alert("Failed to update product.");
-                });
-        } else {
-            axios
-                .post("http://localhost:8000/api/products/store", formData, {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                        Authorization: `Bearer ${localStorage.getItem(
-                            "token"
-                        )}`,
-                    },
-                })
-                .then(() => {
-                    alert("Product added successfully!");
-                    fetchProducts();
-                    resetForm();
-                })
-                .catch((error) => {
-                    console.error("Error adding product:", error);
-                    alert("Failed to add product.");
-                });
-        }
+        const url = editMode
+            ? `http://localhost:8000/api/products/${currentProductId}?_method=PUT`
+            : "http://localhost:8000/api/products/store";
+
+        axios
+            .post(url, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
+            .then(() => {
+                alert(
+                    editMode
+                        ? "Product updated successfully!"
+                        : "Product added successfully!"
+                );
+                fetchProducts();
+                fetchArchivedProducts();
+                resetForm();
+                setShowModal(false);
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                alert(`Failed to ${editMode ? "update" : "add"} product.`);
+            });
     };
 
-    // ✅ Reset form after adding/updating
     const resetForm = () => {
         setProductData({
             product_name: "",
@@ -153,14 +159,10 @@ const AddProduct = () => {
         setCurrentProductId(null);
     };
 
-    const [editMode, setEditMode] = useState(false);
-    const [currentProductId, setCurrentProductId] = useState(null);
-
-    // Handle updating a product quantity
     const handleEdit = (product) => {
         setProductData({
             product_name: product.product_name,
-            product_image: null, // Image is not updated immediately
+            product_image: null,
             brand_id: product.brand?.id,
             category_id: product.category?.id,
             movement_id: product.movement?.id,
@@ -172,36 +174,340 @@ const AddProduct = () => {
         });
         setCurrentProductId(product.id);
         setEditMode(true);
+        setShowModal(true);
     };
-    const [archivedProducts, setArchivedProducts] = useState([]); // ✅ Store archived products
 
-    // Handle archiving a product
     const handleArchive = (productId) => {
-        axios
-            .put(
-                `http://localhost:8000/api/products/${productId}/archive`, // ✅ Use PUT
-                {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem(
-                            "token"
-                        )}`,
-                    },
-                }
-            )
-            .then(() => {
-                alert("Product archived successfully!");
-                fetchProducts(); // ✅ Refresh product list
-                fetchArchivedProducts(); // ✅ Refresh archived list
-            })
-            .catch((error) => {
-                console.error("Error archiving product:", error);
-                alert("Failed to archive product.");
-            });
+        if (window.confirm("Are you sure you want to archive this product?")) {
+            axios
+                .put(
+                    `http://localhost:8000/api/products/${productId}/archive`,
+                    {},
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem(
+                                "token"
+                            )}`,
+                        },
+                    }
+                )
+                .then(() => {
+                    alert("Product archived successfully!");
+                    fetchProducts();
+                    fetchArchivedProducts();
+                })
+                .catch((error) => {
+                    console.error("Error archiving product:", error);
+                    alert("Failed to archive product.");
+                });
+        }
     };
 
-    // ✅ Move handleRestore function outside handleSubmit
-    const handleRestore = (productId) => {
+    const handleArchiveAll = () => {
+        if (selectedProducts.length === 0) {
+            alert("Please select products to archive");
+            return;
+        }
+        if (
+            window.confirm(
+                "Are you sure you want to archive all selected products?"
+            )
+        ) {
+            Promise.all(
+                selectedProducts.map((productId) =>
+                    axios.put(
+                        `http://localhost:8000/api/products/${productId}/archive`,
+                        {},
+                        {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem(
+                                    "token"
+                                )}`,
+                            },
+                        }
+                    )
+                )
+            )
+                .then(() => {
+                    alert("Products archived successfully!");
+                    setSelectedProducts([]);
+                    fetchProducts();
+                    fetchArchivedProducts();
+                })
+                .catch((error) => {
+                    console.error("Error archiving products:", error);
+                    alert("Failed to archive some products.");
+                });
+        }
+    };
+
+    return (
+        <div className="admin-product-container">
+            <Sidebar />
+            <div className="product-content">
+                <h1>Product Management</h1>
+                <div className="product-actions">
+                    <div className="search-and-select">
+                        <div className="search-container">
+                            <i className="fa-solid fa-magnifying-glass search-icon"></i>
+                            <input
+                                type="text"
+                                placeholder="Search Products..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="search-bar"
+                            />
+                        </div>
+                        <div className="checkbox-actions">
+                            <label className="select-all-container">
+                                <input
+                                    type="checkbox"
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            setSelectedProducts(
+                                                filteredProducts.map(
+                                                    (p) => p.id
+                                                )
+                                            );
+                                        } else {
+                                            setSelectedProducts([]);
+                                        }
+                                    }}
+                                    checked={
+                                        selectedProducts.length ===
+                                            filteredProducts.length &&
+                                        filteredProducts.length > 0
+                                    }
+                                    className="action-checkbox"
+                                />
+                                Select All
+                            </label>
+                            {selectedProducts.length ===
+                                filteredProducts.length &&
+                                !viewArchived && (
+                                    <button
+                                        className="archive-all-btn"
+                                        onClick={handleArchiveAll}
+                                    >
+                                        <i className="fa-solid fa-box-archive action-icon"></i>
+                                    </button>
+                                )}
+                        </div>
+                    </div>
+                    <div className="action-buttons">
+                        <button onClick={() => setViewArchived(!viewArchived)}>
+                            {viewArchived
+                                ? "View Active Products"
+                                : "View Archived Products"}
+                        </button>
+                        <button onClick={() => setShowModal(true)}>
+                            Add New Product
+                        </button>
+                    </div>
+                </div>
+                <ProductTable
+                    products={filteredProducts}
+                    handleEdit={handleEdit}
+                    handleArchive={handleArchive}
+                    handleArchiveAll={handleArchiveAll}
+                    handleRestore={handleRestore}
+                    fetchProducts={fetchProducts}
+                    fetchArchivedProducts={fetchArchivedProducts}
+                    isArchived={viewArchived}
+                    selectedProducts={selectedProducts}
+                    setSelectedProducts={setSelectedProducts}
+                />
+                {showModal && (
+                    <div className="modal">
+                        <div className="modal-content">
+                            <h2>
+                                {editMode ? "Edit Product" : "Add New Product"}
+                            </h2>
+                            <form onSubmit={handleSubmit}>
+                                <input
+                                    type="text"
+                                    placeholder="Product Name"
+                                    value={productData.product_name}
+                                    onChange={(e) =>
+                                        setProductData({
+                                            ...productData,
+                                            product_name: e.target.value,
+                                        })
+                                    }
+                                    required
+                                />
+                                <input
+                                    type="file"
+                                    onChange={handleFileChange}
+                                    accept="image/*"
+                                    required={!editMode}
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Price"
+                                    value={productData.price}
+                                    onChange={(e) =>
+                                        setProductData({
+                                            ...productData,
+                                            price: e.target.value,
+                                        })
+                                    }
+                                    required
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Quantity"
+                                    value={productData.quantity}
+                                    onChange={(e) =>
+                                        setProductData({
+                                            ...productData,
+                                            quantity: e.target.value,
+                                        })
+                                    }
+                                    required
+                                />
+                                <select
+                                    value={productData.brand_id}
+                                    onChange={(e) =>
+                                        setProductData({
+                                            ...productData,
+                                            brand_id: e.target.value,
+                                        })
+                                    }
+                                    required
+                                >
+                                    <option value="">Select Brand</option>
+                                    {dropdownData.brands.map((brand) => (
+                                        <option key={brand.id} value={brand.id}>
+                                            {brand.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <select
+                                    value={productData.category_id}
+                                    onChange={(e) =>
+                                        setProductData({
+                                            ...productData,
+                                            category_id: e.target.value,
+                                        })
+                                    }
+                                    required
+                                >
+                                    <option value="">Select Category</option>
+                                    {dropdownData.categories.map((category) => (
+                                        <option
+                                            key={category.id}
+                                            value={category.id}
+                                        >
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <select
+                                    value={productData.movement_id}
+                                    onChange={(e) =>
+                                        setProductData({
+                                            ...productData,
+                                            movement_id: e.target.value,
+                                        })
+                                    }
+                                    required
+                                >
+                                    <option value="">Select Movement</option>
+                                    {dropdownData.movements.map((movement) => (
+                                        <option
+                                            key={movement.id}
+                                            value={movement.id}
+                                        >
+                                            {movement.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <select
+                                    value={productData.strap_material_id}
+                                    onChange={(e) =>
+                                        setProductData({
+                                            ...productData,
+                                            strap_material_id: e.target.value,
+                                        })
+                                    }
+                                    required
+                                >
+                                    <option value="">
+                                        Select Strap Material
+                                    </option>
+                                    {dropdownData.strapMaterials.map(
+                                        (strap) => (
+                                            <option
+                                                key={strap.id}
+                                                value={strap.id}
+                                            >
+                                                {strap.name}
+                                            </option>
+                                        )
+                                    )}
+                                </select>
+                                <select
+                                    value={productData.gender_id}
+                                    onChange={(e) =>
+                                        setProductData({
+                                            ...productData,
+                                            gender_id: e.target.value,
+                                        })
+                                    }
+                                    required
+                                >
+                                    <option value="">Select Gender</option>
+                                    {dropdownData.genders.map((gender) => (
+                                        <option
+                                            key={gender.id}
+                                            value={gender.id}
+                                        >
+                                            {gender.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <select
+                                    value={productData.size_id}
+                                    onChange={(e) =>
+                                        setProductData({
+                                            ...productData,
+                                            size_id: e.target.value,
+                                        })
+                                    }
+                                    required
+                                >
+                                    <option value="">Select Size</option>
+                                    {dropdownData.sizes.map((size) => (
+                                        <option key={size.id} value={size.id}>
+                                            {size.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <div className="modal-buttons">
+                                    <button type="submit">
+                                        {editMode
+                                            ? "Update Product"
+                                            : "Add Product"}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowModal(false)}
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+const handleRestore = (productId, fetchProducts, fetchArchivedProducts) => {
+    if (window.confirm("Are you sure you want to restore this product?")) {
         axios
             .put(
                 `http://localhost:8000/api/products/${productId}/restore`,
@@ -216,316 +522,14 @@ const AddProduct = () => {
             )
             .then(() => {
                 alert("Product restored successfully!");
-                fetchProducts(); // ✅ Refresh active products
-                fetchArchivedProducts(); // ✅ Refresh archived list
+                fetchProducts();
+                fetchArchivedProducts();
             })
             .catch((error) => {
                 console.error("Error restoring product:", error);
                 alert("Failed to restore product.");
             });
-    };
-
-    const fetchArchivedProducts = () => {
-        axios
-            .get("http://localhost:8000/api/products/archived", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            })
-            .then((response) => {
-                setArchivedProducts(response.data); // ✅ Store archived products
-            })
-            .catch((error) =>
-                console.error("Error fetching archived products:", error)
-            );
-    };
-
-    return (
-        <div>
-            <h2>Add New Product</h2>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="Product Name"
-                    value={productData.product_name}
-                    onChange={(e) =>
-                        setProductData({
-                            ...productData,
-                            product_name: e.target.value,
-                        })
-                    }
-                    required
-                />
-
-                <input
-                    type="file"
-                    onChange={handleFileChange}
-                    accept="image/*"
-                    required={!editMode} // ✅ Required only when adding, not when updating
-                />
-
-                <input
-                    type="number"
-                    placeholder="Price"
-                    value={productData.price}
-                    onChange={(e) =>
-                        setProductData({
-                            ...productData,
-                            price: e.target.value,
-                        })
-                    }
-                    required
-                />
-                <input
-                    type="number"
-                    placeholder="Quantity"
-                    value={productData.quantity}
-                    onChange={(e) =>
-                        setProductData({
-                            ...productData,
-                            quantity: e.target.value,
-                        })
-                    }
-                    required
-                />
-
-                <select
-                    value={productData.brand_id}
-                    onChange={(e) =>
-                        setProductData({
-                            ...productData,
-                            brand_id: e.target.value,
-                        })
-                    }
-                    required
-                >
-                    <option value="">Select Brand</option>
-                    {dropdownData.brands?.map((brand) => (
-                        <option key={brand.id} value={brand.id}>
-                            {brand.name}
-                        </option>
-                    )) || <option disabled>No brands available</option>}
-                </select>
-
-                <select
-                    value={productData.category_id}
-                    onChange={(e) =>
-                        setProductData({
-                            ...productData,
-                            category_id: e.target.value,
-                        })
-                    }
-                    required
-                >
-                    <option value="">Select Category</option>
-                    {dropdownData.categories.map((category) => (
-                        <option key={category.id} value={category.id}>
-                            {category.name}
-                        </option>
-                    ))}
-                </select>
-
-                <select
-                    value={productData.movement_id}
-                    onChange={(e) =>
-                        setProductData({
-                            ...productData,
-                            movement_id: e.target.value,
-                        })
-                    }
-                    required
-                >
-                    <option value="">Select Movement</option>
-                    {dropdownData.movements.map((movement) => (
-                        <option key={movement.id} value={movement.id}>
-                            {movement.name}
-                        </option>
-                    ))}
-                </select>
-
-                <select
-                    value={productData.strap_material_id}
-                    onChange={(e) =>
-                        setProductData({
-                            ...productData,
-                            strap_material_id: e.target.value,
-                        })
-                    }
-                    required
-                >
-                    <option value="">Select Strap Material</option>
-                    {dropdownData.strapMaterials.map((strap) => (
-                        <option key={strap.id} value={strap.id}>
-                            {strap.name}
-                        </option>
-                    ))}
-                </select>
-
-                <select
-                    value={productData.gender_id}
-                    onChange={(e) =>
-                        setProductData({
-                            ...productData,
-                            gender_id: e.target.value,
-                        })
-                    }
-                    required
-                >
-                    <option value="">Select Gender</option>
-                    {dropdownData.genders.map((gender) => (
-                        <option key={gender.id} value={gender.id}>
-                            {gender.name}
-                        </option>
-                    ))}
-                </select>
-
-                <select
-                    value={productData.size_id}
-                    onChange={(e) =>
-                        setProductData({
-                            ...productData,
-                            size_id: e.target.value,
-                        })
-                    }
-                    required
-                >
-                    <option value="">Select Size</option>
-                    {dropdownData.sizes.map((size) => (
-                        <option key={size.id} value={size.id}>
-                            {size.name}
-                        </option>
-                    ))}
-                </select>
-
-                <button type="submit">
-                    {editMode ? "Update Product" : "Add Product"}
-                </button>
-            </form>
-            <h2>Product List</h2>
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Brand</th>
-                        <th>Category</th>
-                        <th>Movement</th>
-                        <th>Strap Material</th>
-                        <th>Gender</th>
-                        <th>Size</th>
-                        <th>Quantity</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {products.map((product) => (
-                        <tr key={product.id}>
-                            <td>{product.id}</td>
-                            <td>
-                                <img
-                                    src={`http://localhost:8000/storage/${product.product_image}`}
-                                    alt={product.product_name}
-                                    width="50"
-                                />
-                            </td>
-                            <td>{product.product_name}</td>
-                            <td>${product.price}</td>
-                            <td>{product.brand?.name}</td>
-                            <td>{product.category?.name}</td>
-                            <td>{product.movement?.name}</td>
-                            <td>{product.strap_material?.name || "N/A"}</td>
-                            <td>{product.gender?.name}</td>
-                            <td>{product.size?.name}</td>
-                            <td>{product.quantity}</td>
-                            <td>
-                                <button onClick={() => handleEdit(product)}>
-                                    Edit
-                                </button>
-                                {!product.is_archived ? (
-                                    <button
-                                        onClick={() =>
-                                            handleArchive(product.id)
-                                        }
-                                    >
-                                        Archive
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={() =>
-                                            handleRestore(product.id)
-                                        }
-                                    >
-                                        Restore
-                                    </button>
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            <button onClick={fetchArchivedProducts}>
-                View Archived Products
-            </button>
-
-            <h2>Archived Products</h2>
-            {archivedProducts.length === 0 ? (
-                <p>No archived products found.</p>
-            ) : (
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Image</th>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Brand</th>
-                            <th>Category</th>
-                            <th>Movement</th>
-                            <th>Strap Material</th>
-                            <th>Gender</th>
-                            <th>Size</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {archivedProducts.map((product) => (
-                            <tr key={product.id}>
-                                <td>{product.id}</td>
-                                <td>
-                                    <img
-                                        src={`http://localhost:8000/storage/${product.product_image}`}
-                                        alt={product.product_name}
-                                        width="50"
-                                    />
-                                </td>
-                                <td>{product.product_name}</td>
-                                <td>${product.price}</td>
-                                <td>{product.quantity}</td>
-                                <td>{product.brand?.name}</td>
-                                <td>{product.category?.name}</td>
-                                <td>{product.movement?.name}</td>
-                                <td>{product.strapMaterial?.name}</td>
-                                <td>{product.gender?.name}</td>
-                                <td>{product.size?.name}</td>
-                                <td>
-                                    <button
-                                        onClick={() =>
-                                            handleRestore(product.id)
-                                        }
-                                    >
-                                        Restore
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
-        </div>
-    );
+    }
 };
 
-export default AddProduct;
+export default AdminProduct;

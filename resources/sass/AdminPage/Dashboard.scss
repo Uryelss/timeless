@@ -1,0 +1,76 @@
+// AdminDashboard.scss
+.admin-dashboard-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+
+    .dashboard-content {
+        flex: 1; // Takes remaining space after sidebar
+        display: flex;
+        justify-content: center; // Center horizontally
+        align-items: center; // Center vertically
+        background: #f5f5f5;
+        padding: 40px;
+        overflow-y: auto;
+
+        .centered-content {
+            text-align: center; // Center text within the content
+
+            h1 {
+                color: #006666;
+                font-size: 34px;
+                font-family: "Montserrat", sans-serif;
+                font-weight: 700;
+                margin-bottom: 30px;
+                text-transform: uppercase;
+            }
+
+            .data-section {
+                background: white;
+                padding: 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                display: inline-block; // Keeps it compact and centered
+
+                h3 {
+                    color: #006666;
+                    font-size: 20px;
+                    font-family: "Montserrat", sans-serif;
+                    font-weight: 400;
+                    margin-bottom: 15px;
+                }
+            }
+        }
+
+        .loading,
+        .error {
+            color: #006666;
+            font-size: 20px;
+            font-family: "Montserrat", sans-serif;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        .error {
+            color: #ff3333;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-dashboard-container {
+        flex-direction: column;
+
+        .dashboard-content {
+            padding: 20px;
+            height: auto;
+
+            .centered-content {
+                .data-section {
+                    width: 100%; // Full width on mobile
+                }
+            }
+        }
+    }
+}

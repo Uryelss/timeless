@@ -10,7 +10,7 @@ import AdminDashboard from "./AdminPage/Dashboard";
 import AdminSettings from "./AdminPage/AdminSettings";
 import ProductManagement from "./AdminPage/ProductManagement";
 
-import Homepage from "./UserPage/Homepage"; // ✅ Import correctly
+import Homepage from "./UserPage/Homepage"; //
 
 const App = () => {
     return (
@@ -19,7 +19,6 @@ const App = () => {
                 <Route path="/Register" element={<Register />} />
                 <Route path="/Login" element={<Login />} />
                 <Route path="/Homepage" element={<Homepage />} />{" "}
-                {/* ✅ Fix: Replace UserPage with Homepage */}
                 <Route
                     path="/admin-dashboard"
                     element={
@@ -37,7 +36,7 @@ const App = () => {
                     }
                 />
                 <Route
-                    path="/product-management"
+                    path="/Admin-product"
                     element={
                         <ProtectedRoute allowedRoles={["admin"]}>
                             <ProductManagement />
