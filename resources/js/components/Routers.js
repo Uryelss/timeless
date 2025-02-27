@@ -9,6 +9,7 @@ import ProtectedRoute from "./USERS/ProtectRoute";
 import AdminDashboard from "./AdminPage/Dashboard";
 import AdminSettings from "./AdminPage/AdminSettings";
 import ProductManagement from "./AdminPage/ProductManagement";
+import InventoryManagement from "./AdminPage/InventoryManagement";
 
 import Homepage from "./UserPage/Homepage"; //
 
@@ -18,7 +19,8 @@ const App = () => {
             <Routes>
                 <Route path="/Register" element={<Register />} />
                 <Route path="/Login" element={<Login />} />
-                <Route path="/Homepage" element={<Homepage />} />{" "}
+                <Route path="/Homepage" element={<Homepage />} />
+
                 <Route
                     path="/admin-dashboard"
                     element={
@@ -40,6 +42,14 @@ const App = () => {
                     element={
                         <ProtectedRoute allowedRoles={["admin"]}>
                             <ProductManagement />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin-inventory"
+                    element={
+                        <ProtectedRoute allowedRoles={["admin"]}>
+                            <InventoryManagement />
                         </ProtectedRoute>
                     }
                 />

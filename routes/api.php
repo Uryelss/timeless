@@ -4,6 +4,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\AdminSettingsController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\InventoryController;
 
 // Public routes (No authentication required)
 Route::post('register', [UsersController::class, 'register']);
@@ -24,6 +25,14 @@ Route::middleware(['auth:api'])->group(function () {
     Route::put('/products/{id}/restore', [ProductController::class, 'restore']); // ✅ Restore
     Route::get('/products/archived', [ProductController::class, 'archivedProducts']); // ✅ Get archived products
 
+
+
+
+    Route::get('/inventory', [InventoryController::class, 'index']); // ✅ Get all inventory items
+    Route::put('/inventory/{id}', [InventoryController::class, 'update']); // ✅ Update inventory
+    Route::put('/inventory/{id}/archive', [InventoryController::class, 'archive']); // ✅ Archive inventory
+    Route::put('/inventory/{id}/restore', [InventoryController::class, 'restore']); // ✅ Restore inventory
+    Route::get('/inventory/archived', [InventoryController::class, 'archivedItems']); // ✅ Get archived inventory
 });
 
 // Admin-only routes

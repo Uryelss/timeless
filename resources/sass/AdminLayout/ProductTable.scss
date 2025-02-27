@@ -93,7 +93,7 @@
 // Separated .action-checkbox styling
 .action-checkbox {
     width: 24px; // Consistent size
-    height: 24px; // Consistent size
+    height: 20px; // Consistent size
     margin: 0;
     vertical-align: middle;
     cursor: pointer;
@@ -107,8 +107,7 @@
     width: 36px;
     height: 36px;
     padding: 0;
-    background-color: #007545;
-    color: #333 !important; // Explicitly set to neutral gray to remove green
+    color: #000000 !important; // Explicitly set to neutral gray to remove green
     border: none;
     border-radius: 8px;
     cursor: pointer;

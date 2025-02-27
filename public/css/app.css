@@ -12428,7 +12428,7 @@ textarea.form-control-lg {
 
 .action-checkbox {
   width: 24px;
-  height: 24px;
+  height: 20px;
   margin: 0;
   vertical-align: middle;
   cursor: pointer;
@@ -12441,8 +12441,7 @@ textarea.form-control-lg {
   width: 36px;
   height: 36px;
   padding: 0;
-  background-color: #007545;
-  color: #333 !important;
+  color: #000000 !important;
   border: none;
   border-radius: 8px;
   cursor: pointer;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Inventory; // ✅ Ensure Inventory model is imported
 use App\Models\Product;
 use App\Models\Brand;
 use App\Models\Category;
@@ -21,7 +22,7 @@ class ProductController extends Controller
             'brand',
             'category',
             'movement',
-            'strapMaterial', // ✅ Ensure this is included
+            'strapMaterial',
             'gender',
             'size'
         ])->get();
@@ -29,9 +30,6 @@ class ProductController extends Controller
         return response()->json($products, 200);
     }
 
-
-
-    // ✅ Rename this function to match frontend API call
     public function create()
     {
         return response()->json([
@@ -55,7 +53,7 @@ class ProductController extends Controller
             'gender_id' => 'required|exists:genders,id',
             'size_id' => 'required|exists:sizes,id',
             'price' => 'required|numeric|min:0',
-            'quantity' => 'required|integer|min:1', // ✅ Ensure quantity is required
+            'quantity' => 'required|integer|min:1',
             'product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -64,8 +62,10 @@ class ProductController extends Controller
         }
 
         try {
+            // ✅ Store Image
             $imagePath = $request->file('product_image')->store('products', 'public');
 
+            // ✅ Create Product
             $product = Product::create([
                 'product_name' => $request->product_name,
                 'product_image' => $imagePath,
@@ -76,16 +76,35 @@ class ProductController extends Controller
                 'gender_id' => $request->gender_id,
                 'size_id' => $request->size_id,
                 'price' => $request->price,
-                'quantity' => $request->quantity, // ✅ Save quantity
+                'quantity' => $request->quantity,
             ]);
+            // ✅ Ensure the product is created before adding to inventory
+            if ($product) {
+                Inventory::create([
+                    'product_id' => $product->id,
+                    'product_image' => $imagePath,
+                    'product_name' => $request->product_name,
+                    'stock_quantity' => $product->quantity, // ✅ Sync with product's "quantity"
+                    'sold' => 0,
+                    'stock_status' => $product->quantity > 0 ? 'In Stock' : 'Out of Stock',
+                ]);
+            }
 
-            return response()->json(['message' => 'Product added successfully', 'product' => $product], 201);
+
+            return response()->json([
+                'message' => 'Product and Inventory added successfully',
+                'product' => $product
+            ], 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to add product', 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'Failed to add product',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
         }
     }
 
-    //updatee
+
     public function update(Request $request, $id)
     {
         $product = Product::find($id);
@@ -94,7 +113,6 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product not found'], 404);
         }
 
-        // ✅ Validate fields (image is now optional)
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
             'brand_id' => 'required|exists:brands,id',
@@ -105,7 +123,7 @@ class ProductController extends Controller
             'size_id' => 'required|exists:sizes,id',
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
-            'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // ✅ Image is optional
+            'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -113,16 +131,15 @@ class ProductController extends Controller
         }
 
         try {
-            // ✅ Check if a new image is uploaded
             if ($request->hasFile('product_image')) {
-                // Delete the old image if it exists
-                Storage::delete($product->product_image);
-                // Store new image
+                if ($product->product_image && Storage::exists('public/' . $product->product_image)) {
+                    Storage::delete('public/' . $product->product_image);
+                }
+
                 $imagePath = $request->file('product_image')->store('products', 'public');
                 $product->product_image = $imagePath;
             }
 
-            // ✅ Update product details
             $product->update([
                 'product_name' => $request->product_name,
                 'brand_id' => $request->brand_id,
@@ -134,23 +151,26 @@ class ProductController extends Controller
                 'price' => $request->price,
                 'quantity' => $request->quantity,
             ]);
+            Inventory::where('product_id', $product->id)->update([
+                'stock_quantity' => $request->quantity,
+                'stock_status' => $request->quantity > 0 ? 'In Stock' : 'Out of Stock',
+            ]);
+
 
             return response()->json(['message' => 'Product updated successfully', 'product' => $product], 200);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to update product', 'error' => $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'Failed to update product',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
-
-
-
-
-    //archive
 
     public function archive($id)
     {
         $product = Product::findOrFail($id);
 
-        if ($product->trashed()) {
+        if ($product->deleted_at !== null) {
             return response()->json(['message' => 'Product is already archived'], 400);
         }
 
@@ -158,7 +178,6 @@ class ProductController extends Controller
 
         return response()->json(['message' => 'Product archived successfully'], 200);
     }
-
 
     public function archivedProducts()
     {
@@ -177,7 +196,9 @@ class ProductController extends Controller
     public function restore($id)
     {
         $product = Product::onlyTrashed()->findOrFail($id);
-        $product->restore(); // ✅ Restore product
+        $product->restore();
+        $product->deleted_at = null;
+        $product->save();
 
         return response()->json(['message' => 'Product restored successfully'], 200);
     }

@@ -1,0 +1,238 @@
+.inventory-management-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+
+    .inventory-content {
+        flex: 1;
+        padding: 40px;
+        background: #f5f5f5;
+        overflow-y: auto;
+
+        h1 {
+            color: #007545;
+            font-size: 34px;
+            font-family: "Helvetica", Arial, sans-serif;
+            font-weight: 400;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .inventory-actions {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+
+            .search-and-select {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+
+                .search-container {
+                    position: relative;
+                    width: 300px;
+
+                    .search-icon {
+                        position: absolute;
+                        left: 10px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        color: #007545;
+                        font-size: 16px;
+                    }
+
+                    .search-bar {
+                        padding: 10px 10px 10px 35px;
+                        border: 2px solid #007545;
+                        border-radius: 8px;
+                        font-family: "Helvetica", Arial, sans-serif;
+                        font-size: 16px;
+                        font-weight: 400;
+                        width: 100%;
+                    }
+                }
+
+                .checkbox-actions {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+
+                    .select-all-container {
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                        font-family: "Helvetica", Arial, sans-serif;
+                        font-size: 16px;
+
+                        input[type="checkbox"] {
+                            width: 20px;
+                            height: 20px;
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
+
+            .action-buttons {
+                display: flex;
+                gap: 10px;
+
+                button {
+                    padding: 10px 20px;
+                    background-color: #007545;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-family: "Helvetica", Arial, sans-serif;
+                    font-size: 16px;
+                    font-weight: 400;
+                    transition: background-color 0.3s;
+
+                    &:hover {
+                        background-color: darken(#007545, 10%);
+                    }
+                }
+            }
+        }
+    }
+}
+
+.inventory-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Helvetica", Arial, sans-serif;
+
+    th,
+    td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #007545;
+        color: white;
+        font-weight: 400;
+        font-size: 14px;
+        height: 40px;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    td {
+        font-size: 14px;
+        color: #333;
+        font-weight: 400;
+
+        img {
+            border-radius: 4px;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 15px; // Spacing between checkbox, buttons, and icons
+
+            .action-checkbox {
+                width: 24px; // Consistent size
+                height: 24px; // Consistent size
+                margin: 0;
+                vertical-align: middle;
+                cursor: pointer;
+            }
+
+            .action-button {
+                padding: 5px 10px;
+                background-color: #007545;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 400;
+                transition: background-color 0.3s;
+                height: 30px; // Consistent height for buttons
+                vertical-align: middle;
+
+                &:hover {
+                    background-color: darken(#007545, 10%);
+                }
+            }
+
+            .stock-input {
+                padding: 5px;
+                border: 2px solid #007545;
+                border-radius: 4px;
+                font-size: 14px;
+                margin-right: 5px;
+                width: 80px;
+                vertical-align: middle;
+            }
+        }
+
+        &.category-column {
+            padding-left: 15px;
+        }
+    }
+
+    .no-data {
+        text-align: center;
+        color: #666;
+        font-style: italic;
+        font-weight: 400;
+    }
+}
+
+// Separated .action-icon styling
+.action-icon {
+    font-size: 24px !important; // Explicitly set larger size
+    cursor: pointer;
+    color: #333 !important; // Explicitly set to gray
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    line-height: 24px; // Match height for vertical alignment
+
+    &:hover {
+        color: #555 !important; // Darker gray on hover
+        transform: scale(1.1);
+    }
+}
+
+// Separated .archive-all-btn styling
+.archive-all-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background-color: #007545;
+    color: #333 !important; // Explicitly set to neutral gray to remove green
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-left: 10px; // Space between checkbox and button
+
+    &:hover {
+        background-color: darken(#007545, 10%);
+        color: #fff !important; // White on hover
+    }
+
+    i {
+        font-size: 22px;
+        color: inherit !important; // Inherit button color
+    }
+}
+
+.select-all-container {
+    display: flex;
+    align-items: center;
+}

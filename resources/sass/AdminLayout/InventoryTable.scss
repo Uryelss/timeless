@@ -1,0 +1,41 @@
+.stock-update {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .stock-input {
+        padding: 5px;
+        border: 2px solid #007545;
+        border-radius: 4px;
+        width: 80px;
+        font-family: "Helvetica", Arial, sans-serif;
+        font-size: 14px;
+    }
+
+    .save-btn,
+    .cancel-btn {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: "Helvetica", Arial, sans-serif;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+
+    .save-btn {
+        background-color: #007545;
+        color: white;
+        &:hover {
+            background-color: darken(#007545, 10%);
+        }
+    }
+
+    .cancel-btn {
+        background-color: #ff3333;
+        color: white;
+        &:hover {
+            background-color: darken(#ff3333, 10%);
+        }
+    }
+}

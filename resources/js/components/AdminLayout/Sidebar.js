@@ -39,7 +39,10 @@ const Sidebar = () => {
                 <span>Customer</span>
             </div>
 
-            <div className="menu-item" onClick={() => navigate("/inventory")}>
+            <div
+                className="menu-item"
+                onClick={() => navigate("/admin-inventory")}
+            >
                 <i className="fa-solid fa-box-open"></i>
                 <span>Inventory</span>
             </div>
