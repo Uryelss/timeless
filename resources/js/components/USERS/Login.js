@@ -23,15 +23,24 @@ const Login = () => {
 
             const { token, role } = response.data;
 
+            if (!token || !role) {
+                throw new Error(
+                    "Invalid login response. Missing token or role."
+                );
+            }
+
             localStorage.setItem("token", token);
-            localStorage.setItem("role", role);
+            localStorage.setItem("role", role); // Ensure role is saved correctly
+
+            console.log("User Role Set:", role); // Debugging output
 
             if (role === "admin") {
-                navigate("/admin-dashboard");
-            } else if (role === "user") {
-                navigate("/Homepage");
+                window.location.href = "/admin-dashboard";
+            } else {
+                window.location.href = "/Homepage";
             }
         } catch (err) {
+            console.error("Login Error:", err);
             setError("Invalid credentials");
         }
     };

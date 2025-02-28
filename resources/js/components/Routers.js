@@ -4,53 +4,64 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Register from "./USERS/Register";
 import Login from "./USERS/Login";
-import ProtectedRoute from "./USERS/ProtectRoute";
+import PrivateRoute from "./USERS/PrivateRoute";
 
 import AdminDashboard from "./AdminPage/Dashboard";
 import AdminSettings from "./AdminPage/AdminSettings";
 import ProductManagement from "./AdminPage/ProductManagement";
 import InventoryManagement from "./AdminPage/InventoryManagement";
 
-import Homepage from "./UserPage/Homepage"; //
+import Homepage from "./UserPage/Homepage";
 
 const App = () => {
     return (
         <Router>
             <Routes>
+                {/* Public Routes */}
                 <Route path="/Register" element={<Register />} />
                 <Route path="/Login" element={<Login />} />
-                <Route path="/Homepage" element={<Homepage />} />
 
+                {/* Private Routes - Only Logged-in Users */}
+                <Route
+                    path="/Homepage"
+                    element={
+                        <PrivateRoute allowedRoles={["user", "admin"]}>
+                            <Homepage />
+                        </PrivateRoute>
+                    }
+                />
+
+                {/* Admin Routes - Only Admins */}
                 <Route
                     path="/admin-dashboard"
                     element={
-                        <ProtectedRoute allowedRoles={["admin"]}>
+                        <PrivateRoute allowedRoles={["admin"]}>
                             <AdminDashboard />
-                        </ProtectedRoute>
+                        </PrivateRoute>
                     }
                 />
                 <Route
                     path="/admin-settings"
                     element={
-                        <ProtectedRoute allowedRoles={["admin"]}>
+                        <PrivateRoute allowedRoles={["admin"]}>
                             <AdminSettings />
-                        </ProtectedRoute>
+                        </PrivateRoute>
                     }
                 />
                 <Route
                     path="/Admin-product"
                     element={
-                        <ProtectedRoute allowedRoles={["admin"]}>
+                        <PrivateRoute allowedRoles={["admin"]}>
                             <ProductManagement />
-                        </ProtectedRoute>
+                        </PrivateRoute>
                     }
                 />
                 <Route
                     path="/admin-inventory"
                     element={
-                        <ProtectedRoute allowedRoles={["admin"]}>
+                        <PrivateRoute allowedRoles={["admin"]}>
                             <InventoryManagement />
-                        </ProtectedRoute>
+                        </PrivateRoute>
                     }
                 />
             </Routes>

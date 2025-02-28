@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
@@ -15,7 +14,8 @@ class UsersController extends Controller
 {
     public function register(Request $request)
     {
-        // Validation
+        Log::info('Register Request Data:', $request->all()); // Log request data
+
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
@@ -25,27 +25,27 @@ class UsersController extends Controller
         ]);
 
         if ($validator->fails()) {
+            Log::error('Validation Errors:', $validator->errors()->toArray()); // Log validation errors
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        // Determine user role based on email
-        $roleType = strpos($request->email, '@admin.com') !== false ? 'admin' : 'user';
-        $role = Role::where('role_type', $roleType)->first();
+        // Set a default role (optional: manually update in the database later)
+        $role = Role::where('role_type', 'user')->first(); // Default to 'user' role
 
-        // Check if role exists
+        // Ensure role exists
         if (!$role) {
             return response()->json(['error' => 'Role not found'], 404);
         }
 
-        // Create user with the role
+        // Create user
         $user = User::create([
             'email' => $request->email,
-            'username' => $request->username,  // Ensure this is provided and passed in the request
+            'username' => $request->username,
             'password' => Hash::make($request->password),
-            'role_id' => $role->id,  // Assign role directly
+            'role_id' => $role->id, // Assign default user role (modify manually later)
         ]);
 
-        // Create profile record for the user
+        // Create profile
         $user->profile()->create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
@@ -55,11 +55,8 @@ class UsersController extends Controller
             'phone' => $request->phone ?? null,
         ]);
 
-        return response()->json([
-            'message' => 'Registration successful',
-        ], 201);
+        return response()->json(['message' => 'Registration successful'], 201);
     }
-
 
     public function login(Request $request)
     {
@@ -89,7 +86,6 @@ class UsersController extends Controller
         return response()->json(['error' => 'Unauthorized'], 401);
     }
 
-
     public function adminDashboard(Request $request)
     {
         $user = $request->user(); // Get the authenticated user
@@ -102,8 +98,8 @@ class UsersController extends Controller
         return response()->json([
             'message' => 'Welcome to the admin dashboard',
             'adminData' => [
-                'user_count' => 100, // Example data
-                'pending_requests' => 5, // Example data
+                'user_count' => 100,
+                'pending_requests' => 5,
             ]
         ]);
     }

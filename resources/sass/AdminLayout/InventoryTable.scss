@@ -5,7 +5,7 @@
 
     .stock-input {
         padding: 5px;
-        border: 2px solid #007545;
+        border: 2px solid #006666;
         border-radius: 4px;
         width: 80px;
         font-family: "Helvetica", Arial, sans-serif;
@@ -24,10 +24,10 @@
     }
 
     .save-btn {
-        background-color: #007545;
+        background-color: #006666;
         color: white;
         &:hover {
-            background-color: darken(#007545, 10%);
+            background-color: darken(#006666, 10%);
         }
     }
 

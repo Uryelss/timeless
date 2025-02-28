@@ -76390,7 +76390,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var _USERS_Register__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./USERS/Register */ "./resources/js/components/USERS/Register.js");
 /* harmony import */ var _USERS_Login__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./USERS/Login */ "./resources/js/components/USERS/Login.js");
-/* harmony import */ var _USERS_ProtectRoute__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./USERS/ProtectRoute */ "./resources/js/components/USERS/ProtectRoute.js");
+/* harmony import */ var _USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./USERS/PrivateRoute */ "./resources/js/components/USERS/PrivateRoute.js");
 /* harmony import */ var _AdminPage_Dashboard__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./AdminPage/Dashboard */ "./resources/js/components/AdminPage/Dashboard.js");
 /* harmony import */ var _AdminPage_AdminSettings__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./AdminPage/AdminSettings */ "./resources/js/components/AdminPage/AdminSettings.js");
 /* harmony import */ var _AdminPage_ProductManagement__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./AdminPage/ProductManagement */ "./resources/js/components/AdminPage/ProductManagement.js");
@@ -76407,7 +76407,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- //
+
 
 var App = function App() {
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_11__.BrowserRouter, {
@@ -76420,28 +76420,31 @@ var App = function App() {
         element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_USERS_Login__WEBPACK_IMPORTED_MODULE_3__["default"], {})
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_12__.Route, {
         path: "/Homepage",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_UserPage_Homepage__WEBPACK_IMPORTED_MODULE_9__["default"], {})
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+          allowedRoles: ["user", "admin"],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_UserPage_Homepage__WEBPACK_IMPORTED_MODULE_9__["default"], {})
+        })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_12__.Route, {
         path: "/admin-dashboard",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_USERS_ProtectRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["admin"],
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_AdminPage_Dashboard__WEBPACK_IMPORTED_MODULE_5__["default"], {})
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_12__.Route, {
         path: "/admin-settings",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_USERS_ProtectRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["admin"],
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_AdminPage_AdminSettings__WEBPACK_IMPORTED_MODULE_6__["default"], {})
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_12__.Route, {
         path: "/Admin-product",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_USERS_ProtectRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["admin"],
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_AdminPage_ProductManagement__WEBPACK_IMPORTED_MODULE_7__["default"], {})
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_12__.Route, {
         path: "/admin-inventory",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_USERS_ProtectRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["admin"],
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_10__.jsx)(_AdminPage_InventoryManagement__WEBPACK_IMPORTED_MODULE_8__["default"], {})
         })
@@ -76518,24 +76521,34 @@ var Login = function Login() {
           case 4:
             response = _context.sent;
             _response$data = response.data, token = _response$data.token, role = _response$data.role;
-            localStorage.setItem("token", token);
-            localStorage.setItem("role", role);
-            if (role === "admin") {
-              navigate("/admin-dashboard");
-            } else if (role === "user") {
-              navigate("/Homepage");
+            if (!(!token || !role)) {
+              _context.next = 8;
+              break;
             }
-            _context.next = 14;
+            throw new Error("Invalid login response. Missing token or role.");
+          case 8:
+            localStorage.setItem("token", token);
+            localStorage.setItem("role", role); // Ensure role is saved correctly
+
+            console.log("User Role Set:", role); // Debugging output
+
+            if (role === "admin") {
+              window.location.href = "/admin-dashboard";
+            } else {
+              window.location.href = "/Homepage";
+            }
+            _context.next = 18;
             break;
-          case 11:
-            _context.prev = 11;
-            _context.t0 = _context["catch"](1);
-            setError("Invalid credentials");
           case 14:
+            _context.prev = 14;
+            _context.t0 = _context["catch"](1);
+            console.error("Login Error:", _context.t0);
+            setError("Invalid credentials");
+          case 18:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[1, 11]]);
+      }, _callee, null, [[1, 14]]);
     }));
     return function handleSubmit(_x) {
       return _ref.apply(this, arguments);
@@ -76605,9 +76618,9 @@ var Login = function Login() {
 
 /***/ }),
 
-/***/ "./resources/js/components/USERS/ProtectRoute.js":
+/***/ "./resources/js/components/USERS/PrivateRoute.js":
 /*!*******************************************************!*\
-  !*** ./resources/js/components/USERS/ProtectRoute.js ***!
+  !*** ./resources/js/components/USERS/PrivateRoute.js ***!
   \*******************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -76622,31 +76635,30 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-// Protected route guard component
-
-var ProtectedRoute = function ProtectedRoute(_ref) {
+var PrivateRoute = function PrivateRoute(_ref) {
   var children = _ref.children,
     allowedRoles = _ref.allowedRoles;
   var userRole = localStorage.getItem("role"); // Get role from localStorage
   var token = localStorage.getItem("token"); // Get token from localStorage
 
+  console.log("User Role:", userRole); // Debugging output
+  console.log("Token:", token); // Debugging output
+
   if (!token) {
-    // If there's no token, redirect to login
+    console.warn("No token found. Redirecting to login.");
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Navigate, {
       to: "/login"
     });
   }
-  if (!allowedRoles.includes(userRole)) {
-    // If the user doesn't have the required role, redirect to Homepage
+  if (allowedRoles && !allowedRoles.includes(userRole)) {
+    console.warn("Unauthorized role (".concat(userRole, "). Redirecting to homepage."));
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Navigate, {
       to: "/Homepage"
     });
   }
-
-  // If authenticated and role is valid, render children (protected content)
   return children;
 };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ProtectedRoute);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PrivateRoute);
 
 /***/ }),
 

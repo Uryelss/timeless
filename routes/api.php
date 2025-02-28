@@ -27,7 +27,7 @@ Route::middleware(['auth:api'])->group(function () {
 
 
 
-
+    //inventory
     Route::get('/inventory', [InventoryController::class, 'index']); // ✅ Get all inventory items
     Route::put('/inventory/{id}', [InventoryController::class, 'update']); // ✅ Update inventory
     Route::put('/inventory/{id}/archive', [InventoryController::class, 'archive']); // ✅ Archive inventory
