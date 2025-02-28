@@ -10,7 +10,9 @@ import AdminDashboard from "./AdminPage/Dashboard";
 import AdminSettings from "./AdminPage/AdminSettings";
 import ProductManagement from "./AdminPage/ProductManagement";
 import InventoryManagement from "./AdminPage/InventoryManagement";
+
 import Homepage from "./UserPage/Homepage";
+import AdminUserManagement from "./AdminPage/UserManagement";
 
 const App = () => {
     return (
@@ -60,6 +62,14 @@ const App = () => {
                     element={
                         <PrivateRoute allowedRoles={["admin"]}>
                             <InventoryManagement />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/admin-user"
+                    element={
+                        <PrivateRoute allowedRoles={["admin"]}>
+                            <AdminUserManagement />
                         </PrivateRoute>
                     }
                 />

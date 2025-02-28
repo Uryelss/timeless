@@ -5,6 +5,8 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\AdminSettingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\AdminUserController;
+
 
 // Public routes (No authentication required)
 Route::post('register', [UsersController::class, 'register']);
@@ -38,4 +40,13 @@ Route::middleware(['auth:api'])->group(function () {
 // Admin-only routes
 Route::middleware(['auth:api', 'role:admin'])->group(function () {
     Route::get('/admin-dashboard', [UsersController::class, 'adminDashboard']);
+
+
+
+
+    Route::get('/users', [AdminUserController::class, 'index']); // ✅ Get all users
+    Route::put('/users/{id}', [AdminUserController::class, 'update']); // ✅ Update user
+    Route::put('/users/{id}/archive', [AdminUserController::class, 'archive']); // ✅ Archive user
+    Route::put('/users/{id}/restore', [AdminUserController::class, 'restore']); // ✅ Restore user
+    Route::get('/users/archived', [AdminUserController::class, 'archivedUsers']); // ✅ Get archived users
 });

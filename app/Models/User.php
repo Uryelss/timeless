@@ -6,16 +6,18 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes; // ✅ Soft Deletes
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes; // ✅ Enables soft delete
 
     protected $fillable = [
         'email',
         'username',
         'password',
-        'role_id',  // Ensure role_id is added here for mass assignment
+        'role_id',
+        'status',  // ✅ Ensure status is included
     ];
 
     protected $hidden = [
@@ -27,23 +29,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    /**
-     * Define the relationship with the Role model.
-     *
-     * Each user belongs to one role.
-     */
+    protected $dates = ['deleted_at']; // ✅ Soft delete tracking
+
+    // Relationships
     public function role()
     {
-        return $this->belongsTo(Role::class);  // Each user belongs to one role
-    }
-
-    /**
-     * Define the relationship with the Profile model.
-     *
-     * Each user has one profile.
-     */
-    public function profile()
-    {
-        return $this->hasOne(Profile::class);  // Each user has one profile
+        return $this->belongsTo(Role::class);
     }
 }

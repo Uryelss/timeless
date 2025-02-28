@@ -29,7 +29,7 @@ const Sidebar = () => {
                 <span>Order</span>
             </div>
 
-            <div className="menu-item" onClick={() => navigate("/Admin-user")}>
+            <div className="menu-item" onClick={() => navigate("/admin-user")}>
                 <i className="fa-solid fa-user"></i>
                 <span>User</span>
             </div>
