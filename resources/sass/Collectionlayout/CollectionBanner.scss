@@ -1,0 +1,32 @@
+.collection-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 300px; // Ensures visibility
+}
+
+.collection-banner {
+  background: url("/images/login.png") no-repeat center center; // Ensure correct path
+  background-size: cover;
+  width: 80%;
+  height: 100%; // Make it fill the container
+  text-align: center;
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  border-radius: 10px;
+
+  // 📱 Mobile Responsiveness (for iPhones & small screens)
+  @media (max-width: 768px) {
+    width: 90%;
+    font-size: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    width: 95%;
+    font-size: 1.2rem;
+    border-radius: 5px;
+  }
+}
+

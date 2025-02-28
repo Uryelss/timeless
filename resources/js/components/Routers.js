@@ -11,14 +11,19 @@ import AdminSettings from "./AdminPage/AdminSettings";
 import ProductManagement from "./AdminPage/ProductManagement";
 
 import Homepage from "./UserPage/Homepage"; //
+import Collection from "./UserPage/Collection"; //
+
 
 const App = () => {
     return (
         <Router>
             <Routes>
+                <Route path="/collection" element={<Collection />} />
+                <Route path="/" element={<Homepage />} />
                 <Route path="/Register" element={<Register />} />
                 <Route path="/Login" element={<Login />} />
-                <Route path="/Homepage" element={<Homepage />} />{" "}
+                
+                
                 <Route
                     path="/admin-dashboard"
                     element={

@@ -29,7 +29,7 @@ const Login = () => {
             if (role === "admin") {
                 navigate("/admin-dashboard");
             } else if (role === "user") {
-                navigate("/Homepage");
+                navigate("/");
             }
         } catch (err) {
             setError("Invalid credentials");

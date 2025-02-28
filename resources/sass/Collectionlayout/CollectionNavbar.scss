@@ -1,0 +1,168 @@
+.collection-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+
+    /* Logo */
+    .collection-navbar-logo img {
+        height: 50px;
+    }
+
+    /* Menu Toggle for Mobile */
+    .collection-menu-toggle {
+        display: none;
+        flex-direction: column;
+        cursor: pointer;
+        gap: 5px;
+
+        span {
+            width: 25px;
+            height: 3px;
+            background: #000;
+            transition: 0.3s;
+        }
+    }
+
+    /* Navigation Links */
+    .collection-navbar-links {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 20px;
+
+        li {
+            position: relative;
+
+            a {
+                text-decoration: none;
+                color: #000;
+                font-weight: 600;
+                padding: 10px;
+            }
+
+            /* Dropdown */
+            &.dropdown {
+                .collection-dropdown-toggle {
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    font-weight: 600;
+                    padding: 10px;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                }
+
+                .collection-dropdown-menu {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    background-color: white;
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                    display: none;
+                    flex-direction: column;
+                    width: 150px;
+                    border-radius: 5px;
+                    overflow: hidden;
+
+                    li {
+                        padding: 10px;
+                        white-space: nowrap;
+                    }
+                }
+
+                /* Show dropdown when clicked */
+                &.open .collection-dropdown-menu {
+                    display: flex;
+                }
+            }
+        }
+    }
+
+    /* Right Section: Search & Icons */
+    .collection-navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+
+        .collection-search-container {
+            position: relative;
+
+            .collection-search-bar {
+                padding: 5px 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            i {
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+        }
+
+        .collection-menu-icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+
+            a {
+                color: #000;
+                font-size: 18px;
+            }
+        }
+    }
+
+    /* 📱 Mobile Responsive */
+    @media (max-width: 768px) {
+        .collection-menu-toggle {
+            display: flex;
+        }
+
+        .collection-navbar-links {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            width: 100%;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+        }
+
+        .collection-navbar-links.show {
+            display: flex;
+        }
+
+        .collection-navbar-links li {
+            text-align: center;
+            width: 100%;
+        }
+
+        .dropdown .collection-dropdown-menu {
+            position: static;
+            background: none;
+            box-shadow: none;
+            display: block;
+            padding-left: 20px;
+        }
+
+        .dropdown.open .collection-dropdown-menu {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}
