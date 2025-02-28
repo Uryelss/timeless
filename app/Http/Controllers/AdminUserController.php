@@ -56,18 +56,22 @@ class AdminUserController extends Controller
     }
 
     // ✅ Archive (Soft Delete) User
+    // ✅ Archive (Soft Delete) User
     public function archive($id)
     {
         $user = User::findOrFail($id);
+        $user->update(['status' => 'Inactive']); // ✅ Set status as Inactive
         $user->delete(); // ✅ Soft delete the user
         return response()->json(['message' => 'User archived successfully'], 200);
     }
 
     // ✅ Restore Archived User
+    // ✅ Restore Archived User
     public function restore($id)
     {
         $user = User::onlyTrashed()->findOrFail($id);
         $user->restore(); // ✅ Restore user
+        $user->update(['status' => 'Active']); // ✅ Set status back to Active
         return response()->json(['message' => 'User restored successfully'], 200);
     }
 
