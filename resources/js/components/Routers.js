@@ -10,7 +10,6 @@ import AdminDashboard from "./AdminPage/Dashboard";
 import AdminSettings from "./AdminPage/AdminSettings";
 import ProductManagement from "./AdminPage/ProductManagement";
 import InventoryManagement from "./AdminPage/InventoryManagement";
-
 import Homepage from "./UserPage/Homepage";
 
 const App = () => {
