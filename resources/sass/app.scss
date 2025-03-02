@@ -6,9 +6,17 @@
 
 // Bootstrap
 @import "~bootstrap/scss/bootstrap";
+
 //layout-admin
 @import "AdminLayout/Sidebar.scss";
 @import "AdminLayout/Table.scss";
+
+//dashboard
+@import "Dashboard/TopProducts.scss";
+@import "Dashboard/SaleRevenue.scss";
+@import "Dashboard/RecentOrders.scss";
+@import "Dashboard/ProductOverview.scss";
+
 //page admin
 @import "AdminPage/AdminDashboard.scss";
 @import "AdminPage/AdminProduct.scss";

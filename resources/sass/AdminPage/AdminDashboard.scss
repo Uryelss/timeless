@@ -1,33 +1,232 @@
 .admin-dashboard {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background-color: #f5f5f5;
+    display: flex; // Use flexbox to display the sidebar and content side by side
+    min-height: 100vh;
+    background-color: #f0f0f0;
 
-    h2 {
-        font-family: "Montserrat", sans-serif;
-        font-size: 24px;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 20px;
+    // Sidebar Section
+    .sidebar {
+        width: 250px; // Sidebar width
+        background-color: #006039;
+        color: white;
+        padding: 20px;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 100;
     }
 
-    button {
-        background-color: #006039;
-        color: #ffffff;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        font-family: "Montserrat", sans-serif;
-        font-weight: 500;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: 0.3s ease;
+    // Dashboard Content Section
+    .dashboard-content {
+        margin-left: 250px; // Ensure content doesn't overlap with the sidebar
+        padding: 20px;
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
 
-        &:hover {
-            background-color: #a37e2c;
+        // Stats Buttons Section
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+            width: 100%; // Ensure grid spans the full width
+
+            .stat-button {
+                background-color: #006039;
+                color: #fff;
+                padding: 15px;
+                border-radius: 8px;
+                border: none;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: bold;
+                font-family: Arial, sans-serif;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                transition: background-color 0.3s ease;
+                min-width: 150px;
+
+                &:hover {
+                    background-color: #27ae60;
+                }
+            }
+        }
+
+        // Charts Section (Sale Revenue and Top Products)
+        .charts-section {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+
+            .chart-card,
+            .products-card {
+                flex: 1;
+                min-width: 280px;
+                max-width: 100%;
+                background-color: #fff;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+
+                h3 {
+                    margin: 0 0 10px 0;
+                    color: #333;
+                    font-size: 18px;
+                    font-family: Arial, sans-serif;
+                }
+            }
+        }
+
+        // Product Overview Table
+        .products-table {
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+            h3 {
+                margin: 0 0 10px 0;
+                color: #333;
+                font-size: 18px;
+                font-family: Arial, sans-serif;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+
+                th,
+                td {
+                    padding: 12px;
+                    border: 1px solid #ddd;
+                    text-align: left;
+                    font-size: 14px;
+                    font-family: Arial, sans-serif;
+                }
+
+                th {
+                    background-color: #2ecc71;
+                    color: #fff;
+                    font-weight: bold;
+                }
+
+                tr:nth-child(even) {
+                    background-color: #f9f9f9;
+                }
+            }
+        }
+
+        // Footer
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 15px;
+            background-color: #2ecc71;
+            color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+        }
+    }
+}
+
+// Responsive Design Adjustments
+@media (max-width: 1024px) {
+    .admin-dashboard {
+        .dashboard-content {
+            margin-left: 0; // Remove sidebar margin on smaller screens
+            padding: 15px;
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-section {
+                flex-direction: column;
+                gap: 15px;
+
+                .chart-card,
+                .products-card {
+                    flex: unset;
+                    min-width: unset;
+                }
+            }
+
+            .products-table {
+                margin-top: 15px;
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-dashboard {
+        .dashboard-content {
+            padding: 10px;
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .charts-section {
+                gap: 10px;
+            }
+
+            .products-table {
+                margin-top: 10px;
+                padding: 10px;
+
+                table th,
+                table td {
+                    padding: 8px;
+                    font-size: 12px;
+                }
+
+                h3 {
+                    font-size: 16px;
+                }
+            }
+
+            .footer {
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-dashboard {
+        .dashboard-content {
+            padding: 5px;
+
+            .stats-grid .stat-button,
+            .charts-section .chart-card,
+            .charts-section .products-card,
+            .products-table {
+                padding: 10px;
+
+                h3 {
+                    font-size: 16px;
+                }
+
+                p,
+                table th,
+                table td {
+                    font-size: 12px;
+                }
+            }
+
+            .footer {
+                padding: 8px;
+                font-size: 12px;
+            }
         }
     }
 }
