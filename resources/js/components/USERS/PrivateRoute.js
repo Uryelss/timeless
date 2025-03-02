@@ -2,11 +2,11 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 
 const PrivateRoute = ({ children, allowedRoles }) => {
-    const userRole = localStorage.getItem("role"); // Get role from localStorage
-    const token = localStorage.getItem("token"); // Get token from localStorage
+    const token = localStorage.getItem("token");
+    const userRole = localStorage.getItem("role");
 
-    console.log("User Role:", userRole); // Debugging output
-    console.log("Token:", token); // Debugging output
+    console.log("User Role:", userRole);
+    console.log("Token:", token);
 
     if (!token) {
         console.warn("No token found. Redirecting to login.");

@@ -103,4 +103,11 @@ class UsersController extends Controller
             ]
         ]);
     }
+    public function logout(Request $request)
+    {
+        $token = $request->user()->token();
+        $token->revoke(); // ✅ Revoke the token so the user is logged out
+
+        return response()->json(['message' => 'Logged out successfully'], 200);
+    }
 }

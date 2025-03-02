@@ -12,13 +12,15 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!email || !password) {
+            setError("Email and password are required.");
+            return;
+        }
+
         try {
             const response = await axios.post(
                 "http://localhost:8000/api/login",
-                {
-                    email,
-                    password,
-                }
+                { email, password }
             );
 
             const { token, role } = response.data;
@@ -30,18 +32,18 @@ const Login = () => {
             }
 
             localStorage.setItem("token", token);
-            localStorage.setItem("role", role); // Ensure role is saved correctly
+            localStorage.setItem("role", role);
 
-            console.log("User Role Set:", role); // Debugging output
+            console.log("User Role Set:", role);
 
             if (role === "admin") {
-                window.location.href = "/admin-dashboard";
+                navigate("/admin-dashboard");
             } else {
-                window.location.href = "/Homepage";
+                navigate("/Homepage");
             }
         } catch (err) {
             console.error("Login Error:", err);
-            setError("Invalid credentials");
+            setError("Invalid credentials. Please try again.");
         }
     };
 
@@ -82,8 +84,7 @@ const Login = () => {
                 </form>
                 <div className="signup-section">
                     <p>
-                        New to Timeless?{" "}
-                        <a href="http://localhost:8000/register">Sign Up</a>
+                        New to Timeless? <a href="/register">Sign Up</a>
                     </p>
                 </div>
                 {error && <p className="error">{error}</p>}

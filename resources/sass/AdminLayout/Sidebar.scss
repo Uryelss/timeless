@@ -1,4 +1,3 @@
-// Sidebar.scss
 .sidebar {
     width: 270px;
     height: 100vh;
@@ -6,7 +5,7 @@
     padding: 20px;
     box-sizing: border-box;
     color: white;
-    font-family: "Helvetica", Arial, sans-serif; // Changed to Helvetica
+    font-family: "Helvetica", Arial, sans-serif;
 
     .menu-title,
     .tools-title {
@@ -39,8 +38,19 @@
 
         span {
             font-size: 20px;
-            font-weight: 400; // Changed from 700 to 400 (not bold)
+            font-weight: 400;
             word-wrap: break-word;
+        }
+    }
+
+    /* ✅ Logout Button Styling */
+    .logout-btn {
+        margin-top: 20px;
+        color: #ff4b5c;
+        font-weight: 500;
+
+        &:hover {
+            background-color: rgba(255, 0, 0, 0.2);
         }
     }
 }

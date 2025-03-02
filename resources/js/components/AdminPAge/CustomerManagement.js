@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
+import Sidebar from "../AdminLayout/Sidebar";
+import CustomerTable from "../AdminLayout/CustomerTable";
 
 const AdminCustomerManagement = () => {
     const [customers, setCustomers] = useState([]);
     const [viewArchived, setViewArchived] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [selectedItems, setSelectedItems] = useState([]); // Added for checkbox
     const [editData, setEditData] = useState({
         first_name: "",
         middle_name: "",
@@ -52,7 +55,6 @@ const AdminCustomerManagement = () => {
                     },
                 }
             );
-
             setSelectedCustomer(response.data);
             setEditData({
                 first_name: response.data.first_name || "",
@@ -68,6 +70,7 @@ const AdminCustomerManagement = () => {
             alert("Failed to fetch customer details.");
         }
     };
+
     const handleArchiveRestore = async (id, action) => {
         const confirmMessage = action === "restore" ? "restore" : "archive";
         if (
@@ -91,28 +94,21 @@ const AdminCustomerManagement = () => {
             );
             alert(`Customer ${confirmMessage}d successfully!`);
             fetchCustomers();
-        } catch {
+        } catch (error) {
+            console.error(`Error ${confirmMessage}ing customer:`, error);
             alert(`Failed to ${confirmMessage} customer.`);
         }
     };
 
-    // ✅ Handle Update Submission
     const submitUpdate = async (id) => {
+        const formData = new FormData();
+        for (const key in editData) {
+            if (editData[key] !== null) formData.append(key, editData[key]);
+        }
+
         try {
-            const formData = new FormData();
-            formData.append("first_name", editData.first_name || "");
-            formData.append("middle_name", editData.middle_name || "");
-            formData.append("last_name", editData.last_name || "");
-            formData.append("phone", editData.phone || "");
-            formData.append("date_of_birth", editData.date_of_birth || "");
-            formData.append("gender", editData.gender || "");
-
-            if (editData.profile_image) {
-                formData.append("profile_image", editData.profile_image);
-            }
-
-            const response = await axios.post(
-                `http://localhost:8000/api/customers/${id}/update`,
+            await axios.post(
+                `http://localhost:8000/api/customers/${id}?_method=PUT`,
                 formData,
                 {
                     headers: {
@@ -123,13 +119,11 @@ const AdminCustomerManagement = () => {
                     },
                 }
             );
-
-            console.log("Update Response:", response.data);
             alert("Customer updated successfully!");
             fetchCustomers();
             setSelectedCustomer(null);
         } catch (error) {
-            console.error("Update error:", error.response);
+            console.error("Error updating customer:", error);
             alert("Failed to update customer.");
         }
     };
@@ -137,189 +131,135 @@ const AdminCustomerManagement = () => {
     const memoizedCustomers = useMemo(() => customers, [customers]);
 
     return (
-        <div>
-            <h1>Admin Customer Management</h1>
-            <button onClick={() => setViewArchived(!viewArchived)}>
-                {viewArchived
-                    ? "View Active Customers"
-                    : "View Archived Customers"}
-            </button>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Actions</th>
-                        <th>Customer Image</th>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Date of Birth</th>
-                        <th>Gender</th>
-                        <th>Address</th>
-                        <th>Last Updated</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {memoizedCustomers.map((customer) => (
-                        <tr key={customer.id}>
-                            <td>
-                                <button onClick={() => handleEdit(customer.id)}>
-                                    Edit
-                                </button>
-
-                                {!viewArchived ? (
-                                    <button
-                                        onClick={() =>
-                                            handleArchiveRestore(
-                                                customer.id,
-                                                "archive"
-                                            )
-                                        }
-                                    >
-                                        Archive
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={() =>
-                                            handleArchiveRestore(
-                                                customer.id,
-                                                "restore"
-                                            )
-                                        }
-                                    >
-                                        Restore
-                                    </button>
-                                )}
-                            </td>
-                            <td>
-                                <img
-                                    src={customer.profile_image}
-                                    width="50"
-                                    alt="Customer"
-                                    onError={(e) =>
-                                        (e.target.src = "/default-profile.png")
-                                    }
-                                />
-                            </td>
-                            <td>{customer.full_name}</td>
-                            <td>{customer.phone || "N/A"}</td>
-                            <td>{customer.date_of_birth || "N/A"}</td>
-                            <td>{customer.gender || "N/A"}</td>
-                            <td>{customer.address || "No Address"}</td>
-                            <td>{customer.updated_at}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-
-            {selectedCustomer && (
-                <div className="modal show">
-                    <div className="modal-content">
-                        <h2>Edit Customer</h2>
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                submitUpdate(selectedCustomer.id);
-                            }}
-                        >
-                            <label>First Name:</label>
-                            <input
-                                type="text"
-                                value={editData.first_name}
-                                onChange={(e) =>
-                                    setEditData({
-                                        ...editData,
-                                        first_name: e.target.value,
-                                    })
-                                }
-                            />
-
-                            <label>Middle Name (Optional):</label>
-                            <input
-                                type="text"
-                                value={editData.middle_name}
-                                onChange={(e) =>
-                                    setEditData({
-                                        ...editData,
-                                        middle_name: e.target.value,
-                                    })
-                                }
-                            />
-
-                            <label>Last Name:</label>
-                            <input
-                                type="text"
-                                value={editData.last_name}
-                                onChange={(e) =>
-                                    setEditData({
-                                        ...editData,
-                                        last_name: e.target.value,
-                                    })
-                                }
-                            />
-
-                            <label>Phone:</label>
-                            <input
-                                type="text"
-                                value={editData.phone}
-                                onChange={(e) =>
-                                    setEditData({
-                                        ...editData,
-                                        phone: e.target.value,
-                                    })
-                                }
-                            />
-
-                            <label>Date of Birth:</label>
-                            <input
-                                type="date"
-                                value={editData.date_of_birth}
-                                onChange={(e) =>
-                                    setEditData({
-                                        ...editData,
-                                        date_of_birth: e.target.value,
-                                    })
-                                }
-                            />
-
-                            <label>Gender:</label>
-                            <select
-                                value={editData.gender}
-                                onChange={(e) =>
-                                    setEditData({
-                                        ...editData,
-                                        gender: e.target.value,
-                                    })
-                                }
-                            >
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
-
-                            <label>Profile Image:</label>
-                            <input
-                                type="file"
-                                onChange={(e) =>
-                                    setEditData({
-                                        ...editData,
-                                        profile_image: e.target.files[0],
-                                    })
-                                }
-                            />
-
-                            <div className="modal-buttons">
-                                <button type="submit">Save Changes</button>
-                                <button
-                                    type="button"
-                                    onClick={() => setSelectedCustomer(null)}
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
+        <div className="customer-management-container">
+            <Sidebar />
+            <div className="customer-content">
+                <h1>Admin Customer Management</h1>
+                <div className="customer-actions">
+                    <div className="search-and-select">
+                        {/* Add search functionality if needed */}
+                    </div>
+                    <div className="action-buttons">
+                        <button onClick={() => setViewArchived(!viewArchived)}>
+                            {viewArchived
+                                ? "View Active Customers"
+                                : "View Archived Customers"}
+                        </button>
                     </div>
                 </div>
-            )}
+                <CustomerTable
+                    customers={memoizedCustomers}
+                    viewArchived={viewArchived}
+                    handleEdit={handleEdit}
+                    handleArchiveRestore={handleArchiveRestore}
+                    selectedItems={selectedItems}
+                    setSelectedItems={setSelectedItems}
+                />
+                {selectedCustomer && (
+                    <div className="modal show">
+                        <div className="modal-content">
+                            <h2>Edit Customer</h2>
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    submitUpdate(selectedCustomer.id);
+                                }}
+                            >
+                                <label>First Name:</label>
+                                <input
+                                    type="text"
+                                    value={editData.first_name}
+                                    onChange={(e) =>
+                                        setEditData({
+                                            ...editData,
+                                            first_name: e.target.value,
+                                        })
+                                    }
+                                />
+                                <label>Middle Name (Optional):</label>
+                                <input
+                                    type="text"
+                                    value={editData.middle_name}
+                                    onChange={(e) =>
+                                        setEditData({
+                                            ...editData,
+                                            middle_name: e.target.value,
+                                        })
+                                    }
+                                />
+                                <label>Last Name:</label>
+                                <input
+                                    type="text"
+                                    value={editData.last_name}
+                                    onChange={(e) =>
+                                        setEditData({
+                                            ...editData,
+                                            last_name: e.target.value,
+                                        })
+                                    }
+                                />
+                                <label>Phone:</label>
+                                <input
+                                    type="text"
+                                    value={editData.phone}
+                                    onChange={(e) =>
+                                        setEditData({
+                                            ...editData,
+                                            phone: e.target.value,
+                                        })
+                                    }
+                                />
+                                <label>Date of Birth:</label>
+                                <input
+                                    type="date"
+                                    value={editData.date_of_birth}
+                                    onChange={(e) =>
+                                        setEditData({
+                                            ...editData,
+                                            date_of_birth: e.target.value,
+                                        })
+                                    }
+                                />
+                                <label>Gender:</label>
+                                <select
+                                    value={editData.gender}
+                                    onChange={(e) =>
+                                        setEditData({
+                                            ...editData,
+                                            gender: e.target.value,
+                                        })
+                                    }
+                                >
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                                <label>Profile Image:</label>
+                                <input
+                                    type="file"
+                                    onChange={(e) =>
+                                        setEditData({
+                                            ...editData,
+                                            profile_image: e.target.files[0],
+                                        })
+                                    }
+                                />
+                                <div className="modal-buttons">
+                                    <button type="submit">Save Changes</button>
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setSelectedCustomer(null)
+                                        }
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

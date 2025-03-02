@@ -13,6 +13,7 @@ use App\Http\Controllers\AdminCustomerController;
 // Public routes (No authentication required)
 Route::post('register', [UsersController::class, 'register']);
 Route::post('login', [UsersController::class, 'login']);
+Route::post('/logout', [UsersController::class, 'logout'])->middleware('auth:api');
 
 // Admin-only routes
 Route::middleware(['auth:api', 'role:admin'])->group(function () {

@@ -74804,6 +74804,139 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
+/***/ "./resources/js/components/AdminLayout/CustomerTable.js":
+/*!**************************************************************!*\
+  !*** ./resources/js/components/AdminLayout/CustomerTable.js ***!
+  \**************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+
+
+var CustomerTable = function CustomerTable(_ref) {
+  var customers = _ref.customers,
+    viewArchived = _ref.viewArchived,
+    handleEdit = _ref.handleEdit,
+    handleArchiveRestore = _ref.handleArchiveRestore,
+    selectedItems = _ref.selectedItems,
+    setSelectedItems = _ref.setSelectedItems;
+  var handleCheckboxChange = function handleCheckboxChange(customerId) {
+    setSelectedItems(function (prev) {
+      return prev.includes(customerId) ? prev.filter(function (id) {
+        return id !== customerId;
+      }) : [].concat(_toConsumableArray(prev), [customerId]);
+    });
+  };
+  var handleIconClick = function handleIconClick(action, customerId) {
+    if (action === "edit") handleEdit(customerId);else if (action === "archive") handleArchiveRestore(customerId, "archive");else if (action === "restore") handleArchiveRestore(customerId, "restore");
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+    className: "customer-table-container",
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("table", {
+      className: "customer-table",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("thead", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Actions"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Customer Image"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Name"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Phone"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Date of Birth"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Gender"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Address"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
+            children: "Last Updated"
+          })]
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("tbody", {
+        children: customers.length === 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("tr", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
+            colSpan: "8",
+            className: "no-data",
+            children: ["No ", viewArchived ? "archived" : "active", " ", "customers found."]
+          })
+        }) : customers.map(function (customer) {
+          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
+              className: "actions",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+                type: "checkbox",
+                checked: selectedItems.includes(customer.id),
+                onChange: function onChange() {
+                  return handleCheckboxChange(customer.id);
+                },
+                className: "action-checkbox"
+              }), !viewArchived ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+                  className: "fa-solid fa-pen-to-square action-icon",
+                  onClick: function onClick() {
+                    return handleIconClick("edit", customer.id);
+                  },
+                  title: "Edit"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+                  className: "fa-solid fa-box-archive action-icon",
+                  onClick: function onClick() {
+                    return handleIconClick("archive", customer.id);
+                  },
+                  title: "Archive"
+                })]
+              }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+                onClick: function onClick() {
+                  return handleIconClick("restore", customer.id);
+                },
+                className: "restore-btn",
+                children: "Restore"
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                src: customer.profile_image,
+                width: "50",
+                alt: "Customer",
+                onError: function onError(e) {
+                  return e.target.src = "/default-profile.png";
+                }
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: customer.full_name || "N/A"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: customer.phone || "N/A"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: customer.date_of_birth || "N/A"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: customer.gender || "N/A"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: customer.address || "No Address"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
+              children: new Date(customer.updated_at).toLocaleString()
+            })]
+          }, customer.id);
+        })
+      })]
+    })
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CustomerTable);
+
+/***/ }),
+
 /***/ "./resources/js/components/AdminLayout/InventoryTable.js":
 /*!***************************************************************!*\
   !*** ./resources/js/components/AdminLayout/InventoryTable.js ***!
@@ -75138,12 +75271,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+
 
 
 
 var Sidebar = function Sidebar() {
   var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_2__.useNavigate)();
+  var handleLogout = function handleLogout() {
+    axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/logout", {}, {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function () {
+      localStorage.removeItem("token"); // ✅ Remove authentication token
+      localStorage.removeItem("role"); // ✅ Remove stored role
+      navigate("/login"); // ✅ Redirect to login page
+    })["catch"](function (error) {
+      console.error("Logout failed:", error);
+      alert("Failed to logout.");
+    });
+  };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
     className: "sidebar",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
@@ -75192,7 +75341,7 @@ var Sidebar = function Sidebar() {
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
       className: "menu-item",
       onClick: function onClick() {
-        return navigate("/customers");
+        return navigate("/admin-customer");
       },
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
         className: "fa-solid fa-users"
@@ -75221,6 +75370,14 @@ var Sidebar = function Sidebar() {
         className: "fa-solid fa-gears"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
         children: "Admin Settings"
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      className: "menu-item logout-btn",
+      onClick: handleLogout,
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+        className: "fa-solid fa-sign-out-alt"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+        children: "Logout"
       })]
     })]
   });
@@ -75619,8 +75776,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var _AdminLayout_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminLayout/Sidebar */ "./resources/js/components/AdminLayout/Sidebar.js");
+/* harmony import */ var _AdminLayout_CustomerTable__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../AdminLayout/CustomerTable */ "./resources/js/components/AdminLayout/CustomerTable.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
@@ -75639,6 +75798,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
+
+
 var AdminCustomerManagement = function AdminCustomerManagement() {
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
@@ -75652,7 +75813,11 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
     _useState6 = _slicedToArray(_useState5, 2),
     selectedCustomer = _useState6[0],
     setSelectedCustomer = _useState6[1];
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState8 = _slicedToArray(_useState7, 2),
+    selectedItems = _useState8[0],
+    setSelectedItems = _useState8[1]; // Added for checkbox
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
       first_name: "",
       middle_name: "",
       last_name: "",
@@ -75661,9 +75826,9 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
       gender: "",
       profile_image: null
     }),
-    _useState8 = _slicedToArray(_useState7, 2),
-    editData = _useState8[0],
-    setEditData = _useState8[1];
+    _useState10 = _slicedToArray(_useState9, 2),
+    editData = _useState10[0],
+    setEditData = _useState10[1];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchCustomers();
   }, [viewArchived]);
@@ -75675,7 +75840,7 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
           case 0:
             _context.prev = 0;
             _context.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/customers?archived=".concat(viewArchived), {
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/customers?archived=".concat(viewArchived), {
               headers: {
                 Authorization: "Bearer ".concat(localStorage.getItem("token"))
               }
@@ -75707,7 +75872,7 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
           case 0:
             _context2.prev = 0;
             _context2.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/customers/".concat(customerId), {
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/customers/".concat(customerId), {
               headers: {
                 Authorization: "Bearer ".concat(localStorage.getItem("token"))
               }
@@ -75756,7 +75921,7 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
           case 3:
             _context3.prev = 3;
             _context3.next = 6;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].put("http://localhost:8000/api/customers/".concat(id, "/").concat(action), {}, {
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].put("http://localhost:8000/api/customers/".concat(id, "/").concat(action), {}, {
               headers: {
                 Authorization: "Bearer ".concat(localStorage.getItem("token"))
               }
@@ -75764,13 +75929,14 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
           case 6:
             alert("Customer ".concat(confirmMessage, "d successfully!"));
             fetchCustomers();
-            _context3.next = 13;
+            _context3.next = 14;
             break;
           case 10:
             _context3.prev = 10;
             _context3.t0 = _context3["catch"](3);
+            console.error("Error ".concat(confirmMessage, "ing customer:"), _context3.t0);
             alert("Failed to ".concat(confirmMessage, " customer."));
-          case 13:
+          case 14:
           case "end":
             return _context3.stop();
         }
@@ -75780,50 +75946,40 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
       return _ref3.apply(this, arguments);
     };
   }();
-
-  // ✅ Handle Update Submission
   var submitUpdate = /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(id) {
-      var formData, response;
+      var formData, key;
       return _regeneratorRuntime().wrap(function _callee4$(_context4) {
         while (1) switch (_context4.prev = _context4.next) {
           case 0:
-            _context4.prev = 0;
             formData = new FormData();
-            formData.append("first_name", editData.first_name || "");
-            formData.append("middle_name", editData.middle_name || "");
-            formData.append("last_name", editData.last_name || "");
-            formData.append("phone", editData.phone || "");
-            formData.append("date_of_birth", editData.date_of_birth || "");
-            formData.append("gender", editData.gender || "");
-            if (editData.profile_image) {
-              formData.append("profile_image", editData.profile_image);
+            for (key in editData) {
+              if (editData[key] !== null) formData.append(key, editData[key]);
             }
-            _context4.next = 11;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("http://localhost:8000/api/customers/".concat(id, "/update"), formData, {
+            _context4.prev = 2;
+            _context4.next = 5;
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].post("http://localhost:8000/api/customers/".concat(id, "?_method=PUT"), formData, {
               headers: {
                 "Content-Type": "multipart/form-data",
                 Authorization: "Bearer ".concat(localStorage.getItem("token"))
               }
             });
-          case 11:
-            response = _context4.sent;
-            console.log("Update Response:", response.data);
+          case 5:
             alert("Customer updated successfully!");
             fetchCustomers();
             setSelectedCustomer(null);
-            _context4.next = 22;
+            _context4.next = 14;
             break;
-          case 18:
-            _context4.prev = 18;
-            _context4.t0 = _context4["catch"](0);
-            console.error("Update error:", _context4.t0.response);
+          case 10:
+            _context4.prev = 10;
+            _context4.t0 = _context4["catch"](2);
+            console.error("Error updating customer:", _context4.t0);
             alert("Failed to update customer.");
-          case 22:
+          case 14:
           case "end":
             return _context4.stop();
         }
-      }, _callee4, null, [[0, 18]]);
+      }, _callee4, null, [[2, 10]]);
     }));
     return function submitUpdate(_x4) {
       return _ref4.apply(this, arguments);
@@ -75832,184 +75988,137 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
   var memoizedCustomers = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
     return customers;
   }, [customers]);
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h1", {
-      children: "Admin Customer Management"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-      onClick: function onClick() {
-        return setViewArchived(!viewArchived);
-      },
-      children: viewArchived ? "View Active Customers" : "View Archived Customers"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("table", {
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("thead", {
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Actions"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Customer Image"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Name"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Phone"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Date of Birth"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Gender"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Address"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Last Updated"
-          })]
-        })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("tbody", {
-        children: memoizedCustomers.map(function (customer) {
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-                onClick: function onClick() {
-                  return handleEdit(customer.id);
-                },
-                children: "Edit"
-              }), !viewArchived ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-                onClick: function onClick() {
-                  return handleArchiveRestore(customer.id, "archive");
-                },
-                children: "Archive"
-              }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-                onClick: function onClick() {
-                  return handleArchiveRestore(customer.id, "restore");
-                },
-                children: "Restore"
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+    className: "customer-management-container",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminLayout_Sidebar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+      className: "customer-content",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h1", {
+        children: "Admin Customer Management"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+        className: "customer-actions",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+          className: "search-and-select"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+          className: "action-buttons",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+            onClick: function onClick() {
+              return setViewArchived(!viewArchived);
+            },
+            children: viewArchived ? "View Active Customers" : "View Archived Customers"
+          })
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminLayout_CustomerTable__WEBPACK_IMPORTED_MODULE_2__["default"], {
+        customers: memoizedCustomers,
+        viewArchived: viewArchived,
+        handleEdit: handleEdit,
+        handleArchiveRestore: handleArchiveRestore,
+        selectedItems: selectedItems,
+        setSelectedItems: setSelectedItems
+      }), selectedCustomer && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+        className: "modal show",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          className: "modal-content",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h2", {
+            children: "Edit Customer"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("form", {
+            onSubmit: function onSubmit(e) {
+              e.preventDefault();
+              submitUpdate(selectedCustomer.id);
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+              children: "First Name:"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+              type: "text",
+              value: editData.first_name,
+              onChange: function onChange(e) {
+                return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+                  first_name: e.target.value
+                }));
+              }
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+              children: "Middle Name (Optional):"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+              type: "text",
+              value: editData.middle_name,
+              onChange: function onChange(e) {
+                return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+                  middle_name: e.target.value
+                }));
+              }
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+              children: "Last Name:"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+              type: "text",
+              value: editData.last_name,
+              onChange: function onChange(e) {
+                return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+                  last_name: e.target.value
+                }));
+              }
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+              children: "Phone:"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+              type: "text",
+              value: editData.phone,
+              onChange: function onChange(e) {
+                return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+                  phone: e.target.value
+                }));
+              }
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+              children: "Date of Birth:"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+              type: "date",
+              value: editData.date_of_birth,
+              onChange: function onChange(e) {
+                return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+                  date_of_birth: e.target.value
+                }));
+              }
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+              children: "Gender:"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+              value: editData.gender,
+              onChange: function onChange(e) {
+                return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+                  gender: e.target.value
+                }));
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                value: "",
+                children: "Select Gender"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                value: "Male",
+                children: "Male"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                value: "Female",
+                children: "Female"
               })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-                src: customer.profile_image,
-                width: "50",
-                alt: "Customer",
-                onError: function onError(e) {
-                  return e.target.src = "/default-profile.png";
-                }
-              })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: customer.full_name
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: customer.phone || "N/A"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: customer.date_of_birth || "N/A"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: customer.gender || "N/A"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: customer.address || "No Address"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: customer.updated_at
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+              children: "Profile Image:"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+              type: "file",
+              onChange: function onChange(e) {
+                return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+                  profile_image: e.target.files[0]
+                }));
+              }
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+              className: "modal-buttons",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+                type: "submit",
+                children: "Save Changes"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+                type: "button",
+                onClick: function onClick() {
+                  return setSelectedCustomer(null);
+                },
+                children: "Cancel"
+              })]
             })]
-          }, customer.id);
+          })]
         })
       })]
-    }), selectedCustomer && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-      className: "modal show",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-        className: "modal-content",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-          children: "Edit Customer"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("form", {
-          onSubmit: function onSubmit(e) {
-            e.preventDefault();
-            submitUpdate(selectedCustomer.id);
-          },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-            children: "First Name:"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-            type: "text",
-            value: editData.first_name,
-            onChange: function onChange(e) {
-              return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
-                first_name: e.target.value
-              }));
-            }
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-            children: "Middle Name (Optional):"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-            type: "text",
-            value: editData.middle_name,
-            onChange: function onChange(e) {
-              return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
-                middle_name: e.target.value
-              }));
-            }
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-            children: "Last Name:"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-            type: "text",
-            value: editData.last_name,
-            onChange: function onChange(e) {
-              return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
-                last_name: e.target.value
-              }));
-            }
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-            children: "Phone:"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-            type: "text",
-            value: editData.phone,
-            onChange: function onChange(e) {
-              return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
-                phone: e.target.value
-              }));
-            }
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-            children: "Date of Birth:"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-            type: "date",
-            value: editData.date_of_birth,
-            onChange: function onChange(e) {
-              return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
-                date_of_birth: e.target.value
-              }));
-            }
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-            children: "Gender:"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-            value: editData.gender,
-            onChange: function onChange(e) {
-              return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
-                gender: e.target.value
-              }));
-            },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-              value: "",
-              children: "Select Gender"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-              value: "Male",
-              children: "Male"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-              value: "Female",
-              children: "Female"
-            })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-            children: "Profile Image:"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-            type: "file",
-            onChange: function onChange(e) {
-              return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
-                profile_image: e.target.files[0]
-              }));
-            }
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-            className: "modal-buttons",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-              type: "submit",
-              children: "Save Changes"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-              type: "button",
-              onClick: function onClick() {
-                return setSelectedCustomer(null);
-              },
-              children: "Cancel"
-            })]
-          })]
-        })]
-      })
     })]
   });
 };
@@ -77326,43 +77435,48 @@ var Login = function Login() {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             e.preventDefault();
-            _context.prev = 1;
-            _context.next = 4;
+            if (!(!email || !password)) {
+              _context.next = 4;
+              break;
+            }
+            setError("Email and password are required.");
+            return _context.abrupt("return");
+          case 4:
+            _context.prev = 4;
+            _context.next = 7;
             return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/login", {
               email: email,
               password: password
             });
-          case 4:
+          case 7:
             response = _context.sent;
             _response$data = response.data, token = _response$data.token, role = _response$data.role;
             if (!(!token || !role)) {
-              _context.next = 8;
+              _context.next = 11;
               break;
             }
             throw new Error("Invalid login response. Missing token or role.");
-          case 8:
+          case 11:
             localStorage.setItem("token", token);
-            localStorage.setItem("role", role); // Ensure role is saved correctly
-
-            console.log("User Role Set:", role); // Debugging output
-
+            localStorage.setItem("role", role);
+            console.log("User Role Set:", role);
             if (role === "admin") {
-              window.location.href = "/admin-dashboard";
+              navigate("/admin-dashboard");
             } else {
-              window.location.href = "/Homepage";
+              navigate("/Homepage");
             }
-            _context.next = 18;
+            _context.next = 21;
             break;
-          case 14:
-            _context.prev = 14;
-            _context.t0 = _context["catch"](1);
+          case 17:
+            _context.prev = 17;
+            _context.t0 = _context["catch"](4);
             console.error("Login Error:", _context.t0);
-            setError("Invalid credentials");
-          case 18:
+            setError("Invalid credentials. Please try again.");
+          case 21:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[1, 14]]);
+      }, _callee, null, [[4, 17]]);
     }));
     return function handleSubmit(_x) {
       return _ref.apply(this, arguments);
@@ -77416,8 +77530,8 @@ var Login = function Login() {
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
         className: "signup-section",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("p", {
-          children: ["New to Timeless?", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
-            href: "http://localhost:8000/register",
+          children: ["New to Timeless? ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("a", {
+            href: "/register",
             children: "Sign Up"
           })]
         })
@@ -77452,12 +77566,10 @@ __webpack_require__.r(__webpack_exports__);
 var PrivateRoute = function PrivateRoute(_ref) {
   var children = _ref.children,
     allowedRoles = _ref.allowedRoles;
-  var userRole = localStorage.getItem("role"); // Get role from localStorage
-  var token = localStorage.getItem("token"); // Get token from localStorage
-
-  console.log("User Role:", userRole); // Debugging output
-  console.log("Token:", token); // Debugging output
-
+  var token = localStorage.getItem("token");
+  var userRole = localStorage.getItem("role");
+  console.log("User Role:", userRole);
+  console.log("Token:", token);
   if (!token) {
     console.warn("No token found. Redirecting to login.");
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_2__.Navigate, {
