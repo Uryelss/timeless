@@ -23,6 +23,7 @@ class AdminSettingsController extends Controller
             'strapMaterials' => StrapMaterial::orderBy('name')->get(),
             'genders' => Gender::orderBy('name')->get(),
             'sizes' => Size::orderBy('name')->get(),
+
         ]);
     }
 

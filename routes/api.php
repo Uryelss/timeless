@@ -6,14 +6,17 @@ use App\Http\Controllers\AdminSettingsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AdminCustomerController;
+
 
 
 // Public routes (No authentication required)
 Route::post('register', [UsersController::class, 'register']);
 Route::post('login', [UsersController::class, 'login']);
 
-// Protected routes (Require authentication)
-Route::middleware(['auth:api'])->group(function () {
+// Admin-only routes
+Route::middleware(['auth:api', 'role:admin'])->group(function () {
+
     // Admin Settings Endpoints
     Route::get('/admin-settings', [AdminSettingsController::class, 'index']); // ✅ Fetch filters
     Route::post('/add-filter/{type}', [AdminSettingsController::class, 'addFilter']); // ✅ Add new filter
@@ -35,15 +38,19 @@ Route::middleware(['auth:api'])->group(function () {
     Route::put('/inventory/{id}/archive', [InventoryController::class, 'archive']); // ✅ Archive inventory
     Route::put('/inventory/{id}/restore', [InventoryController::class, 'restore']); // ✅ Restore inventory
     Route::get('/inventory/archived', [InventoryController::class, 'archivedItems']); // ✅ Get archived inventory
-});
 
-// Admin-only routes
-Route::middleware(['auth:api', 'role:admin'])->group(function () {
+
     Route::get('/admin-dashboard', [UsersController::class, 'adminDashboard']);
+    //customers
+    Route::get('/customers', [AdminCustomerController::class, 'index']);
+    Route::post('/customers/{id}/update', [AdminCustomerController::class, 'update']);
+    Route::put('/customers/{id}/archive', [AdminCustomerController::class, 'archive']);
+    Route::put('/customers/{id}/restore', [AdminCustomerController::class, 'restore']);
+    Route::get('/customers/{id}', [AdminCustomerController::class, 'show']); // ✅ Fetch single customer
 
 
 
-
+    //users
     Route::get('/users', [AdminUserController::class, 'index']); // ✅ Get all users
     Route::put('/users/{id}', [AdminUserController::class, 'update']); // ✅ Update user
     Route::put('/users/{id}/archive', [AdminUserController::class, 'archive']); // ✅ Archive user

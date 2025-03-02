@@ -8,12 +8,13 @@ use Illuminate\Support\Facades\Auth;
 
 class CheckRole
 {
-    public function handle(Request $request, Closure $next, $role)
+    public function handle($request, Closure $next, ...$roles)
     {
-        // Check if the authenticated user's role matches the required role
-        if (Auth::check() && Auth::user()->role->role_type !== $role) {
-            // If the role doesn't match, return an unauthorized response or redirect
-            return response()->json(['error' => 'Unauthorized'], 403);
+        $user = auth()->user();
+
+        // ✅ Ensure the user has a role before checking role_type
+        if (!$user || !$user->role || !in_array($user->role->role_type, $roles)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         return $next($request);

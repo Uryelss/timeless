@@ -35,6 +35,14 @@
                 align-items: center;
                 gap: 15px;
 
+                .action-checkbox {
+                    width: 24px;
+                    height: 24px;
+                    margin: 0;
+                    vertical-align: middle;
+                    cursor: pointer;
+                }
+
                 .restore-btn {
                     width: auto;
                     height: 25px;
@@ -50,7 +58,7 @@
                     vertical-align: middle;
 
                     &:hover {
-                        background-color: darken(#006666, 10%);
+                        background-color: darken(#007545, 10%);
                     }
                 }
             }
@@ -80,5 +88,70 @@
     &:hover {
         color: #555 !important;
         transform: scale(1.1);
+    }
+}
+
+// Archive All Button Styling
+.archive-all-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background-color: transparent;
+    color: #333 !important;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-left: 10px;
+
+    &:hover {
+        background-color: darken(#007545, 10%);
+        color: #fff !important;
+    }
+
+    i {
+        font-size: 22px;
+        color: inherit !important;
+    }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+    .user-management-container {
+        flex-direction: column;
+
+        .user-content {
+            padding: 20px;
+
+            .user-actions {
+                flex-direction: column;
+                align-items: flex-start;
+
+                .search-and-select {
+                    width: 100%;
+                }
+
+                .checkbox-actions {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .action-buttons {
+                    width: 100%;
+                    flex-direction: column;
+
+                    button {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+
+        .modal .modal-content {
+            width: 90%;
+        }
     }
 }
