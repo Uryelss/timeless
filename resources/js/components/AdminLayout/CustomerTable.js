@@ -5,23 +5,13 @@ const CustomerTable = ({
     viewArchived,
     handleEdit,
     handleArchiveRestore,
-    selectedItems, // For checkbox
-    setSelectedItems, // For checkbox
 }) => {
-    const handleCheckboxChange = (customerId) => {
-        setSelectedItems((prev) =>
-            prev.includes(customerId)
-                ? prev.filter((id) => id !== customerId)
-                : [...prev, customerId]
-        );
-    };
-
     const handleIconClick = (action, customerId) => {
-        if (action === "edit") handleEdit(customerId);
-        else if (action === "archive")
-            handleArchiveRestore(customerId, "archive");
-        else if (action === "restore")
-            handleArchiveRestore(customerId, "restore");
+        if (action === "edit") {
+            handleEdit(customerId);
+        } else if (action === "archive" || action === "restore") {
+            handleArchiveRestore(customerId, action);
+        }
     };
 
     return (
@@ -51,39 +41,24 @@ const CustomerTable = ({
                         customers.map((customer) => (
                             <tr key={customer.id}>
                                 <td className="actions">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedItems.includes(
-                                            customer.id
-                                        )}
-                                        onChange={() =>
-                                            handleCheckboxChange(customer.id)
+                                    <i
+                                        className="fa-solid fa-pen-to-square action-icon"
+                                        onClick={() =>
+                                            handleIconClick("edit", customer.id)
                                         }
-                                        className="action-checkbox"
-                                    />
+                                        title="Edit"
+                                    ></i>
                                     {!viewArchived ? (
-                                        <>
-                                            <i
-                                                className="fa-solid fa-pen-to-square action-icon"
-                                                onClick={() =>
-                                                    handleIconClick(
-                                                        "edit",
-                                                        customer.id
-                                                    )
-                                                }
-                                                title="Edit"
-                                            ></i>
-                                            <i
-                                                className="fa-solid fa-box-archive action-icon"
-                                                onClick={() =>
-                                                    handleIconClick(
-                                                        "archive",
-                                                        customer.id
-                                                    )
-                                                }
-                                                title="Archive"
-                                            ></i>
-                                        </>
+                                        <i
+                                            className="fa-solid fa-box-archive action-icon"
+                                            onClick={() =>
+                                                handleIconClick(
+                                                    "archive",
+                                                    customer.id
+                                                )
+                                            }
+                                            title="Archive"
+                                        ></i>
                                     ) : (
                                         <button
                                             onClick={() =>
@@ -109,7 +84,7 @@ const CustomerTable = ({
                                         }
                                     />
                                 </td>
-                                <td>{customer.full_name || "N/A"}</td>
+                                <td>{customer.full_name}</td>
                                 <td>{customer.phone || "N/A"}</td>
                                 <td>{customer.date_of_birth || "N/A"}</td>
                                 <td>{customer.gender || "N/A"}</td>

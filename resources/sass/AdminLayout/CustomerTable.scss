@@ -1,3 +1,4 @@
+// Customer Table Styling
 .customer-table-container {
     width: 100%;
     overflow-x: auto;
@@ -38,14 +39,6 @@
                 align-items: center;
                 gap: 15px;
 
-                .action-checkbox {
-                    width: 24px;
-                    height: 20px;
-                    margin: 0;
-                    vertical-align: middle;
-                    cursor: pointer;
-                }
-
                 .restore-btn {
                     width: auto;
                     height: 25px;
@@ -65,13 +58,6 @@
                     }
                 }
             }
-        }
-
-        .no-data {
-            text-align: center;
-            color: #666;
-            font-style: italic;
-            font-weight: 400;
         }
     }
 }

@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import Sidebar from "../AdminLayout/Sidebar";
-import CustomerTable from "../AdminLayout/CustomerTable";
+import Sidebar from "../AdminLayout/Sidebar"; // Import Sidebar
+import CustomerTable from "../AdminLayout/CustomerTable"; // Import the table component
 
 const AdminCustomerManagement = () => {
     const [customers, setCustomers] = useState([]);
     const [viewArchived, setViewArchived] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
-    const [selectedItems, setSelectedItems] = useState([]); // Added for checkbox
     const [editData, setEditData] = useState({
         first_name: "",
         middle_name: "",
@@ -55,6 +54,7 @@ const AdminCustomerManagement = () => {
                     },
                 }
             );
+
             setSelectedCustomer(response.data);
             setEditData({
                 first_name: response.data.first_name || "",
@@ -94,21 +94,27 @@ const AdminCustomerManagement = () => {
             );
             alert(`Customer ${confirmMessage}d successfully!`);
             fetchCustomers();
-        } catch (error) {
-            console.error(`Error ${confirmMessage}ing customer:`, error);
+        } catch {
             alert(`Failed to ${confirmMessage} customer.`);
         }
     };
 
     const submitUpdate = async (id) => {
-        const formData = new FormData();
-        for (const key in editData) {
-            if (editData[key] !== null) formData.append(key, editData[key]);
-        }
-
         try {
-            await axios.post(
-                `http://localhost:8000/api/customers/${id}?_method=PUT`,
+            const formData = new FormData();
+            formData.append("first_name", editData.first_name || "");
+            formData.append("middle_name", editData.middle_name || "");
+            formData.append("last_name", editData.last_name || "");
+            formData.append("phone", editData.phone || "");
+            formData.append("date_of_birth", editData.date_of_birth || "");
+            formData.append("gender", editData.gender || "");
+
+            if (editData.profile_image) {
+                formData.append("profile_image", editData.profile_image);
+            }
+
+            const response = await axios.post(
+                `http://localhost:8000/api/customers/${id}/update`,
                 formData,
                 {
                     headers: {
@@ -119,11 +125,13 @@ const AdminCustomerManagement = () => {
                     },
                 }
             );
+
+            console.log("Update Response:", response.data);
             alert("Customer updated successfully!");
             fetchCustomers();
             setSelectedCustomer(null);
         } catch (error) {
-            console.error("Error updating customer:", error);
+            console.error("Update error:", error.response);
             alert("Failed to update customer.");
         }
     };
@@ -134,10 +142,10 @@ const AdminCustomerManagement = () => {
         <div className="customer-management-container">
             <Sidebar />
             <div className="customer-content">
-                <h1>Admin Customer Management</h1>
+                <h1> Customer </h1>
                 <div className="customer-actions">
                     <div className="search-and-select">
-                        {/* Add search functionality if needed */}
+                        {/* Add search functionality if desired */}
                     </div>
                     <div className="action-buttons">
                         <button onClick={() => setViewArchived(!viewArchived)}>
@@ -152,8 +160,6 @@ const AdminCustomerManagement = () => {
                     viewArchived={viewArchived}
                     handleEdit={handleEdit}
                     handleArchiveRestore={handleArchiveRestore}
-                    selectedItems={selectedItems}
-                    setSelectedItems={setSelectedItems}
                 />
                 {selectedCustomer && (
                     <div className="modal show">
@@ -234,16 +240,6 @@ const AdminCustomerManagement = () => {
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                 </select>
-                                <label>Profile Image:</label>
-                                <input
-                                    type="file"
-                                    onChange={(e) =>
-                                        setEditData({
-                                            ...editData,
-                                            profile_image: e.target.files[0],
-                                        })
-                                    }
-                                />
                                 <div className="modal-buttons">
                                     <button type="submit">Save Changes</button>
                                     <button

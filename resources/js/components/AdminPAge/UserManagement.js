@@ -144,7 +144,7 @@ const AdminUserManagement = () => {
         <div className="user-management-container">
             <Sidebar />
             <div className="user-content">
-                <h1>Admin User Management</h1>
+                <h1> User </h1>
                 <div className="user-actions">
                     <div className="search-and-select">
                         <div className="search-container">

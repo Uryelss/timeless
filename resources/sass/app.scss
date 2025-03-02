@@ -9,12 +9,14 @@
 
 @import "Userpage/Login.scss";
 @import "Userpage/Register.scss";
-
+//ADMINLAYOUT
 @import "AdminLayout/Sidebar.scss";
 @import "AdminLayout/ProductTable.scss";
 @import "AdminLayout/InventoryTable.scss";
 @import "AdminLayout/UserTable.scss";
+@import "AdminLayout/CustomerTable.scss";
 
+//ADMINPAGE
 @import "AdminPage/Dashboard.scss";
 @import "AdminPage/AdminProduct.scss";
 @import "AdminPage/AdminInventory.scss";

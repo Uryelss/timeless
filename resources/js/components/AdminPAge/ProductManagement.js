@@ -245,7 +245,7 @@ const AdminProduct = () => {
         <div className="admin-product-container">
             <Sidebar />
             <div className="product-content">
-                <h1>Product Management</h1>
+                <h1>Product </h1>
                 <div className="product-actions">
                     <div className="search-and-select">
                         <div className="search-container">

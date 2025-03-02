@@ -74817,30 +74817,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
-function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
-function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 
 
 var CustomerTable = function CustomerTable(_ref) {
   var customers = _ref.customers,
     viewArchived = _ref.viewArchived,
     handleEdit = _ref.handleEdit,
-    handleArchiveRestore = _ref.handleArchiveRestore,
-    selectedItems = _ref.selectedItems,
-    setSelectedItems = _ref.setSelectedItems;
-  var handleCheckboxChange = function handleCheckboxChange(customerId) {
-    setSelectedItems(function (prev) {
-      return prev.includes(customerId) ? prev.filter(function (id) {
-        return id !== customerId;
-      }) : [].concat(_toConsumableArray(prev), [customerId]);
-    });
-  };
+    handleArchiveRestore = _ref.handleArchiveRestore;
   var handleIconClick = function handleIconClick(action, customerId) {
-    if (action === "edit") handleEdit(customerId);else if (action === "archive") handleArchiveRestore(customerId, "archive");else if (action === "restore") handleArchiveRestore(customerId, "restore");
+    if (action === "edit") {
+      handleEdit(customerId);
+    } else if (action === "archive" || action === "restore") {
+      handleArchiveRestore(customerId, action);
+    }
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
     className: "customer-table-container",
@@ -74877,27 +74866,18 @@ var CustomerTable = function CustomerTable(_ref) {
           return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
               className: "actions",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-                type: "checkbox",
-                checked: selectedItems.includes(customer.id),
-                onChange: function onChange() {
-                  return handleCheckboxChange(customer.id);
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+                className: "fa-solid fa-pen-to-square action-icon",
+                onClick: function onClick() {
+                  return handleIconClick("edit", customer.id);
                 },
-                className: "action-checkbox"
-              }), !viewArchived ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
-                  className: "fa-solid fa-pen-to-square action-icon",
-                  onClick: function onClick() {
-                    return handleIconClick("edit", customer.id);
-                  },
-                  title: "Edit"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
-                  className: "fa-solid fa-box-archive action-icon",
-                  onClick: function onClick() {
-                    return handleIconClick("archive", customer.id);
-                  },
-                  title: "Archive"
-                })]
+                title: "Edit"
+              }), !viewArchived ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+                className: "fa-solid fa-box-archive action-icon",
+                onClick: function onClick() {
+                  return handleIconClick("archive", customer.id);
+                },
+                title: "Archive"
               }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
                 onClick: function onClick() {
                   return handleIconClick("restore", customer.id);
@@ -74915,7 +74895,7 @@ var CustomerTable = function CustomerTable(_ref) {
                 }
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: customer.full_name || "N/A"
+              children: customer.full_name
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
               children: customer.phone || "N/A"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
@@ -75797,8 +75777,8 @@ function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" !=
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
-
-
+ // Import Sidebar
+ // Import the table component
 
 var AdminCustomerManagement = function AdminCustomerManagement() {
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
@@ -75813,11 +75793,7 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
     _useState6 = _slicedToArray(_useState5, 2),
     selectedCustomer = _useState6[0],
     setSelectedCustomer = _useState6[1];
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-    _useState8 = _slicedToArray(_useState7, 2),
-    selectedItems = _useState8[0],
-    setSelectedItems = _useState8[1]; // Added for checkbox
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
       first_name: "",
       middle_name: "",
       last_name: "",
@@ -75826,9 +75802,9 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
       gender: "",
       profile_image: null
     }),
-    _useState10 = _slicedToArray(_useState9, 2),
-    editData = _useState10[0],
-    setEditData = _useState10[1];
+    _useState8 = _slicedToArray(_useState7, 2),
+    editData = _useState8[0],
+    setEditData = _useState8[1];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchCustomers();
   }, [viewArchived]);
@@ -75929,14 +75905,13 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
           case 6:
             alert("Customer ".concat(confirmMessage, "d successfully!"));
             fetchCustomers();
-            _context3.next = 14;
+            _context3.next = 13;
             break;
           case 10:
             _context3.prev = 10;
             _context3.t0 = _context3["catch"](3);
-            console.error("Error ".concat(confirmMessage, "ing customer:"), _context3.t0);
             alert("Failed to ".concat(confirmMessage, " customer."));
-          case 14:
+          case 13:
           case "end":
             return _context3.stop();
         }
@@ -75948,38 +75923,46 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
   }();
   var submitUpdate = /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(id) {
-      var formData, key;
+      var formData, response;
       return _regeneratorRuntime().wrap(function _callee4$(_context4) {
         while (1) switch (_context4.prev = _context4.next) {
           case 0:
+            _context4.prev = 0;
             formData = new FormData();
-            for (key in editData) {
-              if (editData[key] !== null) formData.append(key, editData[key]);
+            formData.append("first_name", editData.first_name || "");
+            formData.append("middle_name", editData.middle_name || "");
+            formData.append("last_name", editData.last_name || "");
+            formData.append("phone", editData.phone || "");
+            formData.append("date_of_birth", editData.date_of_birth || "");
+            formData.append("gender", editData.gender || "");
+            if (editData.profile_image) {
+              formData.append("profile_image", editData.profile_image);
             }
-            _context4.prev = 2;
-            _context4.next = 5;
-            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].post("http://localhost:8000/api/customers/".concat(id, "?_method=PUT"), formData, {
+            _context4.next = 11;
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].post("http://localhost:8000/api/customers/".concat(id, "/update"), formData, {
               headers: {
                 "Content-Type": "multipart/form-data",
                 Authorization: "Bearer ".concat(localStorage.getItem("token"))
               }
             });
-          case 5:
+          case 11:
+            response = _context4.sent;
+            console.log("Update Response:", response.data);
             alert("Customer updated successfully!");
             fetchCustomers();
             setSelectedCustomer(null);
-            _context4.next = 14;
+            _context4.next = 22;
             break;
-          case 10:
-            _context4.prev = 10;
-            _context4.t0 = _context4["catch"](2);
-            console.error("Error updating customer:", _context4.t0);
+          case 18:
+            _context4.prev = 18;
+            _context4.t0 = _context4["catch"](0);
+            console.error("Update error:", _context4.t0.response);
             alert("Failed to update customer.");
-          case 14:
+          case 22:
           case "end":
             return _context4.stop();
         }
-      }, _callee4, null, [[2, 10]]);
+      }, _callee4, null, [[0, 18]]);
     }));
     return function submitUpdate(_x4) {
       return _ref4.apply(this, arguments);
@@ -75993,7 +75976,7 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminLayout_Sidebar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
       className: "customer-content",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h1", {
-        children: "Admin Customer Management"
+        children: " Customer "
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "customer-actions",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
@@ -76011,9 +75994,7 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
         customers: memoizedCustomers,
         viewArchived: viewArchived,
         handleEdit: handleEdit,
-        handleArchiveRestore: handleArchiveRestore,
-        selectedItems: selectedItems,
-        setSelectedItems: setSelectedItems
+        handleArchiveRestore: handleArchiveRestore
       }), selectedCustomer && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
         className: "modal show",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
@@ -76094,15 +76075,6 @@ var AdminCustomerManagement = function AdminCustomerManagement() {
                 value: "Female",
                 children: "Female"
               })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
-              children: "Profile Image:"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
-              type: "file",
-              onChange: function onChange(e) {
-                return setEditData(_objectSpread(_objectSpread({}, editData), {}, {
-                  profile_image: e.target.files[0]
-                }));
-              }
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
               className: "modal-buttons",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
@@ -76420,7 +76392,7 @@ var InventoryManagement = function InventoryManagement() {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminLayout_Sidebar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
       className: "product-content",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h1", {
-        children: "Inventory Management"
+        children: "Inventory "
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "product-actions",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
@@ -76752,7 +76724,7 @@ var AdminProduct = function AdminProduct() {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminLayout_Sidebar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
       className: "product-content",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h1", {
-        children: "Product Management"
+        children: "Product "
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "product-actions",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
@@ -77173,7 +77145,7 @@ var AdminUserManagement = function AdminUserManagement() {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminLayout_Sidebar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
       className: "user-content",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h1", {
-        children: "Admin User Management"
+        children: " User "
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "user-actions",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {

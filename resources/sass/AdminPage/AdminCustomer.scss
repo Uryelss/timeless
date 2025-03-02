@@ -81,7 +81,7 @@
         }
     }
 
-    // Modal Styling
+    // Modal Styling (for updating customers)
     .modal {
         position: fixed;
         top: 0;
@@ -94,7 +94,7 @@
         align-items: center;
 
         &.show {
-            display: flex;
+            display: flex; // Ensure visibility when active
         }
 
         .modal-content {
@@ -172,6 +172,7 @@
     }
 }
 
+// Responsive Design
 @media (max-width: 768px) {
     .customer-management-container {
         flex-direction: column;
