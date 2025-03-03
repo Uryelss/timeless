@@ -75500,7 +75500,6 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 var AdminSettings = function AdminSettings() {
-  var _filters$brands, _filters$categories, _filters$movements, _filters$strapMateria, _filters$genders, _filters$sizes;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
       brands: [],
       categories: [],
@@ -75514,229 +75513,173 @@ var AdminSettings = function AdminSettings() {
     setFilters = _useState2[1];
   var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
     _useState4 = _slicedToArray(_useState3, 2),
-    newBrand = _useState4[0],
-    setNewBrand = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    newFilter = _useState4[0],
+    setNewFilter = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState6 = _slicedToArray(_useState5, 2),
-    newCategory = _useState6[0],
-    setNewCategory = _useState6[1];
+    selectedFilter = _useState6[0],
+    setSelectedFilter = _useState6[1];
   var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
     _useState8 = _slicedToArray(_useState7, 2),
-    newMovement = _useState8[0],
-    setNewMovement = _useState8[1];
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    editName = _useState8[0],
+    setEditName = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("brands"),
     _useState10 = _slicedToArray(_useState9, 2),
-    newStrapMaterial = _useState10[0],
-    setNewStrapMaterial = _useState10[1];
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
-    _useState12 = _slicedToArray(_useState11, 2),
-    newGender = _useState12[0],
-    setNewGender = _useState12[1];
-  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
-    _useState14 = _slicedToArray(_useState13, 2),
-    newSize = _useState14[0],
-    setNewSize = _useState14[1];
-  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
-    _useState16 = _slicedToArray(_useState15, 2),
-    error = _useState16[0],
-    setError = _useState16[1];
-  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
-    _useState18 = _slicedToArray(_useState17, 2),
-    loading = _useState18[0],
-    setLoading = _useState18[1];
-
-  // Fetch data on component mount
+    filterType = _useState10[0],
+    setFilterType = _useState10[1];
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    fetchFilters();
+  }, []);
   var fetchFilters = function fetchFilters() {
     axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/admin-settings", {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (response) {
-      if (response.data) {
-        setFilters(response.data);
-      } else {
-        setFilters({
-          brands: [],
-          categories: [],
-          movements: [],
-          strapMaterials: [],
-          genders: [],
-          sizes: []
-        });
-      }
+      return setFilters(response.data);
     })["catch"](function (error) {
-      console.error("Error fetching data:", error);
-      setError("Failed to fetch data.");
+      return console.error("Error fetching data:", error);
     });
   };
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    var isMounted = true;
-    fetchFilters();
-    return function () {
-      isMounted = false; // Prevent state update on unmounted component
-    };
-  }, []);
 
-  // General handler for adding any filter (brands, categories, movements, etc.)
-  var handleAddFilter = function handleAddFilter(type, name, setName) {
-    if (!name) {
-      setError("".concat(type, " name cannot be empty."));
-      return;
-    }
-    setLoading(true);
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("http://localhost:8000/api/add-filter/".concat(type), {
-      name: name
+  // ✅ Handle adding a new filter
+  var handleAdd = function handleAdd() {
+    axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("http://localhost:8000/api/add-filter/".concat(filterType), {
+      name: newFilter
     }, {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function () {
-      setName(""); // Reset input field after successful add
-      fetchFilters(); // Refetch data after adding
-    })["catch"](function (error) {
-      console.error("Error adding ".concat(type, ":"), error);
-      setError("Failed to add ".concat(type, "."));
-    })["finally"](function () {
-      setLoading(false);
+      alert("Filter added successfully!");
+      fetchFilters();
+      setNewFilter("");
+    })["catch"](function () {
+      return alert("Failed to add filter.");
+    });
+  };
+
+  // ✅ Handle opening modal for updating
+  var handleEdit = function handleEdit(type, id, name) {
+    setSelectedFilter({
+      type: type,
+      id: id
+    });
+    setEditName(name);
+  };
+
+  // ✅ Handle filter update
+  var submitUpdate = function submitUpdate() {
+    axios__WEBPACK_IMPORTED_MODULE_2__["default"].put("http://localhost:8000/api/update-filter/".concat(selectedFilter.type, "/").concat(selectedFilter.id), {
+      name: editName
+    }, {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function () {
+      alert("Filter updated successfully!");
+      fetchFilters();
+      setSelectedFilter(null);
+    })["catch"](function () {
+      return alert("Failed to update filter.");
+    });
+  };
+
+  // ✅ Handle Archive / Restore
+  var handleArchiveRestore = function handleArchiveRestore(type, id, action) {
+    axios__WEBPACK_IMPORTED_MODULE_2__["default"].put("http://localhost:8000/api/".concat(action, "-filter/").concat(type, "/").concat(id), {}, {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function () {
+      alert("Filter ".concat(action, "d successfully!"));
+      fetchFilters();
+    })["catch"](function () {
+      return alert("Failed to ".concat(action, " filter."));
     });
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h1", {
       children: "Admin Settings"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-      children: "Brands"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
-      children: (filters === null || filters === void 0 || (_filters$brands = filters.brands) === null || _filters$brands === void 0 ? void 0 : _filters$brands.length) > 0 ? filters.brands.map(function (brand, index) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("li", {
-          children: brand.name
-        }, index);
-      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
-        children: "No brands available"
-      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
+      value: filterType,
+      onChange: function onChange(e) {
+        return setFilterType(e.target.value);
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
+        value: "brands",
+        children: "Brand"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
+        value: "categories",
+        children: "Category"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
+        value: "movements",
+        children: "Movement"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
+        value: "strapMaterials",
+        children: "Strap Material"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
+        value: "genders",
+        children: "Gender"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
+        value: "sizes",
+        children: "Size"
+      })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
       type: "text",
-      value: newBrand,
+      value: newFilter,
       onChange: function onChange(e) {
-        return setNewBrand(e.target.value);
+        return setNewFilter(e.target.value);
       },
-      placeholder: "Add new brand"
+      placeholder: "New Filter Name"
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-      onClick: function onClick() {
-        return handleAddFilter("brand", newBrand, setNewBrand);
-      },
-      children: "Add Brand"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-      children: "Categories"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
-      children: (filters === null || filters === void 0 || (_filters$categories = filters.categories) === null || _filters$categories === void 0 ? void 0 : _filters$categories.length) > 0 ? filters.categories.map(function (category, index) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("li", {
-          children: category.name
-        }, index);
-      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
-        children: "No categories available"
+      onClick: handleAdd,
+      children: "Add Filter"
+    }), ["brands", "categories", "movements", "strapMaterials", "genders", "sizes"].map(function (type) {
+      var _filters$type;
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
+          children: type.charAt(0).toUpperCase() + type.slice(1)
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
+          children: (_filters$type = filters[type]) === null || _filters$type === void 0 ? void 0 : _filters$type.map(function (filter) {
+            return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
+              children: [filter.name, /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+                onClick: function onClick() {
+                  return handleEdit(type, filter.id, filter.name);
+                },
+                children: "Edit"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+                onClick: function onClick() {
+                  return handleArchiveRestore(type, filter.id, "archive");
+                },
+                children: "Archive"
+              })]
+            }, filter.id);
+          })
+        })]
+      }, type);
+    }), selectedFilter && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      className: "modal show",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        className: "modal-content",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
+          children: "Edit Filter"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+          type: "text",
+          value: editName,
+          onChange: function onChange(e) {
+            return setEditName(e.target.value);
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+          onClick: submitUpdate,
+          children: "Save"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+          onClick: function onClick() {
+            return setSelectedFilter(null);
+          },
+          children: "Cancel"
+        })]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-      type: "text",
-      value: newCategory,
-      onChange: function onChange(e) {
-        return setNewCategory(e.target.value);
-      },
-      placeholder: "Add new category"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-      onClick: function onClick() {
-        return handleAddFilter("category", newCategory, setNewCategory);
-      },
-      children: "Add Category"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-      children: "Movements"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
-      children: (filters === null || filters === void 0 || (_filters$movements = filters.movements) === null || _filters$movements === void 0 ? void 0 : _filters$movements.length) > 0 ? filters.movements.map(function (movement, index) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("li", {
-          children: movement.name
-        }, index);
-      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
-        children: "No movements available"
-      })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-      type: "text",
-      value: newMovement,
-      onChange: function onChange(e) {
-        return setNewMovement(e.target.value);
-      },
-      placeholder: "Add new movement"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-      onClick: function onClick() {
-        return handleAddFilter("movement", newMovement, setNewMovement);
-      },
-      children: "Add Movement"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-      children: "Strap Materials"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
-      children: (filters === null || filters === void 0 || (_filters$strapMateria = filters.strapMaterials) === null || _filters$strapMateria === void 0 ? void 0 : _filters$strapMateria.length) > 0 ? filters.strapMaterials.map(function (material, index) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("li", {
-          children: material.name
-        }, index);
-      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
-        children: "No strap materials available"
-      })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-      type: "text",
-      value: newStrapMaterial,
-      onChange: function onChange(e) {
-        return setNewStrapMaterial(e.target.value);
-      },
-      placeholder: "Add new strap material"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-      onClick: function onClick() {
-        return handleAddFilter("strap-material", newStrapMaterial, setNewStrapMaterial);
-      },
-      children: "Add Strap Material"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-      children: "Genders"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
-      children: (filters === null || filters === void 0 || (_filters$genders = filters.genders) === null || _filters$genders === void 0 ? void 0 : _filters$genders.length) > 0 ? filters.genders.map(function (gender, index) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("li", {
-          children: gender.name
-        }, index);
-      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
-        children: "No genders available"
-      })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-      type: "text",
-      value: newGender,
-      onChange: function onChange(e) {
-        return setNewGender(e.target.value);
-      },
-      placeholder: "Add new gender"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-      onClick: function onClick() {
-        return handleAddFilter("gender", newGender, setNewGender);
-      },
-      children: "Add Gender"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-      children: "Sizes"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
-      children: (filters === null || filters === void 0 || (_filters$sizes = filters.sizes) === null || _filters$sizes === void 0 ? void 0 : _filters$sizes.length) > 0 ? filters.sizes.map(function (size, index) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("li", {
-          children: size.name
-        }, index);
-      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
-        children: "No sizes available"
-      })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-      type: "text",
-      value: newSize,
-      onChange: function onChange(e) {
-        return setNewSize(e.target.value);
-      },
-      placeholder: "Add new size"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-      onClick: function onClick() {
-        return handleAddFilter("size", newSize, setNewSize);
-      },
-      children: "Add Size"
-    }), error && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
-      children: error
     })]
   });
 };

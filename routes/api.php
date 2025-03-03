@@ -19,8 +19,12 @@ Route::post('/logout', [UsersController::class, 'logout'])->middleware('auth:api
 Route::middleware(['auth:api', 'role:admin'])->group(function () {
 
     // Admin Settings Endpoints
+    // ✅ Admin Settings Endpoints
     Route::get('/admin-settings', [AdminSettingsController::class, 'index']); // ✅ Fetch filters
     Route::post('/add-filter/{type}', [AdminSettingsController::class, 'addFilter']); // ✅ Add new filter
+    Route::put('/update-filter/{type}/{id}', [AdminSettingsController::class, 'updateFilter']); // ✅ Update filter
+    Route::put('/archive-filter/{type}/{id}', [AdminSettingsController::class, 'archiveFilter']); // ✅ Archive filter
+    Route::put('/restore-filter/{type}/{id}', [AdminSettingsController::class, 'restoreFilter']); // ✅ Restore filter
 
     // Product Management Endpoints
     Route::get('/products', [ProductController::class, 'index']); // ✅ Get products

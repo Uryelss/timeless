@@ -11,17 +11,15 @@ const AdminSettings = () => {
         sizes: [],
     });
 
-    const [newBrand, setNewBrand] = useState("");
-    const [newCategory, setNewCategory] = useState("");
-    const [newMovement, setNewMovement] = useState("");
-    const [newStrapMaterial, setNewStrapMaterial] = useState("");
-    const [newGender, setNewGender] = useState("");
-    const [newSize, setNewSize] = useState("");
+    const [newFilter, setNewFilter] = useState("");
+    const [selectedFilter, setSelectedFilter] = useState(null);
+    const [editName, setEditName] = useState("");
+    const [filterType, setFilterType] = useState("brands");
 
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        fetchFilters();
+    }, []);
 
-    // Fetch data on component mount
     const fetchFilters = () => {
         axios
             .get("http://localhost:8000/api/admin-settings", {
@@ -29,48 +27,16 @@ const AdminSettings = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             })
-            .then((response) => {
-                if (response.data) {
-                    setFilters(response.data);
-                } else {
-                    setFilters({
-                        brands: [],
-                        categories: [],
-                        movements: [],
-                        strapMaterials: [],
-                        genders: [],
-                        sizes: [],
-                    });
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error);
-                setError("Failed to fetch data.");
-            });
+            .then((response) => setFilters(response.data))
+            .catch((error) => console.error("Error fetching data:", error));
     };
 
-    useEffect(() => {
-        let isMounted = true;
-        fetchFilters();
-
-        return () => {
-            isMounted = false; // Prevent state update on unmounted component
-        };
-    }, []);
-
-    // General handler for adding any filter (brands, categories, movements, etc.)
-    const handleAddFilter = (type, name, setName) => {
-        if (!name) {
-            setError(`${type} name cannot be empty.`);
-            return;
-        }
-
-        setLoading(true);
-
+    // ✅ Handle adding a new filter
+    const handleAdd = () => {
         axios
             .post(
-                `http://localhost:8000/api/add-filter/${type}`,
-                { name },
+                `http://localhost:8000/api/add-filter/${filterType}`,
+                { name: newFilter },
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem(
@@ -80,173 +46,139 @@ const AdminSettings = () => {
                 }
             )
             .then(() => {
-                setName(""); // Reset input field after successful add
-                fetchFilters(); // Refetch data after adding
+                alert("Filter added successfully!");
+                fetchFilters();
+                setNewFilter("");
             })
-            .catch((error) => {
-                console.error(`Error adding ${type}:`, error);
-                setError(`Failed to add ${type}.`);
+            .catch(() => alert("Failed to add filter."));
+    };
+
+    // ✅ Handle opening modal for updating
+    const handleEdit = (type, id, name) => {
+        setSelectedFilter({ type, id });
+        setEditName(name);
+    };
+
+    // ✅ Handle filter update
+    const submitUpdate = () => {
+        axios
+            .put(
+                `http://localhost:8000/api/update-filter/${selectedFilter.type}/${selectedFilter.id}`,
+                { name: editName },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                }
+            )
+            .then(() => {
+                alert("Filter updated successfully!");
+                fetchFilters();
+                setSelectedFilter(null);
             })
-            .finally(() => {
-                setLoading(false);
-            });
+            .catch(() => alert("Failed to update filter."));
+    };
+
+    // ✅ Handle Archive / Restore
+    const handleArchiveRestore = (type, id, action) => {
+        axios
+            .put(
+                `http://localhost:8000/api/${action}-filter/${type}/${id}`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                }
+            )
+            .then(() => {
+                alert(`Filter ${action}d successfully!`);
+                fetchFilters();
+            })
+            .catch(() => alert(`Failed to ${action} filter.`));
     };
 
     return (
         <div>
             <h1>Admin Settings</h1>
 
-            {/* Brands */}
-            <h2>Brands</h2>
-            <ul>
-                {filters?.brands?.length > 0 ? (
-                    filters.brands.map((brand, index) => (
-                        <li key={index}>{brand.name}</li>
-                    ))
-                ) : (
-                    <p>No brands available</p>
-                )}
-            </ul>
+            <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+            >
+                <option value="brands">Brand</option>
+                <option value="categories">Category</option>
+                <option value="movements">Movement</option>
+                <option value="strapMaterials">Strap Material</option>
+                <option value="genders">Gender</option>
+                <option value="sizes">Size</option>
+            </select>
             <input
                 type="text"
-                value={newBrand}
-                onChange={(e) => setNewBrand(e.target.value)}
-                placeholder="Add new brand"
+                value={newFilter}
+                onChange={(e) => setNewFilter(e.target.value)}
+                placeholder="New Filter Name"
             />
-            <button
-                onClick={() => handleAddFilter("brand", newBrand, setNewBrand)}
-            >
-                Add Brand
-            </button>
+            <button onClick={handleAdd}>Add Filter</button>
 
-            {/* Categories */}
-            <h2>Categories</h2>
-            <ul>
-                {filters?.categories?.length > 0 ? (
-                    filters.categories.map((category, index) => (
-                        <li key={index}>{category.name}</li>
-                    ))
-                ) : (
-                    <p>No categories available</p>
-                )}
-            </ul>
-            <input
-                type="text"
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
-                placeholder="Add new category"
-            />
-            <button
-                onClick={() =>
-                    handleAddFilter("category", newCategory, setNewCategory)
-                }
-            >
-                Add Category
-            </button>
+            {[
+                "brands",
+                "categories",
+                "movements",
+                "strapMaterials",
+                "genders",
+                "sizes",
+            ].map((type) => (
+                <div key={type}>
+                    <h2>{type.charAt(0).toUpperCase() + type.slice(1)}</h2>
+                    <ul>
+                        {filters[type]?.map((filter) => (
+                            <li key={filter.id}>
+                                {filter.name}
+                                <button
+                                    onClick={() =>
+                                        handleEdit(type, filter.id, filter.name)
+                                    }
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() =>
+                                        handleArchiveRestore(
+                                            type,
+                                            filter.id,
+                                            "archive"
+                                        )
+                                    }
+                                >
+                                    Archive
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            ))}
 
-            {/* Movements */}
-            <h2>Movements</h2>
-            <ul>
-                {filters?.movements?.length > 0 ? (
-                    filters.movements.map((movement, index) => (
-                        <li key={index}>{movement.name}</li>
-                    ))
-                ) : (
-                    <p>No movements available</p>
-                )}
-            </ul>
-            <input
-                type="text"
-                value={newMovement}
-                onChange={(e) => setNewMovement(e.target.value)}
-                placeholder="Add new movement"
-            />
-            <button
-                onClick={() =>
-                    handleAddFilter("movement", newMovement, setNewMovement)
-                }
-            >
-                Add Movement
-            </button>
-
-            {/* Strap Materials */}
-            <h2>Strap Materials</h2>
-            <ul>
-                {filters?.strapMaterials?.length > 0 ? (
-                    filters.strapMaterials.map((material, index) => (
-                        <li key={index}>{material.name}</li>
-                    ))
-                ) : (
-                    <p>No strap materials available</p>
-                )}
-            </ul>
-            <input
-                type="text"
-                value={newStrapMaterial}
-                onChange={(e) => setNewStrapMaterial(e.target.value)}
-                placeholder="Add new strap material"
-            />
-            <button
-                onClick={() =>
-                    handleAddFilter(
-                        "strap-material",
-                        newStrapMaterial,
-                        setNewStrapMaterial
-                    )
-                }
-            >
-                Add Strap Material
-            </button>
-
-            {/* Genders */}
-            <h2>Genders</h2>
-            <ul>
-                {filters?.genders?.length > 0 ? (
-                    filters.genders.map((gender, index) => (
-                        <li key={index}>{gender.name}</li>
-                    ))
-                ) : (
-                    <p>No genders available</p>
-                )}
-            </ul>
-            <input
-                type="text"
-                value={newGender}
-                onChange={(e) => setNewGender(e.target.value)}
-                placeholder="Add new gender"
-            />
-            <button
-                onClick={() =>
-                    handleAddFilter("gender", newGender, setNewGender)
-                }
-            >
-                Add Gender
-            </button>
-
-            {/* Sizes */}
-            <h2>Sizes</h2>
-            <ul>
-                {filters?.sizes?.length > 0 ? (
-                    filters.sizes.map((size, index) => (
-                        <li key={index}>{size.name}</li>
-                    ))
-                ) : (
-                    <p>No sizes available</p>
-                )}
-            </ul>
-            <input
-                type="text"
-                value={newSize}
-                onChange={(e) => setNewSize(e.target.value)}
-                placeholder="Add new size"
-            />
-            <button
-                onClick={() => handleAddFilter("size", newSize, setNewSize)}
-            >
-                Add Size
-            </button>
-
-            {error && <p>{error}</p>}
+            {selectedFilter && (
+                <div className="modal show">
+                    <div className="modal-content">
+                        <h2>Edit Filter</h2>
+                        <input
+                            type="text"
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                        />
+                        <button onClick={submitUpdate}>Save</button>
+                        <button onClick={() => setSelectedFilter(null)}>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

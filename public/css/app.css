@@ -12900,10 +12900,8 @@ textarea.form-control-lg {
   font-weight: 400;
   transition: background-color 0.3s;
 }
-.admin-product-container .product-content .product-actions .action-buttons button:hover {
-  background-color: #003333;
-}
-.admin-product-container .modal {
+
+.modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -12914,7 +12912,7 @@ textarea.form-control-lg {
   justify-content: center;
   align-items: center;
 }
-.admin-product-container .modal .modal-content {
+.modal .modal-content {
   background: white;
   padding: 20px;
   border-radius: 12px;
@@ -12923,20 +12921,20 @@ textarea.form-control-lg {
   overflow-y: auto;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
-.admin-product-container .modal .modal-content h2, .admin-product-container .modal .modal-content .h2 {
+.modal .modal-content h2, .modal .modal-content .h2 {
   color: #007545;
   font-family: "Helvetica", Arial, sans-serif;
   font-size: 24px;
   font-weight: 400;
   margin-bottom: 20px;
 }
-.admin-product-container .modal .modal-content form {
+.modal .modal-content form {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
-.admin-product-container .modal .modal-content form input,
-.admin-product-container .modal .modal-content form select {
+.modal .modal-content form input,
+.modal .modal-content form select {
   padding: 10px;
   border: 2px solid #006666;
   border-radius: 8px;
@@ -12944,12 +12942,12 @@ textarea.form-control-lg {
   font-size: 16px;
   font-weight: 400;
 }
-.admin-product-container .modal .modal-content form .modal-buttons {
+.modal .modal-content form .modal-buttons {
   display: flex;
   gap: 10px;
   margin-top: 20px;
 }
-.admin-product-container .modal .modal-content form .modal-buttons button {
+.modal .modal-content form .modal-buttons button {
   padding: 10px 20px;
   background-color: #007545;
   color: white;
@@ -12961,13 +12959,13 @@ textarea.form-control-lg {
   font-weight: 400;
   transition: background-color 0.3s;
 }
-.admin-product-container .modal .modal-content form .modal-buttons button:hover {
+.modal .modal-content form .modal-buttons button:hover {
   background-color: rgb(0, 66, 38.9230769231);
 }
-.admin-product-container .modal .modal-content form .modal-buttons button:nth-child(2) {
+.modal .modal-content form .modal-buttons button:nth-child(2) {
   background-color: #ff3333;
 }
-.admin-product-container .modal .modal-content form .modal-buttons button:nth-child(2):hover {
+.modal .modal-content form .modal-buttons button:nth-child(2):hover {
   background-color: red;
 }
 
