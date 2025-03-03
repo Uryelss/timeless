@@ -202,4 +202,24 @@ class ProductController extends Controller
 
         return response()->json(['message' => 'Product restored successfully'], 200);
     }
+
+    //userpage
+    public function getActiveProducts()
+    {
+        $products = Product::whereNull('deleted_at') // ✅ Only fetch active products
+            ->select('id', 'product_name as name', 'price', 'product_image') // ✅ Keep original column name for correct path
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $product->price,
+                    'image' => $product->product_image
+                        ? asset('storage/' . $product->product_image) // ✅ Fix image URL
+                        : asset('default-product.png'), // ✅ Default fallback image
+                ];
+            });
+
+        return response()->json($products, 200);
+    }
 }

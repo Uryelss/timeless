@@ -14,6 +14,7 @@ import AdminUserManagement from "./AdminPage/UserManagement";
 import AdminCustomerManagement from "./AdminPage/CustomerManagement";
 
 import Homepage from "./UserPage/Homepage";
+import CollectionPage from "./UserPage/Collection";
 
 const App = () => {
     return (
@@ -29,6 +30,14 @@ const App = () => {
                     element={
                         <PrivateRoute allowedRoles={["user", "admin"]}>
                             <Homepage />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/Collection"
+                    element={
+                        <PrivateRoute allowedRoles={["user", "admin"]}>
+                            <CollectionPage />
                         </PrivateRoute>
                     }
                 />

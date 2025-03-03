@@ -1,11 +1,17 @@
 import React from "react";
+import Navbar from "../UserLayout/Navbar";
+import Hero from "../UserLayout/Hero";
+import Footer from "../UserLayout/Footer";
 
 const Homepage = () => {
     return (
-        <div>
-            <h2>Welcome to the Homepage</h2>
-            <p>This is the homepage for regular users.</p>
-        </div>
+        <>
+            <Navbar />
+            <div>
+                <Hero />
+            </div>
+            <Footer /> {/* Add Footer here */}
+        </>
     );
 };
 

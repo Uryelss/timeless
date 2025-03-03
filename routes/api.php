@@ -14,6 +14,7 @@ use App\Http\Controllers\AdminCustomerController;
 Route::post('register', [UsersController::class, 'register']);
 Route::post('login', [UsersController::class, 'login']);
 Route::post('/logout', [UsersController::class, 'logout'])->middleware('auth:api');
+Route::get('/store/products', [ProductController::class, 'getActiveProducts']);
 
 // Admin-only routes
 Route::middleware(['auth:api', 'role:admin'])->group(function () {
