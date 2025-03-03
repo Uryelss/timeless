@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Sidebar = () => {
     const navigate = useNavigate();
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false); // ✅ Dropdown toggle state
 
     const handleLogout = () => {
         axios
@@ -19,9 +20,9 @@ const Sidebar = () => {
                 }
             )
             .then(() => {
-                localStorage.removeItem("token"); // ✅ Remove authentication token
-                localStorage.removeItem("role"); // ✅ Remove stored role
-                navigate("/login"); // ✅ Redirect to login page
+                localStorage.removeItem("token");
+                localStorage.removeItem("role");
+                navigate("/login");
             })
             .catch((error) => {
                 console.error("Logout failed:", error);
@@ -77,13 +78,39 @@ const Sidebar = () => {
 
             <div className="tools-title">TOOLS</div>
 
+            {/* ✅ Admin Settings with Dropdown */}
             <div
                 className="menu-item"
-                onClick={() => navigate("/admin-settings")}
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
             >
                 <i className="fa-solid fa-gears"></i>
                 <span>Admin Settings</span>
+                <i
+                    className={`fa-solid ${
+                        isSettingsOpen ? "fa-chevron-up" : "fa-chevron-down"
+                    }`}
+                    style={{ marginLeft: "auto" }}
+                ></i>
             </div>
+
+            {isSettingsOpen && (
+                <div className="submenu">
+                    <div
+                        className="submenu-item"
+                        onClick={() => navigate("/admin-settings")}
+                    >
+                        <i className="fa-solid fa-cog"></i>
+                        <span>Sub Category</span>
+                    </div>
+                    <div
+                        className="submenu-item"
+                        onClick={() => navigate("/admin-profile")}
+                    >
+                        <i className="fa-solid fa-user-circle"></i>
+                        <span>Profile</span>
+                    </div>
+                </div>
+            )}
 
             {/* ✅ Logout Button */}
             <div className="menu-item logout-btn" onClick={handleLogout}>

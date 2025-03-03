@@ -12306,6 +12306,7 @@ textarea.form-control-lg {
   box-sizing: border-box;
   color: white;
   font-family: "Helvetica", Arial, sans-serif;
+  /* ✅ Dropdown Submenu Styling */
   /* ✅ Logout Button Styling */
 }
 .sidebar .menu-title,
@@ -12339,6 +12340,24 @@ textarea.form-control-lg {
   font-weight: 400;
   word-wrap: break-word;
 }
+.sidebar .submenu {
+  background-color: #004d4d; /* Slightly darker than sidebar */
+  padding-left: 30px;
+  border-left: 3px solid rgba(255, 255, 255, 0.2);
+}
+.sidebar .submenu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.sidebar .submenu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.sidebar .submenu-item i {
+  margin-right: 10px;
+}
 .sidebar .logout-btn {
   margin-top: 20px;
   color: #ff4b5c;
@@ -12348,6 +12367,7 @@ textarea.form-control-lg {
   background-color: rgba(255, 0, 0, 0.2);
 }
 
+/* ✅ Responsive Adjustments */
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
@@ -12911,93 +12931,232 @@ textarea.form-control-lg {
   display: flex;
   justify-content: center;
   align-items: center;
+  max-width: none !important;
+  max-height: none !important;
 }
-.modal .modal-content {
+
+.modal-content {
+  width: 1060px !important;
+  height: 716px !important;
   background: white;
-  padding: 20px;
-  border-radius: 12px;
-  width: 500px;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.55);
+  border: 1px solid black;
+  padding: 10px;
+  border-radius: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
-.modal .modal-content h2, .modal .modal-content .h2 {
+
+.modal-content h2, .modal-content .h2 {
   color: #007545;
   font-family: "Helvetica", Arial, sans-serif;
   font-size: 24px;
   font-weight: 400;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
-.modal .modal-content form {
+
+.modal-form {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  flex: 1;
+  overflow: hidden;
+}
+.modal-form .form-left {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
+  min-width: 496px;
+  max-width: 496px;
 }
-.modal .modal-content form input,
-.modal .modal-content form select {
+.modal-form .form-left .product-name-input {
+  width: 496px;
+  height: 44px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid black;
   padding: 10px;
-  border: 2px solid #006666;
-  border-radius: 8px;
   font-family: "Helvetica", Arial, sans-serif;
   font-size: 16px;
   font-weight: 400;
 }
-.modal .modal-content form .modal-buttons {
+.modal-form .form-left .price-quantity-row {
   display: flex;
   gap: 10px;
-  margin-top: 20px;
+  width: 100%;
 }
-.modal .modal-content form .modal-buttons button {
-  padding: 10px 20px;
-  background-color: #007545;
+.modal-form .form-left .price-quantity-row input {
+  width: 216px;
+  height: 44px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid black;
+  padding: 10px;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+.modal-form .form-left .dropdown-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+.modal-form .form-left .dropdown-row select {
+  width: 216px;
+  height: 44px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid black;
+  padding: 10px;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+.modal-form .form-left select {
+  width: 496px;
+  height: 44px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid black;
+  padding: 10px;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+.modal-form .form-right {
+  flex: 1;
+  min-width: 399px;
+  max-width: 399px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between; /* Push buttons to the bottom */
+}
+.modal-form .form-right .image-upload-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.modal-form .form-right .image-upload-container .image-preview {
+  width: 259px;
+  height: 325px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid black;
+}
+.modal-form .form-right .image-upload-container .image-placeholder {
+  width: 450px;
+  height: 225px;
+  background: #fefcfc;
+  border-radius: 10px;
+  border: 1px solid black;
+  margin-left: 60px; /* Adjust this value to move it further right */
+}
+.modal-form .form-right .image-upload-container .hidden-file-input {
+  display: none;
+}
+.modal-form .form-right .image-upload-container .upload-button {
+  padding: 8px 16px;
+  background-color: #006666;
   color: white;
-  border: none;
   border-radius: 8px;
+  cursor: pointer;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-size: 14px;
+  margin-left: 30px;
+  text-align: center;
+}
+.modal-form .form-right .image-upload-container .upload-button:hover {
+  background-color: #003333;
+}
+.modal-form .form-right .modal-save {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end; /* Align buttons to the bottom right */
+  gap: 10px;
+  margin-top: 10px; /* Add spacing above buttons */
+  padding-top: 10px;
+}
+.modal-form .form-right .modal-save button {
+  width: 216px; /* As specified */
+  height: 44px; /* As specified */
+  background: white; /* Interpreted # as white/no background */
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); /* As specified */
+  border-radius: 10px; /* As specified */
+  border: 1px solid black; /* As specified */
+  padding: 10px 20px; /* Maintain padding for text alignment */
   cursor: pointer;
   font-family: "Helvetica", Arial, sans-serif;
   font-size: 16px;
   font-weight: 400;
   transition: background-color 0.3s;
+  /* Maintain button colors (green for Save, red for Cancel) */
 }
-.modal .modal-content form .modal-buttons button:hover {
+.modal-form .form-right .modal-save button:first-child {
+  background-color: #007545; /* Green for Save Product */
+  color: white;
+}
+.modal-form .form-right .modal-save button:first-child:hover {
   background-color: rgb(0, 66, 38.9230769231);
 }
-.modal .modal-content form .modal-buttons button:nth-child(2) {
-  background-color: #ff3333;
+.modal-form .form-right .modal-save button:last-child {
+  background-color: #ff3333; /* Red for Cancel */
+  color: white;
 }
-.modal .modal-content form .modal-buttons button:nth-child(2):hover {
+.modal-form .form-right .modal-save button:last-child:hover {
   background-color: red;
 }
 
 @media (max-width: 768px) {
-  .admin-product-container {
-    flex-direction: column;
-  }
-  .admin-product-container .product-content {
-    padding: 20px;
-  }
-  .admin-product-container .product-content .product-actions {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .admin-product-container .product-content .product-actions .search-and-select {
-    width: 100%;
-  }
-  .admin-product-container .product-content .product-actions .checkbox-actions {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .admin-product-container .product-content .product-actions .action-buttons {
-    width: 100%;
-    flex-direction: column;
-  }
-  .admin-product-container .product-content .product-actions .action-buttons button {
-    width: 100%;
-  }
-  .admin-product-container .modal .modal-content {
+  .modal-content {
     width: 90%;
+    height: auto;
+    max-height: 90vh;
+  }
+  .modal-content .modal-form {
+    flex-direction: column;
+  }
+  .modal-content .modal-form .form-left,
+  .modal-content .modal-form .form-right {
+    width: 100%;
+    min-width: unset;
+    max-width: unset;
+  }
+  .modal-content .modal-form .product-name-input,
+  .modal-content .modal-form select,
+  .modal-content .modal-form input {
+    width: 100%;
+  }
+  .modal-content .modal-form .price-quantity-row,
+  .modal-content .modal-form .dropdown-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .modal-content .modal-form .price-quantity-row input,
+  .modal-content .modal-form .price-quantity-row select,
+  .modal-content .modal-form .dropdown-row input,
+  .modal-content .modal-form .dropdown-row select {
+    width: 100%;
+  }
+  .modal-content .modal-form .form-right {
+    align-items: flex-start; /* Align items to start on mobile */
+  }
+  .modal-content .modal-form .form-right .modal-save {
+    justify-content: flex-end; /* Keep buttons right-aligned on mobile */
   }
 }
+/* Debug class to remove red outline in production */
+.debug-off {
+  outline: none !important;
+}
+
 .inventory-management-container {
   display: flex;
   height: 100vh;
@@ -13546,6 +13705,261 @@ textarea.form-control-lg {
     width: 100%;
   }
   .customer-management-container .modal .modal-content {
+    width: 90%;
+  }
+}
+.admin-settings-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.settings-content {
+  flex: 1;
+  padding: 40px;
+  background: #f5f5f5;
+  overflow-y: auto;
+}
+
+h1, .h1 {
+  color: #006666;
+  font-size: 34px;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-weight: 400;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  background-color: #ddd;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.tab-btn.active {
+  background-color: #006666;
+  color: white;
+}
+
+.tab-btn:hover {
+  background-color: #006666;
+  color: white;
+}
+
+.toggle-archived-btn {
+  padding: 10px 20px;
+  background-color: #006666;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.toggle-archived-btn:hover {
+  background-color: #003333;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.add-btn {
+  padding: 10px 20px;
+  background-color: #006666;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-size: 16px;
+}
+
+.add-btn:hover {
+  background-color: #003333;
+}
+
+.settings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+
+.settings-table th,
+.settings-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.settings-table th {
+  background-color: #006666;
+  color: white;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.settings-table td {
+  font-size: 14px;
+  color: #333;
+}
+
+.settings-table .actions {
+  display: flex;
+  gap: 15px;
+}
+
+.action-icon {
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+  transition: all 0.3s;
+}
+
+.action-icon:hover {
+  color: #555;
+  transform: scale(1.1);
+}
+
+.restore-btn {
+  padding: 5px 10px;
+  background-color: #006666;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.restore-btn:hover {
+  background-color: #003333;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2, .modal-content .h2 {
+  color: #006666;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #006666;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-size: 16px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.modal-buttons button:nth-child(1) {
+  background-color: #006666;
+  color: white;
+}
+
+.modal-buttons button:nth-child(1):hover {
+  background-color: #003333;
+}
+
+.modal-buttons button:nth-child(2) {
+  background-color: #ff3333;
+  color: white;
+}
+
+.modal-buttons button:nth-child(2):hover {
+  background-color: red;
+}
+
+@media (max-width: 768px) {
+  .admin-settings-container {
+    flex-direction: column;
+  }
+  .settings-content {
+    padding: 20px;
+  }
+  .settings-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .tabs {
+    flex-direction: column;
+    width: 100%;
+  }
+  .tab-btn {
+    width: 100%;
+  }
+  .table-header {
+    justify-content: center;
+  }
+  .modal-content {
     width: 90%;
   }
 }

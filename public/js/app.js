@@ -75253,21 +75253,32 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
 
 var Sidebar = function Sidebar() {
   var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_2__.useNavigate)();
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState2 = _slicedToArray(_useState, 2),
+    isSettingsOpen = _useState2[0],
+    setIsSettingsOpen = _useState2[1]; // ✅ Dropdown toggle state
+
   var handleLogout = function handleLogout() {
     axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/logout", {}, {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function () {
-      localStorage.removeItem("token"); // ✅ Remove authentication token
-      localStorage.removeItem("role"); // ✅ Remove stored role
-      navigate("/login"); // ✅ Redirect to login page
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      navigate("/login");
     })["catch"](function (error) {
       console.error("Logout failed:", error);
       alert("Failed to logout.");
@@ -75344,12 +75355,40 @@ var Sidebar = function Sidebar() {
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
       className: "menu-item",
       onClick: function onClick() {
-        return navigate("/admin-settings");
+        return setIsSettingsOpen(!isSettingsOpen);
       },
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
         className: "fa-solid fa-gears"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
         children: "Admin Settings"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+        className: "fa-solid ".concat(isSettingsOpen ? "fa-chevron-up" : "fa-chevron-down"),
+        style: {
+          marginLeft: "auto"
+        }
+      })]
+    }), isSettingsOpen && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      className: "submenu",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        className: "submenu-item",
+        onClick: function onClick() {
+          return navigate("/admin-settings");
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+          className: "fa-solid fa-cog"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+          children: "Sub Category"
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        className: "submenu-item",
+        onClick: function onClick() {
+          return navigate("/admin-profile");
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("i", {
+          className: "fa-solid fa-user-circle"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+          children: "Profile"
+        })]
       })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
       className: "menu-item logout-btn",
@@ -75488,8 +75527,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var _AdminLayout_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminLayout/Sidebar */ "./resources/js/components/AdminLayout/Sidebar.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -75499,39 +75539,48 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
+
 var AdminSettings = function AdminSettings() {
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("brands"),
+    _useState2 = _slicedToArray(_useState, 2),
+    activeTab = _useState2[0],
+    setActiveTab = _useState2[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState4 = _slicedToArray(_useState3, 2),
+    viewArchived = _useState4[0],
+    setViewArchived = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
       brands: [],
       categories: [],
+      genders: [],
       movements: [],
       strapMaterials: [],
-      genders: [],
       sizes: []
     }),
-    _useState2 = _slicedToArray(_useState, 2),
-    filters = _useState2[0],
-    setFilters = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
-    _useState4 = _slicedToArray(_useState3, 2),
-    newFilter = _useState4[0],
-    setNewFilter = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState6 = _slicedToArray(_useState5, 2),
-    selectedFilter = _useState6[0],
-    setSelectedFilter = _useState6[1];
+    filters = _useState6[0],
+    setFilters = _useState6[1];
   var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
     _useState8 = _slicedToArray(_useState7, 2),
-    editName = _useState8[0],
-    setEditName = _useState8[1];
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("brands"),
+    newFilter = _useState8[0],
+    setNewFilter = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState10 = _slicedToArray(_useState9, 2),
-    filterType = _useState10[0],
-    setFilterType = _useState10[1];
+    selectedFilter = _useState10[0],
+    setSelectedFilter = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    _useState12 = _slicedToArray(_useState11, 2),
+    editName = _useState12[0],
+    setEditName = _useState12[1];
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState14 = _slicedToArray(_useState13, 2),
+    isAddModalOpen = _useState14[0],
+    setIsAddModalOpen = _useState14[1];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchFilters();
-  }, []);
+  }, [viewArchived]);
   var fetchFilters = function fetchFilters() {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/admin-settings", {
+    axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("http://localhost:8000/api/admin-settings?archived=".concat(viewArchived), {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
@@ -75541,10 +75590,8 @@ var AdminSettings = function AdminSettings() {
       return console.error("Error fetching data:", error);
     });
   };
-
-  // ✅ Handle adding a new filter
   var handleAdd = function handleAdd() {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("http://localhost:8000/api/add-filter/".concat(filterType), {
+    axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/add-filter/".concat(activeTab), {
       name: newFilter
     }, {
       headers: {
@@ -75554,23 +75601,20 @@ var AdminSettings = function AdminSettings() {
       alert("Filter added successfully!");
       fetchFilters();
       setNewFilter("");
+      setIsAddModalOpen(false);
     })["catch"](function () {
       return alert("Failed to add filter.");
     });
   };
-
-  // ✅ Handle opening modal for updating
-  var handleEdit = function handleEdit(type, id, name) {
+  var handleEdit = function handleEdit(id, name) {
     setSelectedFilter({
-      type: type,
+      type: activeTab,
       id: id
     });
     setEditName(name);
   };
-
-  // ✅ Handle filter update
   var submitUpdate = function submitUpdate() {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].put("http://localhost:8000/api/update-filter/".concat(selectedFilter.type, "/").concat(selectedFilter.id), {
+    axios__WEBPACK_IMPORTED_MODULE_3__["default"].put("http://localhost:8000/api/update-filter/".concat(selectedFilter.type, "/").concat(selectedFilter.id), {
       name: editName
     }, {
       headers: {
@@ -75584,10 +75628,8 @@ var AdminSettings = function AdminSettings() {
       return alert("Failed to update filter.");
     });
   };
-
-  // ✅ Handle Archive / Restore
-  var handleArchiveRestore = function handleArchiveRestore(type, id, action) {
-    axios__WEBPACK_IMPORTED_MODULE_2__["default"].put("http://localhost:8000/api/".concat(action, "-filter/").concat(type, "/").concat(id), {}, {
+  var handleArchiveRestore = function handleArchiveRestore(id, action) {
+    axios__WEBPACK_IMPORTED_MODULE_3__["default"].put("http://localhost:8000/api/".concat(action, "-filter/").concat(activeTab, "/").concat(id), {}, {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
@@ -75598,88 +75640,167 @@ var AdminSettings = function AdminSettings() {
       return alert("Failed to ".concat(action, " filter."));
     });
   };
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h1", {
-      children: "Admin Settings"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-      value: filterType,
-      onChange: function onChange(e) {
-        return setFilterType(e.target.value);
-      },
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-        value: "brands",
-        children: "Brand"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-        value: "categories",
-        children: "Category"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-        value: "movements",
-        children: "Movement"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-        value: "strapMaterials",
-        children: "Strap Material"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-        value: "genders",
-        children: "Gender"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-        value: "sizes",
-        children: "Size"
-      })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-      type: "text",
-      value: newFilter,
-      onChange: function onChange(e) {
-        return setNewFilter(e.target.value);
-      },
-      placeholder: "New Filter Name"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-      onClick: handleAdd,
-      children: "Add Filter"
-    }), ["brands", "categories", "movements", "strapMaterials", "genders", "sizes"].map(function (type) {
-      var _filters$type;
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-          children: type.charAt(0).toUpperCase() + type.slice(1)
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("ul", {
-          children: (_filters$type = filters[type]) === null || _filters$type === void 0 ? void 0 : _filters$type.map(function (filter) {
-            return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("li", {
-              children: [filter.name, /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-                onClick: function onClick() {
-                  return handleEdit(type, filter.id, filter.name);
-                },
-                children: "Edit"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-                onClick: function onClick() {
-                  return handleArchiveRestore(type, filter.id, "archive");
-                },
-                children: "Archive"
+  var tabs = [{
+    id: "brands",
+    label: "Brand"
+  }, {
+    id: "categories",
+    label: "Categories"
+  }, {
+    id: "genders",
+    label: "Gender"
+  }, {
+    id: "movements",
+    label: "Movements"
+  }, {
+    id: "strapMaterials",
+    label: "Strap Materials"
+  }, {
+    id: "sizes",
+    label: "Sizes"
+  }];
+  var renderTable = function renderTable(type) {
+    var _filters$type, _filters$type2;
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      className: "table-container",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        className: "table-header",
+        children: !viewArchived && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("button", {
+          className: "add-btn",
+          onClick: function onClick() {
+            return setIsAddModalOpen(true);
+          },
+          children: ["Add ", type.charAt(0).toUpperCase() + type.slice(1)]
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("table", {
+        className: "settings-table",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("thead", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+              children: "Actions"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("th", {
+              children: type.charAt(0).toUpperCase() + type.slice(1)
+            })]
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("tbody", {
+          children: ((_filters$type = filters[type]) === null || _filters$type === void 0 ? void 0 : _filters$type.length) === 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("tr", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("td", {
+              colSpan: "2",
+              className: "no-data",
+              children: ["No ", viewArchived ? "archived" : "active", " ", type, " ", "found."]
+            })
+          }) : (_filters$type2 = filters[type]) === null || _filters$type2 === void 0 ? void 0 : _filters$type2.map(function (filter) {
+            return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("tr", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("td", {
+                className: "actions",
+                children: [!viewArchived && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("i", {
+                    className: "fa-solid fa-pen-to-square action-icon",
+                    onClick: function onClick() {
+                      return handleEdit(filter.id, filter.name);
+                    },
+                    title: "Edit"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("i", {
+                    className: "fa-solid fa-box-archive action-icon",
+                    onClick: function onClick() {
+                      return handleArchiveRestore(filter.id, "archive");
+                    },
+                    title: "Archive"
+                  })]
+                }), viewArchived && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+                  className: "restore-btn",
+                  onClick: function onClick() {
+                    return handleArchiveRestore(filter.id, "restore");
+                  },
+                  children: "Restore"
+                })]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("td", {
+                children: filter.name
               })]
             }, filter.id);
           })
         })]
-      }, type);
-    }), selectedFilter && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-      className: "modal show",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-        className: "modal-content",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-          children: "Edit Filter"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-          type: "text",
-          value: editName,
-          onChange: function onChange(e) {
-            return setEditName(e.target.value);
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-          onClick: submitUpdate,
-          children: "Save"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+      })]
+    });
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+    className: "admin-settings-container",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_AdminLayout_Sidebar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      className: "settings-content",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
+        children: "Admin Settings"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        className: "settings-actions",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+          className: "tabs",
+          children: tabs.map(function (tab) {
+            return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+              className: "tab-btn ".concat(activeTab === tab.id ? "active" : ""),
+              onClick: function onClick() {
+                return setActiveTab(tab.id);
+              },
+              children: tab.label
+            }, tab.id);
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+          className: "toggle-archived-btn",
           onClick: function onClick() {
-            return setSelectedFilter(null);
+            return setViewArchived(!viewArchived);
           },
-          children: "Cancel"
+          children: viewArchived ? "View Active" : "View Archived"
         })]
-      })
+      }), renderTable(activeTab), isAddModalOpen && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        className: "modal show",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "modal-content",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("h2", {
+            children: ["Add", " ", activeTab.charAt(0).toUpperCase() + activeTab.slice(1)]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+            type: "text",
+            value: newFilter,
+            onChange: function onChange(e) {
+              return setNewFilter(e.target.value);
+            },
+            placeholder: "New ".concat(activeTab, " Name")
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            className: "modal-buttons",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+              onClick: handleAdd,
+              children: "Add"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+              onClick: function onClick() {
+                return setIsAddModalOpen(false);
+              },
+              children: "Cancel"
+            })]
+          })]
+        })
+      }), selectedFilter && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        className: "modal show",
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "modal-content",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("h2", {
+            children: ["Edit", " ", selectedFilter.type.charAt(0).toUpperCase() + selectedFilter.type.slice(1)]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+            type: "text",
+            value: editName,
+            onChange: function onChange(e) {
+              return setEditName(e.target.value);
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            className: "modal-buttons",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+              onClick: submitUpdate,
+              children: "Save"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+              onClick: function onClick() {
+                return setSelectedFilter(null);
+              },
+              children: "Cancel"
+            })]
+          })]
+        })
+      })]
     })]
   });
 };
@@ -76609,7 +76730,8 @@ var AdminProduct = function AdminProduct() {
     var _product$brand, _product$category, _product$movement, _product$strap_materi, _product$gender, _product$size;
     setProductData({
       product_name: product.product_name,
-      product_image: null,
+      product_image: product.product_image,
+      // ✅ Store the existing image URL
       brand_id: (_product$brand = product.brand) === null || _product$brand === void 0 ? void 0 : _product$brand.id,
       category_id: (_product$category = product.category) === null || _product$category === void 0 ? void 0 : _product$category.id,
       movement_id: (_product$movement = product.movement) === null || _product$movement === void 0 ? void 0 : _product$movement.id,
@@ -76744,154 +76866,187 @@ var AdminProduct = function AdminProduct() {
             children: editMode ? "Edit Product" : "Add New Product"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("form", {
             onSubmit: handleSubmit,
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
-              type: "text",
-              placeholder: "Product Name",
-              value: productData.product_name,
-              onChange: function onChange(e) {
-                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-                  product_name: e.target.value
-                }));
-              },
-              required: true
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
-              type: "file",
-              onChange: handleFileChange,
-              accept: "image/*",
-              required: !editMode
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
-              type: "number",
-              placeholder: "Price",
-              value: productData.price,
-              onChange: function onChange(e) {
-                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-                  price: e.target.value
-                }));
-              },
-              required: true
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
-              type: "number",
-              placeholder: "Quantity",
-              value: productData.quantity,
-              onChange: function onChange(e) {
-                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-                  quantity: e.target.value
-                }));
-              },
-              required: true
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
-              value: productData.brand_id,
-              onChange: function onChange(e) {
-                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-                  brand_id: e.target.value
-                }));
-              },
-              required: true,
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                value: "",
-                children: "Select Brand"
-              }), dropdownData.brands.map(function (brand) {
-                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                  value: brand.id,
-                  children: brand.name
-                }, brand.id);
-              })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
-              value: productData.category_id,
-              onChange: function onChange(e) {
-                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-                  category_id: e.target.value
-                }));
-              },
-              required: true,
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                value: "",
-                children: "Select Category"
-              }), dropdownData.categories.map(function (category) {
-                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                  value: category.id,
-                  children: category.name
-                }, category.id);
-              })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
-              value: productData.movement_id,
-              onChange: function onChange(e) {
-                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-                  movement_id: e.target.value
-                }));
-              },
-              required: true,
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                value: "",
-                children: "Select Movement"
-              }), dropdownData.movements.map(function (movement) {
-                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                  value: movement.id,
-                  children: movement.name
-                }, movement.id);
-              })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
-              value: productData.strap_material_id,
-              onChange: function onChange(e) {
-                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-                  strap_material_id: e.target.value
-                }));
-              },
-              required: true,
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                value: "",
-                children: "Select Strap Material"
-              }), dropdownData.strapMaterials.map(function (strap) {
-                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                  value: strap.id,
-                  children: strap.name
-                }, strap.id);
-              })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
-              value: productData.gender_id,
-              onChange: function onChange(e) {
-                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-                  gender_id: e.target.value
-                }));
-              },
-              required: true,
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                value: "",
-                children: "Select Gender"
-              }), dropdownData.genders.map(function (gender) {
-                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                  value: gender.id,
-                  children: gender.name
-                }, gender.id);
-              })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
-              value: productData.size_id,
-              onChange: function onChange(e) {
-                return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-                  size_id: e.target.value
-                }));
-              },
-              required: true,
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                value: "",
-                children: "Select Size"
-              }), dropdownData.sizes.map(function (size) {
-                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                  value: size.id,
-                  children: size.name
-                }, size.id);
+            className: "modal-form",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+              className: "form-left",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+                type: "text",
+                placeholder: "Product Name",
+                value: productData.product_name,
+                onChange: function onChange(e) {
+                  return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                    product_name: e.target.value
+                  }));
+                },
+                required: true,
+                className: "product-name-input"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                className: "price-quantity-row",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+                  type: "number",
+                  placeholder: "Price",
+                  value: productData.price,
+                  onChange: function onChange(e) {
+                    return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                      price: e.target.value
+                    }));
+                  },
+                  required: true
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+                  type: "number",
+                  placeholder: "Quantity",
+                  value: productData.quantity,
+                  onChange: function onChange(e) {
+                    return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                      quantity: e.target.value
+                    }));
+                  },
+                  required: true
+                })]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                className: "dropdown-row",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+                  value: productData.gender_id,
+                  onChange: function onChange(e) {
+                    return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                      gender_id: e.target.value
+                    }));
+                  },
+                  required: true,
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                    value: "",
+                    children: "Select Gender"
+                  }), dropdownData.genders.map(function (gender) {
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                      value: gender.id,
+                      children: gender.name
+                    }, gender.id);
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+                  value: productData.strap_material_id,
+                  onChange: function onChange(e) {
+                    return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                      strap_material_id: e.target.value
+                    }));
+                  },
+                  required: true,
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                    value: "",
+                    children: "Select Strap Material"
+                  }), dropdownData.strapMaterials.map(function (strap) {
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                      value: strap.id,
+                      children: strap.name
+                    }, strap.id);
+                  })]
+                })]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                className: "dropdown-row",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+                  value: productData.brand_id,
+                  onChange: function onChange(e) {
+                    return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                      brand_id: e.target.value
+                    }));
+                  },
+                  required: true,
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                    value: "",
+                    children: "Select Brand"
+                  }), dropdownData.brands.map(function (brand) {
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                      value: brand.id,
+                      children: brand.name
+                    }, brand.id);
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+                  value: productData.movement_id,
+                  onChange: function onChange(e) {
+                    return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                      movement_id: e.target.value
+                    }));
+                  },
+                  required: true,
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                    value: "",
+                    children: "Select Movement"
+                  }), dropdownData.movements.map(function (movement) {
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                      value: movement.id,
+                      children: movement.name
+                    }, movement.id);
+                  })]
+                })]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+                value: productData.category_id,
+                onChange: function onChange(e) {
+                  return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                    category_id: e.target.value
+                  }));
+                },
+                required: true,
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                  value: "",
+                  children: "Select Category"
+                }), dropdownData.categories.map(function (category) {
+                  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                    value: category.id,
+                    children: category.name
+                  }, category.id);
+                })]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+                value: productData.size_id,
+                onChange: function onChange(e) {
+                  return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                    size_id: e.target.value
+                  }));
+                },
+                required: true,
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                  value: "",
+                  children: "Select Size"
+                }), dropdownData.sizes.map(function (size) {
+                  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                    value: size.id,
+                    children: size.name
+                  }, size.id);
+                })]
               })]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
-              className: "modal-buttons",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
-                type: "submit",
-                children: editMode ? "Update Product" : "Add Product"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
-                type: "button",
-                onClick: function onClick() {
-                  return setShowModal(false);
-                },
-                children: "Cancel"
+              className: "form-right",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                className: "image-upload-container",
+                children: [productData.product_image ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+                  src: typeof productData.product_image === "string" ? "http://localhost:8000/storage/".concat(productData.product_image) // ✅ Display existing image
+                  : URL.createObjectURL(productData.product_image) // ✅ Display newly uploaded image
+                  ,
+                  alt: "Preview",
+                  className: "image-preview"
+                }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+                  className: "image-placeholder"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+                  type: "file",
+                  onChange: handleFileChange,
+                  accept: "image/*",
+                  id: "image-upload",
+                  className: "hidden-file-input"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+                  htmlFor: "image-upload",
+                  className: "upload-button",
+                  children: "Upload New Image"
+                })]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                className: "modal-save",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+                  type: "submit",
+                  children: "Save Product"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
+                  type: "button",
+                  onClick: function onClick() {
+                    return setShowModal(false);
+                  },
+                  children: "Cancel"
+                })]
               })]
             })]
           })]

@@ -56,7 +56,6 @@ class AdminUserController extends Controller
     }
 
     // ✅ Archive (Soft Delete) User
-    // ✅ Archive (Soft Delete) User
     public function archive($id)
     {
         $user = User::findOrFail($id);
@@ -65,7 +64,6 @@ class AdminUserController extends Controller
         return response()->json(['message' => 'User archived successfully'], 200);
     }
 
-    // ✅ Restore Archived User
     // ✅ Restore Archived User
     public function restore($id)
     {

@@ -1,41 +1,47 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Sidebar from "../AdminLayout/Sidebar";
 
 const AdminSettings = () => {
+    const [activeTab, setActiveTab] = useState("brands");
+    const [viewArchived, setViewArchived] = useState(false);
     const [filters, setFilters] = useState({
         brands: [],
         categories: [],
+        genders: [],
         movements: [],
         strapMaterials: [],
-        genders: [],
         sizes: [],
     });
-
     const [newFilter, setNewFilter] = useState("");
     const [selectedFilter, setSelectedFilter] = useState(null);
     const [editName, setEditName] = useState("");
-    const [filterType, setFilterType] = useState("brands");
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     useEffect(() => {
         fetchFilters();
-    }, []);
+    }, [viewArchived]);
 
     const fetchFilters = () => {
         axios
-            .get("http://localhost:8000/api/admin-settings", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            })
+            .get(
+                `http://localhost:8000/api/admin-settings?archived=${viewArchived}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                }
+            )
             .then((response) => setFilters(response.data))
             .catch((error) => console.error("Error fetching data:", error));
     };
 
-    // ✅ Handle adding a new filter
     const handleAdd = () => {
         axios
             .post(
-                `http://localhost:8000/api/add-filter/${filterType}`,
+                `http://localhost:8000/api/add-filter/${activeTab}`,
                 { name: newFilter },
                 {
                     headers: {
@@ -49,17 +55,16 @@ const AdminSettings = () => {
                 alert("Filter added successfully!");
                 fetchFilters();
                 setNewFilter("");
+                setIsAddModalOpen(false);
             })
             .catch(() => alert("Failed to add filter."));
     };
 
-    // ✅ Handle opening modal for updating
-    const handleEdit = (type, id, name) => {
-        setSelectedFilter({ type, id });
+    const handleEdit = (id, name) => {
+        setSelectedFilter({ type: activeTab, id });
         setEditName(name);
     };
 
-    // ✅ Handle filter update
     const submitUpdate = () => {
         axios
             .put(
@@ -81,11 +86,10 @@ const AdminSettings = () => {
             .catch(() => alert("Failed to update filter."));
     };
 
-    // ✅ Handle Archive / Restore
-    const handleArchiveRestore = (type, id, action) => {
+    const handleArchiveRestore = (id, action) => {
         axios
             .put(
-                `http://localhost:8000/api/${action}-filter/${type}/${id}`,
+                `http://localhost:8000/api/${action}-filter/${activeTab}/${id}`,
                 {},
                 {
                     headers: {
@@ -102,83 +106,172 @@ const AdminSettings = () => {
             .catch(() => alert(`Failed to ${action} filter.`));
     };
 
+    const tabs = [
+        { id: "brands", label: "Brand" },
+        { id: "categories", label: "Categories" },
+        { id: "genders", label: "Gender" },
+        { id: "movements", label: "Movements" },
+        { id: "strapMaterials", label: "Strap Materials" },
+        { id: "sizes", label: "Sizes" },
+    ];
+
+    const renderTable = (type) => (
+        <div className="table-container">
+            <div className="table-header">
+                {!viewArchived && (
+                    <button
+                        className="add-btn"
+                        onClick={() => setIsAddModalOpen(true)}
+                    >
+                        Add {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </button>
+                )}
+            </div>
+            <table className="settings-table">
+                <thead>
+                    <tr>
+                        <th>Actions</th>
+                        <th>{type.charAt(0).toUpperCase() + type.slice(1)}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filters[type]?.length === 0 ? (
+                        <tr>
+                            <td colSpan="2" className="no-data">
+                                No {viewArchived ? "archived" : "active"} {type}{" "}
+                                found.
+                            </td>
+                        </tr>
+                    ) : (
+                        filters[type]?.map((filter) => (
+                            <tr key={filter.id}>
+                                <td className="actions">
+                                    {!viewArchived && (
+                                        <>
+                                            <i
+                                                className="fa-solid fa-pen-to-square action-icon"
+                                                onClick={() =>
+                                                    handleEdit(
+                                                        filter.id,
+                                                        filter.name
+                                                    )
+                                                }
+                                                title="Edit"
+                                            ></i>
+                                            <i
+                                                className="fa-solid fa-box-archive action-icon"
+                                                onClick={() =>
+                                                    handleArchiveRestore(
+                                                        filter.id,
+                                                        "archive"
+                                                    )
+                                                }
+                                                title="Archive"
+                                            ></i>
+                                        </>
+                                    )}
+                                    {viewArchived && (
+                                        <button
+                                            className="restore-btn"
+                                            onClick={() =>
+                                                handleArchiveRestore(
+                                                    filter.id,
+                                                    "restore"
+                                                )
+                                            }
+                                        >
+                                            Restore
+                                        </button>
+                                    )}
+                                </td>
+                                <td>{filter.name}</td>
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+            </table>
+        </div>
+    );
+
     return (
-        <div>
-            <h1>Admin Settings</h1>
-
-            <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-            >
-                <option value="brands">Brand</option>
-                <option value="categories">Category</option>
-                <option value="movements">Movement</option>
-                <option value="strapMaterials">Strap Material</option>
-                <option value="genders">Gender</option>
-                <option value="sizes">Size</option>
-            </select>
-            <input
-                type="text"
-                value={newFilter}
-                onChange={(e) => setNewFilter(e.target.value)}
-                placeholder="New Filter Name"
-            />
-            <button onClick={handleAdd}>Add Filter</button>
-
-            {[
-                "brands",
-                "categories",
-                "movements",
-                "strapMaterials",
-                "genders",
-                "sizes",
-            ].map((type) => (
-                <div key={type}>
-                    <h2>{type.charAt(0).toUpperCase() + type.slice(1)}</h2>
-                    <ul>
-                        {filters[type]?.map((filter) => (
-                            <li key={filter.id}>
-                                {filter.name}
-                                <button
-                                    onClick={() =>
-                                        handleEdit(type, filter.id, filter.name)
-                                    }
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() =>
-                                        handleArchiveRestore(
-                                            type,
-                                            filter.id,
-                                            "archive"
-                                        )
-                                    }
-                                >
-                                    Archive
-                                </button>
-                            </li>
+        <div className="admin-settings-container">
+            <Sidebar />
+            <div className="settings-content">
+                <h1>Admin Settings</h1>
+                <div className="settings-actions">
+                    <div className="tabs">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.id}
+                                className={`tab-btn ${
+                                    activeTab === tab.id ? "active" : ""
+                                }`}
+                                onClick={() => setActiveTab(tab.id)}
+                            >
+                                {tab.label}
+                            </button>
                         ))}
-                    </ul>
-                </div>
-            ))}
-
-            {selectedFilter && (
-                <div className="modal show">
-                    <div className="modal-content">
-                        <h2>Edit Filter</h2>
-                        <input
-                            type="text"
-                            value={editName}
-                            onChange={(e) => setEditName(e.target.value)}
-                        />
-                        <button onClick={submitUpdate}>Save</button>
-                        <button onClick={() => setSelectedFilter(null)}>
-                            Cancel
-                        </button>
                     </div>
+                    <button
+                        className="toggle-archived-btn"
+                        onClick={() => setViewArchived(!viewArchived)}
+                    >
+                        {viewArchived ? "View Active" : "View Archived"}
+                    </button>
                 </div>
-            )}
+                {renderTable(activeTab)}
+
+                {/* Add Modal */}
+                {isAddModalOpen && (
+                    <div className="modal show">
+                        <div className="modal-content">
+                            <h2>
+                                Add{" "}
+                                {activeTab.charAt(0).toUpperCase() +
+                                    activeTab.slice(1)}
+                            </h2>
+                            <input
+                                type="text"
+                                value={newFilter}
+                                onChange={(e) => setNewFilter(e.target.value)}
+                                placeholder={`New ${activeTab} Name`}
+                            />
+                            <div className="modal-buttons">
+                                <button onClick={handleAdd}>Add</button>
+                                <button
+                                    onClick={() => setIsAddModalOpen(false)}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Edit Modal */}
+                {selectedFilter && (
+                    <div className="modal show">
+                        <div className="modal-content">
+                            <h2>
+                                Edit{" "}
+                                {selectedFilter.type.charAt(0).toUpperCase() +
+                                    selectedFilter.type.slice(1)}
+                            </h2>
+                            <input
+                                type="text"
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
+                            />
+                            <div className="modal-buttons">
+                                <button onClick={submitUpdate}>Save</button>
+                                <button onClick={() => setSelectedFilter(null)}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
