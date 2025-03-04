@@ -1,6 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    Navigate,
+} from "react-router-dom";
 
 import Register from "./USERS/Register";
 import Login from "./USERS/Login";
@@ -17,12 +22,45 @@ import Homepage from "./UserPage/Homepage";
 import CollectionPage from "./UserPage/Collection";
 
 const App = () => {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
     return (
         <Router>
             <Routes>
                 {/* Public Routes */}
-                <Route path="/Register" element={<Register />} />
-                <Route path="/Login" element={<Login />} />
+                <Route
+                    path="/register"
+                    element={
+                        !token ? (
+                            <Register />
+                        ) : (
+                            <Navigate
+                                to={
+                                    role === "admin"
+                                        ? "/admin-dashboard"
+                                        : "/Homepage"
+                                }
+                            />
+                        )
+                    }
+                />
+                <Route
+                    path="/login"
+                    element={
+                        !token ? (
+                            <Login />
+                        ) : (
+                            <Navigate
+                                to={
+                                    role === "admin"
+                                        ? "/admin-dashboard"
+                                        : "/Homepage"
+                                }
+                            />
+                        )
+                    }
+                />
 
                 {/* Private Routes - Only Logged-in Users */}
                 <Route

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -8,6 +8,20 @@ const Login = () => {
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+
+    // ✅ Redirect if already logged in
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+
+        if (token && role) {
+            if (role === "admin") {
+                navigate("/admin-dashboard"); // Redirect admin to dashboard
+            } else {
+                navigate("/Homepage"); // Redirect users to homepage
+            }
+        }
+    }, [navigate]); // Runs on component mount
 
     const handleSubmit = async (e) => {
         e.preventDefault();

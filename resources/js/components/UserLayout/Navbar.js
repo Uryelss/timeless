@@ -1,13 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Navbar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const profileRef = useRef(null);
+    const navigate = useNavigate();
 
     const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+    const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -17,11 +22,44 @@ const Navbar = () => {
             ) {
                 setIsDropdownOpen(false);
             }
+            if (
+                profileRef.current &&
+                !profileRef.current.contains(event.target)
+            ) {
+                setIsProfileOpen(false);
+            }
         };
         document.addEventListener("mousedown", handleClickOutside);
         return () =>
             document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    // ✅ User Logout Function
+    const handleLogout = async () => {
+        try {
+            await axios.post(
+                "http://localhost:8000/api/logout",
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                }
+            );
+
+            // ✅ Keep user data (e.g., cart) but remove authentication tokens
+            localStorage.removeItem("token"); // Remove authentication token
+            localStorage.removeItem("role"); // Remove role
+
+            // ✅ Redirect to login page
+            navigate("/login");
+        } catch (error) {
+            console.error("Logout failed:", error);
+            alert("Failed to logout.");
+        }
+    };
 
     return (
         <nav className="navbar">
@@ -59,18 +97,14 @@ const Navbar = () => {
                         onClick={toggleDropdown}
                         className="dropdown-toggle"
                     >
-                        CATEGORIES
-                        <i className="fa-solid fa-caret-down"></i>
+                        CATEGORIES <i className="fa-solid fa-caret-down"></i>
                     </button>
                     {isDropdownOpen && (
                         <ul className="dropdown-menu">
                             <li>
                                 <Link
                                     to="/categories/luxury"
-                                    onClick={() => {
-                                        setIsDropdownOpen(false);
-                                        setIsMenuOpen(false);
-                                    }}
+                                    onClick={() => setIsDropdownOpen(false)}
                                 >
                                     Luxury Watches
                                 </Link>
@@ -78,10 +112,7 @@ const Navbar = () => {
                             <li>
                                 <Link
                                     to="/categories/smart"
-                                    onClick={() => {
-                                        setIsDropdownOpen(false);
-                                        setIsMenuOpen(false);
-                                    }}
+                                    onClick={() => setIsDropdownOpen(false)}
                                 >
                                     Smart Watches
                                 </Link>
@@ -89,10 +120,7 @@ const Navbar = () => {
                             <li>
                                 <Link
                                     to="/categories/fashion"
-                                    onClick={() => {
-                                        setIsDropdownOpen(false);
-                                        setIsMenuOpen(false);
-                                    }}
+                                    onClick={() => setIsDropdownOpen(false)}
                                 >
                                     Fashion Watches
                                 </Link>
@@ -118,9 +146,35 @@ const Navbar = () => {
                     <Link to="/cart">
                         <i className="fa fa-shopping-cart"></i>
                     </Link>
-                    <Link to="/profile">
-                        <i className="fa-solid fa-circle-user"></i>
-                    </Link>
+                    <div
+                        className={`profile-dropdown ${
+                            isProfileOpen ? "open" : ""
+                        }`}
+                        ref={profileRef}
+                    >
+                        <button
+                            onClick={toggleProfile}
+                            className="profile-toggle"
+                        >
+                            <i className="fa-solid fa-circle-user"></i>
+                        </button>
+                        {isProfileOpen && (
+                            <div className="profile-menu">
+                                <Link
+                                    to="/profile"
+                                    onClick={() => setIsProfileOpen(false)}
+                                >
+                                    Profile
+                                </Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className="logout-btn"
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </nav>
