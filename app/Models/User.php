@@ -33,7 +33,7 @@ class User extends Authenticatable
     // ✅ Add missing relationship to Profile
     public function profile()
     {
-        return $this->hasOne(Profile::class, 'user_id');
+        return $this->hasOne(Profile::class, 'user_id', 'id');
     }
 
     // ✅ Add missing relationship to Addresses

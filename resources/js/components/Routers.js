@@ -20,6 +20,7 @@ import AdminCustomerManagement from "./AdminPage/CustomerManagement";
 
 import Homepage from "./UserPage/Homepage";
 import CollectionPage from "./UserPage/Collection";
+import UserProfile from "./UserPage/UserProfile"; // ✅ Import UserProfile
 
 const App = () => {
     const token = localStorage.getItem("token");
@@ -76,6 +77,14 @@ const App = () => {
                     element={
                         <PrivateRoute allowedRoles={["user", "admin"]}>
                             <CollectionPage />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/Profile"
+                    element={
+                        <PrivateRoute allowedRoles={["user"]}>
+                            <UserProfile /> {/* ✅ User Profile Page */}
                         </PrivateRoute>
                     }
                 />

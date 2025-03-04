@@ -13989,6 +13989,21 @@ h1, .h1 {
   font-size: 24px;
   color: #000;
   padding: 0;
+  display: flex;
+  align-items: center;
+}
+.navbar-right .menu-icons .profile-dropdown .profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border: 2px solid #ddd;
+}
+.navbar-right .menu-icons .profile-dropdown .default-icon {
+  font-size: 40px;
+  color: gray;
+  margin-right: 8px;
 }
 .navbar-right .menu-icons .profile-dropdown .profile-menu {
   position: absolute;
@@ -14030,6 +14045,11 @@ h1, .h1 {
 }
 .navbar-right .menu-icons .profile-dropdown.open .profile-menu {
   display: flex;
+}
+.navbar-right .username {
+  font-size: 16px;
+  font-weight: bold;
+  margin-left: 8px;
 }
 
 /* Footer Container */

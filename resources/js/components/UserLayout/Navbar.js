@@ -6,35 +6,30 @@ const Navbar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [user, setUser] = useState(null); // ✅ Store user data
+
     const dropdownRef = useRef(null);
     const profileRef = useRef(null);
     const navigate = useNavigate();
 
-    const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-    const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
-
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target)
-            ) {
-                setIsDropdownOpen(false);
-            }
-            if (
-                profileRef.current &&
-                !profileRef.current.contains(event.target)
-            ) {
-                setIsProfileOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () =>
-            document.removeEventListener("mousedown", handleClickOutside);
+        fetchUserProfile();
     }, []);
 
-    // ✅ User Logout Function
+    const fetchUserProfile = async () => {
+        try {
+            const response = await axios.get("http://localhost:8000/api/user", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+
+            setUser(response.data); // ✅ Store user data (including profile image & username)
+        } catch (error) {
+            console.error("Error fetching user profile:", error);
+        }
+    };
+
     const handleLogout = async () => {
         try {
             await axios.post(
@@ -49,12 +44,9 @@ const Navbar = () => {
                 }
             );
 
-            // ✅ Keep user data (e.g., cart) but remove authentication tokens
-            localStorage.removeItem("token"); // Remove authentication token
-            localStorage.removeItem("role"); // Remove role
-
-            // ✅ Redirect to login page
-            navigate("/login");
+            localStorage.removeItem("token");
+            localStorage.removeItem("role");
+            window.location.href = "/login";
         } catch (error) {
             console.error("Logout failed:", error);
             alert("Failed to logout.");
@@ -67,7 +59,10 @@ const Navbar = () => {
                 <img src="Images/logo.png" alt="Logo" />
             </div>
 
-            <div className="menu-toggle" onClick={toggleMenu}>
+            <div
+                className="menu-toggle"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
                 <span></span>
                 <span></span>
                 <span></span>
@@ -75,26 +70,20 @@ const Navbar = () => {
 
             <ul className={`navbar-links ${isMenuOpen ? "show" : ""}`}>
                 <li>
-                    <Link to="/" onClick={() => setIsMenuOpen(false)}>
-                        HOME
-                    </Link>
+                    <Link to="/">HOME</Link>
                 </li>
                 <li>
-                    <Link to="/aboutus" onClick={() => setIsMenuOpen(false)}>
-                        ABOUT US
-                    </Link>
+                    <Link to="/aboutus">ABOUT US</Link>
                 </li>
                 <li>
-                    <Link to="/collection" onClick={() => setIsMenuOpen(false)}>
-                        COLLECTION
-                    </Link>
+                    <Link to="/collection">COLLECTION</Link>
                 </li>
                 <li
                     className={`dropdown ${isDropdownOpen ? "open" : ""}`}
                     ref={dropdownRef}
                 >
                     <button
-                        onClick={toggleDropdown}
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         className="dropdown-toggle"
                     >
                         CATEGORIES <i className="fa-solid fa-caret-down"></i>
@@ -102,26 +91,17 @@ const Navbar = () => {
                     {isDropdownOpen && (
                         <ul className="dropdown-menu">
                             <li>
-                                <Link
-                                    to="/categories/luxury"
-                                    onClick={() => setIsDropdownOpen(false)}
-                                >
+                                <Link to="/categories/luxury">
                                     Luxury Watches
                                 </Link>
                             </li>
                             <li>
-                                <Link
-                                    to="/categories/smart"
-                                    onClick={() => setIsDropdownOpen(false)}
-                                >
+                                <Link to="/categories/smart">
                                     Smart Watches
                                 </Link>
                             </li>
                             <li>
-                                <Link
-                                    to="/categories/fashion"
-                                    onClick={() => setIsDropdownOpen(false)}
-                                >
+                                <Link to="/categories/fashion">
                                     Fashion Watches
                                 </Link>
                             </li>
@@ -146,6 +126,7 @@ const Navbar = () => {
                     <Link to="/cart">
                         <i className="fa fa-shopping-cart"></i>
                     </Link>
+
                     <div
                         className={`profile-dropdown ${
                             isProfileOpen ? "open" : ""
@@ -153,19 +134,24 @@ const Navbar = () => {
                         ref={profileRef}
                     >
                         <button
-                            onClick={toggleProfile}
+                            onClick={() => setIsProfileOpen(!isProfileOpen)}
                             className="profile-toggle"
                         >
-                            <i className="fa-solid fa-circle-user"></i>
+                            {/* ✅ Show profile image if available, otherwise default icon */}
+                            {user?.profile_image ? (
+                                <img
+                                    src={user.profile_image}
+                                    alt="Profile"
+                                    className="profile-img"
+                                />
+                            ) : (
+                                <i className="fa-solid fa-circle-user default-icon"></i>
+                            )}
                         </button>
+
                         {isProfileOpen && (
                             <div className="profile-menu">
-                                <Link
-                                    to="/profile"
-                                    onClick={() => setIsProfileOpen(false)}
-                                >
-                                    Profile
-                                </Link>
+                                <Link to="/Profile">Profile</Link>
                                 <button
                                     onClick={handleLogout}
                                     className="logout-btn"
@@ -175,6 +161,9 @@ const Navbar = () => {
                             </div>
                         )}
                     </div>
+
+                    {/* ✅ Show username beside the profile picture */}
+                    {user && <span className="username">{user.username}</span>}
                 </div>
             </div>
         </nav>

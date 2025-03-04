@@ -22,7 +22,9 @@ const Sidebar = () => {
             .then(() => {
                 localStorage.removeItem("token");
                 localStorage.removeItem("role");
-                navigate("/login");
+
+                // ✅ Use `window.location.href` for a clean logout
+                window.location.href = "/login";
             })
             .catch((error) => {
                 console.error("Logout failed:", error);
