@@ -9,7 +9,6 @@ const Navbar = () => {
     const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
@@ -26,19 +25,16 @@ const Navbar = () => {
 
     return (
         <nav className="navbar">
-            {/* Logo */}
             <div className="navbar-logo">
-                <img src="Images\logo.png" alt="Logo" />
+                <img src="Images/logo.png" alt="Logo" />
             </div>
 
-            {/* Mobile Menu Toggle */}
             <div className="menu-toggle" onClick={toggleMenu}>
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
 
-            {/* Navigation Links */}
             <ul className={`navbar-links ${isMenuOpen ? "show" : ""}`}>
                 <li>
                     <Link to="/" onClick={() => setIsMenuOpen(false)}>
@@ -47,16 +43,14 @@ const Navbar = () => {
                 </li>
                 <li>
                     <Link to="/aboutus" onClick={() => setIsMenuOpen(false)}>
-                        ABOUT
+                        ABOUT US
                     </Link>
                 </li>
                 <li>
-                    <Link to="/Collection" onClick={() => setIsMenuOpen(false)}>
+                    <Link to="/collection" onClick={() => setIsMenuOpen(false)}>
                         COLLECTION
                     </Link>
                 </li>
-
-                {/* Dropdown */}
                 <li
                     className={`dropdown ${isDropdownOpen ? "open" : ""}`}
                     ref={dropdownRef}
@@ -65,7 +59,8 @@ const Navbar = () => {
                         onClick={toggleDropdown}
                         className="dropdown-toggle"
                     >
-                        CATEGORIES <i className="fa fa-caret-down"></i>
+                        CATEGORIES
+                        <i className="fa-solid fa-caret-down"></i>
                     </button>
                     {isDropdownOpen && (
                         <ul className="dropdown-menu">
@@ -107,7 +102,6 @@ const Navbar = () => {
                 </li>
             </ul>
 
-            {/* Right Side Icons */}
             <div className="navbar-right">
                 <div className="search-container">
                     <input
@@ -118,14 +112,14 @@ const Navbar = () => {
                     <i className="fa fa-search"></i>
                 </div>
                 <div className="menu-icons">
+                    <Link to="/notification">
+                        <i className="fa fa-bell"></i>
+                    </Link>
                     <Link to="/cart">
                         <i className="fa fa-shopping-cart"></i>
                     </Link>
                     <Link to="/profile">
-                        <i className="fa fa-user"></i>
-                    </Link>
-                    <Link to="/notification">
-                        <i className="fa fa-bell"></i>
+                        <i className="fa-solid fa-circle-user"></i>
                     </Link>
                 </div>
             </div>

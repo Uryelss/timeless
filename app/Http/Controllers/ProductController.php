@@ -207,7 +207,8 @@ class ProductController extends Controller
     public function getActiveProducts()
     {
         $products = Product::whereNull('deleted_at') // ✅ Only fetch active products
-            ->select('id', 'product_name as name', 'price', 'product_image') // ✅ Keep original column name for correct path
+            ->with(['brand', 'gender', 'movement', 'strapMaterial']) // ✅ Fetch necessary relationships
+            ->select('id', 'product_name as name', 'price', 'product_image', 'brand_id', 'gender_id', 'movement_id', 'strap_material_id') // ✅ Ensure IDs are included
             ->get()
             ->map(function ($product) {
                 return [
@@ -217,6 +218,10 @@ class ProductController extends Controller
                     'image' => $product->product_image
                         ? asset('storage/' . $product->product_image) // ✅ Fix image URL
                         : asset('default-product.png'), // ✅ Default fallback image
+                    'brand' => $product->brand->name ?? '', // ✅ Get brand name
+                    'gender' => $product->gender->name ?? '', // ✅ Get gender name
+                    'movement' => $product->movement->name ?? '', // ✅ Get movement name
+                    'strap_material' => $product->strapMaterial->name ?? '', // ✅ Get strap material name
                 ];
             });
 

@@ -8,20 +8,19 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminCustomerController;
 
+// ✅ PUBLIC ROUTES (No authentication required)
+Route::get('/store/products', [ProductController::class, 'getActiveProducts']); // ✅ Fetch active products
+Route::get('/admin-settings', [AdminSettingsController::class, 'index']); // ✅ Allow fetching filters without login
 
-
-// Public routes (No authentication required)
+// Public Auth Routes
 Route::post('register', [UsersController::class, 'register']);
 Route::post('login', [UsersController::class, 'login']);
 Route::post('/logout', [UsersController::class, 'logout'])->middleware('auth:api');
-Route::get('/store/products', [ProductController::class, 'getActiveProducts']);
-
 // Admin-only routes
 Route::middleware(['auth:api', 'role:admin'])->group(function () {
 
     // Admin Settings Endpoints
     // ✅ Admin Settings Endpoints
-    Route::get('/admin-settings', [AdminSettingsController::class, 'index']); // ✅ Fetch filters
     Route::post('/add-filter/{type}', [AdminSettingsController::class, 'addFilter']); // ✅ Add new filter
     Route::put('/update-filter/{type}/{id}', [AdminSettingsController::class, 'updateFilter']); // ✅ Update filter
     Route::put('/archive-filter/{type}/{id}', [AdminSettingsController::class, 'archiveFilter']); // ✅ Archive filter

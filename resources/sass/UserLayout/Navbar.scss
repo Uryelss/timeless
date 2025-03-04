@@ -1,43 +1,27 @@
 .navbar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 15px 20px;
+    padding: 15px 50px;
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     position: fixed;
     width: 100%;
+    height: 85px;
     top: 0;
     left: 0;
     z-index: 1000;
 
-    /* Logo */
     .navbar-logo img {
-        height: 50px;
+        width: 130px;
+        height: 88px;
     }
 
-    /* Menu Toggle for Mobile */
-    .menu-toggle {
-        display: none;
-        flex-direction: column;
-        cursor: pointer;
-        gap: 5px;
-
-        span {
-            width: 25px;
-            height: 3px;
-            background: #000;
-            transition: 0.3s;
-        }
-    }
-
-    /* Navigation Links */
     .navbar-links {
         display: flex;
         align-items: center;
         list-style: none;
         padding: 0;
-        margin: 0;
+        margin: 0 0 0 13px; /* Changed from 20px to 13px (20 - 7 = 13) */
         gap: 20px;
 
         li {
@@ -50,7 +34,6 @@
                 padding: 10px;
             }
 
-            /* Dropdown */
             &.dropdown {
                 .dropdown-toggle {
                     background: none;
@@ -63,6 +46,10 @@
                     gap: 5px;
                 }
 
+                .dropdown-toggle::after {
+                    content: none;
+                }
+
                 .dropdown-menu {
                     position: absolute;
                     top: 100%;
@@ -73,15 +60,12 @@
                     flex-direction: column;
                     width: 150px;
                     border-radius: 5px;
-                    overflow: hidden;
 
                     li {
                         padding: 10px;
-                        white-space: nowrap;
                     }
                 }
 
-                /* Show dropdown when clicked */
                 &.open .dropdown-menu {
                     display: flex;
                 }
@@ -89,26 +73,31 @@
         }
     }
 
-    /* Right Section: Search & Icons */
     .navbar-right {
         display: flex;
         align-items: center;
+        margin-left: 20px;
         gap: 15px;
 
         .search-container {
             position: relative;
 
             .search-bar {
-                padding: 5px 10px;
+                width: 400px; /* Reduced from 476px */
+                height: 36px;
                 border: 1px solid #ccc;
-                border-radius: 5px;
+                border-radius: 18px;
+                padding: 0 40px 0 15px;
+                shape-rendering: crispEdges;
+                box-sizing: border-box;
             }
 
-            i {
+            .fa-search {
                 position: absolute;
-                right: 10px;
+                right: 15px;
                 top: 50%;
                 transform: translateY(-50%);
+                color: #000;
             }
         }
 
@@ -119,15 +108,24 @@
 
             a {
                 color: #000;
-                font-size: 18px;
+                font-size: 24px; /* Changed from 18px to 24px for 24x24 icons */
             }
         }
     }
 
-    /* 📱 Mobile Responsive */
     @media (max-width: 768px) {
         .menu-toggle {
             display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+
+            span {
+                width: 25px;
+                height: 3px;
+                background: #000;
+                transition: 0.3s;
+            }
         }
 
         .navbar-links {
@@ -139,30 +137,26 @@
             background-color: #fff;
             width: 100%;
             padding: 10px;
+            margin: 0;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            z-index: 999;
         }
 
         .navbar-links.show {
             display: flex;
         }
 
-        .navbar-links li {
-            text-align: center;
-            width: 100%;
-        }
+        .navbar-right {
+            margin-left: 10px;
 
-        .dropdown .dropdown-menu {
-            position: static;
-            background: none;
-            box-shadow: none;
-            display: block;
-            padding-left: 20px;
-        }
+            .search-bar {
+                width: 100%;
+            }
 
-        .dropdown.open .dropdown-menu {
-            display: flex;
-            flex-direction: column;
+            .menu-icons {
+                a {
+                    font-size: 24px; /* Maintain 24x24 in mobile view */
+                }
+            }
         }
     }
 }
