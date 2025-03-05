@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import Navbar from "../UserLayout/Navbar"; // Import the Navbar component
+import Navbar from "../UserLayout/Navbar";
 
 const ProductOverview = () => {
     const { id } = useParams();
@@ -9,9 +9,13 @@ const ProductOverview = () => {
     const [reviews, setReviews] = useState([]);
     const [rating, setRating] = useState("");
     const [reviewText, setReviewText] = useState("");
-    const [activeTab, setActiveTab] = useState("details"); // For tab switching
+    const [activeTab, setActiveTab] = useState("details");
 
     useEffect(() => {
+        fetchProduct();
+    }, [id]);
+
+    const fetchProduct = () => {
         axios
             .get(`http://localhost:8000/api/product/${id}`)
             .then((response) => {
@@ -19,7 +23,7 @@ const ProductOverview = () => {
                 setReviews(response.data.reviews);
             })
             .catch((error) => console.error("Error fetching product:", error));
-    }, [id]);
+    };
 
     const submitReview = () => {
         if (!rating) {
@@ -30,10 +34,7 @@ const ProductOverview = () => {
         axios
             .post(
                 `http://localhost:8000/api/product/${id}/review`,
-                {
-                    rating,
-                    review: reviewText,
-                },
+                { rating, review: reviewText },
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem(
@@ -42,7 +43,12 @@ const ProductOverview = () => {
                     },
                 }
             )
-            .then(() => {
+            .then((response) => {
+                const newReview = response.data.review;
+
+                // ✅ Dynamically update the review list with the correct profile image from `profiles`
+                setReviews((prevReviews) => [newReview, ...prevReviews]);
+
                 alert("Review submitted!");
                 setReviewText("");
                 setRating("");
@@ -52,7 +58,7 @@ const ProductOverview = () => {
 
     if (!product) return <p>Loading...</p>;
 
-    // Calculate average rating for display
+    // Calculate average rating dynamically
     const averageRating =
         reviews.length > 0
             ? (
@@ -62,7 +68,7 @@ const ProductOverview = () => {
 
     return (
         <>
-            <Navbar /> {/* Include the Navbar */}
+            <Navbar />
             <div className="product-container">
                 <div className="product-images">
                     <div className="main-image">
@@ -75,7 +81,6 @@ const ProductOverview = () => {
                         />
                     </div>
                     <div className="side-images">
-                        {/* Placeholder for side images - you can add logic to fetch or generate these */}
                         <img src="/side-image-1.png" alt="Side 1" />
                         <img src="/side-image-2.png" alt="Side 2" />
                         <img src="/side-image-3.png" alt="Side 3" />
@@ -104,23 +109,39 @@ const ProductOverview = () => {
                                 {activeTab === "details" && (
                                     <p>{product.description}</p>
                                 )}
+
                                 {activeTab === "reviews" && (
                                     <>
                                         {reviews.length > 0 ? (
                                             reviews.map((r, index) => (
-                                                <div key={index}>
-                                                    <p>⭐ {r.rating}</p>
-                                                    <p>{r.review}</p>
-                                                    <small>
-                                                        By:{" "}
-                                                        {r.user?.username ||
-                                                            "Anonymous"}
-                                                    </small>
+                                                <div
+                                                    className="review-card"
+                                                    key={index}
+                                                >
+                                                    <img
+                                                        src={
+                                                            r.user.profile_image
+                                                        }
+                                                        alt={r.user.username}
+                                                        className="review-profile-image"
+                                                        onError={(e) =>
+                                                            (e.target.src =
+                                                                "/default-profile.png")
+                                                        }
+                                                    />
+                                                    <div className="review-content">
+                                                        <strong>
+                                                            {r.user.username}
+                                                        </strong>
+                                                        <p>⭐ {r.rating}</p>
+                                                        <p>{r.review}</p>
+                                                    </div>
                                                 </div>
                                             ))
                                         ) : (
                                             <p>No reviews yet</p>
                                         )}
+
                                         <h3>Leave a Review</h3>
                                         <select
                                             value={rating}

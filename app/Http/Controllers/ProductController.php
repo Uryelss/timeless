@@ -245,7 +245,7 @@ class ProductController extends Controller
     }
     public function getProductOverview($id)
     {
-        $product = Product::with(['size', 'reviews.user'])->findOrFail($id);
+        $product = Product::with(['size', 'reviews.user.profile'])->findOrFail($id); // ✅ Ensure `profile` is eager-loaded
 
         $averageRating = $product->reviews()->avg('rating') ?? 0;
 
@@ -253,13 +253,26 @@ class ProductController extends Controller
             'product' => [
                 'id' => $product->id,
                 'product_name' => $product->product_name,
-                'product_image' => asset('storage/' . $product->product_image), // ✅ Fix image URL
+                'product_image' => asset('storage/' . $product->product_image),
                 'price' => $product->price,
                 'size' => $product->size->name ?? null,
                 'description' => $product->description,
                 'average_rating' => number_format($averageRating, 1),
             ],
-            'reviews' => $product->reviews
+            'reviews' => $product->reviews->map(function ($review) {
+                $profileImage = $review->user->profile && $review->user->profile->profile_image
+                    ? asset('storage/' . ltrim($review->user->profile->profile_image, '/'))
+                    : asset('default-profile.png');
+
+                return [
+                    'rating' => $review->rating,
+                    'review' => $review->review,
+                    'user' => [
+                        'username' => $review->user->username ?? 'Anonymous',
+                        'profile_image' => $profileImage, // ✅ Now fetching profile image from `profiles`
+                    ]
+                ];
+            })
         ]);
     }
 }

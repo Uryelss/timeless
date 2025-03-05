@@ -78712,6 +78712,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var _UserLayout_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../UserLayout/Navbar */ "./resources/js/components/UserLayout/Navbar.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -78721,7 +78725,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
- // Import the Navbar component
+
 
 var ProductOverview = function ProductOverview() {
   var _product$size;
@@ -78746,16 +78750,18 @@ var ProductOverview = function ProductOverview() {
   var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("details"),
     _useState10 = _slicedToArray(_useState9, 2),
     activeTab = _useState10[0],
-    setActiveTab = _useState10[1]; // For tab switching
-
+    setActiveTab = _useState10[1];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    fetchProduct();
+  }, [id]);
+  var fetchProduct = function fetchProduct() {
     axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/product/".concat(id)).then(function (response) {
       setProduct(response.data.product);
       setReviews(response.data.reviews);
     })["catch"](function (error) {
       return console.error("Error fetching product:", error);
     });
-  }, [id]);
+  };
   var submitReview = function submitReview() {
     if (!rating) {
       alert("Please select a rating.");
@@ -78768,7 +78774,13 @@ var ProductOverview = function ProductOverview() {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
-    }).then(function () {
+    }).then(function (response) {
+      var newReview = response.data.review;
+
+      // ✅ Dynamically update the review list with the correct profile image from `profiles`
+      setReviews(function (prevReviews) {
+        return [newReview].concat(_toConsumableArray(prevReviews));
+      });
       alert("Review submitted!");
       setReviewText("");
       setRating("");
@@ -78780,12 +78792,12 @@ var ProductOverview = function ProductOverview() {
     children: "Loading..."
   });
 
-  // Calculate average rating for display
+  // Calculate average rating dynamically
   var averageRating = reviews.length > 0 ? (reviews.reduce(function (sum, r) {
     return sum + r.rating;
   }, 0) / reviews.length).toFixed(1) : 0;
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_UserLayout_Navbar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_UserLayout_Navbar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
       className: "product-container",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
         className: "product-images",
@@ -78835,14 +78847,24 @@ var ProductOverview = function ProductOverview() {
                 children: product.description
               }), activeTab === "reviews" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
                 children: [reviews.length > 0 ? reviews.map(function (r, index) {
-                  var _r$user;
                   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-                      children: ["\u2B50 ", r.rating]
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
-                      children: r.review
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("small", {
-                      children: ["By:", " ", ((_r$user = r.user) === null || _r$user === void 0 ? void 0 : _r$user.username) || "Anonymous"]
+                    className: "review-card",
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+                      src: r.user.profile_image,
+                      alt: r.user.username,
+                      className: "review-profile-image",
+                      onError: function onError(e) {
+                        return e.target.src = "/default-profile.png";
+                      }
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                      className: "review-content",
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
+                        children: r.user.username
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+                        children: ["\u2B50 ", r.rating]
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+                        children: r.review
+                      })]
                     })]
                   }, index);
                 }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {

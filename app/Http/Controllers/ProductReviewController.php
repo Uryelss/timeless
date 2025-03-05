@@ -15,13 +15,30 @@ class ProductReviewController extends Controller
             'review' => 'nullable|string'
         ]);
 
-        ProductReview::create([
+        $user = Auth::user(); // ✅ Get the authenticated user
+
+        $review = ProductReview::create([
             'product_id' => $productId,
-            'user_id' => Auth::id(),
+            'user_id' => $user->id,
             'rating' => $request->rating,
             'review' => $request->review
         ]);
 
-        return response()->json(['message' => 'Review added successfully'], 201);
+        // ✅ Ensure the profile image is correctly formatted
+        $profileImage = $user->profile_image
+            ? asset('storage/' . ltrim($user->profile_image, '/'))
+            : asset('default-profile.png');
+
+        return response()->json([
+            'message' => 'Review added successfully',
+            'review' => [
+                'rating' => $review->rating,
+                'review' => $review->review,
+                'user' => [
+                    'username' => $user->username,
+                    'profile_image' => $profileImage, // ✅ Now it includes the correct profile image
+                ]
+            ]
+        ], 201);
     }
 }
