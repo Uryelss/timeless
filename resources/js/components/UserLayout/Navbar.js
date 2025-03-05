@@ -70,7 +70,7 @@ const Navbar = () => {
 
             <ul className={`navbar-links ${isMenuOpen ? "show" : ""}`}>
                 <li>
-                    <Link to="/">HOME</Link>
+                    <Link to="/homepage">HOME</Link>
                 </li>
                 <li>
                     <Link to="/aboutus">ABOUT US</Link>

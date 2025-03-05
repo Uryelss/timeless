@@ -76578,7 +76578,8 @@ var AdminProduct = function AdminProduct() {
       gender_id: "",
       size_id: "",
       price: "",
-      quantity: ""
+      quantity: "",
+      description: "" // ✅ Added description field
     }),
     _useState2 = _slicedToArray(_useState, 2),
     productData = _useState2[0],
@@ -76663,6 +76664,22 @@ var AdminProduct = function AdminProduct() {
       return console.error("Error fetching products:", error);
     });
   };
+  var handleRestore = function handleRestore(productId, fetchProducts, fetchArchivedProducts) {
+    if (window.confirm("Are you sure you want to restore this product?")) {
+      axios__WEBPACK_IMPORTED_MODULE_4__["default"].put("http://localhost:8000/api/products/".concat(productId, "/restore"), {}, {
+        headers: {
+          Authorization: "Bearer ".concat(localStorage.getItem("token"))
+        }
+      }).then(function () {
+        alert("Product restored successfully!");
+        fetchProducts();
+        fetchArchivedProducts();
+      })["catch"](function (error) {
+        console.error("Error restoring product:", error);
+        alert("Failed to restore product.");
+      });
+    }
+  };
   var fetchArchivedProducts = function fetchArchivedProducts() {
     axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/products/archived", {
       headers: {
@@ -76683,11 +76700,12 @@ var AdminProduct = function AdminProduct() {
     e.preventDefault();
     var formData = new FormData();
     for (var key in productData) {
-      if (key === "product_image" && productData[key] === null && !editMode) {
-        alert("Please select an image.");
-        return;
-      }
-      if (!(key === "product_image" && productData[key] === null)) {
+      if (key === "product_image") {
+        // ✅ Only append product_image if a new file is selected
+        if (productData.product_image && productData.product_image instanceof File) {
+          formData.append("product_image", productData.product_image);
+        }
+      } else {
         formData.append(key, productData[key]);
       }
     }
@@ -76741,7 +76759,8 @@ var AdminProduct = function AdminProduct() {
       gender_id: (_product$gender = product.gender) === null || _product$gender === void 0 ? void 0 : _product$gender.id,
       size_id: (_product$size = product.size) === null || _product$size === void 0 ? void 0 : _product$size.id,
       price: product.price,
-      quantity: product.quantity
+      quantity: product.quantity,
+      description: product.description // ✅ Ensure description is pre-filled when editing
     });
     setCurrentProductId(product.id);
     setEditMode(true);
@@ -76904,6 +76923,15 @@ var AdminProduct = function AdminProduct() {
                     }));
                   },
                   required: true
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("textarea", {
+                  placeholder: "Product Description",
+                  value: productData.description,
+                  onChange: function onChange(e) {
+                    return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                      description: e.target.value
+                    }));
+                  },
+                  required: true
                 })]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
                 className: "dropdown-row",
@@ -77056,22 +77084,6 @@ var AdminProduct = function AdminProduct() {
       })]
     })]
   });
-};
-var handleRestore = function handleRestore(productId, fetchProducts, fetchArchivedProducts) {
-  if (window.confirm("Are you sure you want to restore this product?")) {
-    axios__WEBPACK_IMPORTED_MODULE_4__["default"].put("http://localhost:8000/api/products/".concat(productId, "/restore"), {}, {
-      headers: {
-        Authorization: "Bearer ".concat(localStorage.getItem("token"))
-      }
-    }).then(function () {
-      alert("Product restored successfully!");
-      fetchProducts();
-      fetchArchivedProducts();
-    })["catch"](function (error) {
-      console.error("Error restoring product:", error);
-      alert("Failed to restore product.");
-    });
-  }
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AdminProduct);
 
@@ -77365,8 +77377,8 @@ var AdminUserManagement = function AdminUserManagement() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var _USERS_Register__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./USERS/Register */ "./resources/js/components/USERS/Register.js");
 /* harmony import */ var _USERS_Login__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./USERS/Login */ "./resources/js/components/USERS/Login.js");
 /* harmony import */ var _USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./USERS/PrivateRoute */ "./resources/js/components/USERS/PrivateRoute.js");
@@ -77379,7 +77391,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _UserPage_Homepage__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./UserPage/Homepage */ "./resources/js/components/UserPage/Homepage.js");
 /* harmony import */ var _UserPage_Collection__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./UserPage/Collection */ "./resources/js/components/UserPage/Collection.js");
 /* harmony import */ var _UserPage_UserProfile__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./UserPage/UserProfile */ "./resources/js/components/UserPage/UserProfile.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _UserPage_ProductOverview__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./UserPage/ProductOverview */ "./resources/js/components/UserPage/ProductOverview.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 
 
 
@@ -77396,81 +77409,88 @@ __webpack_require__.r(__webpack_exports__);
 
  // ✅ Import UserProfile
 
+
 var App = function App() {
   var token = localStorage.getItem("token");
   var role = localStorage.getItem("role");
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_15__.BrowserRouter, {
-    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Routes, {
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Route, {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.BrowserRouter, {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Routes, {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
         path: "/register",
-        element: !token ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_USERS_Register__WEBPACK_IMPORTED_MODULE_2__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Navigate, {
+        element: !token ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_USERS_Register__WEBPACK_IMPORTED_MODULE_2__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Navigate, {
           to: role === "admin" ? "/admin-dashboard" : "/Homepage"
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Route, {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
         path: "/login",
-        element: !token ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_USERS_Login__WEBPACK_IMPORTED_MODULE_3__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Navigate, {
+        element: !token ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_USERS_Login__WEBPACK_IMPORTED_MODULE_3__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Navigate, {
           to: role === "admin" ? "/admin-dashboard" : "/Homepage"
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Route, {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
         path: "/Homepage",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["user", "admin"],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_UserPage_Homepage__WEBPACK_IMPORTED_MODULE_11__["default"], {})
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_UserPage_Homepage__WEBPACK_IMPORTED_MODULE_11__["default"], {})
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Route, {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
         path: "/Collection",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["user", "admin"],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_UserPage_Collection__WEBPACK_IMPORTED_MODULE_12__["default"], {})
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_UserPage_Collection__WEBPACK_IMPORTED_MODULE_12__["default"], {})
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Route, {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
+        path: "/product/:id",
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+          allowedRoles: ["user", "admin"],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_UserPage_ProductOverview__WEBPACK_IMPORTED_MODULE_14__["default"], {})
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
         path: "/Profile",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsxs)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsxs)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["user"],
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_UserPage_UserProfile__WEBPACK_IMPORTED_MODULE_13__["default"], {}), " "]
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_UserPage_UserProfile__WEBPACK_IMPORTED_MODULE_13__["default"], {}), " "]
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Route, {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
         path: "/admin-dashboard",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["admin"],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_AdminPage_Dashboard__WEBPACK_IMPORTED_MODULE_5__["default"], {})
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_AdminPage_Dashboard__WEBPACK_IMPORTED_MODULE_5__["default"], {})
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Route, {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
         path: "/admin-settings",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["admin"],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_AdminPage_AdminSettings__WEBPACK_IMPORTED_MODULE_6__["default"], {})
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_AdminPage_AdminSettings__WEBPACK_IMPORTED_MODULE_6__["default"], {})
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Route, {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
         path: "/Admin-product",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["admin"],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_AdminPage_ProductManagement__WEBPACK_IMPORTED_MODULE_7__["default"], {})
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_AdminPage_ProductManagement__WEBPACK_IMPORTED_MODULE_7__["default"], {})
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Route, {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
         path: "/admin-inventory",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["admin"],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_AdminPage_InventoryManagement__WEBPACK_IMPORTED_MODULE_8__["default"], {})
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_AdminPage_InventoryManagement__WEBPACK_IMPORTED_MODULE_8__["default"], {})
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Route, {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
         path: "/admin-user",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["admin"],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_AdminPage_UserManagement__WEBPACK_IMPORTED_MODULE_9__["default"], {})
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_AdminPage_UserManagement__WEBPACK_IMPORTED_MODULE_9__["default"], {})
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_16__.Route, {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
         path: "/admin-customer",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_USERS_PrivateRoute__WEBPACK_IMPORTED_MODULE_4__["default"], {
           allowedRoles: ["admin"],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(_AdminPage_CustomerManagement__WEBPACK_IMPORTED_MODULE_10__["default"], {})
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_AdminPage_CustomerManagement__WEBPACK_IMPORTED_MODULE_10__["default"], {})
         })
       })]
     })
   });
 };
 if (document.getElementById("root")) {
-  react_dom__WEBPACK_IMPORTED_MODULE_1__.render(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_14__.jsx)(App, {}), document.getElementById("root"));
+  react_dom__WEBPACK_IMPORTED_MODULE_1__.render(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(App, {}), document.getElementById("root"));
 }
 
 /***/ }),
@@ -78210,7 +78230,7 @@ var Navbar = function Navbar() {
       className: "navbar-links ".concat(isMenuOpen ? "show" : ""),
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("li", {
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
-          to: "/",
+          to: "/homepage",
           children: "HOME"
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("li", {
@@ -78327,6 +78347,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var _UserLayout_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../UserLayout/Navbar */ "./resources/js/components/UserLayout/Navbar.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
@@ -78350,6 +78371,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
+ // ✅ Allows navigation to Product Overview
 
 
 
@@ -78376,10 +78398,17 @@ var CollectionPage = function CollectionPage() {
     _useState6 = _slicedToArray(_useState5, 2),
     filters = _useState6[0],
     setFilters = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    _useState8 = _slicedToArray(_useState7, 2),
+    searchTerm = _useState8[0],
+    setSearchTerm = _useState8[1]; // ✅ Search functionality
+
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchProducts();
-    fetchFilters(); // ✅ Fetch filter options from Admin Settings
+    fetchFilters();
   }, []);
+
+  // ✅ Fetch Active Products
   var fetchProducts = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var response;
@@ -78408,6 +78437,8 @@ var CollectionPage = function CollectionPage() {
       return _ref.apply(this, arguments);
     };
   }();
+
+  // ✅ Fetch Filter Options from Admin Settings
   var fetchFilters = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
       var response;
@@ -78419,7 +78450,6 @@ var CollectionPage = function CollectionPage() {
             return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("http://localhost:8000/api/admin-settings");
           case 3:
             response = _context2.sent;
-            // ✅ No need for Authorization header
             setFilterOptions({
               brands: response.data.brands.map(function (brand) {
                 return brand.name;
@@ -78450,6 +78480,8 @@ var CollectionPage = function CollectionPage() {
       return _ref2.apply(this, arguments);
     };
   }();
+
+  // ✅ Handle Filter Selection
   var handleFilterChange = function handleFilterChange(category, value) {
     setFilters(function (prev) {
       return _objectSpread(_objectSpread({}, prev), {}, _defineProperty({}, category, prev[category].includes(value) ? prev[category].filter(function (item) {
@@ -78457,8 +78489,10 @@ var CollectionPage = function CollectionPage() {
       }) : [].concat(_toConsumableArray(prev[category]), [value])));
     });
   };
+
+  // ✅ Filter Products Based on Selected Filters
   var filteredProducts = products.filter(function (product) {
-    return (filters.brand.length === 0 || filters.brand.includes(product.brand)) && (filters.gender.length === 0 || filters.gender.includes(product.gender)) && (filters.movement.length === 0 || filters.movement.includes(product.movement)) && (filters.strapMaterial.length === 0 || filters.strapMaterial.includes(product.strap_material));
+    return (filters.brand.length === 0 || filters.brand.includes(product.brand)) && (filters.gender.length === 0 || filters.gender.includes(product.gender)) && (filters.movement.length === 0 || filters.movement.includes(product.movement)) && (filters.strapMaterial.length === 0 || filters.strapMaterial.includes(product.strap_material)) && (searchTerm === "" || product.name.toLowerCase().includes(searchTerm.toLowerCase()));
   });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
     className: "collection-page",
@@ -78539,7 +78573,7 @@ var CollectionPage = function CollectionPage() {
               strapMaterial: []
             });
           },
-          children: "APPLY"
+          children: "CLEAR FILTERS"
         })]
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
         className: "products-section",
@@ -78549,7 +78583,11 @@ var CollectionPage = function CollectionPage() {
             className: "search-input",
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
               type: "text",
-              placeholder: "Q"
+              placeholder: "Search Product...",
+              value: searchTerm,
+              onChange: function onChange(e) {
+                return setSearchTerm(e.target.value);
+              }
             })
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             className: "sort-dropdown",
@@ -78573,29 +78611,34 @@ var CollectionPage = function CollectionPage() {
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
           className: "products-grid",
-          children: filteredProducts.map(function (product) {
+          children: filteredProducts.length > 0 ? filteredProducts.map(function (product) {
             return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
               className: "product-card",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-                src: product.image,
-                alt: product.name,
-                onError: function onError(e) {
-                  return e.target.src = "/default-product.png";
-                }
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
-                children: product.name
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-                children: ["\u20B1", product.price]
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
+                to: "/product/".concat(product.id),
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+                  src: product.image,
+                  alt: product.name,
+                  onError: function onError(e) {
+                    return e.target.src = "/default-product.png";
+                  }
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+                  children: product.name
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+                  children: ["\u20B1", product.price]
+                })]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 className: "product-footer",
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                   className: "rating",
-                  children: "\u2605\u2605\u2605\u2605\u2606 4.5"
+                  children: "\u2B50 4.5"
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("i", {
                   className: "fa fa-shopping-cart"
                 })]
               })]
             }, product.id);
+          }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+            children: "No products found."
           })
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
           className: "pagination"
@@ -78638,7 +78681,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _UserLayout_Footer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../UserLayout/Footer */ "./resources/js/components/UserLayout/Footer.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 
-
+ // ✅ Correct
 
 
 
@@ -78650,6 +78693,221 @@ var Homepage = function Homepage() {
   });
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Homepage);
+
+/***/ }),
+
+/***/ "./resources/js/components/UserPage/ProductOverview.js":
+/*!*************************************************************!*\
+  !*** ./resources/js/components/UserPage/ProductOverview.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var _UserLayout_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../UserLayout/Navbar */ "./resources/js/components/UserLayout/Navbar.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+
+
+
+ // Import the Navbar component
+
+var ProductOverview = function ProductOverview() {
+  var _product$size;
+  var _useParams = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useParams)(),
+    id = _useParams.id;
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState2 = _slicedToArray(_useState, 2),
+    product = _useState2[0],
+    setProduct = _useState2[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState4 = _slicedToArray(_useState3, 2),
+    reviews = _useState4[0],
+    setReviews = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    _useState6 = _slicedToArray(_useState5, 2),
+    rating = _useState6[0],
+    setRating = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    _useState8 = _slicedToArray(_useState7, 2),
+    reviewText = _useState8[0],
+    setReviewText = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("details"),
+    _useState10 = _slicedToArray(_useState9, 2),
+    activeTab = _useState10[0],
+    setActiveTab = _useState10[1]; // For tab switching
+
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/product/".concat(id)).then(function (response) {
+      setProduct(response.data.product);
+      setReviews(response.data.reviews);
+    })["catch"](function (error) {
+      return console.error("Error fetching product:", error);
+    });
+  }, [id]);
+  var submitReview = function submitReview() {
+    if (!rating) {
+      alert("Please select a rating.");
+      return;
+    }
+    axios__WEBPACK_IMPORTED_MODULE_4__["default"].post("http://localhost:8000/api/product/".concat(id, "/review"), {
+      rating: rating,
+      review: reviewText
+    }, {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function () {
+      alert("Review submitted!");
+      setReviewText("");
+      setRating("");
+    })["catch"](function (error) {
+      return console.error("Error submitting review:", error);
+    });
+  };
+  if (!product) return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+    children: "Loading..."
+  });
+
+  // Calculate average rating for display
+  var averageRating = reviews.length > 0 ? (reviews.reduce(function (sum, r) {
+    return sum + r.rating;
+  }, 0) / reviews.length).toFixed(1) : 0;
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_UserLayout_Navbar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      className: "product-container",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        className: "product-images",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+          className: "main-image",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+            src: product.product_image,
+            alt: product.product_name,
+            onError: function onError(e) {
+              return e.target.src = "/default-product.png";
+            }
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "side-images",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+            src: "/side-image-1.png",
+            alt: "Side 1"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+            src: "/side-image-2.png",
+            alt: "Side 2"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+            src: "/side-image-3.png",
+            alt: "Side 3"
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+          className: "tabs",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            className: "tab-container",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+              className: "tab-buttons",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+                className: activeTab === "details" ? "active" : "",
+                onClick: function onClick() {
+                  return setActiveTab("details");
+                },
+                children: "PRODUCT DETAILS"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+                className: activeTab === "reviews" ? "active" : "",
+                onClick: function onClick() {
+                  return setActiveTab("reviews");
+                },
+                children: "REVIEWS & RATINGS"
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+              className: "tab-content",
+              children: [activeTab === "details" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+                children: product.description
+              }), activeTab === "reviews" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
+                children: [reviews.length > 0 ? reviews.map(function (r, index) {
+                  var _r$user;
+                  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+                      children: ["\u2B50 ", r.rating]
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+                      children: r.review
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("small", {
+                      children: ["By:", " ", ((_r$user = r.user) === null || _r$user === void 0 ? void 0 : _r$user.username) || "Anonymous"]
+                    })]
+                  }, index);
+                }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+                  children: "No reviews yet"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+                  children: "Leave a Review"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("select", {
+                  value: rating,
+                  onChange: function onChange(e) {
+                    return setRating(e.target.value);
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+                    value: "",
+                    children: "Select Rating"
+                  }), [1, 2, 3, 4, 5].map(function (star) {
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("option", {
+                      value: star,
+                      children: [star, " Stars"]
+                    }, star);
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("textarea", {
+                  value: reviewText,
+                  onChange: function onChange(e) {
+                    return setReviewText(e.target.value);
+                  },
+                  placeholder: "Write a review"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+                  onClick: submitReview,
+                  children: "Submit Review"
+                })]
+              })]
+            })]
+          })
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        className: "product-details-card",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
+          children: product.product_name
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "price",
+          children: ["\u20B1", product.price]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "rating",
+          children: ["Rating: ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+            className: "stars",
+            children: "\u2B50"
+          }), " ", averageRating]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "size",
+          children: ["Size: ", ((_product$size = product.size) === null || _product$size === void 0 ? void 0 : _product$size.name) || "Default Size"]
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        className: "actions",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+          className: "add-to-cart",
+          children: "Add to Cart"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+          className: "buy-now",
+          children: "Buy Now"
+        })]
+      })]
+    })]
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ProductOverview);
 
 /***/ }),
 
@@ -78665,8 +78923,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var _UserLayout_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../UserLayout/Navbar */ "./resources/js/components/UserLayout/Navbar.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
@@ -78682,8 +78941,10 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+// UserProfile.js
 
 
+ // Import the Navbar to render it at the top
 
 var UserProfile = function UserProfile() {
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
@@ -78719,7 +78980,7 @@ var UserProfile = function UserProfile() {
           case 0:
             _context.prev = 0;
             _context.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/user", {
+            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("http://localhost:8000/api/user", {
               headers: {
                 Authorization: "Bearer ".concat(localStorage.getItem("token"))
               }
@@ -78728,15 +78989,15 @@ var UserProfile = function UserProfile() {
             response = _context.sent;
             setUser(response.data);
             setProfileData({
-              username: response.data.username,
-              email: response.data.email,
+              username: response.data.username || "",
+              email: response.data.email || "",
               first_name: response.data.first_name || "",
               middle_name: response.data.middle_name || "",
               last_name: response.data.last_name || "",
               suffix: response.data.suffix || "",
               date_of_birth: response.data.date_of_birth || "",
               gender: response.data.gender || "",
-              profile_image: response.data.profile_image || null
+              profile_image: response.data.profile_image || "/default-profile.png"
             });
             _context.next = 11;
             break;
@@ -78754,25 +79015,36 @@ var UserProfile = function UserProfile() {
       return _ref.apply(this, arguments);
     };
   }();
-
-  // ✅ Keep Edited Changes Separate Until Save is Clicked
   var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(_objectSpread({}, profileData)),
     _useState8 = _slicedToArray(_useState7, 2),
     editedProfileData = _useState8[0],
     setEditedProfileData = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(profileData.profile_image),
+    _useState10 = _slicedToArray(_useState9, 2),
+    previewImage = _useState10[0],
+    setPreviewImage = _useState10[1];
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    setEditedProfileData(profileData);
+    setPreviewImage(profileData.profile_image);
+  }, [profileData]);
   var handleInputChange = function handleInputChange(e) {
     setEditedProfileData(_objectSpread(_objectSpread({}, editedProfileData), {}, _defineProperty({}, e.target.name, e.target.value)));
   };
   var handleFileChange = function handleFileChange(e) {
     if (e.target.files.length > 0) {
+      var file = e.target.files[0];
       setEditedProfileData(_objectSpread(_objectSpread({}, editedProfileData), {}, {
-        profile_image: e.target.files[0]
+        profile_image: file
       }));
+      var reader = new FileReader();
+      reader.onloadend = function () {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
   var handleEdit = function handleEdit() {
     setEditMode(true);
-    setEditedProfileData(profileData); // ✅ Copy current data into editable state
   };
   var handleSubmit = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(e) {
@@ -78792,7 +79064,7 @@ var UserProfile = function UserProfile() {
               formData.append("profile_image", editedProfileData.profile_image);
             }
             _context2.next = 7;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].post("http://localhost:8000/api/update-profile", formData, {
+            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/update-profile", formData, {
               headers: {
                 "Content-Type": "multipart/form-data",
                 Authorization: "Bearer ".concat(localStorage.getItem("token"))
@@ -78801,14 +79073,14 @@ var UserProfile = function UserProfile() {
           case 7:
             alert("Profile updated successfully!");
             setEditMode(false);
-            fetchUserProfile(); // ✅ Refresh profile data after saving
+            fetchUserProfile();
             _context2.next = 16;
             break;
           case 12:
             _context2.prev = 12;
             _context2.t0 = _context2["catch"](1);
             console.error("Error updating profile:", (_error$response = _context2.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data);
-            alert("Failed to update profile. Check the image format.");
+            alert("Complete the Requirements Fields");
           case 16:
           case "end":
             return _context2.stop();
@@ -78820,142 +79092,181 @@ var UserProfile = function UserProfile() {
     };
   }();
   if (!user) {
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
       children: "Loading..."
     });
   }
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-    style: {
-      padding: "20px",
-      maxWidth: "500px",
-      margin: "auto"
-    },
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-      children: "User Profile"
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-      style: {
-        textAlign: "center",
-        marginBottom: "20px"
-      },
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-        src: user.profile_image,
-        alt: "Profile",
-        style: {
-          width: "100px",
-          height: "100px",
-          borderRadius: "50%",
-          objectFit: "cover",
-          border: "2px solid #ddd"
-        }
-      })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("form", {
-      onSubmit: handleSubmit,
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-        children: "Username:"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "text",
-        name: "username",
-        value: editedProfileData.username,
-        onChange: handleInputChange,
-        disabled: !editMode
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-        children: "Email:"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "email",
-        name: "email",
-        value: editedProfileData.email,
-        onChange: handleInputChange,
-        disabled: !editMode
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-        children: "First Name:"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "text",
-        name: "first_name",
-        value: editedProfileData.first_name,
-        onChange: handleInputChange,
-        disabled: !editMode
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-        children: "Middle Name:"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "text",
-        name: "middle_name",
-        value: editedProfileData.middle_name,
-        onChange: handleInputChange,
-        disabled: !editMode
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-        children: "Last Name:"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "text",
-        name: "last_name",
-        value: editedProfileData.last_name,
-        onChange: handleInputChange,
-        disabled: !editMode
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-        children: "Suffix:"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        name: "suffix",
-        value: editedProfileData.suffix,
-        onChange: handleInputChange,
-        disabled: !editMode,
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "",
-          children: "None"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "Jr.",
-          children: "Jr."
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "Sr.",
-          children: "Sr."
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "II",
-          children: "II"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "III",
-          children: "III"
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+    className: "profile-container",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_UserLayout_Navbar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      className: "user-sidebar",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        className: "sidebar-item",
+        children: "PROFILE"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        className: "sidebar-item",
+        children: "MY PURCHASE"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        className: "sidebar-item",
+        children: "ADDRESSES"
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      className: "profile-content",
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        className: "profile-header",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+          src: previewImage,
+          alt: "Profile",
+          style: {
+            width: "120px",
+            height: "120px",
+            objectFit: "cover"
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h2", {
+          children: user.username
         })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-        children: "Date of Birth:"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "date",
-        name: "date_of_birth",
-        value: editedProfileData.date_of_birth,
-        onChange: handleInputChange,
-        disabled: !editMode
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-        children: "Gender:"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("select", {
-        name: "gender",
-        value: editedProfileData.gender,
-        onChange: handleInputChange,
-        disabled: !editMode,
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "Male",
-          children: "Male"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("option", {
-          value: "Female",
-          children: "Female"
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("label", {
-        children: "Profile Image:"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
-        type: "file",
-        onChange: handleFileChange,
-        disabled: !editMode
-      }), editMode ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-          type: "submit",
-          children: "Save Changes"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("form", {
+        onSubmit: handleSubmit,
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "form-group",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+            children: "Username:"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+            type: "text",
+            name: "username",
+            value: editedProfileData.username,
+            onChange: handleInputChange,
+            disabled: !editMode
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "form-group",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+            children: "Email:"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+            type: "email",
+            name: "email",
+            value: editedProfileData.email,
+            onChange: handleInputChange,
+            disabled: !editMode
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "form-group",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+            children: "First Name:"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+            type: "text",
+            name: "first_name",
+            value: editedProfileData.first_name,
+            onChange: handleInputChange,
+            disabled: !editMode
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "form-group",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+            children: "Middle Name:"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+            type: "text",
+            name: "middle_name",
+            value: editedProfileData.middle_name,
+            onChange: handleInputChange,
+            disabled: !editMode
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "form-group",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+            children: "Last Name:"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+            type: "text",
+            name: "last_name",
+            value: editedProfileData.last_name,
+            onChange: handleInputChange,
+            disabled: !editMode
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "form-group",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+            children: "Suffix:"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("select", {
+            name: "suffix",
+            value: editedProfileData.suffix,
+            onChange: handleInputChange,
+            disabled: !editMode,
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+              value: "",
+              children: "None"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+              value: "Jr.",
+              children: "Jr."
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+              value: "Sr.",
+              children: "Sr."
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+              value: "II",
+              children: "II"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+              value: "III",
+              children: "III"
+            })]
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "form-group",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+            children: "Date of Birth:"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+            type: "date",
+            name: "date_of_birth",
+            value: editedProfileData.date_of_birth,
+            onChange: handleInputChange,
+            disabled: !editMode
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "form-group",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+            children: "Gender:"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("select", {
+            name: "gender",
+            value: editedProfileData.gender || "",
+            onChange: handleInputChange,
+            disabled: !editMode,
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+              value: "",
+              children: "Select Gender"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+              value: "Male",
+              children: "Male"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
+              value: "Female",
+              children: "Female"
+            })]
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "form-group",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+            children: "Profile Image:"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+            type: "file",
+            onChange: handleFileChange,
+            disabled: !editMode
+          })]
+        }), editMode ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+            type: "submit",
+            className: "save-btn",
+            children: "Save Changes"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+            type: "button",
+            className: "cancel-btn",
+            onClick: function onClick() {
+              return setEditMode(false);
+            },
+            children: "Cancel"
+          })]
+        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
           type: "button",
-          onClick: function onClick() {
-            return setEditMode(false);
-          },
-          children: "Cancel"
+          className: "edit-btn",
+          onClick: handleEdit,
+          children: "Edit Profile"
         })]
-      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("button", {
-        type: "button",
-        onClick: handleEdit,
-        children: "Edit Profile"
       })]
     })]
   });

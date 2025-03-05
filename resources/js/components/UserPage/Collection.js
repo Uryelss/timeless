@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom"; // ✅ Allows navigation to Product Overview
 import axios from "axios";
 import Navbar from "../UserLayout/Navbar";
 
@@ -17,11 +18,14 @@ const CollectionPage = () => {
         strapMaterial: [],
     });
 
+    const [searchTerm, setSearchTerm] = useState(""); // ✅ Search functionality
+
     useEffect(() => {
         fetchProducts();
-        fetchFilters(); // ✅ Fetch filter options from Admin Settings
+        fetchFilters();
     }, []);
 
+    // ✅ Fetch Active Products
     const fetchProducts = async () => {
         try {
             const response = await axios.get(
@@ -33,11 +37,12 @@ const CollectionPage = () => {
         }
     };
 
+    // ✅ Fetch Filter Options from Admin Settings
     const fetchFilters = async () => {
         try {
             const response = await axios.get(
                 "http://localhost:8000/api/admin-settings"
-            ); // ✅ No need for Authorization header
+            );
             setFilterOptions({
                 brands: response.data.brands.map((brand) => brand.name),
                 genders: response.data.genders.map((gender) => gender.name),
@@ -53,6 +58,7 @@ const CollectionPage = () => {
         }
     };
 
+    // ✅ Handle Filter Selection
     const handleFilterChange = (category, value) => {
         setFilters((prev) => ({
             ...prev,
@@ -62,6 +68,7 @@ const CollectionPage = () => {
         }));
     };
 
+    // ✅ Filter Products Based on Selected Filters
     const filteredProducts = products.filter((product) => {
         return (
             (filters.brand.length === 0 ||
@@ -71,7 +78,9 @@ const CollectionPage = () => {
             (filters.movement.length === 0 ||
                 filters.movement.includes(product.movement)) &&
             (filters.strapMaterial.length === 0 ||
-                filters.strapMaterial.includes(product.strap_material))
+                filters.strapMaterial.includes(product.strap_material)) &&
+            (searchTerm === "" ||
+                product.name.toLowerCase().includes(searchTerm.toLowerCase()))
         );
     });
 
@@ -79,13 +88,15 @@ const CollectionPage = () => {
         <div className="collection-page">
             <Navbar />
 
+            {/* ✅ Hero Image */}
             <div className="collection-image-box"></div>
 
             <div className="main-content">
+                {/* ✅ Filter Section */}
                 <div className="filters">
                     <h3>FILTER</h3>
 
-                    {/* ✅ Dynamic Brands Filter */}
+                    {/* ✅ Brand Filter */}
                     <div>
                         <h4>BRAND</h4>
                         {filterOptions.brands.map((brand) => (
@@ -103,7 +114,7 @@ const CollectionPage = () => {
                         ))}
                     </div>
 
-                    {/* ✅ Dynamic Genders Filter */}
+                    {/* ✅ Gender Filter */}
                     <div>
                         <h4>GENDER</h4>
                         {filterOptions.genders.map((gender) => (
@@ -121,7 +132,7 @@ const CollectionPage = () => {
                         ))}
                     </div>
 
-                    {/* ✅ Dynamic Movement Filter */}
+                    {/* ✅ Movement Filter */}
                     <div>
                         <h4>MOVEMENT</h4>
                         {filterOptions.movements.map((movement) => (
@@ -141,7 +152,7 @@ const CollectionPage = () => {
                         ))}
                     </div>
 
-                    {/* ✅ Dynamic Strap Material Filter */}
+                    {/* ✅ Strap Material Filter */}
                     <div>
                         <h4>STRAP MATERIAL</h4>
                         {filterOptions.strapMaterials.map((material) => (
@@ -164,6 +175,7 @@ const CollectionPage = () => {
                         ))}
                     </div>
 
+                    {/* ✅ Clear Filters Button */}
                     <button
                         onClick={() =>
                             setFilters({
@@ -174,14 +186,21 @@ const CollectionPage = () => {
                             })
                         }
                     >
-                        APPLY
+                        CLEAR FILTERS
                     </button>
                 </div>
 
+                {/* ✅ Product Listing Section */}
                 <div className="products-section">
+                    {/* ✅ Search & Sort */}
                     <div className="search-sort">
                         <div className="search-input">
-                            <input type="text" placeholder="Q" />
+                            <input
+                                type="text"
+                                placeholder="Search Product..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
                         </div>
                         <div className="sort-dropdown">
                             <select>
@@ -196,30 +215,41 @@ const CollectionPage = () => {
                         </div>
                     </div>
 
+                    {/* ✅ Display Products */}
                     <div className="products-grid">
-                        {filteredProducts.map((product) => (
-                            <div key={product.id} className="product-card">
-                                <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    onError={(e) =>
-                                        (e.target.src = "/default-product.png")
-                                    }
-                                />
-                                <h3>{product.name}</h3>
-                                <p>₱{product.price}</p>
-                                <div className="product-footer">
-                                    <span className="rating">★★★★☆ 4.5</span>
-                                    <i className="fa fa-shopping-cart" />
+                        {filteredProducts.length > 0 ? (
+                            filteredProducts.map((product) => (
+                                <div key={product.id} className="product-card">
+                                    {/* ✅ Clicking a product redirects to its overview */}
+                                    <Link to={`/product/${product.id}`}>
+                                        <img
+                                            src={product.image}
+                                            alt={product.name}
+                                            onError={(e) =>
+                                                (e.target.src =
+                                                    "/default-product.png")
+                                            }
+                                        />
+                                        <h3>{product.name}</h3>
+                                        <p>₱{product.price}</p>
+                                    </Link>
+                                    <div className="product-footer">
+                                        <span className="rating">⭐ 4.5</span>
+                                        <i className="fa fa-shopping-cart" />
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        ) : (
+                            <p>No products found.</p>
+                        )}
                     </div>
 
+                    {/* ✅ Pagination Placeholder */}
                     <div className="pagination"></div>
                 </div>
             </div>
 
+            {/* ✅ Footer */}
             <div className="footer">
                 <h1>TIMELESS</h1>
                 <div>

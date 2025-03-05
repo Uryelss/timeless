@@ -54,6 +54,7 @@ class ProductController extends Controller
             'size_id' => 'required|exists:sizes,id',
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
+            'description' => 'required|string',
             'product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -66,6 +67,8 @@ class ProductController extends Controller
             $imagePath = $request->file('product_image')->store('products', 'public');
 
             // ✅ Create Product
+
+
             $product = Product::create([
                 'product_name' => $request->product_name,
                 'product_image' => $imagePath,
@@ -77,7 +80,9 @@ class ProductController extends Controller
                 'size_id' => $request->size_id,
                 'price' => $request->price,
                 'quantity' => $request->quantity,
+                'description' => $request->description
             ]);
+
             // ✅ Ensure the product is created before adding to inventory
             if ($product) {
                 Inventory::create([
@@ -112,7 +117,6 @@ class ProductController extends Controller
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
-
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
             'brand_id' => 'required|exists:brands,id',
@@ -123,7 +127,8 @@ class ProductController extends Controller
             'size_id' => 'required|exists:sizes,id',
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
-            'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'required|string',
+            'product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -131,17 +136,23 @@ class ProductController extends Controller
         }
 
         try {
+            // ✅ Keep the old image if no new image is uploaded
+            $imagePath = $product->product_image;
+
             if ($request->hasFile('product_image')) {
+                // ✅ Delete the old image if it exists
                 if ($product->product_image && Storage::exists('public/' . $product->product_image)) {
                     Storage::delete('public/' . $product->product_image);
                 }
 
+                // ✅ Upload the new image
                 $imagePath = $request->file('product_image')->store('products', 'public');
-                $product->product_image = $imagePath;
             }
 
+            // ✅ Update the Product
             $product->update([
                 'product_name' => $request->product_name,
+                'product_image' => $imagePath,
                 'brand_id' => $request->brand_id,
                 'category_id' => $request->category_id,
                 'movement_id' => $request->movement_id,
@@ -150,14 +161,18 @@ class ProductController extends Controller
                 'size_id' => $request->size_id,
                 'price' => $request->price,
                 'quantity' => $request->quantity,
+                'description' => $request->description
             ]);
+
+            // ✅ Sync the Inventory Table with the updated Product Data
             Inventory::where('product_id', $product->id)->update([
-                'stock_quantity' => $request->quantity,
-                'stock_status' => $request->quantity > 0 ? 'In Stock' : 'Out of Stock',
+                'product_name' => $request->product_name, // ✅ Update name in inventory
+                'product_image' => $imagePath, // ✅ Update image in inventory
+                'stock_quantity' => $request->quantity, // ✅ Update stock quantity
+                'stock_status' => $request->quantity > 0 ? 'In Stock' : 'Out of Stock', // ✅ Update stock status
             ]);
 
-
-            return response()->json(['message' => 'Product updated successfully', 'product' => $product], 200);
+            return response()->json(['message' => 'Product and Inventory updated successfully', 'product' => $product], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to update product',
@@ -165,6 +180,7 @@ class ProductController extends Controller
             ], 500);
         }
     }
+
 
     public function archive($id)
     {
@@ -226,5 +242,24 @@ class ProductController extends Controller
             });
 
         return response()->json($products, 200);
+    }
+    public function getProductOverview($id)
+    {
+        $product = Product::with(['size', 'reviews.user'])->findOrFail($id);
+
+        $averageRating = $product->reviews()->avg('rating') ?? 0;
+
+        return response()->json([
+            'product' => [
+                'id' => $product->id,
+                'product_name' => $product->product_name,
+                'product_image' => asset('storage/' . $product->product_image), // ✅ Fix image URL
+                'price' => $product->price,
+                'size' => $product->size->name ?? null,
+                'description' => $product->description,
+                'average_rating' => number_format($averageRating, 1),
+            ],
+            'reviews' => $product->reviews
+        ]);
     }
 }

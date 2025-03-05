@@ -15,6 +15,7 @@ const AdminProduct = () => {
         size_id: "",
         price: "",
         quantity: "",
+        description: "", // ✅ Added description field
     });
 
     const [dropdownData, setDropdownData] = useState({
@@ -75,6 +76,31 @@ const AdminProduct = () => {
             .then((response) => setProducts(response.data))
             .catch((error) => console.error("Error fetching products:", error));
     };
+    const handleRestore = (productId, fetchProducts, fetchArchivedProducts) => {
+        if (window.confirm("Are you sure you want to restore this product?")) {
+            axios
+                .put(
+                    `http://localhost:8000/api/products/${productId}/restore`,
+                    {},
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem(
+                                "token"
+                            )}`,
+                        },
+                    }
+                )
+                .then(() => {
+                    alert("Product restored successfully!");
+                    fetchProducts();
+                    fetchArchivedProducts();
+                })
+                .catch((error) => {
+                    console.error("Error restoring product:", error);
+                    alert("Failed to restore product.");
+                });
+        }
+    };
 
     const fetchArchivedProducts = () => {
         axios
@@ -96,19 +122,21 @@ const AdminProduct = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const formData = new FormData();
+
         for (const key in productData) {
-            if (
-                key === "product_image" &&
-                productData[key] === null &&
-                !editMode
-            ) {
-                alert("Please select an image.");
-                return;
-            }
-            if (!(key === "product_image" && productData[key] === null)) {
+            if (key === "product_image") {
+                // ✅ Only append product_image if a new file is selected
+                if (
+                    productData.product_image &&
+                    productData.product_image instanceof File
+                ) {
+                    formData.append("product_image", productData.product_image);
+                }
+            } else {
                 formData.append(key, productData[key]);
             }
         }
+
         if (!productData.quantity) {
             alert("Quantity is required.");
             return;
@@ -171,6 +199,7 @@ const AdminProduct = () => {
             size_id: product.size?.id,
             price: product.price,
             quantity: product.quantity,
+            description: product.description, // ✅ Ensure description is pre-filled when editing
         });
         setCurrentProductId(product.id);
         setEditMode(true);
@@ -362,6 +391,17 @@ const AdminProduct = () => {
                                                 setProductData({
                                                     ...productData,
                                                     quantity: e.target.value,
+                                                })
+                                            }
+                                            required
+                                        />
+                                        <textarea
+                                            placeholder="Product Description"
+                                            value={productData.description}
+                                            onChange={(e) =>
+                                                setProductData({
+                                                    ...productData,
+                                                    description: e.target.value,
                                                 })
                                             }
                                             required
@@ -567,32 +607,6 @@ const AdminProduct = () => {
             </div>
         </div>
     );
-};
-
-const handleRestore = (productId, fetchProducts, fetchArchivedProducts) => {
-    if (window.confirm("Are you sure you want to restore this product?")) {
-        axios
-            .put(
-                `http://localhost:8000/api/products/${productId}/restore`,
-                {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem(
-                            "token"
-                        )}`,
-                    },
-                }
-            )
-            .then(() => {
-                alert("Product restored successfully!");
-                fetchProducts();
-                fetchArchivedProducts();
-            })
-            .catch((error) => {
-                console.error("Error restoring product:", error);
-                alert("Failed to restore product.");
-            });
-    }
 };
 
 export default AdminProduct;

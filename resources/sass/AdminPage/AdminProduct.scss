@@ -260,6 +260,19 @@
                 }
             }
         }
+        .modal-form {
+            .form-left {
+                textarea {
+                    width: 100%;
+                    height: 80px;
+                    border: 1px solid black;
+                    border-radius: 8px;
+                    padding: 10px;
+                    font-size: 16px;
+                    resize: none;
+                }
+            }
+        }
 
         .modal-save {
             width: 100%;

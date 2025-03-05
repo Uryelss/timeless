@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminCustomerController;
+use App\Http\Controllers\ProductReviewController;
+
 
 // ✅ PUBLIC ROUTES (No authentication required)
 Route::get('/store/products', [ProductController::class, 'getActiveProducts']); // ✅ Fetch active products
@@ -16,6 +18,8 @@ Route::get('/admin-settings', [AdminSettingsController::class, 'index']); // ✅
 Route::post('register', [UsersController::class, 'register']);
 Route::post('login', [UsersController::class, 'login']);
 Route::post('/logout', [UsersController::class, 'logout'])->middleware('auth:api');
+Route::get('/product/{id}', [ProductController::class, 'getProductOverview']);
+Route::post('/product/{id}/review', [ProductReviewController::class, 'store'])->middleware('auth:api');
 
 // ✅ USER-ONLY ROUTES (Customers must be logged in)
 Route::middleware(['auth:api', 'role:user'])->group(function () {

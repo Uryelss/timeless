@@ -1,5 +1,7 @@
+// UserProfile.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Navbar from "../UserLayout/Navbar"; // Import the Navbar to render it at the top
 
 const UserProfile = () => {
     const [user, setUser] = useState(null);
@@ -30,25 +32,31 @@ const UserProfile = () => {
 
             setUser(response.data);
             setProfileData({
-                username: response.data.username,
-                email: response.data.email,
+                username: response.data.username || "",
+                email: response.data.email || "",
                 first_name: response.data.first_name || "",
                 middle_name: response.data.middle_name || "",
                 last_name: response.data.last_name || "",
                 suffix: response.data.suffix || "",
                 date_of_birth: response.data.date_of_birth || "",
                 gender: response.data.gender || "",
-                profile_image: response.data.profile_image || null,
+                profile_image:
+                    response.data.profile_image || "/default-profile.png",
             });
         } catch (error) {
             console.error("Error fetching user profile:", error);
         }
     };
 
-    // ✅ Keep Edited Changes Separate Until Save is Clicked
     const [editedProfileData, setEditedProfileData] = useState({
         ...profileData,
     });
+    const [previewImage, setPreviewImage] = useState(profileData.profile_image);
+
+    useEffect(() => {
+        setEditedProfileData(profileData);
+        setPreviewImage(profileData.profile_image);
+    }, [profileData]);
 
     const handleInputChange = (e) => {
         setEditedProfileData({
@@ -59,16 +67,22 @@ const UserProfile = () => {
 
     const handleFileChange = (e) => {
         if (e.target.files.length > 0) {
+            const file = e.target.files[0];
             setEditedProfileData({
                 ...editedProfileData,
-                profile_image: e.target.files[0],
+                profile_image: file,
             });
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewImage(reader.result);
+            };
+            reader.readAsDataURL(file);
         }
     };
 
     const handleEdit = () => {
         setEditMode(true);
-        setEditedProfileData(profileData); // ✅ Copy current data into editable state
     };
 
     const handleSubmit = async (e) => {
@@ -104,10 +118,10 @@ const UserProfile = () => {
 
             alert("Profile updated successfully!");
             setEditMode(false);
-            fetchUserProfile(); // ✅ Refresh profile data after saving
+            fetchUserProfile();
         } catch (error) {
             console.error("Error updating profile:", error.response?.data);
-            alert("Failed to update profile. Check the image format.");
+            alert("Complete the Requirements Fields");
         }
     };
 
@@ -116,127 +130,157 @@ const UserProfile = () => {
     }
 
     return (
-        <div style={{ padding: "20px", maxWidth: "500px", margin: "auto" }}>
-            <h2>User Profile</h2>
-
-            {/* ✅ Profile Image Display Section */}
-            <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                <img
-                    src={user.profile_image}
-                    alt="Profile"
-                    style={{
-                        width: "100px",
-                        height: "100px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        border: "2px solid #ddd",
-                    }}
-                />
+        <div className="profile-container">
+            <Navbar /> {/* Render the Navbar at the top */}
+            <div className="user-sidebar">
+                <div className="sidebar-item">PROFILE</div>
+                <div className="sidebar-item">MY PURCHASE</div>
+                <div className="sidebar-item">ADDRESSES</div>
             </div>
+            <div className="profile-content">
+                <div className="profile-header">
+                    <img
+                        src={previewImage}
+                        alt="Profile"
+                        style={{
+                            width: "120px",
+                            height: "120px",
+                            objectFit: "cover",
+                        }}
+                    />
+                    <h2>{user.username}</h2>
+                </div>
 
-            <form onSubmit={handleSubmit}>
-                <label>Username:</label>
-                <input
-                    type="text"
-                    name="username"
-                    value={editedProfileData.username}
-                    onChange={handleInputChange}
-                    disabled={!editMode}
-                />
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label>Username:</label>
+                        <input
+                            type="text"
+                            name="username"
+                            value={editedProfileData.username}
+                            onChange={handleInputChange}
+                            disabled={!editMode}
+                        />
+                    </div>
 
-                <label>Email:</label>
-                <input
-                    type="email"
-                    name="email"
-                    value={editedProfileData.email}
-                    onChange={handleInputChange}
-                    disabled={!editMode}
-                />
+                    <div className="form-group">
+                        <label>Email:</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={editedProfileData.email}
+                            onChange={handleInputChange}
+                            disabled={!editMode}
+                        />
+                    </div>
 
-                <label>First Name:</label>
-                <input
-                    type="text"
-                    name="first_name"
-                    value={editedProfileData.first_name}
-                    onChange={handleInputChange}
-                    disabled={!editMode}
-                />
+                    <div className="form-group">
+                        <label>First Name:</label>
+                        <input
+                            type="text"
+                            name="first_name"
+                            value={editedProfileData.first_name}
+                            onChange={handleInputChange}
+                            disabled={!editMode}
+                        />
+                    </div>
 
-                <label>Middle Name:</label>
-                <input
-                    type="text"
-                    name="middle_name"
-                    value={editedProfileData.middle_name}
-                    onChange={handleInputChange}
-                    disabled={!editMode}
-                />
+                    <div className="form-group">
+                        <label>Middle Name:</label>
+                        <input
+                            type="text"
+                            name="middle_name"
+                            value={editedProfileData.middle_name}
+                            onChange={handleInputChange}
+                            disabled={!editMode}
+                        />
+                    </div>
 
-                <label>Last Name:</label>
-                <input
-                    type="text"
-                    name="last_name"
-                    value={editedProfileData.last_name}
-                    onChange={handleInputChange}
-                    disabled={!editMode}
-                />
+                    <div className="form-group">
+                        <label>Last Name:</label>
+                        <input
+                            type="text"
+                            name="last_name"
+                            value={editedProfileData.last_name}
+                            onChange={handleInputChange}
+                            disabled={!editMode}
+                        />
+                    </div>
 
-                <label>Suffix:</label>
-                <select
-                    name="suffix"
-                    value={editedProfileData.suffix}
-                    onChange={handleInputChange}
-                    disabled={!editMode}
-                >
-                    <option value="">None</option>
-                    <option value="Jr.">Jr.</option>
-                    <option value="Sr.">Sr.</option>
-                    <option value="II">II</option>
-                    <option value="III">III</option>
-                </select>
+                    <div className="form-group">
+                        <label>Suffix:</label>
+                        <select
+                            name="suffix"
+                            value={editedProfileData.suffix}
+                            onChange={handleInputChange}
+                            disabled={!editMode}
+                        >
+                            <option value="">None</option>
+                            <option value="Jr.">Jr.</option>
+                            <option value="Sr.">Sr.</option>
+                            <option value="II">II</option>
+                            <option value="III">III</option>
+                        </select>
+                    </div>
 
-                <label>Date of Birth:</label>
-                <input
-                    type="date"
-                    name="date_of_birth"
-                    value={editedProfileData.date_of_birth}
-                    onChange={handleInputChange}
-                    disabled={!editMode}
-                />
+                    <div className="form-group">
+                        <label>Date of Birth:</label>
+                        <input
+                            type="date"
+                            name="date_of_birth"
+                            value={editedProfileData.date_of_birth}
+                            onChange={handleInputChange}
+                            disabled={!editMode}
+                        />
+                    </div>
 
-                <label>Gender:</label>
-                <select
-                    name="gender"
-                    value={editedProfileData.gender}
-                    onChange={handleInputChange}
-                    disabled={!editMode}
-                >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                </select>
+                    <div className="form-group">
+                        <label>Gender:</label>
+                        <select
+                            name="gender"
+                            value={editedProfileData.gender || ""}
+                            onChange={handleInputChange}
+                            disabled={!editMode}
+                        >
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
 
-                <label>Profile Image:</label>
-                <input
-                    type="file"
-                    onChange={handleFileChange}
-                    disabled={!editMode}
-                />
+                    <div className="form-group">
+                        <label>Profile Image:</label>
+                        <input
+                            type="file"
+                            onChange={handleFileChange}
+                            disabled={!editMode}
+                        />
+                    </div>
 
-                {editMode ? (
-                    <>
-                        <button type="submit">Save Changes</button>
+                    {editMode ? (
+                        <>
+                            <button type="submit" className="save-btn">
+                                Save Changes
+                            </button>
+                            <button
+                                type="button"
+                                className="cancel-btn"
+                                onClick={() => setEditMode(false)}
+                            >
+                                Cancel
+                            </button>
+                        </>
+                    ) : (
                         <button
                             type="button"
-                            onClick={() => setEditMode(false)}
+                            className="edit-btn"
+                            onClick={handleEdit}
                         >
-                            Cancel
+                            Edit Profile
                         </button>
-                    </>
-                ) : (
-                    <button type="button" onClick={handleEdit}>
-                        Edit Profile
-                    </button>
-                )}
-            </form>
+                    )}
+                </form>
+            </div>
         </div>
     );
 };

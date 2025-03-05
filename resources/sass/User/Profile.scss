@@ -1,0 +1,126 @@
+// profile.scss
+.profile-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    position: relative; // Ensure relative positioning for absolute child
+    .user-sidebar {
+        width: 250px; // Standard width for a left sidebar
+        background-color: #ffffff;
+        padding: 20px 0;
+        border-right: 1px solid #ddd;
+        position: absolute; // Use absolute positioning to control vertical position
+        top: 25%; // Move it further down (adjust as needed, e.g., 70%, 80%)
+        left: 20px; // Keep it on the left, slightly inset from the edge
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); // Optional: Add shadow for depth
+        height: 800px;
+        .sidebar-item {
+            padding: 15px 20px;
+            color: #333;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+
+            &:hover {
+                background-color: #f0f0f0;
+                color: #0066cc;
+            }
+
+            &.active {
+                background-color: #0066cc;
+                color: white;
+            }
+        }
+    }
+
+    .profile-content {
+        flex: 1;
+        padding: 30px;
+        margin-left: 270px; // Account for sidebar width + spacing (250px + 20px)
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+            margin-top: 60px; // Keep this to avoid navbar overlap (adjust as needed)
+
+            img {
+                width: 120px;
+                height: 120px;
+                border-radius: 50%;
+                border: 3px solid #ddd;
+                margin-bottom: 10px;
+            }
+
+            h2 {
+                margin: 0;
+                color: #333;
+            }
+        }
+
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+            .form-group {
+                margin-bottom: 15px;
+
+                label {
+                    display: block;
+                    margin-bottom: 5px;
+                    color: #555;
+                    font-weight: 500;
+                }
+
+                input,
+                select {
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    font-size: 14px;
+                }
+
+                input[type="file"] {
+                    padding: 5px;
+                }
+            }
+
+            button {
+                padding: 10px 20px;
+                margin-right: 10px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 14px;
+
+                &.edit-btn {
+                    background-color: #0066cc;
+                    color: white;
+
+                    &:hover {
+                        background-color: #0052a3;
+                    }
+                }
+
+                &.save-btn {
+                    background-color: #4caf50;
+                    color: white;
+
+                    &:hover {
+                        background-color: #45a049;
+                    }
+                }
+
+                &.cancel-btn {
+                    background-color: #ff4444;
+                    color: white;
+
+                    &:hover {
+                        background-color: #cc0000;
+                    }
+                }
+            }
+        }
+    }
+}

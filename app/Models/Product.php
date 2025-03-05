@@ -20,8 +20,10 @@ class Product extends Model
         'gender_id',
         'size_id',
         'price',
-        'quantity'
+        'quantity',
+        'description'
     ];
+
     protected $casts = [
         'is_archived' => 'boolean',
     ];
@@ -58,5 +60,9 @@ class Product extends Model
     public function size()
     {
         return $this->belongsTo(Size::class);
+    }
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class);
     }
 }

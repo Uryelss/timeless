@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "../UserLayout/Navbar";
+import Navbar from "../UserLayout/Navbar"; // ✅ Correct
 import Hero from "../UserLayout/Hero";
 import Footer from "../UserLayout/Footer";
 
