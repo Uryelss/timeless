@@ -12,4 +12,8 @@ class Size extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = ['name'];
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_size');
+    }
 }

@@ -300,11 +300,29 @@ $shadow-color: rgba(0, 0, 0, 0.1);
                     h3 {
                         font-size: 16px;
                         margin-top: 10px;
+                        color: #000; // Set h3 text to black
                     }
 
                     p {
                         font-weight: bold;
                         color: #333;
+                    }
+
+                    .product-footer {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-top: 5px;
+
+                        .rating {
+                            color: #ffd700;
+                        }
+
+                        .fa-shopping-cart {
+                            color: $secondary-color;
+                            font-size: 18px;
+                            cursor: pointer;
+                        }
                     }
 
                     .product-footer {

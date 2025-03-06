@@ -17,7 +17,6 @@ const CollectionPage = () => {
         movement: [],
         strapMaterial: [],
     });
-
     const [searchTerm, setSearchTerm] = useState(""); // ✅ Search functionality
 
     useEffect(() => {
@@ -25,7 +24,7 @@ const CollectionPage = () => {
         fetchFilters();
     }, []);
 
-    // ✅ Fetch Active Products
+    // ✅ Fetch Active Products (make sure API returns `average_rating`)
     const fetchProducts = async () => {
         try {
             const response = await axios.get(
@@ -221,7 +220,13 @@ const CollectionPage = () => {
                             filteredProducts.map((product) => (
                                 <div key={product.id} className="product-card">
                                     {/* ✅ Clicking a product redirects to its overview */}
-                                    <Link to={`/product/${product.id}`}>
+                                    <Link
+                                        to={`/product/${product.id}`}
+                                        style={{
+                                            textDecoration: "none",
+                                            color: "#000",
+                                        }}
+                                    >
                                         <img
                                             src={product.image}
                                             alt={product.name}
@@ -233,8 +238,38 @@ const CollectionPage = () => {
                                         <h3>{product.name}</h3>
                                         <p>₱{product.price}</p>
                                     </Link>
+
                                     <div className="product-footer">
-                                        <span className="rating">⭐ 4.5</span>
+                                        <span className="rating">
+                                            {Array.from(
+                                                { length: 5 },
+                                                (_, i) => (
+                                                    <i
+                                                        key={i}
+                                                        className={
+                                                            i <
+                                                            Math.round(
+                                                                product.average_rating
+                                                            )
+                                                                ? "fas fa-star"
+                                                                : "far fa-star"
+                                                        }
+                                                        style={{
+                                                            color: "#ffd700",
+                                                            marginRight: "2px",
+                                                        }}
+                                                    />
+                                                )
+                                            )}
+                                            <span
+                                                style={{
+                                                    marginLeft: "8px",
+                                                    fontWeight: "bold",
+                                                }}
+                                            >
+                                                {product.average_rating}
+                                            </span>
+                                        </span>
                                         <i className="fa fa-shopping-cart" />
                                     </div>
                                 </div>

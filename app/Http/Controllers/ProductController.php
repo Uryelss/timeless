@@ -69,6 +69,7 @@ class ProductController extends Controller
             // ✅ Create Product
 
 
+            // Create the product (keep other fields as before)
             $product = Product::create([
                 'product_name' => $request->product_name,
                 'product_image' => $imagePath,
@@ -77,11 +78,17 @@ class ProductController extends Controller
                 'movement_id' => $request->movement_id,
                 'strap_material_id' => $request->strap_material_id,
                 'gender_id' => $request->gender_id,
-                'size_id' => $request->size_id,
+                // Instead of size_id, you now expect an array of size IDs:
                 'price' => $request->price,
                 'quantity' => $request->quantity,
                 'description' => $request->description
             ]);
+
+            // If a product is created and the request has an array of size_ids, attach them:
+            if ($product && $request->has('size_ids')) {
+                $product->sizes()->attach($request->size_ids);
+            }
+
 
             // ✅ Ensure the product is created before adding to inventory
             if ($product) {
@@ -163,6 +170,9 @@ class ProductController extends Controller
                 'quantity' => $request->quantity,
                 'description' => $request->description
             ]);
+            if ($request->has('size_ids')) {
+                $product->sizes()->sync($request->size_ids);
+            }
 
             // ✅ Sync the Inventory Table with the updated Product Data
             Inventory::where('product_id', $product->id)->update([
@@ -222,31 +232,35 @@ class ProductController extends Controller
     //userpage
     public function getActiveProducts()
     {
-        $products = Product::whereNull('deleted_at') // ✅ Only fetch active products
-            ->with(['brand', 'gender', 'movement', 'strapMaterial']) // ✅ Fetch necessary relationships
-            ->select('id', 'product_name as name', 'price', 'product_image', 'brand_id', 'gender_id', 'movement_id', 'strap_material_id') // ✅ Ensure IDs are included
+        $products = Product::whereNull('deleted_at')
+            ->with(['brand', 'gender', 'movement', 'strapMaterial', 'reviews']) // add reviews here
+            ->select('id', 'product_name as name', 'price', 'product_image', 'brand_id', 'gender_id', 'movement_id', 'strap_material_id')
             ->get()
             ->map(function ($product) {
+                $average_rating = count($product->reviews) > 0
+                    ? number_format($product->reviews->avg('rating'), 1)
+                    : 0;
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
                     'price' => $product->price,
                     'image' => $product->product_image
-                        ? asset('storage/' . $product->product_image) // ✅ Fix image URL
-                        : asset('default-product.png'), // ✅ Default fallback image
-                    'brand' => $product->brand->name ?? '', // ✅ Get brand name
-                    'gender' => $product->gender->name ?? '', // ✅ Get gender name
-                    'movement' => $product->movement->name ?? '', // ✅ Get movement name
-                    'strap_material' => $product->strapMaterial->name ?? '', // ✅ Get strap material name
+                        ? asset('storage/' . $product->product_image)
+                        : asset('default-product.png'),
+                    'brand' => $product->brand->name ?? '',
+                    'gender' => $product->gender->name ?? '',
+                    'movement' => $product->movement->name ?? '',
+                    'strap_material' => $product->strapMaterial->name ?? '',
+                    'average_rating' => $average_rating,
                 ];
             });
 
         return response()->json($products, 200);
     }
+
     public function getProductOverview($id)
     {
-        $product = Product::with(['size', 'reviews.user.profile'])->findOrFail($id); // ✅ Ensure `profile` is eager-loaded
-
+        $product = Product::with(['sizes', 'reviews.user.profile'])->findOrFail($id);
         $averageRating = $product->reviews()->avg('rating') ?? 0;
 
         return response()->json([
@@ -255,8 +269,8 @@ class ProductController extends Controller
                 'product_name' => $product->product_name,
                 'product_image' => asset('storage/' . $product->product_image),
                 'price' => $product->price,
-                'size' => $product->size->name ?? null,
                 'description' => $product->description,
+                'size' => $product->sizes, // Return all available sizes
                 'average_rating' => number_format($averageRating, 1),
             ],
             'reviews' => $product->reviews->map(function ($review) {
@@ -269,7 +283,7 @@ class ProductController extends Controller
                     'review' => $review->review,
                     'user' => [
                         'username' => $review->user->username ?? 'Anonymous',
-                        'profile_image' => $profileImage, // ✅ Now fetching profile image from `profiles`
+                        'profile_image' => $profileImage,
                     ]
                 ];
             })

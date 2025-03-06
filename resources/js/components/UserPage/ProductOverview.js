@@ -7,9 +7,10 @@ const ProductOverview = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [reviews, setReviews] = useState([]);
-    const [rating, setRating] = useState("");
+    const [rating, setRating] = useState(0); // Numeric rating for reviews
     const [reviewText, setReviewText] = useState("");
     const [activeTab, setActiveTab] = useState("details");
+    const [selectedSize, setSelectedSize] = useState("");
 
     useEffect(() => {
         fetchProduct();
@@ -21,16 +22,22 @@ const ProductOverview = () => {
             .then((response) => {
                 setProduct(response.data.product);
                 setReviews(response.data.reviews);
+                // If there are available sizes, set the first one as default
+                if (
+                    response.data.product.sizes &&
+                    response.data.product.sizes.length > 0
+                ) {
+                    setSelectedSize(response.data.product.sizes[0].name);
+                }
             })
             .catch((error) => console.error("Error fetching product:", error));
     };
 
     const submitReview = () => {
-        if (!rating) {
+        if (rating === 0) {
             alert("Please select a rating.");
             return;
         }
-
         axios
             .post(
                 `http://localhost:8000/api/product/${id}/review`,
@@ -44,21 +51,24 @@ const ProductOverview = () => {
                 }
             )
             .then((response) => {
-                const newReview = response.data.review;
-
-                // ✅ Dynamically update the review list with the correct profile image from `profiles`
-                setReviews((prevReviews) => [newReview, ...prevReviews]);
-
+                // Option: re-fetch updated reviews from the backend
+                axios
+                    .get(`http://localhost:8000/api/product/${id}`)
+                    .then((res) => {
+                        setReviews(res.data.reviews);
+                    })
+                    .catch((err) =>
+                        console.error("Error fetching updated reviews:", err)
+                    );
                 alert("Review submitted!");
                 setReviewText("");
-                setRating("");
+                setRating(0);
             })
             .catch((error) => console.error("Error submitting review:", error));
     };
 
     if (!product) return <p>Loading...</p>;
 
-    // Calculate average rating dynamically
     const averageRating =
         reviews.length > 0
             ? (
@@ -109,7 +119,6 @@ const ProductOverview = () => {
                                 {activeTab === "details" && (
                                     <p>{product.description}</p>
                                 )}
-
                                 {activeTab === "reviews" && (
                                     <>
                                         {reviews.length > 0 ? (
@@ -133,7 +142,29 @@ const ProductOverview = () => {
                                                         <strong>
                                                             {r.user.username}
                                                         </strong>
-                                                        <p>⭐ {r.rating}</p>
+                                                        <p>
+                                                            {Array.from(
+                                                                { length: 5 },
+                                                                (_, i) => (
+                                                                    <i
+                                                                        key={i}
+                                                                        className={
+                                                                            i <
+                                                                            r.rating
+                                                                                ? "fas fa-star"
+                                                                                : "far fa-star"
+                                                                        }
+                                                                        style={{
+                                                                            color:
+                                                                                i <
+                                                                                r.rating
+                                                                                    ? "#ffd700"
+                                                                                    : "#ccc",
+                                                                        }}
+                                                                    />
+                                                                )
+                                                            )}
+                                                        </p>
                                                         <p>{r.review}</p>
                                                     </div>
                                                 </div>
@@ -141,23 +172,31 @@ const ProductOverview = () => {
                                         ) : (
                                             <p>No reviews yet</p>
                                         )}
-
                                         <h3>Leave a Review</h3>
-                                        <select
-                                            value={rating}
-                                            onChange={(e) =>
-                                                setRating(e.target.value)
-                                            }
-                                        >
-                                            <option value="">
-                                                Select Rating
-                                            </option>
+                                        <div className="star-rating-selector">
                                             {[1, 2, 3, 4, 5].map((star) => (
-                                                <option key={star} value={star}>
-                                                    {star} Stars
-                                                </option>
+                                                <i
+                                                    key={star}
+                                                    className={
+                                                        rating >= star
+                                                            ? "fas fa-star"
+                                                            : "far fa-star"
+                                                    }
+                                                    onClick={() =>
+                                                        setRating(star)
+                                                    }
+                                                    style={{
+                                                        cursor: "pointer",
+                                                        color:
+                                                            rating >= star
+                                                                ? "#ffd700"
+                                                                : "#ccc",
+                                                        fontSize: "24px",
+                                                        marginRight: "5px",
+                                                    }}
+                                                />
                                             ))}
-                                        </select>
+                                        </div>
                                         <textarea
                                             value={reviewText}
                                             onChange={(e) =>
@@ -174,20 +213,73 @@ const ProductOverview = () => {
                         </div>
                     </div>
                 </div>
-                <div className="product-details-card">
-                    <h1>{product.product_name}</h1>
-                    <div className="price">₱{product.price}</div>
-                    <div className="rating">
-                        Rating: <span className="stars">⭐</span>{" "}
-                        {averageRating}
+                <div className="details-actions-container">
+                    <div className="product-details-card">
+                        <h1>{product.product_name}</h1>
+                        <div className="price">₱{product.price}</div>
+                        {/* Dynamic sizes from the many-to-many relationship */}
+                        <div className="available-sizes">
+                            {product.sizes && product.sizes.length > 0 ? (
+                                product.sizes.map((size) => (
+                                    <button
+                                        key={size.id}
+                                        onClick={() =>
+                                            setSelectedSize(size.name)
+                                        }
+                                        className={
+                                            selectedSize === size.name
+                                                ? "selected"
+                                                : ""
+                                        }
+                                    >
+                                        {size.name}
+                                    </button>
+                                ))
+                            ) : (
+                                <p>No sizes available</p>
+                            )}
+                        </div>
+                        <div className="rating">
+                            <span>
+                                {Array.from({ length: 5 }, (_, i) => (
+                                    <i
+                                        key={i}
+                                        className={
+                                            i < Math.round(averageRating)
+                                                ? "fas fa-star"
+                                                : "far fa-star"
+                                        }
+                                        style={{
+                                            color: "#ffd700",
+                                            marginRight: "2px",
+                                        }}
+                                    />
+                                ))}
+                            </span>
+                            <span
+                                style={{
+                                    marginLeft: "8px",
+                                    fontWeight: "bold",
+                                }}
+                            >
+                                {averageRating}
+                            </span>
+                        </div>
                     </div>
-                    <div className="size">
-                        Size: {product.size?.name || "Default Size"}
+                    <div className="actions">
+                        <button
+                            className="add-to-cart"
+                            onClick={() => alert("Added to cart!")}
+                        >
+                            ADD TO CART
+                        </button>
+                        <button
+                            className="buy-now"
+                            onClick={() => alert("Redirecting to checkout!")}
+                        >
+                            BUY NOW
+                        </button>
                     </div>
-                </div>
-                <div className="actions">
-                    <button className="add-to-cart">Add to Cart</button>
-                    <button className="buy-now">Buy Now</button>
                 </div>
             </div>
         </>

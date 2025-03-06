@@ -31,6 +31,7 @@ const App = () => {
         <Router>
             <Routes>
                 {/* Public Routes */}
+
                 <Route
                     path="/register"
                     element={
@@ -57,7 +58,7 @@ const App = () => {
                                 to={
                                     role === "admin"
                                         ? "/admin-dashboard"
-                                        : "/Homepage"
+                                        : "/login"
                                 }
                             />
                         )

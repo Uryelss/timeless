@@ -76576,10 +76576,11 @@ var AdminProduct = function AdminProduct() {
       movement_id: "",
       strap_material_id: "",
       gender_id: "",
-      size_id: "",
+      // Replace size_id with size_ids (an array)
+      size_ids: [],
       price: "",
       quantity: "",
-      description: "" // ✅ Added description field
+      description: ""
     }),
     _useState2 = _slicedToArray(_useState, 2),
     productData = _useState2[0],
@@ -76923,15 +76924,6 @@ var AdminProduct = function AdminProduct() {
                     }));
                   },
                   required: true
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("textarea", {
-                  placeholder: "Product Description",
-                  value: productData.description,
-                  onChange: function onChange(e) {
-                    return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-                      description: e.target.value
-                    }));
-                  },
-                  required: true
                 })]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
                 className: "dropdown-row",
@@ -77007,40 +76999,52 @@ var AdminProduct = function AdminProduct() {
                     }, movement.id);
                   })]
                 })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
-                value: productData.category_id,
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                className: "dropdown-select",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+                  value: productData.category_id,
+                  onChange: function onChange(e) {
+                    return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                      category_id: e.target.value
+                    }));
+                  },
+                  required: true,
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                    value: "",
+                    children: "Select Category"
+                  }), dropdownData.categories.map(function (category) {
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                      value: category.id,
+                      children: category.name
+                    }, category.id);
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
+                  value: productData.size_id,
+                  onChange: function onChange(e) {
+                    return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                      size_id: e.target.value
+                    }));
+                  },
+                  required: true,
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                    value: "",
+                    children: "Select Size"
+                  }), dropdownData.sizes.map(function (size) {
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
+                      value: size.id,
+                      children: size.name
+                    }, size.id);
+                  })]
+                })]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("textarea", {
+                placeholder: "Product Description",
+                value: productData.description,
                 onChange: function onChange(e) {
                   return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-                    category_id: e.target.value
+                    description: e.target.value
                   }));
                 },
-                required: true,
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                  value: "",
-                  children: "Select Category"
-                }), dropdownData.categories.map(function (category) {
-                  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                    value: category.id,
-                    children: category.name
-                  }, category.id);
-                })]
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
-                value: productData.size_id,
-                onChange: function onChange(e) {
-                  return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-                    size_id: e.target.value
-                  }));
-                },
-                required: true,
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                  value: "",
-                  children: "Select Size"
-                }), dropdownData.sizes.map(function (size) {
-                  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                    value: size.id,
-                    children: size.name
-                  }, size.id);
-                })]
+                required: true
               })]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
               className: "form-right",
@@ -77423,7 +77427,7 @@ var App = function App() {
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
         path: "/login",
         element: !token ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(_USERS_Login__WEBPACK_IMPORTED_MODULE_3__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Navigate, {
-          to: role === "admin" ? "/admin-dashboard" : "/Homepage"
+          to: role === "admin" ? "/admin-dashboard" : "/login"
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_15__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Route, {
         path: "/Homepage",
@@ -78408,7 +78412,7 @@ var CollectionPage = function CollectionPage() {
     fetchFilters();
   }, []);
 
-  // ✅ Fetch Active Products
+  // ✅ Fetch Active Products (make sure API returns `average_rating`)
   var fetchProducts = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var response;
@@ -78616,6 +78620,10 @@ var CollectionPage = function CollectionPage() {
               className: "product-card",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_4__.Link, {
                 to: "/product/".concat(product.id),
+                style: {
+                  textDecoration: "none",
+                  color: "#000"
+                },
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
                   src: product.image,
                   alt: product.name,
@@ -78629,9 +78637,25 @@ var CollectionPage = function CollectionPage() {
                 })]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 className: "product-footer",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
                   className: "rating",
-                  children: "\u2B50 4.5"
+                  children: [Array.from({
+                    length: 5
+                  }, function (_, i) {
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("i", {
+                      className: i < Math.round(product.average_rating) ? "fas fa-star" : "far fa-star",
+                      style: {
+                        color: "#ffd700",
+                        marginRight: "2px"
+                      }
+                    }, i);
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+                    style: {
+                      marginLeft: "8px",
+                      fontWeight: "bold"
+                    },
+                    children: product.average_rating
+                  })]
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("i", {
                   className: "fa fa-shopping-cart"
                 })]
@@ -78712,10 +78736,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var _UserLayout_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../UserLayout/Navbar */ "./resources/js/components/UserLayout/Navbar.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
-function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
-function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -78728,7 +78748,6 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 var ProductOverview = function ProductOverview() {
-  var _product$size;
   var _useParams = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useParams)(),
     id = _useParams.id;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
@@ -78739,10 +78758,10 @@ var ProductOverview = function ProductOverview() {
     _useState4 = _slicedToArray(_useState3, 2),
     reviews = _useState4[0],
     setReviews = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
     _useState6 = _slicedToArray(_useState5, 2),
     rating = _useState6[0],
-    setRating = _useState6[1];
+    setRating = _useState6[1]; // Numeric rating for reviews
   var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
     _useState8 = _slicedToArray(_useState7, 2),
     reviewText = _useState8[0],
@@ -78751,6 +78770,10 @@ var ProductOverview = function ProductOverview() {
     _useState10 = _slicedToArray(_useState9, 2),
     activeTab = _useState10[0],
     setActiveTab = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    _useState12 = _slicedToArray(_useState11, 2),
+    selectedSize = _useState12[0],
+    setSelectedSize = _useState12[1];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchProduct();
   }, [id]);
@@ -78758,12 +78781,16 @@ var ProductOverview = function ProductOverview() {
     axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/product/".concat(id)).then(function (response) {
       setProduct(response.data.product);
       setReviews(response.data.reviews);
+      // If there are available sizes, set the first one as default
+      if (response.data.product.sizes && response.data.product.sizes.length > 0) {
+        setSelectedSize(response.data.product.sizes[0].name);
+      }
     })["catch"](function (error) {
       return console.error("Error fetching product:", error);
     });
   };
   var submitReview = function submitReview() {
-    if (!rating) {
+    if (rating === 0) {
       alert("Please select a rating.");
       return;
     }
@@ -78775,15 +78802,15 @@ var ProductOverview = function ProductOverview() {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (response) {
-      var newReview = response.data.review;
-
-      // ✅ Dynamically update the review list with the correct profile image from `profiles`
-      setReviews(function (prevReviews) {
-        return [newReview].concat(_toConsumableArray(prevReviews));
+      // Option: re-fetch updated reviews from the backend
+      axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/product/".concat(id)).then(function (res) {
+        setReviews(res.data.reviews);
+      })["catch"](function (err) {
+        return console.error("Error fetching updated reviews:", err);
       });
       alert("Review submitted!");
       setReviewText("");
-      setRating("");
+      setRating(0);
     })["catch"](function (error) {
       return console.error("Error submitting review:", error);
     });
@@ -78791,8 +78818,6 @@ var ProductOverview = function ProductOverview() {
   if (!product) return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
     children: "Loading..."
   });
-
-  // Calculate average rating dynamically
   var averageRating = reviews.length > 0 ? (reviews.reduce(function (sum, r) {
     return sum + r.rating;
   }, 0) / reviews.length).toFixed(1) : 0;
@@ -78860,8 +78885,17 @@ var ProductOverview = function ProductOverview() {
                       className: "review-content",
                       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
                         children: r.user.username
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-                        children: ["\u2B50 ", r.rating]
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+                        children: Array.from({
+                          length: 5
+                        }, function (_, i) {
+                          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("i", {
+                            className: i < r.rating ? "fas fa-star" : "far fa-star",
+                            style: {
+                              color: i < r.rating ? "#ffd700" : "#ccc"
+                            }
+                          }, i);
+                        })
                       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
                         children: r.review
                       })]
@@ -78871,20 +78905,22 @@ var ProductOverview = function ProductOverview() {
                   children: "No reviews yet"
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
                   children: "Leave a Review"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("select", {
-                  value: rating,
-                  onChange: function onChange(e) {
-                    return setRating(e.target.value);
-                  },
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("option", {
-                    value: "",
-                    children: "Select Rating"
-                  }), [1, 2, 3, 4, 5].map(function (star) {
-                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("option", {
-                      value: star,
-                      children: [star, " Stars"]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+                  className: "star-rating-selector",
+                  children: [1, 2, 3, 4, 5].map(function (star) {
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("i", {
+                      className: rating >= star ? "fas fa-star" : "far fa-star",
+                      onClick: function onClick() {
+                        return setRating(star);
+                      },
+                      style: {
+                        cursor: "pointer",
+                        color: rating >= star ? "#ffd700" : "#ccc",
+                        fontSize: "24px",
+                        marginRight: "5px"
+                      }
                     }, star);
-                  })]
+                  })
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("textarea", {
                   value: reviewText,
                   onChange: function onChange(e) {
@@ -78900,30 +78936,64 @@ var ProductOverview = function ProductOverview() {
           })
         })]
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-        className: "product-details-card",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
-          children: product.product_name
+        className: "details-actions-container",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          className: "product-details-card",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
+            children: product.product_name
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            className: "price",
+            children: ["\u20B1", product.price]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+            className: "available-sizes",
+            children: product.sizes && product.sizes.length > 0 ? product.sizes.map(function (size) {
+              return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+                onClick: function onClick() {
+                  return setSelectedSize(size.name);
+                },
+                className: selectedSize === size.name ? "selected" : "",
+                children: size.name
+              }, size.id);
+            }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+              children: "No sizes available"
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            className: "rating",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+              children: Array.from({
+                length: 5
+              }, function (_, i) {
+                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("i", {
+                  className: i < Math.round(averageRating) ? "fas fa-star" : "far fa-star",
+                  style: {
+                    color: "#ffd700",
+                    marginRight: "2px"
+                  }
+                }, i);
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+              style: {
+                marginLeft: "8px",
+                fontWeight: "bold"
+              },
+              children: averageRating
+            })]
+          })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-          className: "price",
-          children: ["\u20B1", product.price]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-          className: "rating",
-          children: ["Rating: ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
-            className: "stars",
-            children: "\u2B50"
-          }), " ", averageRating]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-          className: "size",
-          children: ["Size: ", ((_product$size = product.size) === null || _product$size === void 0 ? void 0 : _product$size.name) || "Default Size"]
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-        className: "actions",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-          className: "add-to-cart",
-          children: "Add to Cart"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-          className: "buy-now",
-          children: "Buy Now"
+          className: "actions",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+            className: "add-to-cart",
+            onClick: function onClick() {
+              return alert("Added to cart!");
+            },
+            children: "ADD TO CART"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
+            className: "buy-now",
+            onClick: function onClick() {
+              return alert("Redirecting to checkout!");
+            },
+            children: "BUY NOW"
+          })]
         })]
       })]
     })]
