@@ -3,6 +3,7 @@
     height: 100vh;
     width: 100vw;
     overflow: hidden;
+    overflow-y: auto; /* Scroll if content is too long */
 }
 
 .settings-content {
@@ -173,10 +174,15 @@ h1 {
     background: white;
     padding: 20px;
     border-radius: 12px;
-    width: 400px;
+    width: 400px !important;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    height: auto !important; /* Auto height based on content */
+    max-height: 80vh;
+    overflow-y: auto; /* Scroll if content exceeds max-height */
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
 }
-
 .modal-content h2 {
     color: #006666;
     font-family: "Helvetica", Arial, sans-serif;
@@ -200,6 +206,7 @@ h1 {
 }
 
 .modal-buttons button {
+    width: 89.81px;
     padding: 10px 20px;
     border: none;
     border-radius: 8px;
