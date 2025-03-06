@@ -395,17 +395,6 @@ const AdminProduct = () => {
                                             }
                                             required
                                         />
-                                        <textarea
-                                            placeholder="Product Description"
-                                            value={productData.description}
-                                            onChange={(e) =>
-                                                setProductData({
-                                                    ...productData,
-                                                    description: e.target.value,
-                                                })
-                                            }
-                                            required
-                                        />
                                     </div>
                                     <div className="dropdown-row">
                                         <select
@@ -510,50 +499,67 @@ const AdminProduct = () => {
                                             )}
                                         </select>
                                     </div>
-                                    <select
-                                        value={productData.category_id}
-                                        onChange={(e) =>
-                                            setProductData({
-                                                ...productData,
-                                                category_id: e.target.value,
-                                            })
-                                        }
-                                        required
-                                    >
-                                        <option value="">
-                                            Select Category
-                                        </option>
-                                        {dropdownData.categories.map(
-                                            (category) => (
-                                                <option
-                                                    key={category.id}
-                                                    value={category.id}
-                                                >
-                                                    {category.name}
-                                                </option>
-                                            )
-                                        )}
-                                    </select>
-                                    <select
-                                        value={productData.size_id}
-                                        onChange={(e) =>
-                                            setProductData({
-                                                ...productData,
-                                                size_id: e.target.value,
-                                            })
-                                        }
-                                        required
-                                    >
-                                        <option value="">Select Size</option>
-                                        {dropdownData.sizes.map((size) => (
-                                            <option
-                                                key={size.id}
-                                                value={size.id}
-                                            >
-                                                {size.name}
+
+                                    <div className="dropdown-select">
+                                        <select
+                                            value={productData.category_id}
+                                            onChange={(e) =>
+                                                setProductData({
+                                                    ...productData,
+                                                    category_id: e.target.value,
+                                                })
+                                            }
+                                            required
+                                        >
+                                            <option value="">
+                                                Select Category
                                             </option>
-                                        ))}
-                                    </select>
+                                            {dropdownData.categories.map(
+                                                (category) => (
+                                                    <option
+                                                        key={category.id}
+                                                        value={category.id}
+                                                    >
+                                                        {category.name}
+                                                    </option>
+                                                )
+                                            )}
+                                        </select>
+                                        <select
+                                            value={productData.size_id}
+                                            onChange={(e) =>
+                                                setProductData({
+                                                    ...productData,
+                                                    size_id: e.target.value,
+                                                })
+                                            }
+                                            required
+                                        >
+                                            <option value="">
+                                                Select Size
+                                            </option>
+                                            {dropdownData.sizes.map((size) => (
+                                                <option
+                                                    key={size.id}
+                                                    value={size.id}
+                                                >
+                                                    {size.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <textarea
+                                        placeholder="Product Description"
+                                        value={productData.description}
+                                        onChange={(e) =>
+                                            setProductData({
+                                                ...productData,
+                                                description: e.target.value,
+                                            })
+                                        }
+                                        required
+                                    />
                                 </div>
                                 <div className="form-right">
                                     <div className="image-upload-container">

@@ -12962,6 +12962,7 @@ textarea.form-control-lg {
   gap: 20px;
   flex: 1;
   overflow: hidden;
+  padding: 20px;
 }
 .modal-form .form-left {
   flex: 1;
@@ -12998,6 +12999,16 @@ textarea.form-control-lg {
   font-size: 16px;
   font-weight: 400;
 }
+.modal-form .form-left textarea {
+  width: 100%;
+  height: 200px;
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 16px;
+  resize: none;
+  margin-top: 20px; /* Add space between other fields and the description */
+}
 .modal-form .form-left .dropdown-row {
   display: flex;
   gap: 10px;
@@ -13016,6 +13027,21 @@ textarea.form-control-lg {
 }
 .modal-form .form-left select {
   width: 496px;
+  height: 44px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid black;
+  padding: 10px;
+  font-family: "Helvetica", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+.modal-form .dropdown-select {
+  display: flex;
+  gap: 10px; /* This creates space between the dropdowns */
+}
+.modal-form .dropdown-select select {
+  width: 216px;
   height: 44px;
   background: white;
   border-radius: 10px;
@@ -13069,7 +13095,7 @@ textarea.form-control-lg {
   cursor: pointer;
   font-family: "Helvetica", Arial, sans-serif;
   font-size: 14px;
-  margin-left: 30px;
+  margin-left: 80px;
   text-align: center;
 }
 .modal-form .form-right .image-upload-container .upload-button:hover {
@@ -13092,6 +13118,7 @@ textarea.form-control-lg {
   gap: 10px;
   margin-top: 10px; /* Add spacing above buttons */
   padding-top: 10px;
+  margin-left: 80px; /* Adjust this value to move buttons further right */
 }
 .modal-form .form-right .modal-save button {
   width: 216px; /* As specified */
@@ -13166,6 +13193,16 @@ textarea.form-control-lg {
   outline: none !important;
 }
 
+/* Add responsiveness if needed */
+@media (max-width: 768px) {
+  .dropdown-select {
+    flex-direction: column; /* Stack the selects vertically on smaller screens */
+    gap: 15px;
+  }
+  select {
+    width: 100%; /* Ensure each select takes up full width */
+  }
+}
 .inventory-management-container {
   display: flex;
   height: 100vh;
@@ -14155,7 +14192,7 @@ ul li a:hover {
   height: 100vh;
   width: 100%;
   padding: 50px;
-  background: url(/images/homepage.png?cafa83b49355acf2836c374f8042ea4d) center/cover no-repeat;
+  background: url(C:modalpublicImageshomepage.png) center/cover no-repeat;
   position: relative;
   color: #fff;
   /* Responsive */
