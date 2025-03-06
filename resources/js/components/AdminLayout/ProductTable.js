@@ -44,7 +44,7 @@ const ProductTable = ({
                         <th>Movement</th>
                         <th>Strap Material</th>
                         <th>Gender</th>
-                        <th>Size</th>
+                        <th>Sizes</th> {/* Updated column */}
                     </tr>
                 </thead>
                 <tbody>
@@ -124,7 +124,13 @@ const ProductTable = ({
                                 <td>{product.movement?.name || "N/A"}</td>
                                 <td>{product.strap_material?.name || "N/A"}</td>
                                 <td>{product.gender?.name || "N/A"}</td>
-                                <td>{product.size?.name || "N/A"}</td>
+                                <td>
+                                    {product.sizes && product.sizes.length > 0
+                                        ? product.sizes
+                                              .map((size) => size.name)
+                                              .join(", ")
+                                        : "N/A"}
+                                </td>
                             </tr>
                         ))
                     )}

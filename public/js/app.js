@@ -75157,8 +75157,8 @@ var ProductTable = function ProductTable(_ref) {
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
             children: "Gender"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("th", {
-            children: "Size"
-          })]
+            children: "Sizes"
+          }), " "]
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("tbody", {
         children: products.length === 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("tr", {
@@ -75168,7 +75168,7 @@ var ProductTable = function ProductTable(_ref) {
             children: ["No ", isArchived ? "archived" : "active", " products found."]
           })
         }) : products.map(function (product) {
-          var _product$category, _product$brand, _product$movement, _product$strap_materi, _product$gender, _product$size;
+          var _product$category, _product$brand, _product$movement, _product$strap_materi, _product$gender;
           return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("tr", {
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("td", {
               className: "actions",
@@ -75226,7 +75226,9 @@ var ProductTable = function ProductTable(_ref) {
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
               children: ((_product$gender = product.gender) === null || _product$gender === void 0 ? void 0 : _product$gender.name) || "N/A"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("td", {
-              children: ((_product$size = product.size) === null || _product$size === void 0 ? void 0 : _product$size.name) || "N/A"
+              children: product.sizes && product.sizes.length > 0 ? product.sizes.map(function (size) {
+                return size.name;
+              }).join(", ") : "N/A"
             })]
           }, product.id);
         })
@@ -76551,6 +76553,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _AdminLayout_ProductTable__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../AdminLayout/ProductTable */ "./resources/js/components/AdminLayout/ProductTable.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -76576,7 +76582,7 @@ var AdminProduct = function AdminProduct() {
       movement_id: "",
       strap_material_id: "",
       gender_id: "",
-      // Replace size_id with size_ids (an array)
+      // Changed from a single size to multiple sizes (array)
       size_ids: [],
       price: "",
       quantity: "",
@@ -76665,22 +76671,6 @@ var AdminProduct = function AdminProduct() {
       return console.error("Error fetching products:", error);
     });
   };
-  var handleRestore = function handleRestore(productId, fetchProducts, fetchArchivedProducts) {
-    if (window.confirm("Are you sure you want to restore this product?")) {
-      axios__WEBPACK_IMPORTED_MODULE_4__["default"].put("http://localhost:8000/api/products/".concat(productId, "/restore"), {}, {
-        headers: {
-          Authorization: "Bearer ".concat(localStorage.getItem("token"))
-        }
-      }).then(function () {
-        alert("Product restored successfully!");
-        fetchProducts();
-        fetchArchivedProducts();
-      })["catch"](function (error) {
-        console.error("Error restoring product:", error);
-        alert("Failed to restore product.");
-      });
-    }
-  };
   var fetchArchivedProducts = function fetchArchivedProducts() {
     axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/products/archived", {
       headers: {
@@ -76702,10 +76692,13 @@ var AdminProduct = function AdminProduct() {
     var formData = new FormData();
     for (var key in productData) {
       if (key === "product_image") {
-        // ✅ Only append product_image if a new file is selected
         if (productData.product_image && productData.product_image instanceof File) {
           formData.append("product_image", productData.product_image);
         }
+      } else if (key === "size_ids") {
+        productData.size_ids.forEach(function (sizeId) {
+          formData.append("size_ids[]", sizeId);
+        });
       } else {
         formData.append(key, productData[key]);
       }
@@ -76740,28 +76733,30 @@ var AdminProduct = function AdminProduct() {
       movement_id: "",
       strap_material_id: "",
       gender_id: "",
-      size_id: "",
+      size_ids: [],
       price: "",
-      quantity: ""
+      quantity: "",
+      description: ""
     });
     setEditMode(false);
     setCurrentProductId(null);
   };
   var handleEdit = function handleEdit(product) {
-    var _product$brand, _product$category, _product$movement, _product$strap_materi, _product$gender, _product$size;
+    var _product$brand, _product$category, _product$movement, _product$strap_materi, _product$gender;
     setProductData({
       product_name: product.product_name,
       product_image: product.product_image,
-      // ✅ Store the existing image URL
       brand_id: (_product$brand = product.brand) === null || _product$brand === void 0 ? void 0 : _product$brand.id,
       category_id: (_product$category = product.category) === null || _product$category === void 0 ? void 0 : _product$category.id,
       movement_id: (_product$movement = product.movement) === null || _product$movement === void 0 ? void 0 : _product$movement.id,
       strap_material_id: (_product$strap_materi = product.strap_material) === null || _product$strap_materi === void 0 ? void 0 : _product$strap_materi.id,
       gender_id: (_product$gender = product.gender) === null || _product$gender === void 0 ? void 0 : _product$gender.id,
-      size_id: (_product$size = product.size) === null || _product$size === void 0 ? void 0 : _product$size.id,
+      size_ids: product.sizes ? product.sizes.map(function (s) {
+        return s.id.toString();
+      }) : [],
       price: product.price,
       quantity: product.quantity,
-      description: product.description // ✅ Ensure description is pre-filled when editing
+      description: product.description
     });
     setCurrentProductId(product.id);
     setEditMode(true);
@@ -76806,12 +76801,28 @@ var AdminProduct = function AdminProduct() {
       });
     }
   };
+  var handleRestore = function handleRestore(productId, fetchProducts, fetchArchivedProducts) {
+    if (window.confirm("Are you sure you want to restore this product?")) {
+      axios__WEBPACK_IMPORTED_MODULE_4__["default"].put("http://localhost:8000/api/products/".concat(productId, "/restore"), {}, {
+        headers: {
+          Authorization: "Bearer ".concat(localStorage.getItem("token"))
+        }
+      }).then(function () {
+        alert("Product restored successfully!");
+        fetchProducts();
+        fetchArchivedProducts();
+      })["catch"](function (error) {
+        console.error("Error restoring product:", error);
+        alert("Failed to restore product.");
+      });
+    }
+  };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
     className: "admin-product-container",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminLayout_Sidebar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
       className: "product-content",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h1", {
-        children: "Product "
+        children: "Product"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
         className: "product-actions",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
@@ -77018,21 +77029,31 @@ var AdminProduct = function AdminProduct() {
                       children: category.name
                     }, category.id);
                   })]
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
-                  value: productData.size_id,
-                  onChange: function onChange(e) {
-                    return setProductData(_objectSpread(_objectSpread({}, productData), {}, {
-                      size_id: e.target.value
-                    }));
-                  },
-                  required: true,
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                    value: "",
-                    children: "Select Size"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                  className: "size-checkbox-group",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+                    children: "Select Sizes:"
                   }), dropdownData.sizes.map(function (size) {
-                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("option", {
-                      value: size.id,
-                      children: size.name
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("label", {
+                      className: "size-checkbox",
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
+                        type: "checkbox",
+                        value: size.id,
+                        checked: productData.size_ids.includes(size.id.toString()),
+                        onChange: function onChange(e) {
+                          if (e.target.checked) {
+                            setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                              size_ids: [].concat(_toConsumableArray(productData.size_ids), [e.target.value])
+                            }));
+                          } else {
+                            setProductData(_objectSpread(_objectSpread({}, productData), {}, {
+                              size_ids: productData.size_ids.filter(function (id) {
+                                return id !== e.target.value;
+                              })
+                            }));
+                          }
+                        }
+                      }), size.name]
                     }, size.id);
                   })]
                 })]
@@ -77051,9 +77072,7 @@ var AdminProduct = function AdminProduct() {
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
                 className: "image-upload-container",
                 children: [productData.product_image ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
-                  src: typeof productData.product_image === "string" ? "http://localhost:8000/storage/".concat(productData.product_image) // ✅ Display existing image
-                  : URL.createObjectURL(productData.product_image) // ✅ Display newly uploaded image
-                  ,
+                  src: typeof productData.product_image === "string" ? "http://localhost:8000/storage/".concat(productData.product_image) : URL.createObjectURL(productData.product_image),
                   alt: "Preview",
                   className: "image-preview"
                 }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
@@ -78736,6 +78755,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var _UserLayout_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../UserLayout/Navbar */ "./resources/js/components/UserLayout/Navbar.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -78770,10 +78793,11 @@ var ProductOverview = function ProductOverview() {
     _useState10 = _slicedToArray(_useState9, 2),
     activeTab = _useState10[0],
     setActiveTab = _useState10[1];
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+  // Changed from a single size to an array for multiple selection
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState12 = _slicedToArray(_useState11, 2),
-    selectedSize = _useState12[0],
-    setSelectedSize = _useState12[1];
+    selectedSizes = _useState12[0],
+    setSelectedSizes = _useState12[1];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchProduct();
   }, [id]);
@@ -78781,9 +78805,10 @@ var ProductOverview = function ProductOverview() {
     axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/product/".concat(id)).then(function (response) {
       setProduct(response.data.product);
       setReviews(response.data.reviews);
-      // If there are available sizes, set the first one as default
+      // If there are available sizes, set default selected as the first one
       if (response.data.product.sizes && response.data.product.sizes.length > 0) {
-        setSelectedSize(response.data.product.sizes[0].name);
+        // You can either pre-select the first one or leave empty for multiple selection
+        setSelectedSizes([response.data.product.sizes[0].id.toString()]);
       }
     })["catch"](function (error) {
       return console.error("Error fetching product:", error);
@@ -78802,7 +78827,7 @@ var ProductOverview = function ProductOverview() {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (response) {
-      // Option: re-fetch updated reviews from the backend
+      // Optionally re-fetch updated reviews
       axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/product/".concat(id)).then(function (res) {
         setReviews(res.data.reviews);
       })["catch"](function (err) {
@@ -78944,19 +78969,31 @@ var ProductOverview = function ProductOverview() {
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             className: "price",
             children: ["\u20B1", product.price]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             className: "available-sizes",
-            children: product.sizes && product.sizes.length > 0 ? product.sizes.map(function (size) {
-              return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("button", {
-                onClick: function onClick() {
-                  return setSelectedSize(size.name);
-                },
-                className: selectedSize === size.name ? "selected" : "",
-                children: size.name
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+              children: "Select Sizes:"
+            }), product.sizes && product.sizes.length > 0 ? product.sizes.map(function (size) {
+              return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("label", {
+                className: "size-checkbox",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("input", {
+                  type: "checkbox",
+                  value: size.id,
+                  checked: selectedSizes.includes(size.id.toString()),
+                  onChange: function onChange(e) {
+                    if (e.target.checked) {
+                      setSelectedSizes([].concat(_toConsumableArray(selectedSizes), [size.id.toString()]));
+                    } else {
+                      setSelectedSizes(selectedSizes.filter(function (id) {
+                        return id !== size.id.toString();
+                      }));
+                    }
+                  }
+                }), size.name]
               }, size.id);
             }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
               children: "No sizes available"
-            })
+            })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             className: "rating",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {

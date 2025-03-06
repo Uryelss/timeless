@@ -12,7 +12,7 @@ const AdminProduct = () => {
         movement_id: "",
         strap_material_id: "",
         gender_id: "",
-        // Replace size_id with size_ids (an array)
+        // Changed from a single size to multiple sizes (array)
         size_ids: [],
         price: "",
         quantity: "",
@@ -77,31 +77,6 @@ const AdminProduct = () => {
             .then((response) => setProducts(response.data))
             .catch((error) => console.error("Error fetching products:", error));
     };
-    const handleRestore = (productId, fetchProducts, fetchArchivedProducts) => {
-        if (window.confirm("Are you sure you want to restore this product?")) {
-            axios
-                .put(
-                    `http://localhost:8000/api/products/${productId}/restore`,
-                    {},
-                    {
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem(
-                                "token"
-                            )}`,
-                        },
-                    }
-                )
-                .then(() => {
-                    alert("Product restored successfully!");
-                    fetchProducts();
-                    fetchArchivedProducts();
-                })
-                .catch((error) => {
-                    console.error("Error restoring product:", error);
-                    alert("Failed to restore product.");
-                });
-        }
-    };
 
     const fetchArchivedProducts = () => {
         axios
@@ -126,13 +101,16 @@ const AdminProduct = () => {
 
         for (const key in productData) {
             if (key === "product_image") {
-                // ✅ Only append product_image if a new file is selected
                 if (
                     productData.product_image &&
                     productData.product_image instanceof File
                 ) {
                     formData.append("product_image", productData.product_image);
                 }
+            } else if (key === "size_ids") {
+                productData.size_ids.forEach((sizeId) => {
+                    formData.append("size_ids[]", sizeId);
+                });
             } else {
                 formData.append(key, productData[key]);
             }
@@ -180,9 +158,10 @@ const AdminProduct = () => {
             movement_id: "",
             strap_material_id: "",
             gender_id: "",
-            size_id: "",
+            size_ids: [],
             price: "",
             quantity: "",
+            description: "",
         });
         setEditMode(false);
         setCurrentProductId(null);
@@ -191,16 +170,18 @@ const AdminProduct = () => {
     const handleEdit = (product) => {
         setProductData({
             product_name: product.product_name,
-            product_image: product.product_image, // ✅ Store the existing image URL
+            product_image: product.product_image,
             brand_id: product.brand?.id,
             category_id: product.category?.id,
             movement_id: product.movement?.id,
             strap_material_id: product.strap_material?.id,
             gender_id: product.gender?.id,
-            size_id: product.size?.id,
+            size_ids: product.sizes
+                ? product.sizes.map((s) => s.id.toString())
+                : [],
             price: product.price,
             quantity: product.quantity,
-            description: product.description, // ✅ Ensure description is pre-filled when editing
+            description: product.description,
         });
         setCurrentProductId(product.id);
         setEditMode(true);
@@ -271,11 +252,37 @@ const AdminProduct = () => {
         }
     };
 
+    const handleRestore = (productId, fetchProducts, fetchArchivedProducts) => {
+        if (window.confirm("Are you sure you want to restore this product?")) {
+            axios
+                .put(
+                    `http://localhost:8000/api/products/${productId}/restore`,
+                    {},
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem(
+                                "token"
+                            )}`,
+                        },
+                    }
+                )
+                .then(() => {
+                    alert("Product restored successfully!");
+                    fetchProducts();
+                    fetchArchivedProducts();
+                })
+                .catch((error) => {
+                    console.error("Error restoring product:", error);
+                    alert("Failed to restore product.");
+                });
+        }
+    };
+
     return (
         <div className="admin-product-container">
             <Sidebar />
             <div className="product-content">
-                <h1>Product </h1>
+                <h1>Product</h1>
                 <div className="product-actions">
                     <div className="search-and-select">
                         <div className="search-container">
@@ -500,7 +507,6 @@ const AdminProduct = () => {
                                             )}
                                         </select>
                                     </div>
-
                                     <div className="dropdown-select">
                                         <select
                                             value={productData.category_id}
@@ -526,30 +532,54 @@ const AdminProduct = () => {
                                                 )
                                             )}
                                         </select>
-                                        <select
-                                            value={productData.size_id}
-                                            onChange={(e) =>
-                                                setProductData({
-                                                    ...productData,
-                                                    size_id: e.target.value,
-                                                })
-                                            }
-                                            required
-                                        >
-                                            <option value="">
-                                                Select Size
-                                            </option>
+                                        {/* Checkboxes for multiple sizes */}
+                                        <div className="size-checkbox-group">
+                                            <p>Select Sizes:</p>
                                             {dropdownData.sizes.map((size) => (
-                                                <option
+                                                <label
                                                     key={size.id}
-                                                    value={size.id}
+                                                    className="size-checkbox"
                                                 >
+                                                    <input
+                                                        type="checkbox"
+                                                        value={size.id}
+                                                        checked={productData.size_ids.includes(
+                                                            size.id.toString()
+                                                        )}
+                                                        onChange={(e) => {
+                                                            if (
+                                                                e.target.checked
+                                                            ) {
+                                                                setProductData({
+                                                                    ...productData,
+                                                                    size_ids: [
+                                                                        ...productData.size_ids,
+                                                                        e.target
+                                                                            .value,
+                                                                    ],
+                                                                });
+                                                            } else {
+                                                                setProductData({
+                                                                    ...productData,
+                                                                    size_ids:
+                                                                        productData.size_ids.filter(
+                                                                            (
+                                                                                id
+                                                                            ) =>
+                                                                                id !==
+                                                                                e
+                                                                                    .target
+                                                                                    .value
+                                                                        ),
+                                                                });
+                                                            }
+                                                        }}
+                                                    />
                                                     {size.name}
-                                                </option>
+                                                </label>
                                             ))}
-                                        </select>
+                                        </div>
                                     </div>
-
                                     <textarea
                                         placeholder="Product Description"
                                         value={productData.description}
@@ -569,10 +599,10 @@ const AdminProduct = () => {
                                                 src={
                                                     typeof productData.product_image ===
                                                     "string"
-                                                        ? `http://localhost:8000/storage/${productData.product_image}` // ✅ Display existing image
+                                                        ? `http://localhost:8000/storage/${productData.product_image}`
                                                         : URL.createObjectURL(
                                                               productData.product_image
-                                                          ) // ✅ Display newly uploaded image
+                                                          )
                                                 }
                                                 alt="Preview"
                                                 className="image-preview"
@@ -594,7 +624,6 @@ const AdminProduct = () => {
                                             Upload New Image
                                         </label>
                                     </div>
-
                                     <div className="modal-save">
                                         <button type="submit">
                                             Save Product

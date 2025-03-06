@@ -10,7 +10,8 @@ const ProductOverview = () => {
     const [rating, setRating] = useState(0); // Numeric rating for reviews
     const [reviewText, setReviewText] = useState("");
     const [activeTab, setActiveTab] = useState("details");
-    const [selectedSize, setSelectedSize] = useState("");
+    // Changed from a single size to an array for multiple selection
+    const [selectedSizes, setSelectedSizes] = useState([]);
 
     useEffect(() => {
         fetchProduct();
@@ -22,12 +23,15 @@ const ProductOverview = () => {
             .then((response) => {
                 setProduct(response.data.product);
                 setReviews(response.data.reviews);
-                // If there are available sizes, set the first one as default
+                // If there are available sizes, set default selected as the first one
                 if (
                     response.data.product.sizes &&
                     response.data.product.sizes.length > 0
                 ) {
-                    setSelectedSize(response.data.product.sizes[0].name);
+                    // You can either pre-select the first one or leave empty for multiple selection
+                    setSelectedSizes([
+                        response.data.product.sizes[0].id.toString(),
+                    ]);
                 }
             })
             .catch((error) => console.error("Error fetching product:", error));
@@ -51,7 +55,7 @@ const ProductOverview = () => {
                 }
             )
             .then((response) => {
-                // Option: re-fetch updated reviews from the backend
+                // Optionally re-fetch updated reviews
                 axios
                     .get(`http://localhost:8000/api/product/${id}`)
                     .then((res) => {
@@ -217,23 +221,40 @@ const ProductOverview = () => {
                     <div className="product-details-card">
                         <h1>{product.product_name}</h1>
                         <div className="price">₱{product.price}</div>
-                        {/* Dynamic sizes from the many-to-many relationship */}
+                        {/* Dynamic sizes displayed as checkboxes */}
                         <div className="available-sizes">
+                            <p>Select Sizes:</p>
                             {product.sizes && product.sizes.length > 0 ? (
                                 product.sizes.map((size) => (
-                                    <button
+                                    <label
                                         key={size.id}
-                                        onClick={() =>
-                                            setSelectedSize(size.name)
-                                        }
-                                        className={
-                                            selectedSize === size.name
-                                                ? "selected"
-                                                : ""
-                                        }
+                                        className="size-checkbox"
                                     >
+                                        <input
+                                            type="checkbox"
+                                            value={size.id}
+                                            checked={selectedSizes.includes(
+                                                size.id.toString()
+                                            )}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedSizes([
+                                                        ...selectedSizes,
+                                                        size.id.toString(),
+                                                    ]);
+                                                } else {
+                                                    setSelectedSizes(
+                                                        selectedSizes.filter(
+                                                            (id) =>
+                                                                id !==
+                                                                size.id.toString()
+                                                        )
+                                                    );
+                                                }
+                                            }}
+                                        />
                                         {size.name}
-                                    </button>
+                                    </label>
                                 ))
                             ) : (
                                 <p>No sizes available</p>

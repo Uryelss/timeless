@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes; // ✅ Import SoftDeletes
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes; // ✅ Use SoftDeletes
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'product_name',
@@ -18,18 +18,12 @@ class Product extends Model
         'movement_id',
         'strap_material_id',
         'gender_id',
-        'size_id',
         'price',
         'quantity',
         'description'
     ];
 
-    protected $casts = [
-        'is_archived' => 'boolean',
-    ];
-    protected $dates = ['deleted_at']; // ✅ Track soft deletes
-
-
+    protected $dates = ['deleted_at'];
 
     // Relationships
     public function brand()
@@ -57,16 +51,23 @@ class Product extends Model
         return $this->belongsTo(Gender::class);
     }
 
-    public function size()
-    {
-        return $this->belongsTo(Size::class);
-    }
-    public function reviews()
-    {
-        return $this->hasMany(ProductReview::class);
-    }
+    // Remove the singular relation
+    // public function size()
+    // {
+    //     return $this->belongsTo(Size::class);
+    // }
+
+    // Only use the many-to-many relation:
+    // In App\Models\Product.php
+
     public function sizes()
     {
         return $this->belongsToMany(Size::class, 'product_size');
+    }
+
+
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class);
     }
 }

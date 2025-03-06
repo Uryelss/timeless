@@ -24,11 +24,13 @@ class ProductController extends Controller
             'movement',
             'strapMaterial',
             'gender',
-            'size'
+            'sizes'  // use "sizes" (plural)
         ])->get();
 
         return response()->json($products, 200);
     }
+
+
 
     public function create()
     {
@@ -51,12 +53,14 @@ class ProductController extends Controller
             'movement_id' => 'required|exists:movements,id',
             'strap_material_id' => 'required|exists:strap_materials,id',
             'gender_id' => 'required|exists:genders,id',
-            'size_id' => 'required|exists:sizes,id',
+            'size_ids' => 'required|array',
+            'size_ids.*' => 'exists:sizes,id',
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
             'description' => 'required|string',
             'product_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
@@ -78,16 +82,15 @@ class ProductController extends Controller
                 'movement_id' => $request->movement_id,
                 'strap_material_id' => $request->strap_material_id,
                 'gender_id' => $request->gender_id,
-                // Instead of size_id, you now expect an array of size IDs:
                 'price' => $request->price,
                 'quantity' => $request->quantity,
                 'description' => $request->description
             ]);
 
-            // If a product is created and the request has an array of size_ids, attach them:
             if ($product && $request->has('size_ids')) {
                 $product->sizes()->attach($request->size_ids);
             }
+
 
 
             // ✅ Ensure the product is created before adding to inventory
@@ -131,7 +134,8 @@ class ProductController extends Controller
             'movement_id' => 'required|exists:movements,id',
             'strap_material_id' => 'required|exists:strap_materials,id',
             'gender_id' => 'required|exists:genders,id',
-            'size_id' => 'required|exists:sizes,id',
+            'size_ids' => 'required|array',
+            'size_ids.*' => 'exists:sizes,id',
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
             'description' => 'required|string',
@@ -143,20 +147,16 @@ class ProductController extends Controller
         }
 
         try {
-            // ✅ Keep the old image if no new image is uploaded
+            // Keep old image if no new image is uploaded
             $imagePath = $product->product_image;
-
             if ($request->hasFile('product_image')) {
-                // ✅ Delete the old image if it exists
                 if ($product->product_image && Storage::exists('public/' . $product->product_image)) {
                     Storage::delete('public/' . $product->product_image);
                 }
-
-                // ✅ Upload the new image
                 $imagePath = $request->file('product_image')->store('products', 'public');
             }
 
-            // ✅ Update the Product
+            // Update the product (remove size_id field)
             $product->update([
                 'product_name' => $request->product_name,
                 'product_image' => $imagePath,
@@ -165,21 +165,20 @@ class ProductController extends Controller
                 'movement_id' => $request->movement_id,
                 'strap_material_id' => $request->strap_material_id,
                 'gender_id' => $request->gender_id,
-                'size_id' => $request->size_id,
                 'price' => $request->price,
                 'quantity' => $request->quantity,
                 'description' => $request->description
             ]);
+
             if ($request->has('size_ids')) {
                 $product->sizes()->sync($request->size_ids);
             }
 
-            // ✅ Sync the Inventory Table with the updated Product Data
             Inventory::where('product_id', $product->id)->update([
-                'product_name' => $request->product_name, // ✅ Update name in inventory
-                'product_image' => $imagePath, // ✅ Update image in inventory
-                'stock_quantity' => $request->quantity, // ✅ Update stock quantity
-                'stock_status' => $request->quantity > 0 ? 'In Stock' : 'Out of Stock', // ✅ Update stock status
+                'product_name' => $request->product_name,
+                'product_image' => $imagePath,
+                'stock_quantity' => $request->quantity,
+                'stock_status' => $request->quantity > 0 ? 'In Stock' : 'Out of Stock',
             ]);
 
             return response()->json(['message' => 'Product and Inventory updated successfully', 'product' => $product], 200);
@@ -190,6 +189,7 @@ class ProductController extends Controller
             ], 500);
         }
     }
+
 
 
     public function archive($id)
@@ -233,13 +233,10 @@ class ProductController extends Controller
     public function getActiveProducts()
     {
         $products = Product::whereNull('deleted_at')
-            ->with(['brand', 'gender', 'movement', 'strapMaterial', 'reviews']) // add reviews here
+            ->with(['brand', 'gender', 'movement', 'strapMaterial', 'sizes']) // load sizes
             ->select('id', 'product_name as name', 'price', 'product_image', 'brand_id', 'gender_id', 'movement_id', 'strap_material_id')
             ->get()
             ->map(function ($product) {
-                $average_rating = count($product->reviews) > 0
-                    ? number_format($product->reviews->avg('rating'), 1)
-                    : 0;
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
@@ -251,38 +248,43 @@ class ProductController extends Controller
                     'gender' => $product->gender->name ?? '',
                     'movement' => $product->movement->name ?? '',
                     'strap_material' => $product->strapMaterial->name ?? '',
-                    'average_rating' => $average_rating,
+                    'sizes' => count($product->sizes) > 0
+                        ? implode(", ", $product->sizes->pluck('name')->toArray())
+                        : "N/A",
                 ];
             });
 
         return response()->json($products, 200);
     }
 
+
+
+
     public function getProductOverview($id)
     {
+        // Eager load the 'sizes' relationship (and reviews with user.profile)
         $product = Product::with(['sizes', 'reviews.user.profile'])->findOrFail($id);
         $averageRating = $product->reviews()->avg('rating') ?? 0;
 
         return response()->json([
             'product' => [
-                'id' => $product->id,
-                'product_name' => $product->product_name,
-                'product_image' => asset('storage/' . $product->product_image),
-                'price' => $product->price,
-                'description' => $product->description,
-                'size' => $product->sizes, // Return all available sizes
-                'average_rating' => number_format($averageRating, 1),
+                'id'              => $product->id,
+                'product_name'    => $product->product_name,
+                'product_image'   => asset('storage/' . $product->product_image),
+                'price'           => $product->price,
+                'description'     => $product->description,
+                'sizes'           => $product->sizes, // Return all sizes
+                'average_rating'  => number_format($averageRating, 1),
             ],
             'reviews' => $product->reviews->map(function ($review) {
                 $profileImage = $review->user->profile && $review->user->profile->profile_image
                     ? asset('storage/' . ltrim($review->user->profile->profile_image, '/'))
                     : asset('default-profile.png');
-
                 return [
                     'rating' => $review->rating,
                     'review' => $review->review,
                     'user' => [
-                        'username' => $review->user->username ?? 'Anonymous',
+                        'username'      => $review->user->username ?? 'Anonymous',
                         'profile_image' => $profileImage,
                     ]
                 ];
