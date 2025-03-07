@@ -20,7 +20,10 @@ class Product extends Model
         'gender_id',
         'price',
         'quantity',
-        'description'
+        'description',
+        'side_image1',
+        'side_image2',
+        'side_image3'
     ];
 
     protected $dates = ['deleted_at'];

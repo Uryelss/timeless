@@ -1,32 +1,26 @@
-// Import variables and mixins if needed (you can define these globally)
-$primary-color: #006400; // Green color (can be adjusted if needed)
-$border-radius: 5px;
-$shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-
-// Product page styling
 .product-container {
-    max-width: 1400px; // Increased max-width to allow more space
-    margin: 80px auto 20px; // Increased top margin to avoid overlapping with Navbar
+    max-width: 1400px;
+    margin: 80px auto 20px;
     padding: 20px;
     display: flex;
-    flex-direction: row; // Side-by-side layout
+    flex-direction: row;
     gap: 20px;
 
     .product-images {
-        flex: 1; // Adjusted to fit alongside details
-        max-width: 50%; // Half the container for images
+        flex: 1;
+        max-width: 50%;
 
         .main-image {
             border: 1px solid #ddd;
-            border-radius: $border-radius;
+            border-radius: 5px;
             padding: 10px;
-            box-shadow: $shadow;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
 
             img {
-                max-width: 100%;
-                height: 300px; // Matches the height in the image
-                object-fit: cover;
+                width: 100%;
+                height: 300px;
+                object-fit: fill; // Ensures the image covers the container
                 display: block;
             }
         }
@@ -35,31 +29,24 @@ $shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            margin-left: 100px; // Shift side images further right
 
             img {
                 width: 100px;
                 height: 100px;
                 border: 1px solid #ddd;
-                border-radius: $border-radius;
+                border-radius: 8px;
                 object-fit: cover;
                 cursor: pointer;
-                transition: border-color 0.3s;
-
-                &:hover {
-                    border-color: $primary-color;
-                }
             }
         }
 
         .tabs {
-            flex: 2;
-            width: 100%;
-
             .tab-container {
                 background: #fff;
                 border: 1px solid #ddd;
-                border-radius: $border-radius;
-                box-shadow: $shadow;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                 padding: 20px;
 
                 .tab-buttons {
@@ -80,14 +67,13 @@ $shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                         transition: border-color 0.3s, color 0.3s;
 
                         &.active {
-                            border-bottom: 2px solid $primary-color;
-                            color: $primary-color;
+                            border-bottom: 2px solid #006400;
+                            color: #006400;
                         }
 
                         &:hover {
-                            border-bottom: 2px solid
-                                lighten($primary-color, 20%);
-                            color: lighten($primary-color, 20%);
+                            border-bottom: 2px solid lighten(#006400, 20%);
+                            color: lighten(#006400, 20%);
                         }
                     }
                 }
@@ -104,27 +90,23 @@ $shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
     .details-actions-container {
         flex: 1;
-        max-width: 50%; // Half the container for details and actions
+        max-width: 50%;
         display: flex;
-        flex-direction: column; // Stack details and actions vertically
+        flex-direction: column;
         gap: 20px;
 
         .product-details-card {
             background: #fff;
             border: 1px solid #ddd;
-            border-radius: $border-radius;
-            box-shadow: $shadow;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            text-align: center;
 
             h1 {
                 font-size: 20px;
                 margin-bottom: 10px;
                 color: #333;
-                text-align: center;
             }
 
             .price {
@@ -132,20 +114,30 @@ $shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                 font-weight: bold;
                 color: #000;
                 margin-bottom: 10px;
-                text-align: center;
             }
 
-            .size-select {
-                font-size: 14px;
-                color: #666;
-                margin-bottom: 10px;
-                text-align: center;
-
-                select {
-                    margin-left: 5px;
-                    padding: 5px;
-                    border-radius: $border-radius;
-                    border: 1px solid #ddd;
+            .available-sizes {
+                p {
+                    margin-bottom: 5px;
+                    font-size: 14px;
+                    color: #666;
+                }
+                .size-checkbox {
+                    margin: 5px;
+                    padding: 8px 12px;
+                    border: 1px solid #ccc;
+                    background-color: #f5f5f5;
+                    cursor: pointer;
+                    border-radius: 4px;
+                    display: inline-block;
+                    input {
+                        margin-right: 5px;
+                    }
+                    &.selected {
+                        background-color: #006400;
+                        color: #fff;
+                        border-color: #006400;
+                    }
                 }
             }
 
@@ -153,8 +145,6 @@ $shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                 font-size: 14px;
                 color: #666;
                 margin-bottom: 20px;
-                text-align: center;
-
                 .stars {
                     color: #ffd700;
                 }
@@ -164,8 +154,7 @@ $shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         .actions {
             display: flex;
             gap: 10px;
-            justify-content: center; // Center the buttons horizontally
-
+            justify-content: center;
             button {
                 padding: 15px 30px;
                 font-size: 16px;
@@ -174,7 +163,6 @@ $shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                 cursor: pointer;
                 width: 200px;
                 transition: background-color 0.3s;
-
                 &.add-to-cart {
                     background-color: #000;
                     color: #fff;
@@ -182,7 +170,6 @@ $shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                         background-color: #333;
                     }
                 }
-
                 &.buy-now {
                     background-color: #fff;
                     color: #000;
@@ -191,54 +178,6 @@ $shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                         background-color: #f0f0f0;
                     }
                 }
-            }
-        }
-    }
-
-    .review-card {
-        display: flex;
-        align-items: center;
-        background: #f9f9f9;
-        border-radius: 8px;
-        padding: 10px;
-        margin-bottom: 10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-
-        .review-profile-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 15px;
-        }
-
-        .review-content {
-            strong {
-                font-size: 16px;
-                color: #333;
-            }
-
-            p {
-                font-size: 14px;
-                color: #666;
-                margin: 5px 0;
-            }
-        }
-    }
-    .available-sizes {
-        margin: 10px 0;
-        p {
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .size-checkbox {
-            display: inline-block;
-            margin-right: 10px;
-            font-size: 14px;
-            color: #333;
-            cursor: pointer;
-            input {
-                margin-right: 5px;
             }
         }
     }

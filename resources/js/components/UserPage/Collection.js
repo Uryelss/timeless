@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom"; // ✅ Allows navigation to Product Overview
 import axios from "axios";
 import Navbar from "../UserLayout/Navbar";
+// Import Footer if needed elsewhere, but it's not rendered here.
+// import Footer from "../UserLayout/Footer";
 
 const CollectionPage = () => {
     const [products, setProducts] = useState([]);
@@ -87,15 +89,21 @@ const CollectionPage = () => {
         <div className="collection-page">
             <Navbar />
 
-            {/* ✅ Hero Image */}
-            <div className="collection-image-box"></div>
+            {/* Updated Hero Section */}
+            <div className="collection-hero">
+                <img
+                    src="/Images/COLLECTION.png"
+                    alt="Collection Hero"
+                    className="hero-image"
+                />
+            </div>
 
             <div className="main-content">
-                {/* ✅ Filter Section */}
+                {/* Filter Section */}
                 <div className="filters">
                     <h3>FILTER</h3>
 
-                    {/* ✅ Brand Filter */}
+                    {/* Brand Filter */}
                     <div>
                         <h4>BRAND</h4>
                         {filterOptions.brands.map((brand) => (
@@ -113,7 +121,7 @@ const CollectionPage = () => {
                         ))}
                     </div>
 
-                    {/* ✅ Gender Filter */}
+                    {/* Gender Filter */}
                     <div>
                         <h4>GENDER</h4>
                         {filterOptions.genders.map((gender) => (
@@ -131,7 +139,7 @@ const CollectionPage = () => {
                         ))}
                     </div>
 
-                    {/* ✅ Movement Filter */}
+                    {/* Movement Filter */}
                     <div>
                         <h4>MOVEMENT</h4>
                         {filterOptions.movements.map((movement) => (
@@ -151,7 +159,7 @@ const CollectionPage = () => {
                         ))}
                     </div>
 
-                    {/* ✅ Strap Material Filter */}
+                    {/* Strap Material Filter */}
                     <div>
                         <h4>STRAP MATERIAL</h4>
                         {filterOptions.strapMaterials.map((material) => (
@@ -174,7 +182,7 @@ const CollectionPage = () => {
                         ))}
                     </div>
 
-                    {/* ✅ Clear Filters Button */}
+                    {/* Clear Filters Button */}
                     <button
                         onClick={() =>
                             setFilters({
@@ -189,108 +197,106 @@ const CollectionPage = () => {
                     </button>
                 </div>
 
-                {/* ✅ Product Listing Section */}
+                {/* Product Listing Section */}
                 <div className="products-section">
-                    {/* ✅ Search & Sort */}
-                    <div className="search-sort">
-                        <div className="search-input">
-                            <input
-                                type="text"
-                                placeholder="Search Product..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
+                    <div className="collection-box">
+                        {/* Search & Sort */}
+                        <div className="search-sort">
+                            <div className="search-input">
+                                <input
+                                    type="text"
+                                    placeholder="Search Product..."
+                                    value={searchTerm}
+                                    onChange={(e) =>
+                                        setSearchTerm(e.target.value)
+                                    }
+                                />
+                            </div>
+                            <div className="sort-dropdown">
+                                <select>
+                                    <option>SORT BY</option>
+                                    <option>Low to High</option>
+                                    <option>High to Low</option>
+                                    <option>Best Seller</option>
+                                    <option>New Arrivals</option>
+                                    <option>Highest Rated</option>
+                                </select>
+                                <i className="fa-solid fa-caret-down" />
+                            </div>
                         </div>
-                        <div className="sort-dropdown">
-                            <select>
-                                <option>SORT BY</option>
-                                <option>Low to High</option>
-                                <option>High to Low</option>
-                                <option>Best Seller</option>
-                                <option>New Arrivals</option>
-                                <option>Highest Rated</option>
-                            </select>
-                            <i className="fa-solid fa-caret-down" />
-                        </div>
-                    </div>
 
-                    {/* ✅ Display Products */}
-                    <div className="products-grid">
-                        {filteredProducts.length > 0 ? (
-                            filteredProducts.map((product) => (
-                                <div key={product.id} className="product-card">
-                                    {/* ✅ Clicking a product redirects to its overview */}
-                                    <Link
-                                        to={`/product/${product.id}`}
-                                        style={{
-                                            textDecoration: "none",
-                                            color: "#000",
-                                        }}
+                        {/* Display Products */}
+                        <div className="products-grid">
+                            {filteredProducts.length > 0 ? (
+                                filteredProducts.map((product) => (
+                                    <div
+                                        key={product.id}
+                                        className="product-card"
                                     >
-                                        <img
-                                            src={product.image}
-                                            alt={product.name}
-                                            onError={(e) =>
-                                                (e.target.src =
-                                                    "/default-product.png")
-                                            }
-                                        />
-                                        <h3>{product.name}</h3>
-                                        <p>₱{product.price}</p>
-                                    </Link>
+                                        {/* Clicking a product redirects to its overview */}
+                                        <Link
+                                            to={`/product/${product.id}`}
+                                            style={{
+                                                textDecoration: "none",
+                                                color: "#000",
+                                            }}
+                                        >
+                                            <img
+                                                src={product.image}
+                                                alt={product.name}
+                                                onError={(e) =>
+                                                    (e.target.src =
+                                                        "/default-product.png")
+                                                }
+                                            />
+                                            <h3>{product.name}</h3>
+                                            <p>₱{product.price}</p>
+                                        </Link>
 
-                                    <div className="product-footer">
-                                        <span className="rating">
-                                            {Array.from(
-                                                { length: 5 },
-                                                (_, i) => (
-                                                    <i
-                                                        key={i}
-                                                        className={
-                                                            i <
-                                                            Math.round(
-                                                                product.average_rating
-                                                            )
-                                                                ? "fas fa-star"
-                                                                : "far fa-star"
-                                                        }
-                                                        style={{
-                                                            color: "#ffd700",
-                                                            marginRight: "2px",
-                                                        }}
-                                                    />
-                                                )
-                                            )}
-                                            <span
-                                                style={{
-                                                    marginLeft: "8px",
-                                                    fontWeight: "bold",
-                                                }}
-                                            >
-                                                {product.average_rating}
+                                        <div className="product-footer">
+                                            <span className="rating">
+                                                {Array.from(
+                                                    { length: 5 },
+                                                    (_, i) => (
+                                                        <i
+                                                            key={i}
+                                                            className={
+                                                                i <
+                                                                Math.round(
+                                                                    product.average_rating
+                                                                )
+                                                                    ? "fas fa-star"
+                                                                    : "far fa-star"
+                                                            }
+                                                            style={{
+                                                                color: "#ffd700",
+                                                                marginRight:
+                                                                    "2px",
+                                                            }}
+                                                        />
+                                                    )
+                                                )}
+                                                <span
+                                                    style={{
+                                                        marginLeft: "8px",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    {product.average_rating}
+                                                </span>
                                             </span>
-                                        </span>
-                                        <i className="fa fa-shopping-cart" />
+                                            <i className="fa fa-shopping-cart" />
+                                        </div>
                                     </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p>No products found.</p>
-                        )}
+                                ))
+                            ) : (
+                                <p>No products found.</p>
+                            )}
+                        </div>
+
+                        {/* Pagination Placeholder */}
+                        <div className="pagination"></div>
                     </div>
-
-                    {/* ✅ Pagination Placeholder */}
-                    <div className="pagination"></div>
-                </div>
-            </div>
-
-            {/* ✅ Footer */}
-            <div className="footer">
-                <h1>TIMELESS</h1>
-                <div>
-                    <h3>SUPPORT</h3>
-                    <p>How to Order</p>
-                    <p>Modes of Payment</p>
                 </div>
             </div>
         </div>

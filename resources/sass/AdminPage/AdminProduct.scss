@@ -96,6 +96,7 @@
         }
     }
 }
+
 .modal {
     position: fixed;
     top: 0;
@@ -112,13 +113,13 @@
 
 .modal-content {
     width: 1060px !important;
-    height: 716px !important;
+    max-height: 90vh;
     background: white;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.55);
     border: 1px solid black;
     padding: 10px;
     border-radius: 0;
-    overflow: hidden;
+    overflow-y: auto; /* Allow vertical scrolling */
     display: flex;
     flex-direction: column;
 }
@@ -136,77 +137,37 @@
     flex-direction: row;
     gap: 20px;
     flex: 1;
-    overflow: hidden;
     padding: 20px;
+    overflow-y: auto; /* Allow vertical scrolling in the form */
+}
 
-    .form-left {
-        flex: 1;
+.modal-form .form-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 496px;
+    max-width: 496px;
+
+    .product-name-input {
+        width: 496px;
+        height: 44px;
+        background: white;
+        border-radius: 10px;
+        border: 1px solid black;
+        padding: 10px;
+        font-family: "Helvetica", Arial, sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+    }
+
+    .price-quantity-row {
         display: flex;
-        flex-direction: column;
         gap: 10px;
-        min-width: 496px;
-        max-width: 496px;
+        width: 100%;
 
-        .product-name-input {
-            width: 496px;
-            height: 44px;
-            background: white;
-            border-radius: 10px;
-            border: 1px solid black;
-            padding: 10px;
-            font-family: "Helvetica", Arial, sans-serif;
-            font-size: 16px;
-            font-weight: 400;
-        }
-
-        .price-quantity-row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-
-            input {
-                width: 216px;
-                height: 44px;
-                background: white;
-                border-radius: 10px;
-                border: 1px solid black;
-                padding: 10px;
-                font-family: "Helvetica", Arial, sans-serif;
-                font-size: 16px;
-                font-weight: 400;
-            }
-        }
-        textarea {
-            width: 100%;
-            height: 200px;
-            border: 1px solid black;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 16px;
-            resize: none;
-            margin-top: 20px; /* Add space between other fields and the description */
-        }
-
-        .dropdown-row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-
-            select {
-                width: 216px;
-                height: 44px;
-                background: white;
-                border-radius: 10px;
-                border: 1px solid black;
-                padding: 10px;
-                font-family: "Helvetica", Arial, sans-serif;
-                font-size: 16px;
-                font-weight: 400;
-            }
-        }
-
-        select {
-            width: 496px;
+        input {
+            width: 216px;
             height: 44px;
             background: white;
             border-radius: 10px;
@@ -218,9 +179,21 @@
         }
     }
 
-    .dropdown-select {
+    textarea {
+        width: 100%;
+        height: 200px;
+        border: 1px solid black;
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 16px;
+        resize: none;
+        margin-top: 20px; /* Add space between other fields and the description */
+    }
+
+    .dropdown-row {
         display: flex;
-        gap: 10px; /* This creates space between the dropdowns */
+        gap: 10px;
+        width: 100%;
 
         select {
             width: 216px;
@@ -235,112 +208,149 @@
         }
     }
 
-    .form-right {
-        flex: 1;
-        min-width: 399px;
-        max-width: 399px;
+    select {
+        width: 496px;
+        height: 44px;
+        background: white;
+        border-radius: 10px;
+        border: 1px solid black;
+        padding: 10px;
+        font-family: "Helvetica", Arial, sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+    }
+}
+
+.modal-form .dropdown-select {
+    display: flex;
+    gap: 10px; /* This creates space between the dropdowns */
+
+    select {
+        width: 216px;
+        height: 44px;
+        background: white;
+        border-radius: 10px;
+        border: 1px solid black;
+        padding: 10px;
+        font-family: "Helvetica", Arial, sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+    }
+}
+
+.modal-form .side-images-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+
+    .side-image-upload {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .upload-button {
+            padding: 8px 16px;
+            background-color: #006400;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    }
+}
+
+.modal-form .form-right {
+    flex: 1;
+    min-width: 399px;
+    max-width: 399px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between; /* Push buttons to the bottom */
+
+    .image-upload-container {
+        width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 10px;
-        justify-content: space-between; /* Push buttons to the bottom */
 
-        .image-upload-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
+        .image-preview {
+            width: 259px;
+            height: 325px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid black;
+        }
 
-            .image-preview {
-                width: 259px;
-                height: 325px;
-                object-fit: cover;
-                border-radius: 10px;
-                border: 1px solid black;
+        .image-placeholder {
+            width: 450px;
+            height: 225px;
+            background: #fefcfc;
+            border-radius: 10px;
+            border: 1px solid black;
+            margin-left: 60px; /* Adjust this value to move it further right */
+        }
+
+        .hidden-file-input {
+            display: none;
+        }
+
+        .upload-button {
+            padding: 8px 16px;
+            background-color: #006666;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: "Helvetica", Arial, sans-serif;
+            font-size: 14px;
+            margin-left: 80px;
+            text-align: center;
+            &:hover {
+                background-color: darken(#006666, 10%);
             }
+        }
+    }
 
-            .image-placeholder {
-                width: 450px;
-                height: 225px;
-                background: #fefcfc;
-                border-radius: 10px;
-                border: 1px solid black;
-                margin-left: 60px; /* Adjust this value to move it further right */
-            }
+    .modal-save {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end; /* Align buttons to the bottom right */
+        gap: 10px;
+        margin-top: 10px; /* Add spacing above buttons */
+        padding-top: 10px;
+        margin-left: 80px; /* Adjust this value to move buttons further right */
 
-            .hidden-file-input {
-                display: none;
-            }
+        button {
+            width: 216px; /* As specified */
+            height: 44px; /* As specified */
+            background: white;
+            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+            border-radius: 10px;
+            border: 1px solid black;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: "Helvetica", Arial, sans-serif;
+            font-size: 16px;
+            font-weight: 400;
+            transition: background-color 0.3s;
 
-            .upload-button {
-                padding: 8px 16px;
-                background-color: #006666;
+            /* Maintain button colors (green for Save, red for Cancel) */
+            &:first-child {
+                background-color: #007545;
                 color: white;
-                border-radius: 8px;
-                cursor: pointer;
-                font-family: "Helvetica", Arial, sans-serif;
-                font-size: 14px;
-                margin-left: 80px;
-                text-align: center;
                 &:hover {
-                    background-color: darken(#006666, 10%);
+                    background-color: darken(#007545, 10%);
                 }
             }
-        }
-        .modal-form {
-            .form-left {
-                textarea {
-                    width: 100%;
-                    height: 80px;
-                    border: 1px solid black;
-                    border-radius: 8px;
-                    padding: 10px;
-                    font-size: 16px;
-                    resize: none;
-                }
-            }
-        }
 
-        .modal-save {
-            width: 100%;
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-end; /* Align buttons to the bottom right */
-            gap: 10px;
-            margin-top: 10px; /* Add spacing above buttons */
-            padding-top: 10px;
-            margin-left: 80px; /* Adjust this value to move buttons further right */
-
-            button {
-                width: 216px; /* As specified */
-                height: 44px; /* As specified */
-                background: white; /* Interpreted # as white/no background */
-                box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); /* As specified */
-                border-radius: 10px; /* As specified */
-                border: 1px solid black; /* As specified */
-                padding: 10px 20px; /* Maintain padding for text alignment */
-                cursor: pointer;
-                font-family: "Helvetica", Arial, sans-serif;
-                font-size: 16px;
-                font-weight: 400;
-                transition: background-color 0.3s;
-
-                /* Maintain button colors (green for Save, red for Cancel) */
-                &:first-child {
-                    background-color: #007545; /* Green for Save Product */
-                    color: white;
-                    &:hover {
-                        background-color: darken(#007545, 10%);
-                    }
-                }
-
-                &:last-child {
-                    background-color: #ff3333; /* Red for Cancel */
-                    color: white;
-                    &:hover {
-                        background-color: darken(#ff3333, 10%);
-                    }
+            &:last-child {
+                background-color: #ff3333;
+                color: white;
+                &:hover {
+                    background-color: darken(#ff3333, 10%);
                 }
             }
         }
@@ -381,9 +391,9 @@
             }
 
             .form-right {
-                align-items: flex-start; /* Align items to start on mobile */
+                align-items: flex-start;
                 .modal-save {
-                    justify-content: flex-end; /* Keep buttons right-aligned on mobile */
+                    justify-content: flex-end;
                 }
             }
         }
@@ -395,14 +405,14 @@
     outline: none !important;
 }
 
-/* Add responsiveness if needed */
+/* Additional responsiveness if needed */
 @media (max-width: 768px) {
     .dropdown-select {
-        flex-direction: column; /* Stack the selects vertically on smaller screens */
+        flex-direction: column;
         gap: 15px;
     }
 
     select {
-        width: 100%; /* Ensure each select takes up full width */
+        width: 100%;
     }
 }

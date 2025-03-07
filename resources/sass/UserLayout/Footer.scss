@@ -1,94 +1,61 @@
-/* Footer Container */
-.footer {
-    background-color: #136945;
-    color: white;
-    display: flex;
-    justify-content: space-between; /* Keep items on opposite sides */
-    align-items: center;
-    padding: 20px 80px;
-    height: 120px;
-    width: 100%;
-    position: relative;
-    bottom: 0;
-    left: 0;
-}
+.site-footer {
+    background-color: #131313;
+    color: #fff;
+    /* Very tight padding */
+    padding: 0.5rem 0.5rem;
 
-/* TIMELESS Logo - Fully Left */
-.footer-logo {
-    font-family: "Montserrat Subrayada", sans-serif;
-    font-size: 60px; /* Adjusted size */
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    line-height: 1;
-    white-space: nowrap;
-    text-align: left;
-    flex-grow: 1; /* Takes available space */
-    max-width: 50%;
-}
+    .footer-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: flex-start;
+        /* Minimal space between columns */
+        gap: 0.5rem;
 
-/* Right Section: Support Links */
-.footer-right {
-    max-width: 200px;
-    text-align: right;
-}
+        .footer-column {
+            flex: 0 0 auto;
+            min-width: 120px; /* Allows columns to be narrow and side by side */
 
-h3 {
-    font-family: "Montserrat", sans-serif;
-    font-weight: bold;
-    font-size: 16px;
-    margin-bottom: 5px;
-}
+            .footer-title {
+                font-size: 0.9rem;
+                margin-bottom: 0.3rem;
+                color: #fff;
+            }
 
-ul {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 0;
+            .footer-links {
+                list-style: none;
+                padding: 0;
+                margin: 0;
 
-    li {
-        margin-bottom: 5px;
+                li {
+                    margin-bottom: 0.2rem;
+                    font-size: 0.8rem; /* Slightly smaller text */
+                    color: #ccc;
 
-        a {
-            text-decoration: none;
-            color: white;
-            font-size: 14px;
-            transition: color 0.3s;
+                    /* Icons have some spacing to the right */
+                    i {
+                        margin-right: 0.3rem;
+                    }
 
-            &:hover {
-                color: #a37e2c; /* Gold hover effect */
+                    a {
+                        text-decoration: none;
+                        color: #ccc;
+                        &:hover {
+                            color: #fff;
+                            text-decoration: underline;
+                        }
+                    }
+                }
             }
         }
     }
 }
 
-/* Responsive Adjustments */
-@media (max-width: 1024px) {
-    .footer {
-        padding: 15px 50px;
-        height: 100px;
-    }
-
-    .footer-logo {
-        font-size: 45px;
-    }
-}
-
+/* Stack columns vertically on small screens */
 @media (max-width: 768px) {
-    .footer {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        height: auto;
-        padding: 20px;
-    }
-
-    .footer-logo {
-        font-size: 40px;
-    }
-
-    .footer-right {
-        align-items: center;
-        text-align: center;
-        margin-top: 10px;
+    .site-footer {
+        .footer-container {
+            flex-direction: column;
+        }
     }
 }

@@ -12,11 +12,14 @@ const AdminProduct = () => {
         movement_id: "",
         strap_material_id: "",
         gender_id: "",
-        // Changed from a single size to multiple sizes (array)
         size_ids: [],
         price: "",
         quantity: "",
         description: "",
+        // New side image fields:
+        side_image1: null,
+        side_image2: null,
+        side_image3: null,
     });
 
     const [dropdownData, setDropdownData] = useState({
@@ -91,8 +94,8 @@ const AdminProduct = () => {
             );
     };
 
-    const handleFileChange = (e) => {
-        setProductData({ ...productData, product_image: e.target.files[0] });
+    const handleFileChange = (e, field) => {
+        setProductData({ ...productData, [field]: e.target.files[0] });
     };
 
     const handleSubmit = (e) => {
@@ -100,12 +103,9 @@ const AdminProduct = () => {
         const formData = new FormData();
 
         for (const key in productData) {
-            if (key === "product_image") {
-                if (
-                    productData.product_image &&
-                    productData.product_image instanceof File
-                ) {
-                    formData.append("product_image", productData.product_image);
+            if (key === "product_image" || key.startsWith("side_image")) {
+                if (productData[key] && productData[key] instanceof File) {
+                    formData.append(key, productData[key]);
                 }
             } else if (key === "size_ids") {
                 productData.size_ids.forEach((sizeId) => {
@@ -162,6 +162,9 @@ const AdminProduct = () => {
             price: "",
             quantity: "",
             description: "",
+            side_image1: null,
+            side_image2: null,
+            side_image3: null,
         });
         setEditMode(false);
         setCurrentProductId(null);
@@ -182,6 +185,11 @@ const AdminProduct = () => {
             price: product.price,
             quantity: product.quantity,
             description: product.description,
+            // You might not load side images from the product table if not needed,
+            // or load them if they exist:
+            side_image1: product.side_image1,
+            side_image2: product.side_image2,
+            side_image3: product.side_image3,
         });
         setCurrentProductId(product.id);
         setEditMode(true);
@@ -592,6 +600,8 @@ const AdminProduct = () => {
                                         required
                                     />
                                 </div>
+                                // ... Inside your form in the modal (form-left
+                                remains unchanged)
                                 <div className="form-right">
                                     <div className="image-upload-container">
                                         {productData.product_image ? (
@@ -612,7 +622,12 @@ const AdminProduct = () => {
                                         )}
                                         <input
                                             type="file"
-                                            onChange={handleFileChange}
+                                            onChange={(e) =>
+                                                handleFileChange(
+                                                    e,
+                                                    "product_image"
+                                                )
+                                            }
                                             accept="image/*"
                                             id="image-upload"
                                             className="hidden-file-input"
@@ -621,8 +636,71 @@ const AdminProduct = () => {
                                             htmlFor="image-upload"
                                             className="upload-button"
                                         >
-                                            Upload New Image
+                                            Upload Main Image
                                         </label>
+                                    </div>
+                                    {/* Side images upload */}
+                                    <div className="side-images-upload">
+                                        <div className="side-image-upload">
+                                            <input
+                                                type="file"
+                                                onChange={(e) =>
+                                                    handleFileChange(
+                                                        e,
+                                                        "side_image1"
+                                                    )
+                                                }
+                                                accept="image/*"
+                                                id="side-image1-upload"
+                                                className="hidden-file-input"
+                                            />
+                                            <label
+                                                htmlFor="side-image1-upload"
+                                                className="upload-button"
+                                            >
+                                                Upload Side Image 1
+                                            </label>
+                                        </div>
+                                        <div className="side-image-upload">
+                                            <input
+                                                type="file"
+                                                onChange={(e) =>
+                                                    handleFileChange(
+                                                        e,
+                                                        "side_image2"
+                                                    )
+                                                }
+                                                accept="image/*"
+                                                id="side-image2-upload"
+                                                className="hidden-file-input"
+                                            />
+                                            <label
+                                                htmlFor="side-image2-upload"
+                                                className="upload-button"
+                                            >
+                                                Upload Side Image 2
+                                            </label>
+                                        </div>
+                                        <div className="side-image-upload">
+                                            <input
+                                                type="file"
+                                                onChange={(e) =>
+                                                    handleFileChange(
+                                                        e,
+                                                        "side_image3"
+                                                    )
+                                                }
+                                                accept="image/*"
+                                                id="side-image3-upload"
+                                                className="hidden-file-input"
+                                            />
+                                            <label
+                                                htmlFor="side-image3-upload"
+                                                className="upload-button"
+                                            >
+                                                Upload Side Image 3
+                                            </label>
+                                        </div>
                                     </div>
                                     <div className="modal-save">
                                         <button type="submit">

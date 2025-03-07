@@ -6,11 +6,11 @@ import Navbar from "../UserLayout/Navbar";
 const ProductOverview = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
+    const [currentMainImage, setCurrentMainImage] = useState("");
     const [reviews, setReviews] = useState([]);
     const [rating, setRating] = useState(0); // Numeric rating for reviews
     const [reviewText, setReviewText] = useState("");
     const [activeTab, setActiveTab] = useState("details");
-    // Changed from a single size to an array for multiple selection
     const [selectedSizes, setSelectedSizes] = useState([]);
 
     useEffect(() => {
@@ -21,17 +21,14 @@ const ProductOverview = () => {
         axios
             .get(`http://localhost:8000/api/product/${id}`)
             .then((response) => {
-                setProduct(response.data.product);
+                const prod = response.data.product;
+                setProduct(prod);
                 setReviews(response.data.reviews);
-                // If there are available sizes, set default selected as the first one
-                if (
-                    response.data.product.sizes &&
-                    response.data.product.sizes.length > 0
-                ) {
-                    // You can either pre-select the first one or leave empty for multiple selection
-                    setSelectedSizes([
-                        response.data.product.sizes[0].id.toString(),
-                    ]);
+                // Set the current main image to the product's main image initially
+                setCurrentMainImage(prod.product_image);
+                // Optionally preselect sizes
+                if (prod.sizes && prod.sizes.length > 0) {
+                    setSelectedSizes([prod.sizes[0].id.toString()]);
                 }
             })
             .catch((error) => console.error("Error fetching product:", error));
@@ -87,7 +84,7 @@ const ProductOverview = () => {
                 <div className="product-images">
                     <div className="main-image">
                         <img
-                            src={product.product_image}
+                            src={currentMainImage}
                             alt={product.product_name}
                             onError={(e) =>
                                 (e.target.src = "/default-product.png")
@@ -95,9 +92,36 @@ const ProductOverview = () => {
                         />
                     </div>
                     <div className="side-images">
-                        <img src="/side-image-1.png" alt="Side 1" />
-                        <img src="/side-image-2.png" alt="Side 2" />
-                        <img src="/side-image-3.png" alt="Side 3" />
+                        {product.side_image1 && (
+                            <img
+                                src={product.side_image1}
+                                alt="Side 1"
+                                onClick={() =>
+                                    setCurrentMainImage(product.side_image1)
+                                }
+                                style={{ cursor: "pointer" }}
+                            />
+                        )}
+                        {product.side_image2 && (
+                            <img
+                                src={product.side_image2}
+                                alt="Side 2"
+                                onClick={() =>
+                                    setCurrentMainImage(product.side_image2)
+                                }
+                                style={{ cursor: "pointer" }}
+                            />
+                        )}
+                        {product.side_image3 && (
+                            <img
+                                src={product.side_image3}
+                                alt="Side 3"
+                                onClick={() =>
+                                    setCurrentMainImage(product.side_image3)
+                                }
+                                style={{ cursor: "pointer" }}
+                            />
+                        )}
                     </div>
                     <div className="tabs">
                         <div className="tab-container">
@@ -220,8 +244,9 @@ const ProductOverview = () => {
                 <div className="details-actions-container">
                     <div className="product-details-card">
                         <h1>{product.product_name}</h1>
-                        <div className="price">₱{product.price}</div>
-                        {/* Dynamic sizes displayed as checkboxes */}
+                        <div className="price">
+                            ₱{number_format(product.price)}
+                        </div>
                         <div className="available-sizes">
                             <p>Select Sizes:</p>
                             {product.sizes && product.sizes.length > 0 ? (
@@ -305,6 +330,13 @@ const ProductOverview = () => {
             </div>
         </>
     );
+};
+
+// Helper function to format price with commas
+const number_format = (number) => {
+    return Number(number)
+        .toFixed(0)
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
 export default ProductOverview;
