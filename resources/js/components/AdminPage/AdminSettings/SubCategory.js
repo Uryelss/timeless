@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Layout,
     Tabs,
@@ -9,147 +9,94 @@ import {
     Modal,
     Input,
     Form,
+    message,
 } from "antd";
 import {
     EditOutlined,
     DeleteOutlined,
-    FolderOpenOutlined,
     UndoOutlined,
+    FolderOpenOutlined,
     PlusOutlined,
 } from "@ant-design/icons";
 import Sidebar from "../AdminSidebar/Sidebar";
+import axios from "axios";
 
 const { Header, Content, Sider } = Layout;
 const { TabPane } = Tabs;
 
 const SubCategoryManagement = () => {
-    // Active tab key: "brand", "categories", "gender", "movement", "strap-materials", "sizes"
+    // Active tab (values: brand, categories, gender, movement, strap_materials, sizes)
     const [activeTab, setActiveTab] = useState("brand");
-    const [selectAll, setSelectAll] = useState(false);
+    // Modal states
     const [openAddModal, setOpenAddModal] = useState(false);
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
     const [form] = Form.useForm();
+    // Bulk selection and search state
+    const [selectAll, setSelectAll] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    // Data state for active and archived records
+    const [data, setData] = useState([]);
+    const [archivedData, setArchivedData] = useState([]);
 
-    // Dummy data for main sub-categories (one array per tab)
-    const dummyData = {
-        brand: [
-            {
-                key: "1",
-                id: 1,
-                name: "Brand A",
-                created_at: "2023-12-01",
-                updated_at: "2023-12-02",
-            },
-            {
-                key: "2",
-                id: 2,
-                name: "Brand B",
-                created_at: "2023-12-03",
-                updated_at: "2023-12-04",
-            },
-        ],
-        categories: [
-            {
-                key: "1",
-                id: 1,
-                name: "Category A",
-                created_at: "2023-11-01",
-                updated_at: "2023-11-02",
-            },
-            {
-                key: "2",
-                id: 2,
-                name: "Category B",
-                created_at: "2023-11-03",
-                updated_at: "2023-11-04",
-            },
-        ],
-        gender: [
-            {
-                key: "1",
-                id: 1,
-                name: "Male",
-                created_at: "2023-10-01",
-                updated_at: "2023-10-02",
-            },
-            {
-                key: "2",
-                id: 2,
-                name: "Female",
-                created_at: "2023-10-03",
-                updated_at: "2023-10-04",
-            },
-        ],
-        movement: [
-            {
-                key: "1",
-                id: 1,
-                name: "Automatic",
-                created_at: "2023-09-01",
-                updated_at: "2023-09-02",
-            },
-        ],
-        "strap-materials": [
-            {
-                key: "1",
-                id: 1,
-                name: "Leather",
-                created_at: "2023-08-01",
-                updated_at: "2023-08-02",
-            },
-        ],
-        sizes: [
-            {
-                key: "1",
-                id: 1,
-                name: "Small",
-                created_at: "2023-07-01",
-                updated_at: "2023-07-02",
-            },
-            {
-                key: "2",
-                id: 2,
-                name: "Medium",
-                created_at: "2023-07-03",
-                updated_at: "2023-07-04",
-            },
-            {
-                key: "3",
-                id: 3,
-                name: "Large",
-                created_at: "2023-07-05",
-                updated_at: "2023-07-06",
-            },
-        ],
+    // Fetch active sub-categories for the current active tab
+    const fetchData = () => {
+        axios
+            .get(`http://localhost:8000/api/sub-categories?type=${activeTab}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
+            .then((res) => {
+                // Ensure each record has a unique "key" for Ant Design table
+                setData(
+                    res.data.map((item) => ({
+                        ...item,
+                        key: item.id.toString(),
+                    }))
+                );
+            })
+            .catch((err) => {
+                console.error(err);
+                message.error("Error fetching data");
+            });
     };
 
-    // Dummy data for archived sub-categories
-    const archivedDummyData = {
-        brand: [
-            {
-                key: "3",
-                id: 3,
-                name: "Brand C",
-                created_at: "2023-06-01",
-                updated_at: "2023-06-02",
-            },
-        ],
-        categories: [
-            {
-                key: "3",
-                id: 3,
-                name: "Category C",
-                created_at: "2023-05-01",
-                updated_at: "2023-05-02",
-            },
-        ],
-        gender: [],
-        movement: [],
-        "strap-materials": [],
-        sizes: [],
+    // Fetch archived sub-categories for the current active tab
+    const fetchArchivedData = () => {
+        // Assuming your backend supports an archived flag (or use a separate endpoint)
+        axios
+            .get(
+                `http://localhost:8000/api/sub-categories?type=${activeTab}&archived=1`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                }
+            )
+            .then((res) => {
+                setArchivedData(
+                    res.data.map((item) => ({
+                        ...item,
+                        key: item.id.toString(),
+                    }))
+                );
+            })
+            .catch((err) => {
+                console.error(err);
+                message.error("Error fetching archived data");
+            });
     };
 
-    // Common table columns for main sub-categories
+    useEffect(() => {
+        fetchData();
+        if (openArchiveModal) {
+            fetchArchivedData();
+        }
+    }, [activeTab, openArchiveModal]);
+
+    // Table columns for active items
     const columns = [
         {
             title: "Actions",
@@ -174,46 +121,83 @@ const SubCategoryManagement = () => {
         { title: "Updated At", dataIndex: "updated_at", key: "updated_at" },
     ];
 
-    // Archive modal columns: same as main but Actions only show Restore
+    // Table columns for archived items (Restore action)
     const archiveColumns = [
         {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
-                <Button type="link" onClick={() => handleRestore(record.key)}>
+                <Button type="link" onClick={() => handleRestore(record.id)}>
                     <UndoOutlined style={{ fontSize: "18px" }} />
                 </Button>
             ),
         },
-        ...columns.slice(1),
+        { title: "ID", dataIndex: "id", key: "id" },
+        { title: "Name", dataIndex: "name", key: "name" },
+        { title: "Created At", dataIndex: "created_at", key: "created_at" },
+        { title: "Updated At", dataIndex: "updated_at", key: "updated_at" },
     ];
 
     const handleTabChange = (key) => {
         setActiveTab(key);
-        setSelectAll(false); // reset select all on tab change
+        setSelectAll(false);
     };
 
     const handleEdit = (record) => {
-        console.log("Edit sub-category:", record);
+        // Set form values for editing; include record id if editing
         form.setFieldsValue(record);
         setOpenAddModal(true);
     };
 
     const handleArchive = (record) => {
-        console.log("Archive sub-category:", record);
-    };
-
-    const handleRestore = (key) => {
-        console.log("Restore sub-category with key:", key);
-    };
-
-    const handleArchiveAll = () => {
         Modal.confirm({
-            title: `Are you sure you want to archive all selected ${activeTab}?`,
+            title: "Are you sure you want to archive this item?",
             onOk: () => {
-                console.log("Bulk archiving sub-categories in", activeTab);
+                axios
+                    .delete(
+                        `http://localhost:8000/api/sub-categories/${record.id}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem(
+                                    "token"
+                                )}`,
+                            },
+                        }
+                    )
+                    .then((res) => {
+                        message.success("Archived successfully");
+                        fetchData();
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        message.error("Failed to archive");
+                    });
             },
         });
+    };
+
+    const handleRestore = (id) => {
+        axios
+            .post(
+                `http://localhost:8000/api/sub-categories/${id}/restore`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                }
+            )
+            .then((res) => {
+                message.success("Restored successfully");
+                fetchArchivedData();
+                fetchData();
+            })
+            .catch((err) => {
+                console.error(err);
+                message.error("Failed to restore");
+            });
     };
 
     const handleAdd = () => {
@@ -224,22 +208,70 @@ const SubCategoryManagement = () => {
     const handleModalOk = () => {
         form.validateFields()
             .then((values) => {
-                console.log("Saved values:", values, "for type:", activeTab);
-                setOpenAddModal(false);
-                // Save add/update action here
+                // If an id exists, we are editing; otherwise, we add new
+                if (values.id) {
+                    axios
+                        .put(
+                            `http://localhost:8000/api/sub-categories/${values.id}`,
+                            { name: values.name },
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                        .then((res) => {
+                            message.success("Updated successfully");
+                            setOpenAddModal(false);
+                            fetchData();
+                        })
+                        .catch((err) => {
+                            console.error(err);
+                            message.error("Update failed");
+                        });
+                } else {
+                    axios
+                        .post(
+                            `http://localhost:8000/api/sub-categories`,
+                            {
+                                type: activeTab,
+                                name: values.name,
+                            },
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                        .then((res) => {
+                            message.success("Added successfully");
+                            setOpenAddModal(false);
+                            fetchData();
+                        })
+                        .catch((err) => {
+                            console.error(err);
+                            message.error("Addition failed");
+                        });
+                }
             })
-            .catch((err) => console.log("Validation error:", err));
+            .catch((info) => {
+                console.log("Validation Failed:", info);
+            });
     };
 
-    const handleModalCancel = () => {
-        setOpenAddModal(false);
+    const handleBulkArchive = () => {
+        Modal.confirm({
+            title: "Are you sure you want to archive all selected items?",
+            onOk: () => {
+                // Implement bulk archive logic here (e.g., send array of selected IDs)
+                message.success("Bulk archive executed (not implemented)");
+            },
+        });
     };
-
-    // Capitalize activeTab for display purposes
-    const displayActiveTab = activeTab
-        .split("-")
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(" ");
 
     return (
         <Layout>
@@ -255,19 +287,17 @@ const SubCategoryManagement = () => {
                         fontWeight: "bold",
                     }}
                 >
-                    SUB CATEGORY
+                    SUB-CATEGORY SETTINGS
                 </Header>
                 <Content style={{ padding: 24, background: "#fff" }}>
-                    {/* Tabs for sub-category types */}
                     <Tabs activeKey={activeTab} onChange={handleTabChange}>
                         <TabPane tab="Brand" key="brand" />
                         <TabPane tab="Categories" key="categories" />
                         <TabPane tab="Gender" key="gender" />
                         <TabPane tab="Movement" key="movement" />
-                        <TabPane tab="Strap Materials" key="strap-materials" />
+                        <TabPane tab="Strap Materials" key="strap_materials" />
                         <TabPane tab="Sizes" key="sizes" />
                     </Tabs>
-
                     {/* Toolbar */}
                     <div
                         style={{
@@ -279,9 +309,7 @@ const SubCategoryManagement = () => {
                         <div style={{ display: "flex", alignItems: "center" }}>
                             <Input.Search
                                 placeholder="Search sub-categories"
-                                onSearch={(value) =>
-                                    console.log("Search:", value)
-                                }
+                                onSearch={(value) => setSearchQuery(value)}
                                 style={{ width: 300, marginRight: 16 }}
                             />
                             <Checkbox
@@ -292,7 +320,7 @@ const SubCategoryManagement = () => {
                             {selectAll && (
                                 <Button
                                     type="link"
-                                    onClick={handleArchiveAll}
+                                    onClick={handleBulkArchive}
                                     style={{ marginLeft: 8 }}
                                     title="Archive All"
                                 >
@@ -308,81 +336,84 @@ const SubCategoryManagement = () => {
                                 onClick={() => setOpenArchiveModal(true)}
                                 style={{ marginRight: 8 }}
                             >
-                                Archived {displayActiveTab}
+                                Archived View
                             </Button>
-                            <Button type="primary" onClick={handleAdd}>
-                                Add {displayActiveTab}
+                            <Button
+                                type="primary"
+                                onClick={handleAdd}
+                                icon={<PlusOutlined />}
+                            >
+                                Add
                             </Button>
                         </div>
                     </div>
-
-                    {/* Main Table */}
                     <Table
                         columns={columns}
-                        dataSource={dummyData[activeTab]}
+                        dataSource={data.filter((item) =>
+                            item.name
+                                .toLowerCase()
+                                .includes(searchQuery.toLowerCase())
+                        )}
                     />
-
-                    {/* Archive Modal */}
-                    <Modal
-                        title={`Archived ${displayActiveTab}`}
-                        visible={openArchiveModal}
-                        onCancel={() => setOpenArchiveModal(false)}
-                        footer={[
-                            <Button
-                                key="close"
-                                onClick={() => setOpenArchiveModal(false)}
-                            >
-                                Close
-                            </Button>,
-                        ]}
-                        width={1200}
-                    >
-                        <Table
-                            columns={archiveColumns}
-                            dataSource={archivedDummyData[activeTab]}
-                            pagination={false}
-                        />
-                    </Modal>
-
-                    {/* Add/Edit Modal */}
-                    <Modal
-                        title={
-                            form.getFieldValue("id")
-                                ? `Edit ${displayActiveTab}`
-                                : `Add ${displayActiveTab}`
-                        }
-                        visible={openAddModal}
-                        onOk={handleModalOk}
-                        onCancel={handleModalCancel}
-                        width={600}
-                    >
-                        <Form form={form} layout="vertical">
-                            <Form.Item
-                                name="name"
-                                label="Name"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please enter a name",
-                                    },
-                                ]}
-                            >
-                                <Input
-                                    placeholder={`Enter ${displayActiveTab} name`}
-                                />
-                            </Form.Item>
-                            {/* Hidden field for type (active tab) */}
-                            <Form.Item
-                                name="type"
-                                initialValue={activeTab}
-                                hidden
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Form>
-                    </Modal>
                 </Content>
             </Layout>
+
+            {/* Add/Edit Modal */}
+            <Modal
+                title="Sub-Category"
+                centered
+                open={openAddModal}
+                onCancel={() => setOpenAddModal(false)}
+                onOk={handleModalOk}
+                okText="Save"
+                cancelText="Cancel"
+            >
+                <Form form={form} layout="vertical">
+                    {/* Hidden field for editing */}
+                    <Form.Item name="id" style={{ display: "none" }}>
+                        <Input type="hidden" />
+                    </Form.Item>
+                    <Form.Item
+                        name="name"
+                        label="Name"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please enter the name",
+                            },
+                        ]}
+                    >
+                        <Input placeholder="Enter name" />
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+            {/* Archive Modal */}
+            <Modal
+                title="Archived Sub-Categories"
+                centered
+                open={openArchiveModal}
+                onCancel={() => setOpenArchiveModal(false)}
+                footer={[
+                    <Button
+                        key="close"
+                        onClick={() => setOpenArchiveModal(false)}
+                    >
+                        Close
+                    </Button>,
+                ]}
+                width={1200}
+            >
+                <Table
+                    columns={archiveColumns}
+                    dataSource={archivedData.filter((item) =>
+                        item.name
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase())
+                    )}
+                    pagination={false}
+                />
+            </Modal>
         </Layout>
     );
 };

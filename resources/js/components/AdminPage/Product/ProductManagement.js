@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import {
     Layout,
     Table,
@@ -24,72 +23,42 @@ import {
     FolderOpenOutlined,
 } from "@ant-design/icons";
 import Sidebar from "../AdminSidebar/Sidebar";
-import "./ProductManagement.scss";
+import axios from "axios";
 
 const { Header, Content, Sider } = Layout;
 const { Option } = Select;
 const { TextArea, Search } = Input;
 
 const ProductManagement = () => {
-    // Modal and toolbar state
+    // Modal and form states
     const [openAddModal, setOpenAddModal] = useState(false);
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
+    const [form] = Form.useForm();
     const [searchText, setSearchText] = useState("");
     const [selectAll, setSelectAll] = useState(false);
-    const [form] = Form.useForm();
-
-    // Backend states
     const [products, setProducts] = useState([]);
     const [archivedProducts, setArchivedProducts] = useState([]);
-    const [dropdownData, setDropdownData] = useState({
-        brands: [],
-        categories: [],
-        movements: [],
-        strapMaterials: [],
-        genders: [],
-        sizes: [],
-    });
-    const [productData, setProductData] = useState({
-        product_name: "",
-        product_image: null,
-        brand_id: "",
-        category_id: "",
-        movement_id: "",
-        strap_material_id: "",
-        gender_id: "",
-        size_ids: [],
-        price: "",
-        quantity: "",
-        description: "",
-        side_image1: null,
-        side_image2: null,
-        side_image3: null,
-    });
+    // currentProduct: if null, we're adding; if not, we're updating.
+    const [currentProduct, setCurrentProduct] = useState(null);
 
-    // For image preview in the modal
-    const [mainImage, setMainImage] = useState(null);
-    const [sideImages, setSideImages] = useState([null, null, null]);
+    // Image states for main and side images
+    const [mainImageFile, setMainImageFile] = useState(null);
+    const [mainImagePreview, setMainImagePreview] = useState("");
+    const [sideImagesFiles, setSideImagesFiles] = useState([null, null, null]);
+    const [sideImagesPreview, setSideImagesPreview] = useState(["", "", ""]);
 
-    // Use backend on component mount
-    useEffect(() => {
-        fetchProducts();
-        fetchDropdownData();
-        fetchArchivedProducts();
-    }, []);
+    // Dynamic options for select fields
+    const [brands, setBrands] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [movements, setMovements] = useState([]);
+    const [strapMaterials, setStrapMaterials] = useState([]);
+    const [genders, setGenders] = useState([]);
+    const [sizesOptions, setSizesOptions] = useState([]);
 
-    const fetchDropdownData = () => {
-        axios
-            .get("http://localhost:8000/api/products/create", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            })
-            .then((response) => setDropdownData(response.data))
-            .catch((error) =>
-                console.error("Error fetching dropdown data:", error)
-            );
-    };
+    // Base URL for images (adjust as needed)
+    const imageBaseURL = "http://localhost:8000/storage/";
 
+    // Fetch products from API
     const fetchProducts = () => {
         axios
             .get("http://localhost:8000/api/products", {
@@ -97,238 +66,53 @@ const ProductManagement = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             })
-            .then((response) => setProducts(response.data))
-            .catch((error) => console.error("Error fetching products:", error));
+            .then((res) => setProducts(res.data))
+            .catch((err) => message.error("Error fetching products"));
     };
 
+    // Fetch archived products
     const fetchArchivedProducts = () => {
         axios
-            .get("http://localhost:8000/api/products/archived", {
+            .get("http://localhost:8000/api/products?archived=1", {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             })
-            .then((response) => setArchivedProducts(response.data))
-            .catch((error) =>
-                console.error("Error fetching archived products:", error)
-            );
+            .then((res) => setArchivedProducts(res.data))
+            .catch((err) => message.error("Error fetching archived products"));
     };
 
-    const filteredProducts = products.filter((product) => {
-        const lowerSearch = searchText.toLowerCase();
-        return (
-            product.product_name.toLowerCase().includes(lowerSearch) ||
-            product.brand?.name.toLowerCase().includes(lowerSearch) ||
-            product.category?.name.toLowerCase().includes(lowerSearch)
-        );
-    });
-
-    // Handle form submission (add or edit)
-    const handleSave = () => {
-        form.validateFields()
-            .then((values) => {
-                const data = { ...productData, ...values };
-                const formData = new FormData();
-                for (const key in data) {
-                    if (
-                        key === "product_image" ||
-                        key.startsWith("side_image")
-                    ) {
-                        if (data[key] && data[key] instanceof File) {
-                            formData.append(key, data[key]);
-                        }
-                    } else if (key === "size_ids") {
-                        data.size_ids.forEach((sizeId) => {
-                            formData.append("size_ids[]", sizeId);
-                        });
-                    } else {
-                        formData.append(key, data[key]);
-                    }
-                }
-                if (!data.quantity) {
-                    message.error("Quantity is required.");
-                    return;
-                }
-                // Use PUT for edit, POST for new product
-                const url = productData.id
-                    ? `http://localhost:8000/api/products/${productData.id}?_method=PUT`
-                    : "http://localhost:8000/api/products/store";
-
-                axios
-                    .post(url, formData, {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                            Authorization: `Bearer ${localStorage.getItem(
-                                "token"
-                            )}`,
-                        },
-                    })
-                    .then(() => {
-                        message.success("Product saved successfully!");
-                        fetchProducts();
-                        fetchArchivedProducts();
-                        resetForm();
-                        setOpenAddModal(false);
-                        form.resetFields();
-                    })
-                    .catch((error) => {
-                        console.error("Error saving product:", error);
-                        message.error("Failed to save product.");
-                    });
+    // Fetch sub-category options dynamically based on type
+    const fetchSubCategoryOptions = (type, setter) => {
+        axios
+            .get(`http://localhost:8000/api/sub-categories?type=${type}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
             })
-            .catch((err) => console.log("Validation Failed:", err));
+            .then((res) => setter(res.data))
+            .catch((err) => console.error(`Error fetching ${type}`, err));
     };
 
-    const resetForm = () => {
-        setProductData({
-            product_name: "",
-            product_image: null,
-            brand_id: "",
-            category_id: "",
-            movement_id: "",
-            strap_material_id: "",
-            gender_id: "",
-            size_ids: [],
-            price: "",
-            quantity: "",
-            description: "",
-            side_image1: null,
-            side_image2: null,
-            side_image3: null,
-        });
-        setMainImage(null);
-        setSideImages([null, null, null]);
-    };
+    useEffect(() => {
+        fetchProducts();
+        fetchSubCategoryOptions("brand", setBrands);
+        fetchSubCategoryOptions("categories", setCategories);
+        fetchSubCategoryOptions("movement", setMovements);
+        fetchSubCategoryOptions("strap_materials", setStrapMaterials);
+        fetchSubCategoryOptions("gender", setGenders);
+        fetchSubCategoryOptions("sizes", setSizesOptions);
+    }, []);
 
-    const handleEdit = (record) => {
-        setProductData({
-            product_name: record.product_name,
-            product_image: record.product_image,
-            brand_id: record.brand?.id,
-            category_id: record.category?.id,
-            movement_id: record.movement?.id,
-            strap_material_id: record.strap_material?.id,
-            gender_id: record.gender?.id,
-            size_ids: record.sizes
-                ? record.sizes.map((s) => s.id.toString())
-                : [],
-            price: record.price,
-            quantity: record.quantity,
-            description: record.description,
-            side_image1: record.side_image1,
-            side_image2: record.side_image2,
-            side_image3: record.side_image3,
-        });
-        if (record.product_image) {
-            setMainImage(
-                `http://localhost:8000/storage/${record.product_image}`
-            );
+    useEffect(() => {
+        if (openArchiveModal) {
+            fetchArchivedProducts();
         }
-        if (record.side_image1) {
-            setSideImages((prev) => {
-                let newArr = [...prev];
-                newArr[0] = `http://localhost:8000/storage/${record.side_image1}`;
-                return newArr;
-            });
-        }
-        if (record.side_image2) {
-            setSideImages((prev) => {
-                let newArr = [...prev];
-                newArr[1] = `http://localhost:8000/storage/${record.side_image2}`;
-                return newArr;
-            });
-        }
-        if (record.side_image3) {
-            setSideImages((prev) => {
-                let newArr = [...prev];
-                newArr[2] = `http://localhost:8000/storage/${record.side_image3}`;
-                return newArr;
-            });
-        }
-        form.setFieldsValue({
-            product_name: record.product_name,
-            price: record.price,
-            quantity: record.quantity,
-            description: record.description,
-            brand_id: record.brand?.id,
-            category_id: record.category?.id,
-            movement_id: record.movement?.id,
-            strap_material_id: record.strap_material?.id,
-            gender_id: record.gender?.id,
-            size_ids: record.sizes
-                ? record.sizes.map((s) => s.id.toString())
-                : [],
-        });
-        setOpenAddModal(true);
-    };
+    }, [openArchiveModal]);
 
-    const handleArchive = (record) => {
-        Modal.confirm({
-            title: "Are you sure you want to archive this product?",
-            onOk: () => {
-                axios
-                    .put(
-                        `http://localhost:8000/api/products/${record.id}/archive`,
-                        {},
-                        {
-                            headers: {
-                                Authorization: `Bearer ${localStorage.getItem(
-                                    "token"
-                                )}`,
-                            },
-                        }
-                    )
-                    .then(() => {
-                        message.success("Product archived successfully!");
-                        fetchProducts();
-                        fetchArchivedProducts();
-                    })
-                    .catch((error) => {
-                        console.error("Error archiving product:", error);
-                        message.error("Failed to archive product.");
-                    });
-            },
-        });
-    };
-
-    const handleRestore = (record) => {
-        Modal.confirm({
-            title: "Are you sure you want to restore this product?",
-            onOk: () => {
-                axios
-                    .put(
-                        `http://localhost:8000/api/products/${record.id}/restore`,
-                        {},
-                        {
-                            headers: {
-                                Authorization: `Bearer ${localStorage.getItem(
-                                    "token"
-                                )}`,
-                            },
-                        }
-                    )
-                    .then(() => {
-                        message.success("Product restored successfully!");
-                        fetchProducts();
-                        fetchArchivedProducts();
-                    })
-                    .catch((error) => {
-                        console.error("Error restoring product:", error);
-                        message.error("Failed to restore product.");
-                    });
-            },
-        });
-    };
-
-    const handleArchiveAll = () => {
-        Modal.confirm({
-            title: "Are you sure you want to archive all selected products?",
-            onOk: () => {
-                // Implement bulk archive action here
-                message.info("Bulk archive action triggered");
-            },
-        });
-    };
+    // Helper for validation rules.
+    // When adding, fields are required. When updating, form is prefilled so we relax client-side rules.
+    const getRule = (message) => [{ required: !currentProduct, message }];
 
     // Table columns for active products
     const mainColumns = [
@@ -340,11 +124,11 @@ const ProductManagement = () => {
                     <Checkbox />
                     <EditOutlined
                         onClick={() => handleEdit(record)}
-                        style={{ fontSize: "16px", cursor: "pointer" }}
+                        style={{ fontSize: "16px" }}
                     />
                     <DeleteOutlined
                         onClick={() => handleArchive(record)}
-                        style={{ fontSize: "16px", cursor: "pointer" }}
+                        style={{ fontSize: "16px" }}
                     />
                 </Space>
             ),
@@ -352,14 +136,14 @@ const ProductManagement = () => {
         { title: "ID", dataIndex: "id", key: "id" },
         {
             title: "Product Image",
-            dataIndex: "product_image",
-            key: "product_image",
+            dataIndex: "main_image",
+            key: "main_image",
             render: (image) => (
                 <img
                     src={
-                        typeof image === "string"
-                            ? `http://localhost:8000/storage/${image}`
-                            : image
+                        image
+                            ? `${imageBaseURL}${image}`
+                            : "https://via.placeholder.com/100?text=Prod"
                     }
                     alt="product"
                     style={{ width: 50 }}
@@ -371,15 +155,51 @@ const ProductManagement = () => {
             dataIndex: "product_name",
             key: "product_name",
         },
-        { title: "Brand", dataIndex: ["brand", "name"], key: "brand" },
-        { title: "Category", dataIndex: ["category", "name"], key: "category" },
-        { title: "Movement", dataIndex: ["movement", "name"], key: "movement" },
+        {
+            title: "Brand",
+            dataIndex: "brand_id",
+            key: "brand_id",
+            render: (id) => {
+                const option = brands.find((b) => b.id === id);
+                return option ? option.name : "";
+            },
+        },
+        {
+            title: "Category",
+            dataIndex: "category_id",
+            key: "category_id",
+            render: (id) => {
+                const option = categories.find((c) => c.id === id);
+                return option ? option.name : "";
+            },
+        },
+        {
+            title: "Movement",
+            dataIndex: "movement_id",
+            key: "movement_id",
+            render: (id) => {
+                const option = movements.find((m) => m.id === id);
+                return option ? option.name : "";
+            },
+        },
         {
             title: "Strap Material",
-            dataIndex: ["strap_material", "name"],
-            key: "strap_material",
+            dataIndex: "strap_material_id",
+            key: "strap_material_id",
+            render: (id) => {
+                const option = strapMaterials.find((s) => s.id === id);
+                return option ? option.name : "";
+            },
         },
-        { title: "Gender", dataIndex: ["gender", "name"], key: "gender" },
+        {
+            title: "Gender",
+            dataIndex: "gender_id",
+            key: "gender_id",
+            render: (id) => {
+                const option = genders.find((g) => g.id === id);
+                return option ? option.name : "";
+            },
+        },
         {
             title: "Price",
             dataIndex: "price",
@@ -389,44 +209,241 @@ const ProductManagement = () => {
         { title: "Quantity", dataIndex: "quantity", key: "quantity" },
     ];
 
-    // Table columns for archived products (with restore icon)
+    // Archive table columns – similar to main, but only restore action
     const archiveColumns = [
         {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
-                <Space>
-                    <Button type="link" onClick={() => handleRestore(record)}>
-                        <UndoOutlined style={{ fontSize: "18px" }} />
-                    </Button>
-                </Space>
+                <Button type="link" onClick={() => handleRestore(record.id)}>
+                    <UndoOutlined style={{ fontSize: "18px" }} />
+                </Button>
             ),
         },
         ...mainColumns.slice(1),
     ];
 
-    // Handle image upload for Add Product modal using AntD Upload customRequest
+    // When editing, prefill the form and load current images into previews.
+    const handleEdit = (record) => {
+        console.log("Edit product:", record);
+        setCurrentProduct(record);
+        form.setFieldsValue({
+            id: record.id,
+            product_name: record.product_name,
+            brand_id: record.brand_id,
+            category_id: record.category_id,
+            movement_id: record.movement_id,
+            strap_material_id: record.strap_material_id,
+            gender_id: record.gender_id,
+            price: record.price,
+            quantity: record.quantity,
+            description: record.description,
+            sizes: record.sizes,
+        });
+        setMainImagePreview(
+            record.main_image ? imageBaseURL + record.main_image : ""
+        );
+        // For simplicity, we clear side images on edit.
+        setSideImagesPreview(["", "", ""]);
+        setSideImagesFiles([null, null, null]);
+        setOpenAddModal(true);
+    };
+
+    // Archive a product
+    const handleArchive = (record) => {
+        Modal.confirm({
+            title: "Are you sure you want to archive this product?",
+            onOk: () => {
+                axios
+                    .delete(`http://localhost:8000/api/products/${record.id}`, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem(
+                                "token"
+                            )}`,
+                        },
+                    })
+                    .then(() => {
+                        message.success("Product archived successfully");
+                        fetchProducts();
+                    })
+                    .catch((err) => message.error("Failed to archive product"));
+            },
+        });
+    };
+
+    // Restore a product
+    const handleRestore = (id) => {
+        axios
+            .post(
+                `http://localhost:8000/api/products/${id}/restore`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                }
+            )
+            .then(() => {
+                message.success("Product restored successfully");
+                fetchArchivedProducts();
+                fetchProducts();
+            })
+            .catch((err) => message.error("Failed to restore product"));
+    };
+
+    // Bulk archive (placeholder)
+    const handleArchiveAll = () => {
+        Modal.confirm({
+            title: "Are you sure you want to archive all selected products?",
+            onOk: () => {
+                message.success("Bulk archive executed (not implemented)");
+            },
+        });
+    };
+
+    // Open Add Product modal (reset form and images)
+    const handleAdd = () => {
+        form.resetFields();
+        setCurrentProduct(null);
+        setMainImageFile(null);
+        setMainImagePreview("");
+        setSideImagesFiles([null, null, null]);
+        setSideImagesPreview(["", "", ""]);
+        setOpenAddModal(true);
+    };
+
+    // Save product: if updating, perform PUT; if adding, perform POST.
+    // For update, only append new image files if provided.
+    const handleSave = () => {
+        form.validateFields()
+            .then((values) => {
+                const formData = new FormData();
+                formData.append("product_name", values.product_name);
+                formData.append("brand_id", parseInt(values.brand_id, 10));
+                formData.append(
+                    "category_id",
+                    parseInt(values.category_id, 10)
+                );
+                formData.append(
+                    "movement_id",
+                    parseInt(values.movement_id, 10)
+                );
+                formData.append(
+                    "strap_material_id",
+                    parseInt(values.strap_material_id, 10)
+                );
+                formData.append("gender_id", parseInt(values.gender_id, 10));
+                formData.append("price", values.price);
+                formData.append("quantity", values.quantity);
+                formData.append("description", values.description);
+                formData.append("sizes", JSON.stringify(values.sizes || {}));
+
+                // Append new image files only if uploaded
+                if (mainImageFile) {
+                    formData.append("main_image", mainImageFile);
+                }
+                sideImagesFiles.forEach((file, index) => {
+                    if (file) {
+                        formData.append(`side_image_${index + 1}`, file);
+                    }
+                });
+
+                // IMPORTANT: For update, use _method override for FormData with PUT.
+                if (values.id) {
+                    formData.append("_method", "PUT");
+                    axios
+                        .post(
+                            `http://localhost:8000/api/products/${values.id}`,
+                            formData,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                    "Content-Type": "multipart/form-data",
+                                },
+                            }
+                        )
+                        .then(() => {
+                            message.success("Product updated successfully");
+                            setOpenAddModal(false);
+                            fetchProducts();
+                        })
+                        .catch((err) => {
+                            console.error(err);
+                            message.error("Failed to update product");
+                        });
+                } else {
+                    // Adding new product – require main image.
+                    if (!mainImageFile) {
+                        message.error("Main product image is required.");
+                        return;
+                    }
+                    axios
+                        .post("http://localhost:8000/api/products", formData, {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem(
+                                    "token"
+                                )}`,
+                                "Content-Type": "multipart/form-data",
+                            },
+                        })
+                        .then(() => {
+                            message.success("Product added successfully");
+                            setOpenAddModal(false);
+                            fetchProducts();
+                        })
+                        .catch((err) => {
+                            console.error(err);
+                            message.error("Failed to add product");
+                        });
+                }
+            })
+            .catch((err) => {
+                console.log("Validation Failed:", err);
+            });
+    };
+
     const handleImageUpload = (info, type, index = null) => {
-        // Accept file immediately (prevent automatic upload)
-        if (info.file.status === "done" || info.file.status === "error") {
-            const imageUrl = URL.createObjectURL(info.file.originFileObj);
+        if (info.file.status === "done" || info.file.status === "uploading") {
+            const file = info.file.originFileObj;
+            const preview = URL.createObjectURL(file);
             if (type === "main") {
-                setMainImage(imageUrl);
-                setProductData((prev) => ({
-                    ...prev,
-                    product_image: info.file.originFileObj,
-                }));
+                setMainImageFile(file);
+                setMainImagePreview(preview);
             } else {
-                const updatedImages = [...sideImages];
-                updatedImages[index] = imageUrl;
-                setSideImages(updatedImages);
-                setProductData((prev) => ({
-                    ...prev,
-                    [`side_image${index + 1}`]: info.file.originFileObj,
-                }));
+                const updatedFiles = [...sideImagesFiles];
+                updatedFiles[index] = file;
+                setSideImagesFiles(updatedFiles);
+                const updatedPreviews = [...sideImagesPreview];
+                updatedPreviews[index] = preview;
+                setSideImagesPreview(updatedPreviews);
             }
         }
     };
+
+    const customUploadRequest = ({ file, onSuccess }) => {
+        setTimeout(() => {
+            onSuccess("ok");
+        }, 0);
+    };
+
+    const filteredProducts = products.filter((product) => {
+        const lower = searchText.toLowerCase();
+        return (
+            product.product_name.toLowerCase().includes(lower) ||
+            brands
+                .find((b) => b.id === product.brand_id)
+                ?.name.toLowerCase()
+                .includes(lower) ||
+            categories
+                .find((c) => c.id === product.category_id)
+                ?.name.toLowerCase()
+                .includes(lower)
+        );
+    });
 
     return (
         <Layout>
@@ -442,10 +459,9 @@ const ProductManagement = () => {
                         fontWeight: "bold",
                     }}
                 >
-                    PRODUCT
+                    PRODUCT MANAGEMENT
                 </Header>
                 <Content style={{ padding: 24, background: "#fff" }}>
-                    {/* Toolbar */}
                     <div
                         style={{
                             display: "flex",
@@ -489,11 +505,7 @@ const ProductManagement = () => {
                             <Button
                                 type="primary"
                                 icon={<PlusOutlined />}
-                                onClick={() => {
-                                    resetForm();
-                                    form.resetFields();
-                                    setOpenAddModal(true);
-                                }}
+                                onClick={handleAdd}
                             >
                                 Add Product
                             </Button>
@@ -507,9 +519,9 @@ const ProductManagement = () => {
                 </Content>
             </Layout>
 
-            {/* Add/Edit Product Modal */}
+            {/* Add / Edit Product Modal */}
             <Modal
-                title="Add Product"
+                title="Add / Edit Product"
                 centered
                 open={openAddModal}
                 onCancel={() => setOpenAddModal(false)}
@@ -524,17 +536,16 @@ const ProductManagement = () => {
                 ]}
             >
                 <Form form={form} layout="vertical">
+                    {/* Hidden field for product id (for update) */}
+                    <Form.Item name="id" style={{ display: "none" }}>
+                        <Input type="hidden" />
+                    </Form.Item>
                     <Row gutter={16}>
                         <Col span={12}>
                             <Form.Item
                                 name="product_name"
                                 label="Product Name"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please enter product name",
-                                    },
-                                ]}
+                                rules={getRule("Please enter product name")}
                             >
                                 <Input placeholder="Enter product name" />
                             </Form.Item>
@@ -543,15 +554,10 @@ const ProductManagement = () => {
                             <Form.Item
                                 name="brand_id"
                                 label="Brand"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please select a brand",
-                                    },
-                                ]}
+                                rules={getRule("Please select a brand")}
                             >
                                 <Select placeholder="Select Brand">
-                                    {dropdownData.brands.map((brand) => (
+                                    {brands.map((brand) => (
                                         <Option key={brand.id} value={brand.id}>
                                             {brand.name}
                                         </Option>
@@ -565,15 +571,10 @@ const ProductManagement = () => {
                             <Form.Item
                                 name="category_id"
                                 label="Category"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please select a category",
-                                    },
-                                ]}
+                                rules={getRule("Please select a category")}
                             >
                                 <Select placeholder="Select Category">
-                                    {dropdownData.categories.map((category) => (
+                                    {categories.map((category) => (
                                         <Option
                                             key={category.id}
                                             value={category.id}
@@ -588,25 +589,16 @@ const ProductManagement = () => {
                             <Form.Item
                                 name="strap_material_id"
                                 label="Strap Material"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message:
-                                            "Please select a strap material",
-                                    },
-                                ]}
+                                rules={getRule(
+                                    "Please select a strap material"
+                                )}
                             >
                                 <Select placeholder="Select Strap Material">
-                                    {dropdownData.strapMaterials.map(
-                                        (strap) => (
-                                            <Option
-                                                key={strap.id}
-                                                value={strap.id}
-                                            >
-                                                {strap.name}
-                                            </Option>
-                                        )
-                                    )}
+                                    {strapMaterials.map((s) => (
+                                        <Option key={s.id} value={s.id}>
+                                            {s.name}
+                                        </Option>
+                                    ))}
                                 </Select>
                             </Form.Item>
                         </Col>
@@ -614,22 +606,14 @@ const ProductManagement = () => {
                     <Row gutter={16}>
                         <Col span={12}>
                             <Form.Item
-                                name="gender_id"
-                                label="Gender"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please select gender",
-                                    },
-                                ]}
+                                name="movement_id"
+                                label="Movement"
+                                rules={getRule("Please select a movement")}
                             >
-                                <Select placeholder="Select Gender">
-                                    {dropdownData.genders.map((gender) => (
-                                        <Option
-                                            key={gender.id}
-                                            value={gender.id}
-                                        >
-                                            {gender.name}
+                                <Select placeholder="Select Movement">
+                                    {movements.map((m) => (
+                                        <Option key={m.id} value={m.id}>
+                                            {m.name}
                                         </Option>
                                     ))}
                                 </Select>
@@ -637,14 +621,26 @@ const ProductManagement = () => {
                         </Col>
                         <Col span={12}>
                             <Form.Item
+                                name="gender_id"
+                                label="Gender"
+                                rules={getRule("Please select gender")}
+                            >
+                                <Select placeholder="Select Gender">
+                                    {genders.map((g) => (
+                                        <Option key={g.id} value={g.id}>
+                                            {g.name}
+                                        </Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item
                                 name="price"
                                 label="Price"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please enter price",
-                                    },
-                                ]}
+                                rules={getRule("Please enter price")}
                             >
                                 <Input
                                     type="number"
@@ -652,18 +648,11 @@ const ProductManagement = () => {
                                 />
                             </Form.Item>
                         </Col>
-                    </Row>
-                    <Row gutter={16}>
                         <Col span={12}>
                             <Form.Item
                                 name="quantity"
                                 label="Quantity"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please enter quantity",
-                                    },
-                                ]}
+                                rules={getRule("Please enter quantity")}
                             >
                                 <Input
                                     type="number"
@@ -671,31 +660,24 @@ const ProductManagement = () => {
                                 />
                             </Form.Item>
                         </Col>
-                        <Col span={12}>
-                            <Form.Item name="size_ids" label="Available Sizes">
-                                <Checkbox.Group>
-                                    <Row>
-                                        {sizes.map((size, index) => (
-                                            <Col span={8} key={index}>
-                                                <Checkbox value={size}>
-                                                    {size}
-                                                </Checkbox>
-                                            </Col>
-                                        ))}
-                                    </Row>
-                                </Checkbox.Group>
-                            </Form.Item>
-                        </Col>
                     </Row>
+                    <Form.Item
+                        name="sizes"
+                        label="Available Sizes"
+                        rules={getRule("Please select sizes")}
+                    >
+                        <Select mode="multiple" placeholder="Select sizes">
+                            {sizesOptions.map((s) => (
+                                <Option key={s.id} value={s.name}>
+                                    {s.name}
+                                </Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
                     <Form.Item
                         name="description"
                         label="Description"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please enter product description",
-                            },
-                        ]}
+                        rules={getRule("Please enter product description")}
                     >
                         <TextArea
                             rows={4}
@@ -707,7 +689,8 @@ const ProductManagement = () => {
                             <Form.Item label="Main Product Image">
                                 <Upload
                                     showUploadList={false}
-                                    customRequest={(info) =>
+                                    customRequest={customUploadRequest}
+                                    onChange={(info) =>
                                         handleImageUpload(info, "main")
                                     }
                                 >
@@ -715,25 +698,27 @@ const ProductManagement = () => {
                                         Upload Main Image
                                     </Button>
                                 </Upload>
-                                <div className="image-preview-card">
+                                <div style={{ marginTop: 8 }}>
                                     <img
                                         src={
-                                            mainImage ||
+                                            mainImagePreview ||
                                             "https://via.placeholder.com/150?text=Main+Image"
                                         }
                                         alt="Main Preview"
+                                        style={{ width: 150 }}
                                     />
                                 </div>
                             </Form.Item>
                         </Col>
                     </Row>
                     <Row gutter={16}>
-                        {sideImages.map((image, index) => (
+                        {sideImagesPreview.map((img, index) => (
                             <Col span={8} key={index}>
                                 <Form.Item label={`Side Image ${index + 1}`}>
                                     <Upload
                                         showUploadList={false}
-                                        customRequest={(info) =>
+                                        customRequest={customUploadRequest}
+                                        onChange={(info) =>
                                             handleImageUpload(
                                                 info,
                                                 "side",
@@ -745,15 +730,16 @@ const ProductManagement = () => {
                                             Upload
                                         </Button>
                                     </Upload>
-                                    <div className="image-preview-card">
+                                    <div style={{ marginTop: 8 }}>
                                         <img
                                             src={
-                                                image ||
+                                                img ||
                                                 `https://via.placeholder.com/100?text=Side+${
                                                     index + 1
                                                 }`
                                             }
                                             alt={`Side Preview ${index + 1}`}
+                                            style={{ width: 100 }}
                                         />
                                     </div>
                                 </Form.Item>
@@ -762,8 +748,6 @@ const ProductManagement = () => {
                     </Row>
                 </Form>
             </Modal>
-
-            {/* Archived Products Modal with Restore button */}
             <Modal
                 title="Archived Products"
                 centered

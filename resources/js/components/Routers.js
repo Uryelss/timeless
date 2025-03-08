@@ -5,156 +5,82 @@ import {
     Routes,
     Route,
     Navigate,
+    Outlet,
 } from "react-router-dom";
 
-import Register from "./USERS/Register";
-import Login from "./USERS/Login";
-import PrivateRoute from "./USERS/PrivateRoute";
+import AdminDashboard from "./AdminPage/AdminDashboard/AdminDashboard";
+import ProductManagement from "./AdminPage/Product/ProductManagement";
+import OrderManagement from "./AdminPage/Order/OrderManagement";
+import UserManagement from "./AdminPage/User/UserManagement";
+import InventoryManagement from "./AdminPage/Inventory/InventoryManagement";
+import AdminProfile from "./AdminPage/AdminSettings/AdminProfile";
+import SubCategory from "./AdminPage/AdminSettings/SubCategory";
+import CustomerManagement from "./AdminPage/Customer/CustomerManagement";
+import AdminSettings from "./AdminPage/AdminSettings/AdminSettings";
 
-import AdminDashboard from "./AdminPage/Dashboard";
-import AdminSettings from "./AdminPage/AdminSettings";
-import ProductManagement from "./AdminPage/ProductManagement";
-import InventoryManagement from "./AdminPage/InventoryManagement";
-import AdminUserManagement from "./AdminPage/UserManagement";
-import AdminCustomerManagement from "./AdminPage/CustomerManagement";
+// Auth pages
+import Register from "./AccessPage/RegisterPage/Register";
+import Login from "./AccessPage/LoginPage/Login";
 
-import Homepage from "./UserPage/Homepage";
-import CollectionPage from "./UserPage/Collection";
-import UserProfile from "./UserPage/UserProfile"; // ✅ Import UserProfile
-import ProductOverview from "./UserPage/ProductOverview";
-///
+// User page (for role 'user')
+import UserHome from "./UserPage/UserHome/HomePage";
 
-const App = () => {
+// Protected route for Admin users
+const AdminRoute = () => {
     const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!token || !user || user.role?.name !== "admin") {
+        return <Navigate to="/login" replace />;
+    }
+    return <Outlet />;
+};
 
+// Protected route for Regular users
+const UserRoute = () => {
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!token || !user || user.role?.name !== "user") {
+        return <Navigate to="/login" replace />;
+    }
+    return <Outlet />;
+};
+
+export default function Routers() {
     return (
         <Router>
             <Routes>
-                {/* Public Routes */}
+                {/* Authentication Routes */}
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
 
-                <Route
-                    path="/register"
-                    element={
-                        !token ? (
-                            <Register />
-                        ) : (
-                            <Navigate
-                                to={
-                                    role === "admin"
-                                        ? "/admin-dashboard"
-                                        : "/Homepage"
-                                }
-                            />
-                        )
-                    }
-                />
-                <Route
-                    path="/login"
-                    element={
-                        !token ? (
-                            <Login />
-                        ) : (
-                            <Navigate
-                                to={
-                                    role === "admin"
-                                        ? "/admin-dashboard"
-                                        : "/login"
-                                }
-                            />
-                        )
-                    }
-                />
+                {/* Admin Protected Routes */}
+                <Route element={<AdminRoute />}>
+                    <Route path="/dashboard" element={<AdminDashboard />} />
+                    <Route path="/products" element={<ProductManagement />} />
+                    <Route path="/orders" element={<OrderManagement />} />
+                    <Route path="/customers" element={<CustomerManagement />} />
+                    <Route path="/users" element={<UserManagement />} />
+                    <Route
+                        path="/inventory"
+                        element={<InventoryManagement />}
+                    />
+                    <Route path="/admin-profile" element={<AdminProfile />} />
+                    <Route path="/sub-category" element={<SubCategory />} />
+                </Route>
 
-                {/* Private Routes - Only Logged-in Users */}
-                <Route
-                    path="/Homepage"
-                    element={
-                        <PrivateRoute allowedRoles={["user", "admin"]}>
-                            <Homepage />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path="/Collection"
-                    element={
-                        <PrivateRoute allowedRoles={["user", "admin"]}>
-                            <CollectionPage />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path="/product/:id"
-                    element={
-                        <PrivateRoute allowedRoles={["user", "admin"]}>
-                            <ProductOverview />
-                        </PrivateRoute>
-                    }
-                />
+                {/* User Protected Routes */}
+                <Route element={<UserRoute />}>
+                    <Route path="/user-home" element={<UserHome />} />
+                </Route>
 
-                <Route
-                    path="/Profile"
-                    element={
-                        <PrivateRoute allowedRoles={["user"]}>
-                            <UserProfile /> {/* ✅ User Profile Page */}
-                        </PrivateRoute>
-                    }
-                />
-
-                {/* Admin Routes - Only Admins */}
-                <Route
-                    path="/admin-dashboard"
-                    element={
-                        <PrivateRoute allowedRoles={["admin"]}>
-                            <AdminDashboard />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path="/admin-settings"
-                    element={
-                        <PrivateRoute allowedRoles={["admin"]}>
-                            <AdminSettings />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path="/Admin-product"
-                    element={
-                        <PrivateRoute allowedRoles={["admin"]}>
-                            <ProductManagement />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path="/admin-inventory"
-                    element={
-                        <PrivateRoute allowedRoles={["admin"]}>
-                            <InventoryManagement />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path="/admin-user"
-                    element={
-                        <PrivateRoute allowedRoles={["admin"]}>
-                            <AdminUserManagement />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path="/admin-customer"
-                    element={
-                        <PrivateRoute allowedRoles={["admin"]}>
-                            <AdminCustomerManagement />
-                        </PrivateRoute>
-                    }
-                />
+                {/* Catch-all redirect */}
+                <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
         </Router>
     );
-};
+}
 
-if (document.getElementById("root")) {
-    ReactDOM.render(<App />, document.getElementById("root"));
+const rootElement = document.getElementById("root");
+if (rootElement) {
+    ReactDOM.render(<Routers />, rootElement);
 }

@@ -56,18 +56,19 @@ const items = [
         key: "admin-settings",
         icon: <SettingOutlined />,
         label: "Admin Settings",
+        // Notice there is no "path" for the parent, it's just a grouping.
         children: [
             {
                 key: "admin-profile",
                 icon: <ProfileOutlined />,
                 label: "Admin Profile",
-                path: "/admin-settings/profile",
+                path: "/admin-profile",
             },
             {
                 key: "sub-category",
                 icon: <SettingOutlined />,
                 label: "Sub Category",
-                path: "/admin-settings/sub-category",
+                path: "/sub-category",
             },
         ],
     },
