@@ -1,0 +1,24 @@
+.sidebar-container {
+    width: 256px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.logout-container {
+    margin-top: auto;
+    padding: 16px;
+    text-align: center;
+}
+
+.logout-button {
+    display: inline-flex;
+    align-items: center;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.65); /* default light color for dark theme */
+    transition: color 0.3s ease;
+}
+
+.logout-button:hover {
+    color: red;
+}
