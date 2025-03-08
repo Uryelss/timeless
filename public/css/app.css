@@ -14378,7 +14378,7 @@ h1, .h1 {
   height: 100vh;
   width: 100%;
   padding: 50px;
-  background: url(/images/homepage.png?cafa83b49355acf2836c374f8042ea4d) center/cover no-repeat;
+  background: url("/Images/homepage.png") center/cover no-repeat;
   position: relative;
   color: #fff;
   /* Responsive */

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import Navbar from "../UserLayout/Navbar";
+import HeaderComponent from "../UserLayout/Headercomponent";
 
 const ProductOverview = () => {
     const { id } = useParams();
@@ -79,7 +79,7 @@ const ProductOverview = () => {
 
     return (
         <>
-            <Navbar />
+            <HeaderComponent />
             <div className="product-container">
                 <div className="product-images">
                     <div className="main-image">

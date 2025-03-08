@@ -20,12 +20,11 @@ import AdminCustomerManagement from "./AdminPage/CustomerManagement";
 
 import Homepage from "./UserPage/Homepage";
 import CollectionPage from "./UserPage/Collection";
-import UserProfile from "./UserPage/UserProfile"; // ✅ Import UserProfile
 import ProductOverview from "./UserPage/ProductOverview";
-///
-
-
-
+import Checkout from "./UserPage/checkout"; // Import the Checkout component
+import Shipped from "./UserPage/shipped"; // Import the Shipped component
+import Aboutus from "./UserPage/Aboutus"; // Import the AboutUs component
+import Profile from "./UserPage/profile"; // Import the Profile component
 
 const App = () => {
     const token = localStorage.getItem("token");
@@ -35,7 +34,6 @@ const App = () => {
         <Router>
             <Routes>
                 {/* Public Routes */}
-
                 <Route
                     path="/register"
                     element={
@@ -68,6 +66,10 @@ const App = () => {
                         )
                     }
                 />
+                <Route
+                    path="/aboutus"
+                    element={<Aboutus />} 
+                />
 
                 {/* Private Routes - Only Logged-in Users */}
                 <Route
@@ -94,12 +96,27 @@ const App = () => {
                         </PrivateRoute>
                     }
                 />
-
                 <Route
                     path="/Profile"
                     element={
                         <PrivateRoute allowedRoles={["user"]}>
-                            <UserProfile /> {/* ✅ User Profile Page */}
+                            <Profile /> {/* Profile Page */}
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/checkout"
+                    element={
+                        <PrivateRoute allowedRoles={["user"]}>
+                            <Checkout /> {/* Checkout Page */}
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/shipped"
+                    element={
+                        <PrivateRoute allowedRoles={["user"]}>
+                            <Shipped /> {/* Shipped Page */}
                         </PrivateRoute>
                     }
                 />

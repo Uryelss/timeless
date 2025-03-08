@@ -1,16 +1,16 @@
 import React from "react";
-import Navbar from "../UserLayout/Navbar"; // ✅ Correct
+import Headercomponent from "../UserLayout/Headercomponent"; // ✅ Correct
 import Hero from "../UserLayout/Hero";
-import Footer from "../UserLayout/Footer";
+import FooterComponent from "../UserLayout/Footercomponent";
 
 const Homepage = () => {
     return (
         <>
-            <Navbar />
+            <Headercomponent />
             <div>
                 <Hero />
             </div>
-            <Footer /> {/* Add Footer here */}
+            <FooterComponent/> {/* Add Footer here */}
         </>
     );
 };
