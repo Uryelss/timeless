@@ -1,98 +1,92 @@
-import React, { useState } from "react";
-import { Layout, Table, Space, Checkbox, Button, Modal, Input } from "antd";
+import React, { useState, useEffect } from "react";
+import {
+    Layout,
+    Table,
+    Space,
+    Button,
+    Modal,
+    Input,
+    Checkbox,
+    Form,
+    Select,
+    message,
+} from "antd";
 import {
     EditOutlined,
     DeleteOutlined,
     UndoOutlined,
     FolderOpenOutlined,
     SearchOutlined,
+    PlusOutlined,
 } from "@ant-design/icons";
 import Sidebar from "../AdminSidebar/Sidebar";
+import axios from "axios";
 
 const { Header, Content, Sider } = Layout;
+const { Search } = Input;
+const { Option } = Select;
 
 const CustomerManagement = () => {
-    // State for Archive modal, search query and bulk selection
+    const [customers, setCustomers] = useState([]);
+    const [archivedCustomers, setArchivedCustomers] = useState([]);
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
+    const [openAddEditModal, setOpenAddEditModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectAll, setSelectAll] = useState(false);
+    const [editingCustomer, setEditingCustomer] = useState(null);
+    const [form] = Form.useForm();
 
-    // Dummy data for main customers
-    const [customers] = useState([
-        {
-            key: "1",
-            id: 1,
-            customerImage: "https://via.placeholder.com/100?text=John+Doe",
-            customerName: "John Doe",
-            phone: "123-456-7890",
-            dob: "1990-01-01",
-            gender: "Male",
-            address: "123 Main St",
-            lastUpdated: "2023-12-01",
-        },
-        {
-            key: "2",
-            id: 2,
-            customerImage: "https://via.placeholder.com/100?text=Jane+Smith",
-            customerName: "Jane Smith",
-            phone: "987-654-3210",
-            dob: "1985-05-05",
-            gender: "Female",
-            address: "456 Elm St",
-            lastUpdated: "2023-12-02",
-        },
-    ]);
+    // API endpoint for customers
+    const API_URL = "http://localhost:8000/api/customers";
 
-    // Dummy data for archived customers
-    const [archivedCustomers] = useState([
-        {
-            key: "3",
-            id: 3,
-            customerImage: "https://via.placeholder.com/100?text=Alice+Johnson",
-            customerName: "Alice Johnson",
-            phone: "555-123-4567",
-            dob: "1992-03-03",
-            gender: "Female",
-            address: "789 Oak St",
-            lastUpdated: "2023-11-20",
-        },
-    ]);
-
-    // Handlers for edit, archive and restore actions
-    const handleEdit = (record) => {
-        console.log("Edit customer:", record);
-        // Implement edit functionality here
+    // Fetch active customers
+    const fetchCustomers = () => {
+        axios
+            .get(API_URL, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
+            .then((res) => {
+                console.log("Fetched customers:", res.data);
+                setCustomers(res.data);
+            })
+            .catch((err) => {
+                message.error("Error fetching customers");
+                console.error(err);
+            });
     };
 
-    const handleArchive = (record) => {
-        console.log("Archive customer:", record);
-        // Implement individual archive functionality here
+    // Fetch archived customers
+    const fetchArchivedCustomers = () => {
+        axios
+            .get(`${API_URL}?archived=1`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
+            .then((res) => {
+                console.log("Fetched archived customers:", res.data);
+                setArchivedCustomers(res.data);
+            })
+            .catch((err) => {
+                message.error("Error fetching archived customers");
+                console.error(err);
+            });
     };
 
-    const handleRestore = (key) => {
-        console.log("Restore customer with key:", key);
-        // Implement restore functionality here
-    };
+    useEffect(() => {
+        fetchCustomers();
+    }, []);
 
-    // Handler for search action
-    const handleSearch = (value) => {
-        console.log("Search query:", value);
-        setSearchQuery(value);
-        // Optionally filter customers based on search query
-    };
+    useEffect(() => {
+        if (openArchiveModal) {
+            fetchArchivedCustomers();
+        }
+    }, [openArchiveModal]);
 
-    // Bulk archive handler with confirmation
-    const handleArchiveAll = () => {
-        Modal.confirm({
-            title: "Are you sure you want to archive all selected customers?",
-            onOk: () => {
-                console.log("Bulk archiving all selected customers");
-                // Perform bulk archive action here
-            },
-        });
-    };
-
-    // Main table columns for customers
+    // Table columns for active customers.
+    // We use the computed full_name from the Customer model.
     const mainColumns = [
         {
             title: "Actions",
@@ -114,37 +108,189 @@ const CustomerManagement = () => {
         { title: "ID", dataIndex: "id", key: "id" },
         {
             title: "Customer Image",
-            dataIndex: "customerImage",
-            key: "customerImage",
+            dataIndex: "profile_image",
+            key: "profile_image",
             render: (image) => (
-                <img src={image} alt="customer" style={{ width: 50 }} />
+                <img
+                    src={
+                        image || "https://via.placeholder.com/100?text=Customer"
+                    }
+                    alt="customer"
+                    style={{ width: 50 }}
+                />
             ),
         },
         {
             title: "Customer Name",
-            dataIndex: "customerName",
-            key: "customerName",
+            dataIndex: "full_name",
+            key: "full_name",
+            // full_name is computed in the model (accessor)
         },
         { title: "Phone", dataIndex: "phone", key: "phone" },
-        { title: "Date of Birth", dataIndex: "dob", key: "dob" },
+        { title: "Date of Birth", dataIndex: "date_of_birth", key: "dob" },
         { title: "Gender", dataIndex: "gender", key: "gender" },
         { title: "Address", dataIndex: "address", key: "address" },
-        { title: "Last Updated", dataIndex: "lastUpdated", key: "lastUpdated" },
+        { title: "Last Updated", dataIndex: "updated_at", key: "updated_at" },
     ];
 
-    // Archive table columns: same as main, except the Actions column shows only Restore.
+    // Archive table columns – similar to main, but with a restore button.
     const archiveColumns = [
         {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
-                <Button type="link" onClick={() => handleRestore(record.key)}>
+                <Button type="link" onClick={() => handleRestore(record.id)}>
                     <UndoOutlined style={{ fontSize: "18px" }} />
                 </Button>
             ),
         },
         ...mainColumns.slice(1),
     ];
+
+    // Handle edit action: open modal and prefill form with record data.
+    const handleEdit = (record) => {
+        console.log("Edit customer:", record);
+        setEditingCustomer(record);
+        form.setFieldsValue({
+            first_name: record.first_name,
+            middle_name: record.middle_name,
+            last_name: record.last_name,
+            suffix: record.suffix,
+            phone: record.phone,
+            date_of_birth: record.date_of_birth,
+            gender: record.gender,
+            address: record.address,
+        });
+        setOpenAddEditModal(true);
+    };
+
+    // Handle archive (soft delete) action.
+    const handleArchive = (record) => {
+        Modal.confirm({
+            title: "Are you sure you want to archive this customer?",
+            onOk: () => {
+                axios
+                    .delete(`${API_URL}/${record.id}`, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem(
+                                "token"
+                            )}`,
+                        },
+                    })
+                    .then(() => {
+                        message.success("Customer archived successfully");
+                        fetchCustomers();
+                    })
+                    .catch((err) => {
+                        message.error("Failed to archive customer");
+                        console.error(err);
+                    });
+            },
+        });
+    };
+
+    // Handle restore action.
+    const handleRestore = (id) => {
+        axios
+            .post(
+                `${API_URL}/${id}/restore`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                }
+            )
+            .then(() => {
+                message.success("Customer restored successfully");
+                fetchArchivedCustomers();
+                fetchCustomers();
+            })
+            .catch((err) => {
+                message.error("Failed to restore customer");
+                console.error(err);
+            });
+    };
+
+    // Bulk archive handler.
+    const handleArchiveAll = () => {
+        Modal.confirm({
+            title: "Are you sure you want to archive all selected customers?",
+            onOk: () => {
+                message.success("Bulk archive executed (not implemented)");
+            },
+        });
+    };
+
+    // Handle adding a new customer (opens the add modal)
+    const handleAdd = () => {
+        form.resetFields();
+        setEditingCustomer(null);
+        setOpenAddEditModal(true);
+    };
+
+    // Handle save (for both add and edit)
+    const handleSave = () => {
+        form.validateFields()
+            .then((values) => {
+                if (editingCustomer) {
+                    // Update existing customer
+                    axios
+                        .put(`${API_URL}/${editingCustomer.id}`, values, {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem(
+                                    "token"
+                                )}`,
+                            },
+                        })
+                        .then(() => {
+                            message.success("Customer updated successfully");
+                            setOpenAddEditModal(false);
+                            setEditingCustomer(null);
+                            fetchCustomers();
+                        })
+                        .catch((err) => {
+                            message.error("Failed to update customer");
+                            console.error(err);
+                        });
+                } else {
+                    // Add new customer
+                    axios
+                        .post(API_URL, values, {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem(
+                                    "token"
+                                )}`,
+                            },
+                        })
+                        .then(() => {
+                            message.success("Customer added successfully");
+                            setOpenAddEditModal(false);
+                            fetchCustomers();
+                        })
+                        .catch((err) => {
+                            message.error("Failed to add customer");
+                            console.error(err);
+                        });
+                }
+            })
+            .catch((err) => {
+                console.log("Validation Failed:", err);
+            });
+    };
+
+    // Filter customers based on search query.
+    const filteredCustomers = customers.filter((customer) => {
+        const lower = searchQuery.toLowerCase();
+        return (
+            (customer.full_name &&
+                customer.full_name.toLowerCase().includes(lower)) ||
+            (customer.phone && customer.phone.toLowerCase().includes(lower)) ||
+            (customer.address && customer.address.toLowerCase().includes(lower))
+        );
+    });
 
     return (
         <Layout>
@@ -160,10 +306,9 @@ const CustomerManagement = () => {
                         fontWeight: "bold",
                     }}
                 >
-                    CUSTOMER
+                    CUSTOMER MANAGEMENT
                 </Header>
                 <Content style={{ padding: 24, background: "#fff" }}>
-                    {/* Toolbar with Search, Select All and Bulk Archive */}
                     <div
                         style={{
                             display: "flex",
@@ -171,14 +316,16 @@ const CustomerManagement = () => {
                             marginBottom: 16,
                         }}
                     >
+                        {/* Left side: Search input and Bulk Archive controls */}
                         <div style={{ display: "flex", alignItems: "center" }}>
-                            <Input.Search
+                            <Search
                                 placeholder="Search customers"
-                                onSearch={handleSearch}
-                                style={{ width: 300, marginRight: 16 }}
+                                onSearch={(value) => setSearchQuery(value)}
+                                style={{ width: 300 }}
                             />
                             <Checkbox
                                 onChange={(e) => setSelectAll(e.target.checked)}
+                                style={{ marginLeft: 16 }}
                             >
                                 Select All
                             </Checkbox>
@@ -195,23 +342,33 @@ const CustomerManagement = () => {
                                 </Button>
                             )}
                         </div>
-                        <div>
+                        {/* Right side: Add Customer and Archived View */}
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <Button
+                                type="primary"
+                                onClick={handleAdd}
+                                style={{ marginRight: 16 }}
+                            >
+                                <PlusOutlined style={{ marginRight: 4 }} />
+                                Add Customer
+                            </Button>
                             <Button
                                 type="default"
                                 onClick={() => setOpenArchiveModal(true)}
                             >
+                                <DeleteOutlined style={{ marginRight: 4 }} />
                                 Archived View
                             </Button>
                         </div>
                     </div>
                     <Table
                         columns={mainColumns}
-                        dataSource={customers}
+                        dataSource={filteredCustomers}
+                        rowKey="id"
                         scroll={{ x: 1200 }}
                     />
                 </Content>
             </Layout>
-
             {/* Archived Customers Modal */}
             <Modal
                 title="Archived Customers"
@@ -231,9 +388,101 @@ const CustomerManagement = () => {
                 <Table
                     columns={archiveColumns}
                     dataSource={archivedCustomers}
-                    scroll={{ x: 1200 }}
+                    rowKey="id"
                     pagination={false}
                 />
+            </Modal>
+            {/* Add/Edit Customer Modal */}
+            <Modal
+                title={editingCustomer ? "Edit Customer" : "Add Customer"}
+                centered
+                open={openAddEditModal}
+                onCancel={() => {
+                    setOpenAddEditModal(false);
+                    setEditingCustomer(null);
+                }}
+                footer={[
+                    <Button
+                        key="cancel"
+                        onClick={() => {
+                            setOpenAddEditModal(false);
+                            setEditingCustomer(null);
+                        }}
+                    >
+                        Cancel
+                    </Button>,
+                    <Button key="save" type="primary" onClick={handleSave}>
+                        {editingCustomer ? "Update Customer" : "Add Customer"}
+                    </Button>,
+                ]}
+            >
+                <Form form={form} layout="vertical">
+                    <Form.Item
+                        name="first_name"
+                        label="First Name"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please enter first name",
+                            },
+                        ]}
+                    >
+                        <Input placeholder="Enter first name" />
+                    </Form.Item>
+                    <Form.Item
+                        name="middle_name"
+                        label="Middle Name (optional)"
+                    >
+                        <Input placeholder="Enter middle name" />
+                    </Form.Item>
+                    <Form.Item
+                        name="last_name"
+                        label="Last Name"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please enter last name",
+                            },
+                        ]}
+                    >
+                        <Input placeholder="Enter last name" />
+                    </Form.Item>
+                    <Form.Item name="suffix" label="Suffix (optional)">
+                        <Input placeholder="Enter suffix (if any)" />
+                    </Form.Item>
+                    <Form.Item name="phone" label="Phone">
+                        <Input placeholder="Enter phone number" />
+                    </Form.Item>
+                    <Form.Item name="date_of_birth" label="Date of Birth">
+                        <Input placeholder="YYYY-MM-DD" />
+                    </Form.Item>
+                    <Form.Item name="gender" label="Gender">
+                        <Select placeholder="Select gender">
+                            <Option value="Male">Male</Option>
+                            <Option value="Female">Female</Option>
+                            <Option value="Other">Other</Option>
+                        </Select>
+                    </Form.Item>
+                    <Form.Item name="address" label="Address">
+                        <Input.TextArea placeholder="Enter address" />
+                    </Form.Item>
+                    {/* Optionally, you can add a customer image field if needed */}
+                    {/* Only show password input when adding a customer */}
+                    {!editingCustomer && (
+                        <Form.Item
+                            name="password"
+                            label="Password"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please enter password",
+                                },
+                            ]}
+                        >
+                            <Input.Password placeholder="Enter password" />
+                        </Form.Item>
+                    )}
+                </Form>
             </Modal>
         </Layout>
     );

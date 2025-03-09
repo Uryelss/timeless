@@ -64,8 +64,15 @@ class AccessController extends Controller
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
+        $user = Auth::user();
+
+        // Prevent login if the user's status is inactive
+        if ($user->status !== 'active') {
+            return response()->json(['message' => 'Your account is inactive.'], 403);
+        }
+
         // Load the role relation so that the user object includes role info
-        $user = Auth::user()->load('role');
+        $user->load('role');
         $token = $user->createToken('authToken')->accessToken;
 
         return response()->json([

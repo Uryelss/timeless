@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccessController;
 use App\Http\Controllers\API\SubCategoryController;
 use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\InventoryController;
+use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\CustomerController;
+
 
 Route::post('register', [AccessController::class, 'register']);
 Route::post('login', [AccessController::class, 'login']);
@@ -27,4 +31,24 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::put('/products/{id}', [ProductController::class, 'update']);
     Route::delete('/products/{id}', [ProductController::class, 'destroy']);
     Route::post('/products/{id}/restore', [ProductController::class, 'restore']);
+
+
+    Route::get('/inventory', [InventoryController::class, 'index']);
+    Route::post('/inventory/{product_id}', [InventoryController::class, 'store']);
+    Route::put('/inventory/{id}', [InventoryController::class, 'update']);
+    Route::delete('/inventory/{id}', [InventoryController::class, 'destroy']);
+    Route::post('/inventory/{id}/restore', [InventoryController::class, 'restore']);
+    // User Management routes
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::put('/users/{id}', [UserController::class, 'update']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    Route::post('/users/{id}/restore', [UserController::class, 'restore']);
+
+    // Customer routes
+    Route::get('/customers', [CustomerController::class, 'index']);
+    Route::post('/customers', [CustomerController::class, 'store']);
+    Route::put('/customers/{id}', [CustomerController::class, 'update']);
+    Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
+    Route::post('/customers/{id}/restore', [CustomerController::class, 'restore']);
 });

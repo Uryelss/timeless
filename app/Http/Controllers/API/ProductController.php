@@ -35,13 +35,14 @@ class ProductController extends Controller
             'price'              => 'required|numeric',
             'quantity'           => 'required|integer',
             'description'        => 'required|string',
-            'sizes'              => 'required',
+            'sizes'              => 'required', // JSON string, e.g., '["21mm", "22mm"]'
             'main_image'         => 'required|file|image',
             'side_image_1'       => 'nullable|file|image',
             'side_image_2'       => 'nullable|file|image',
             'side_image_3'       => 'nullable|file|image',
         ]);
 
+        // Handle file uploads
         if ($request->hasFile('main_image')) {
             $validatedData['main_image'] = $request->file('main_image')->store('products', 'public');
         }
@@ -51,7 +52,33 @@ class ProductController extends Controller
             }
         }
 
+        // Create the product
         $product = Product::create($validatedData);
+
+        // Decode sizes (ensure sizes is a valid JSON array)
+        $sizes = $product->sizes;
+        if (is_string($sizes)) {
+            $sizes = json_decode($sizes, true);
+        }
+
+        // For each size, create an inventory record.
+        if (is_array($sizes)) {
+            foreach ($sizes as $size) {
+                \App\Models\Inventory::create([
+                    'product_id'   => $product->id,
+                    'size'         => $size,
+                    // Here, you can decide how to set initial quantity.
+                    // For example, if the product quantity is overall stock,
+                    // you might want to divide it equally among sizes,
+                    // or set a default value.
+                    // For this example, we'll use the product's quantity:
+                    'quantity'     => $product->quantity,
+                    'sold'         => 0,
+                    'stock_status' => $product->quantity == 0 ? 'Out of Stock' : 'In Stock',
+                ]);
+            }
+        }
+
         return response()->json($product, 201);
     }
 

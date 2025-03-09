@@ -158216,7 +158216,7 @@ var items = [{
   key: "dashboard",
   icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_3__["default"], {}),
   label: "Dashboard",
-  path: "/"
+  path: "/dashboard"
 }, {
   key: "product",
   icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_4__["default"], {}),
@@ -158345,17 +158345,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/select/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/PlusOutlined.js");
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -158372,110 +158377,101 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
+
 var Header = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Header,
   Content = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Content,
   Sider = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Sider;
+var Search = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Search;
+var Option = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Option;
 var CustomerManagement = function CustomerManagement() {
-  // State for Archive modal, search query and bulk selection
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
-    openArchiveModal = _useState2[0],
-    setOpenArchiveModal = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    customers = _useState2[0],
+    setCustomers = _useState2[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState4 = _slicedToArray(_useState3, 2),
-    searchQuery = _useState4[0],
-    setSearchQuery = _useState4[1];
+    archivedCustomers = _useState4[0],
+    setArchivedCustomers = _useState4[1];
   var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState6 = _slicedToArray(_useState5, 2),
-    selectAll = _useState6[0],
-    setSelectAll = _useState6[1];
+    openArchiveModal = _useState6[0],
+    setOpenArchiveModal = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState8 = _slicedToArray(_useState7, 2),
+    openAddEditModal = _useState8[0],
+    setOpenAddEditModal = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    _useState10 = _slicedToArray(_useState9, 2),
+    searchQuery = _useState10[0],
+    setSearchQuery = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState12 = _slicedToArray(_useState11, 2),
+    selectAll = _useState12[0],
+    setSelectAll = _useState12[1];
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState14 = _slicedToArray(_useState13, 2),
+    editingCustomer = _useState14[0],
+    setEditingCustomer = _useState14[1];
+  var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_6__["default"].useForm(),
+    _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
+    form = _Form$useForm2[0];
 
-  // Dummy data for main customers
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
-      key: "1",
-      id: 1,
-      customerImage: "https://via.placeholder.com/100?text=John+Doe",
-      customerName: "John Doe",
-      phone: "123-456-7890",
-      dob: "1990-01-01",
-      gender: "Male",
-      address: "123 Main St",
-      lastUpdated: "2023-12-01"
-    }, {
-      key: "2",
-      id: 2,
-      customerImage: "https://via.placeholder.com/100?text=Jane+Smith",
-      customerName: "Jane Smith",
-      phone: "987-654-3210",
-      dob: "1985-05-05",
-      gender: "Female",
-      address: "456 Elm St",
-      lastUpdated: "2023-12-02"
-    }]),
-    _useState8 = _slicedToArray(_useState7, 1),
-    customers = _useState8[0];
+  // API endpoint for customers
+  var API_URL = "http://localhost:8000/api/customers";
 
-  // Dummy data for archived customers
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
-      key: "3",
-      id: 3,
-      customerImage: "https://via.placeholder.com/100?text=Alice+Johnson",
-      customerName: "Alice Johnson",
-      phone: "555-123-4567",
-      dob: "1992-03-03",
-      gender: "Female",
-      address: "789 Oak St",
-      lastUpdated: "2023-11-20"
-    }]),
-    _useState10 = _slicedToArray(_useState9, 1),
-    archivedCustomers = _useState10[0];
-
-  // Handlers for edit, archive and restore actions
-  var handleEdit = function handleEdit(record) {
-    console.log("Edit customer:", record);
-    // Implement edit functionality here
-  };
-  var handleArchive = function handleArchive(record) {
-    console.log("Archive customer:", record);
-    // Implement individual archive functionality here
-  };
-  var handleRestore = function handleRestore(key) {
-    console.log("Restore customer with key:", key);
-    // Implement restore functionality here
-  };
-
-  // Handler for search action
-  var handleSearch = function handleSearch(value) {
-    console.log("Search query:", value);
-    setSearchQuery(value);
-    // Optionally filter customers based on search query
-  };
-
-  // Bulk archive handler with confirmation
-  var handleArchiveAll = function handleArchiveAll() {
-    antd__WEBPACK_IMPORTED_MODULE_4__["default"].confirm({
-      title: "Are you sure you want to archive all selected customers?",
-      onOk: function onOk() {
-        console.log("Bulk archiving all selected customers");
-        // Perform bulk archive action here
+  // Fetch active customers
+  var fetchCustomers = function fetchCustomers() {
+    axios__WEBPACK_IMPORTED_MODULE_7__["default"].get(API_URL, {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
+    }).then(function (res) {
+      console.log("Fetched customers:", res.data);
+      setCustomers(res.data);
+    })["catch"](function (err) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching customers");
+      console.error(err);
     });
   };
 
-  // Main table columns for customers
+  // Fetch archived customers
+  var fetchArchivedCustomers = function fetchArchivedCustomers() {
+    axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(API_URL, "?archived=1"), {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function (res) {
+      console.log("Fetched archived customers:", res.data);
+      setArchivedCustomers(res.data);
+    })["catch"](function (err) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching archived customers");
+      console.error(err);
+    });
+  };
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    fetchCustomers();
+  }, []);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (openArchiveModal) {
+      fetchArchivedCustomers();
+    }
+  }, [openArchiveModal]);
+
+  // Table columns for active customers.
+  // We use the computed full_name from the Customer model.
   var mainColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_7__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
           onClick: function onClick() {
             return handleEdit(record);
           },
           style: {
             fontSize: "16px"
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
           onClick: function onClick() {
             return handleArchive(record);
           },
@@ -158491,11 +158487,11 @@ var CustomerManagement = function CustomerManagement() {
     key: "id"
   }, {
     title: "Customer Image",
-    dataIndex: "customerImage",
-    key: "customerImage",
+    dataIndex: "profile_image",
+    key: "profile_image",
     render: function render(image) {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-        src: image,
+        src: image || "https://via.placeholder.com/100?text=Customer",
         alt: "customer",
         style: {
           width: 50
@@ -158504,15 +158500,16 @@ var CustomerManagement = function CustomerManagement() {
     }
   }, {
     title: "Customer Name",
-    dataIndex: "customerName",
-    key: "customerName"
+    dataIndex: "full_name",
+    key: "full_name"
+    // full_name is computed in the model (accessor)
   }, {
     title: "Phone",
     dataIndex: "phone",
     key: "phone"
   }, {
     title: "Date of Birth",
-    dataIndex: "dob",
+    dataIndex: "date_of_birth",
     key: "dob"
   }, {
     title: "Gender",
@@ -158524,21 +158521,21 @@ var CustomerManagement = function CustomerManagement() {
     key: "address"
   }, {
     title: "Last Updated",
-    dataIndex: "lastUpdated",
-    key: "lastUpdated"
+    dataIndex: "updated_at",
+    key: "updated_at"
   }];
 
-  // Archive table columns: same as main, except the Actions column shows only Restore.
+  // Archive table columns – similar to main, but with a restore button.
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         type: "link",
         onClick: function onClick() {
-          return handleRestore(record.key);
+          return handleRestore(record.id);
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
           style: {
             fontSize: "18px"
           }
@@ -158546,6 +158543,120 @@ var CustomerManagement = function CustomerManagement() {
       });
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
+
+  // Handle edit action: open modal and prefill form with record data.
+  var handleEdit = function handleEdit(record) {
+    console.log("Edit customer:", record);
+    setEditingCustomer(record);
+    form.setFieldsValue({
+      first_name: record.first_name,
+      middle_name: record.middle_name,
+      last_name: record.last_name,
+      suffix: record.suffix,
+      phone: record.phone,
+      date_of_birth: record.date_of_birth,
+      gender: record.gender,
+      address: record.address
+    });
+    setOpenAddEditModal(true);
+  };
+
+  // Handle archive (soft delete) action.
+  var handleArchive = function handleArchive(record) {
+    antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
+      title: "Are you sure you want to archive this customer?",
+      onOk: function onOk() {
+        axios__WEBPACK_IMPORTED_MODULE_7__["default"]["delete"]("".concat(API_URL, "/").concat(record.id), {
+          headers: {
+            Authorization: "Bearer ".concat(localStorage.getItem("token"))
+          }
+        }).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Customer archived successfully");
+          fetchCustomers();
+        })["catch"](function (err) {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive customer");
+          console.error(err);
+        });
+      }
+    });
+  };
+
+  // Handle restore action.
+  var handleRestore = function handleRestore(id) {
+    axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/").concat(id, "/restore"), {}, {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function () {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Customer restored successfully");
+      fetchArchivedCustomers();
+      fetchCustomers();
+    })["catch"](function (err) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore customer");
+      console.error(err);
+    });
+  };
+
+  // Bulk archive handler.
+  var handleArchiveAll = function handleArchiveAll() {
+    antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
+      title: "Are you sure you want to archive all selected customers?",
+      onOk: function onOk() {
+        antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Bulk archive executed (not implemented)");
+      }
+    });
+  };
+
+  // Handle adding a new customer (opens the add modal)
+  var handleAdd = function handleAdd() {
+    form.resetFields();
+    setEditingCustomer(null);
+    setOpenAddEditModal(true);
+  };
+
+  // Handle save (for both add and edit)
+  var handleSave = function handleSave() {
+    form.validateFields().then(function (values) {
+      if (editingCustomer) {
+        // Update existing customer
+        axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("".concat(API_URL, "/").concat(editingCustomer.id), values, {
+          headers: {
+            Authorization: "Bearer ".concat(localStorage.getItem("token"))
+          }
+        }).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Customer updated successfully");
+          setOpenAddEditModal(false);
+          setEditingCustomer(null);
+          fetchCustomers();
+        })["catch"](function (err) {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update customer");
+          console.error(err);
+        });
+      } else {
+        // Add new customer
+        axios__WEBPACK_IMPORTED_MODULE_7__["default"].post(API_URL, values, {
+          headers: {
+            Authorization: "Bearer ".concat(localStorage.getItem("token"))
+          }
+        }).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Customer added successfully");
+          setOpenAddEditModal(false);
+          fetchCustomers();
+        })["catch"](function (err) {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to add customer");
+          console.error(err);
+        });
+      }
+    })["catch"](function (err) {
+      console.log("Validation Failed:", err);
+    });
+  };
+
+  // Filter customers based on search query.
+  var filteredCustomers = customers.filter(function (customer) {
+    var lower = searchQuery.toLowerCase();
+    return customer.full_name && customer.full_name.toLowerCase().includes(lower) || customer.phone && customer.phone.toLowerCase().includes(lower) || customer.address && customer.address.toLowerCase().includes(lower);
+  });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
       width: 256,
@@ -158561,7 +158672,7 @@ var CustomerManagement = function CustomerManagement() {
           fontSize: "18px",
           fontWeight: "bold"
         },
-        children: "CUSTOMER"
+        children: "CUSTOMER MANAGEMENT"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Content, {
         style: {
           padding: 24,
@@ -158578,49 +158689,73 @@ var CustomerManagement = function CustomerManagement() {
               display: "flex",
               alignItems: "center"
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"].Search, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Search, {
               placeholder: "Search customers",
-              onSearch: handleSearch,
+              onSearch: function onSearch(value) {
+                return setSearchQuery(value);
+              },
               style: {
-                width: 300,
-                marginRight: 16
+                width: 300
               }
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
               onChange: function onChange(e) {
                 return setSelectAll(e.target.checked);
               },
+              style: {
+                marginLeft: 16
+              },
               children: "Select All"
-            }), selectAll && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+            }), selectAll && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
               type: "link",
               onClick: handleArchiveAll,
               style: {
                 marginLeft: 8
               },
               title: "Archive All",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {
                 style: {
                   fontSize: "18px"
                 }
               })
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            style: {
+              display: "flex",
+              alignItems: "center"
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+              type: "primary",
+              onClick: handleAdd,
+              style: {
+                marginRight: 16
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {
+                style: {
+                  marginRight: 4
+                }
+              }), "Add Customer"]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
               type: "default",
               onClick: function onClick() {
                 return setOpenArchiveModal(true);
               },
-              children: "Archived View"
-            })
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+                style: {
+                  marginRight: 4
+                }
+              }), "Archived View"]
+            })]
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
           columns: mainColumns,
-          dataSource: customers,
+          dataSource: filteredCustomers,
+          rowKey: "id",
           scroll: {
             x: 1200
           }
         })]
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
       title: "Archived Customers",
       centered: true,
       open: openArchiveModal,
@@ -158628,19 +158763,117 @@ var CustomerManagement = function CustomerManagement() {
         return setOpenArchiveModal(false);
       },
       width: 1200,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         onClick: function onClick() {
           return setOpenArchiveModal(false);
         },
         children: "Close"
       }, "close")],
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
         columns: archiveColumns,
         dataSource: archivedCustomers,
-        scroll: {
-          x: 1200
-        },
+        rowKey: "id",
         pagination: false
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+      title: editingCustomer ? "Edit Customer" : "Add Customer",
+      centered: true,
+      open: openAddEditModal,
+      onCancel: function onCancel() {
+        setOpenAddEditModal(false);
+        setEditingCustomer(null);
+      },
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        onClick: function onClick() {
+          setOpenAddEditModal(false);
+          setEditingCustomer(null);
+        },
+        children: "Cancel"
+      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        type: "primary",
+        onClick: handleSave,
+        children: editingCustomer ? "Update Customer" : "Add Customer"
+      }, "save")],
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+        form: form,
+        layout: "vertical",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "first_name",
+          label: "First Name",
+          rules: [{
+            required: true,
+            message: "Please enter first name"
+          }],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            placeholder: "Enter first name"
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "middle_name",
+          label: "Middle Name (optional)",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            placeholder: "Enter middle name"
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "last_name",
+          label: "Last Name",
+          rules: [{
+            required: true,
+            message: "Please enter last name"
+          }],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            placeholder: "Enter last name"
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "suffix",
+          label: "Suffix (optional)",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            placeholder: "Enter suffix (if any)"
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "phone",
+          label: "Phone",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            placeholder: "Enter phone number"
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "date_of_birth",
+          label: "Date of Birth",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            placeholder: "YYYY-MM-DD"
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "gender",
+          label: "Gender",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+            placeholder: "Select gender",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+              value: "Male",
+              children: "Male"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+              value: "Female",
+              children: "Female"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+              value: "Other",
+              children: "Other"
+            })]
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "address",
+          label: "Address",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"].TextArea, {
+            placeholder: "Enter address"
+          })
+        }), !editingCustomer && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "password",
+          label: "Password",
+          rules: [{
+            required: true,
+            message: "Please enter password"
+          }],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"].Password, {
+            placeholder: "Enter password"
+          })
+        })]
       })
     })]
   });
@@ -158662,17 +158895,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -158689,110 +158925,99 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
+
 var Header = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Header,
   Content = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Content,
   Sider = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Sider;
+var Search = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Search;
 var InventoryManagement = function InventoryManagement() {
-  // States for Archive modal, search query and bulk selection
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
-    openArchiveModal = _useState2[0],
-    setOpenArchiveModal = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    inventoryItems = _useState2[0],
+    setInventoryItems = _useState2[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState4 = _slicedToArray(_useState3, 2),
-    searchQuery = _useState4[0],
-    setSearchQuery = _useState4[1];
+    archivedInventory = _useState4[0],
+    setArchivedInventory = _useState4[1];
   var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState6 = _slicedToArray(_useState5, 2),
-    selectAll = _useState6[0],
-    setSelectAll = _useState6[1];
+    openArchiveModal = _useState6[0],
+    setOpenArchiveModal = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState8 = _slicedToArray(_useState7, 2),
+    openEditModal = _useState8[0],
+    setOpenEditModal = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    _useState10 = _slicedToArray(_useState9, 2),
+    searchQuery = _useState10[0],
+    setSearchQuery = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState12 = _slicedToArray(_useState11, 2),
+    selectAll = _useState12[0],
+    setSelectAll = _useState12[1];
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState14 = _slicedToArray(_useState13, 2),
+    editingRecord = _useState14[0],
+    setEditingRecord = _useState14[1];
+  var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_5__["default"].useForm(),
+    _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
+    form = _Form$useForm2[0];
 
-  // Dummy data for main inventory items
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
-      key: "1",
-      id: 1,
-      productImage: "https://via.placeholder.com/100?text=Prod+1",
-      productName: "Classic Watch",
-      stockQuantity: 50,
-      size: "Medium",
-      sold: 20,
-      stockStatus: "In Stock",
-      lastUpdated: "2023-12-01"
-    }, {
-      key: "2",
-      id: 2,
-      productImage: "https://via.placeholder.com/100?text=Prod+2",
-      productName: "Sport Watch",
-      stockQuantity: 30,
-      size: "Large",
-      sold: 15,
-      stockStatus: "Low Stock",
-      lastUpdated: "2023-12-02"
-    }]),
-    _useState8 = _slicedToArray(_useState7, 1),
-    inventoryItems = _useState8[0];
+  // Base URL for images – adjust if needed
+  var imageBaseURL = "http://localhost:8000/storage/";
 
-  // Dummy data for archived inventory items
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
-      key: "3",
-      id: 3,
-      productImage: "https://via.placeholder.com/100?text=Archived+Prod+1",
-      productName: "Vintage Watch",
-      stockQuantity: 10,
-      size: "Small",
-      sold: 5,
-      stockStatus: "Archived",
-      lastUpdated: "2023-11-20"
-    }]),
-    _useState10 = _slicedToArray(_useState9, 1),
-    archivedInventory = _useState10[0];
-
-  // Handlers for edit, archive and restore actions
-  var handleEdit = function handleEdit(record) {
-    console.log("Edit inventory item:", record);
-    // Implement edit functionality here
-  };
-  var handleArchive = function handleArchive(record) {
-    console.log("Archive inventory item:", record);
-    // Implement individual archive functionality here
-  };
-  var handleRestore = function handleRestore(key) {
-    console.log("Restore inventory item with key:", key);
-    // Implement restore functionality here
-  };
-
-  // Handler for search action
-  var handleSearch = function handleSearch(value) {
-    console.log("Search query:", value);
-    setSearchQuery(value);
-    // Optionally filter inventory items based on search query
-  };
-
-  // Bulk archive handler with confirmation
-  var handleArchiveAll = function handleArchiveAll() {
-    antd__WEBPACK_IMPORTED_MODULE_4__["default"].confirm({
-      title: "Are you sure you want to archive all selected inventory items?",
-      onOk: function onOk() {
-        console.log("Bulk archiving all selected inventory items");
-        // Perform bulk archive action here
+  // Fetch active inventory records from API (with product data)
+  var fetchInventory = function fetchInventory() {
+    axios__WEBPACK_IMPORTED_MODULE_6__["default"].get("http://localhost:8000/api/inventory", {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
+    }).then(function (res) {
+      console.log("Fetched inventory:", res.data);
+      setInventoryItems(res.data);
+    })["catch"](function (err) {
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error fetching inventory");
+      console.error(err);
     });
   };
 
-  // Main table columns for inventory items
+  // Fetch archived inventory records
+  var fetchArchivedInventory = function fetchArchivedInventory() {
+    axios__WEBPACK_IMPORTED_MODULE_6__["default"].get("http://localhost:8000/api/inventory?archived=1", {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function (res) {
+      console.log("Fetched archived inventory:", res.data);
+      setArchivedInventory(res.data);
+    })["catch"](function (err) {
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error fetching archived inventory");
+      console.error(err);
+    });
+  };
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    fetchInventory();
+  }, []);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (openArchiveModal) {
+      fetchArchivedInventory();
+    }
+  }, [openArchiveModal]);
+
+  // Table columns for active inventory records
   var mainColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_7__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
           onClick: function onClick() {
             return handleEdit(record);
           },
           style: {
             fontSize: "16px"
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
           onClick: function onClick() {
             return handleArchive(record);
           },
@@ -158808,11 +159033,12 @@ var InventoryManagement = function InventoryManagement() {
     key: "id"
   }, {
     title: "Product (Image)",
-    dataIndex: "productImage",
     key: "productImage",
-    render: function render(image) {
+    render: function render(record) {
+      var _record$product;
+      var productImage = (_record$product = record.product) === null || _record$product === void 0 ? void 0 : _record$product.main_image;
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-        src: image,
+        src: productImage ? "".concat(imageBaseURL).concat(productImage) : "https://via.placeholder.com/100?text=Prod",
         alt: "product",
         style: {
           width: 50
@@ -158821,41 +159047,43 @@ var InventoryManagement = function InventoryManagement() {
     }
   }, {
     title: "Product Name",
-    dataIndex: "productName",
-    key: "productName"
-  }, {
-    title: "Stock Quantity",
-    dataIndex: "stockQuantity",
-    key: "stockQuantity"
+    key: "productName",
+    render: function render(record) {
+      return record.product ? record.product.product_name : "N/A";
+    }
   }, {
     title: "Size",
     dataIndex: "size",
     key: "size"
+  }, {
+    title: "Stock Quantity",
+    dataIndex: "quantity",
+    key: "quantity"
   }, {
     title: "Sold",
     dataIndex: "sold",
     key: "sold"
   }, {
     title: "Stock Status",
-    dataIndex: "stockStatus",
-    key: "stockStatus"
+    dataIndex: "stock_status",
+    key: "stock_status"
   }, {
     title: "Last Updated",
-    dataIndex: "lastUpdated",
-    key: "lastUpdated"
+    dataIndex: "updated_at",
+    key: "updated_at"
   }];
 
-  // Archive table columns: same as main, except Actions shows only the Restore icon.
+  // Archive table columns – similar to main, but with a restore button.
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
         type: "link",
         onClick: function onClick() {
-          return handleRestore(record.key);
+          return handleRestore(record.id);
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
           style: {
             fontSize: "18px"
           }
@@ -158863,6 +159091,91 @@ var InventoryManagement = function InventoryManagement() {
       });
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
+
+  // Handle edit action: open modal and prefill form with record data.
+  var handleEdit = function handleEdit(record) {
+    console.log("Edit inventory record:", record);
+    setEditingRecord(record);
+    form.setFieldsValue({
+      size: record.size,
+      quantity: record.quantity,
+      sold: record.sold
+    });
+    setOpenEditModal(true);
+  };
+
+  // Handle archive (soft delete) action.
+  var handleArchive = function handleArchive(record) {
+    antd__WEBPACK_IMPORTED_MODULE_14__["default"].confirm({
+      title: "Are you sure you want to archive this inventory item?",
+      onOk: function onOk() {
+        axios__WEBPACK_IMPORTED_MODULE_6__["default"]["delete"]("http://localhost:8000/api/inventory/".concat(record.id), {
+          headers: {
+            Authorization: "Bearer ".concat(localStorage.getItem("token"))
+          }
+        }).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Inventory item archived successfully");
+          fetchInventory();
+        })["catch"](function (err) {
+          antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive inventory item");
+          console.error(err);
+        });
+      }
+    });
+  };
+
+  // Handle restore action.
+  var handleRestore = function handleRestore(id) {
+    axios__WEBPACK_IMPORTED_MODULE_6__["default"].post("http://localhost:8000/api/inventory/".concat(id, "/restore"), {}, {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function () {
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Inventory item restored successfully");
+      fetchArchivedInventory();
+      fetchInventory();
+    })["catch"](function (err) {
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to restore inventory item");
+      console.error(err);
+    });
+  };
+
+  // Bulk archive handler (if needed).
+  var handleArchiveAll = function handleArchiveAll() {
+    antd__WEBPACK_IMPORTED_MODULE_14__["default"].confirm({
+      title: "Are you sure you want to archive all selected inventory items?",
+      onOk: function onOk() {
+        antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Bulk archive executed (not implemented)");
+      }
+    });
+  };
+
+  // Filter inventory records based on the search query.
+  var filteredInventory = inventoryItems.filter(function (item) {
+    var lower = searchQuery.toLowerCase();
+    return item.product && item.product.product_name.toLowerCase().includes(lower) || item.size.toLowerCase().includes(lower) || item.stock_status.toLowerCase().includes(lower);
+  });
+
+  // Handle update of inventory record (called from the edit modal).
+  var handleUpdate = function handleUpdate() {
+    form.validateFields().then(function (values) {
+      axios__WEBPACK_IMPORTED_MODULE_6__["default"].put("http://localhost:8000/api/inventory/".concat(editingRecord.id), values, {
+        headers: {
+          Authorization: "Bearer ".concat(localStorage.getItem("token"))
+        }
+      }).then(function () {
+        antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Inventory updated successfully");
+        setOpenEditModal(false);
+        setEditingRecord(null);
+        fetchInventory();
+      })["catch"](function (err) {
+        antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to update inventory");
+        console.error(err);
+      });
+    })["catch"](function (err) {
+      console.log("Validation Failed:", err);
+    });
+  };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
       width: 256,
@@ -158878,7 +159191,7 @@ var InventoryManagement = function InventoryManagement() {
           fontSize: "18px",
           fontWeight: "bold"
         },
-        children: "INVENTORY"
+        children: "INVENTORY MANAGEMENT"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Content, {
         style: {
           padding: 24,
@@ -158895,46 +159208,54 @@ var InventoryManagement = function InventoryManagement() {
               display: "flex",
               alignItems: "center"
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"].Search, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Search, {
               placeholder: "Search inventory",
-              onSearch: handleSearch,
+              onSearch: function onSearch(value) {
+                return setSearchQuery(value);
+              },
               style: {
-                width: 300,
-                marginRight: 16
+                width: 300
               }
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
               onChange: function onChange(e) {
                 return setSelectAll(e.target.checked);
               },
+              style: {
+                marginLeft: 16
+              },
               children: "Select All"
-            }), selectAll && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+            }), selectAll && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
               type: "link",
               onClick: handleArchiveAll,
               style: {
                 marginLeft: 8
               },
-              title: "Archive All",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
                 style: {
                   fontSize: "18px"
                 }
               })
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
               type: "default",
               onClick: function onClick() {
                 return setOpenArchiveModal(true);
               },
-              children: "Archived View"
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+                style: {
+                  marginRight: 4
+                }
+              }), "Archived View"]
             })
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
           columns: mainColumns,
-          dataSource: inventoryItems
+          dataSource: filteredInventory,
+          rowKey: "id"
         })]
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
       title: "Archived Inventory",
       centered: true,
       open: openArchiveModal,
@@ -158942,16 +159263,73 @@ var InventoryManagement = function InventoryManagement() {
         return setOpenArchiveModal(false);
       },
       width: 1200,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
         onClick: function onClick() {
           return setOpenArchiveModal(false);
         },
         children: "Close"
       }, "close")],
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
         columns: archiveColumns,
         dataSource: archivedInventory,
+        rowKey: "id",
         pagination: false
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+      title: "Edit Inventory Item",
+      centered: true,
+      open: openEditModal,
+      onCancel: function onCancel() {
+        setOpenEditModal(false);
+        setEditingRecord(null);
+      },
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+        onClick: function onClick() {
+          setOpenEditModal(false);
+          setEditingRecord(null);
+        },
+        children: "Cancel"
+      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+        type: "primary",
+        onClick: handleUpdate,
+        children: "Update Inventory"
+      }, "save")],
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+        form: form,
+        layout: "vertical",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+          name: "size",
+          label: "Size",
+          rules: [{
+            required: true,
+            message: "Size is required"
+          }],
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            disabled: true
+          }), " "]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+          name: "quantity",
+          label: "Stock Quantity",
+          rules: [{
+            required: true,
+            message: "Quantity is required"
+          }],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            type: "number",
+            placeholder: "Enter quantity"
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+          name: "sold",
+          label: "Sold",
+          rules: [{
+            required: true,
+            message: "Sold is required"
+          }],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            type: "number",
+            placeholder: "Enter sold quantity"
+          })
+        })]
       })
     })]
   });
@@ -159841,17 +160219,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/select/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/PlusOutlined.js");
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -159868,110 +160251,100 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
+
 var Header = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Header,
   Content = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Content,
   Sider = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Sider;
+var Search = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Search;
+var Option = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Option;
 var UserManagement = function UserManagement() {
-  // State for Archive modal, search query and bulk selection
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
-    openArchiveModal = _useState2[0],
-    setOpenArchiveModal = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    users = _useState2[0],
+    setUsers = _useState2[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState4 = _slicedToArray(_useState3, 2),
-    searchQuery = _useState4[0],
-    setSearchQuery = _useState4[1];
+    archivedUsers = _useState4[0],
+    setArchivedUsers = _useState4[1];
   var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState6 = _slicedToArray(_useState5, 2),
-    selectAll = _useState6[0],
-    setSelectAll = _useState6[1];
+    openArchiveModal = _useState6[0],
+    setOpenArchiveModal = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState8 = _slicedToArray(_useState7, 2),
+    openAddEditModal = _useState8[0],
+    setOpenAddEditModal = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    _useState10 = _slicedToArray(_useState9, 2),
+    searchQuery = _useState10[0],
+    setSearchQuery = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState12 = _slicedToArray(_useState11, 2),
+    selectAll = _useState12[0],
+    setSelectAll = _useState12[1];
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState14 = _slicedToArray(_useState13, 2),
+    editingUser = _useState14[0],
+    setEditingUser = _useState14[1];
+  var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_6__["default"].useForm(),
+    _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
+    form = _Form$useForm2[0];
 
-  // Dummy data for main users
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
-      key: "1",
-      id: 1,
-      userImage: "https://via.placeholder.com/100?text=User+1",
-      username: "john_doe",
-      email: "john@example.com",
-      role: "Admin",
-      status: "Active",
-      dateAdded: "2023-12-01",
-      lastUpdated: "2023-12-01"
-    }, {
-      key: "2",
-      id: 2,
-      userImage: "https://via.placeholder.com/100?text=User+2",
-      username: "jane_smith",
-      email: "jane@example.com",
-      role: "User",
-      status: "Inactive",
-      dateAdded: "2023-12-02",
-      lastUpdated: "2023-12-02"
-    }]),
-    _useState8 = _slicedToArray(_useState7, 1),
-    users = _useState8[0];
+  // API endpoint for users
+  var API_URL = "http://localhost:8000/api/users";
 
-  // Dummy data for archived users
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([{
-      key: "3",
-      id: 3,
-      userImage: "https://via.placeholder.com/100?text=User+3",
-      username: "alice_jones",
-      email: "alice@example.com",
-      role: "User",
-      status: "Inactive",
-      dateAdded: "2023-11-20",
-      lastUpdated: "2023-11-20"
-    }]),
-    _useState10 = _slicedToArray(_useState9, 1),
-    archivedUsers = _useState10[0];
-
-  // Handlers for edit, archive and restore actions
-  var handleEdit = function handleEdit(record) {
-    console.log("Edit user:", record);
-    // Implement edit functionality here
-  };
-  var handleArchive = function handleArchive(record) {
-    console.log("Archive user:", record);
-    // Implement individual archive functionality here
-  };
-  var handleRestore = function handleRestore(key) {
-    console.log("Restore user with key:", key);
-    // Implement restore functionality here
-  };
-
-  // Handler for search action
-  var handleSearch = function handleSearch(value) {
-    console.log("Search query:", value);
-    setSearchQuery(value);
-    // Optionally filter users based on search query
-  };
-
-  // Bulk archive handler with confirmation
-  var handleArchiveAll = function handleArchiveAll() {
-    antd__WEBPACK_IMPORTED_MODULE_4__["default"].confirm({
-      title: "Are you sure you want to archive all selected users?",
-      onOk: function onOk() {
-        console.log("Bulk archiving all selected users");
-        // Perform bulk archive action here
+  // Fetch active users with role relationship
+  var fetchUsers = function fetchUsers() {
+    axios__WEBPACK_IMPORTED_MODULE_7__["default"].get(API_URL, {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
+    }).then(function (res) {
+      console.log("Fetched users:", res.data);
+      setUsers(res.data);
+    })["catch"](function (err) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching users");
+      console.error(err);
     });
   };
 
-  // Main table columns for users
+  // Fetch archived users
+  var fetchArchivedUsers = function fetchArchivedUsers() {
+    axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(API_URL, "?archived=1"), {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function (res) {
+      console.log("Fetched archived users:", res.data);
+      setArchivedUsers(res.data);
+    })["catch"](function (err) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching archived users");
+      console.error(err);
+    });
+  };
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    fetchUsers();
+  }, []);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (openArchiveModal) {
+      fetchArchivedUsers();
+    }
+  }, [openArchiveModal]);
+
+  // Table columns for active users
   var mainColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_7__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
           onClick: function onClick() {
             return handleEdit(record);
           },
           style: {
             fontSize: "16px"
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
           onClick: function onClick() {
             return handleArchive(record);
           },
@@ -159986,19 +160359,6 @@ var UserManagement = function UserManagement() {
     dataIndex: "id",
     key: "id"
   }, {
-    title: "User Image",
-    dataIndex: "userImage",
-    key: "userImage",
-    render: function render(image) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-        src: image,
-        alt: "user",
-        style: {
-          width: 50
-        }
-      });
-    }
-  }, {
     title: "Username",
     dataIndex: "username",
     key: "username"
@@ -160008,33 +160368,35 @@ var UserManagement = function UserManagement() {
     key: "email"
   }, {
     title: "Role",
-    dataIndex: "role",
-    key: "role"
+    key: "role",
+    render: function render(record) {
+      return record.role ? record.role.name : record.role_id;
+    }
   }, {
     title: "Status",
     dataIndex: "status",
     key: "status"
   }, {
     title: "Date Added",
-    dataIndex: "dateAdded",
-    key: "dateAdded"
+    dataIndex: "created_at",
+    key: "created_at"
   }, {
     title: "Last Updated",
-    dataIndex: "lastUpdated",
-    key: "lastUpdated"
+    dataIndex: "updated_at",
+    key: "updated_at"
   }];
 
-  // Archive table columns: same as main, except the Actions column shows only Restore.
+  // Archive table columns – similar to main, but with only restore action.
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         type: "link",
         onClick: function onClick() {
-          return handleRestore(record.key);
+          return handleRestore(record.id);
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
           style: {
             fontSize: "18px"
           }
@@ -160042,6 +160404,116 @@ var UserManagement = function UserManagement() {
       });
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
+
+  // Handle edit action: open modal and prefill form with record data.
+  var handleEdit = function handleEdit(record) {
+    console.log("Edit user:", record);
+    setEditingUser(record);
+    form.setFieldsValue({
+      username: record.username,
+      email: record.email,
+      role_id: record.role ? record.role.id : "",
+      status: record.status
+    });
+    setOpenAddEditModal(true);
+  };
+
+  // Handle archive (soft delete) action.
+  var handleArchive = function handleArchive(record) {
+    antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
+      title: "Are you sure you want to archive this user?",
+      onOk: function onOk() {
+        axios__WEBPACK_IMPORTED_MODULE_7__["default"]["delete"]("".concat(API_URL, "/").concat(record.id), {
+          headers: {
+            Authorization: "Bearer ".concat(localStorage.getItem("token"))
+          }
+        }).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("User archived successfully");
+          fetchUsers();
+        })["catch"](function (err) {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive user");
+          console.error(err);
+        });
+      }
+    });
+  };
+
+  // Handle restore action.
+  var handleRestore = function handleRestore(id) {
+    axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/").concat(id, "/restore"), {}, {
+      headers: {
+        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+      }
+    }).then(function () {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("User restored successfully");
+      fetchArchivedUsers();
+      fetchUsers();
+    })["catch"](function (err) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore user");
+      console.error(err);
+    });
+  };
+
+  // Bulk archive handler (if needed)
+  var handleArchiveAll = function handleArchiveAll() {
+    antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
+      title: "Are you sure you want to archive all selected users?",
+      onOk: function onOk() {
+        antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Bulk archive executed (not implemented)");
+      }
+    });
+  };
+
+  // Handle adding a new user (opens the add modal)
+  var handleAdd = function handleAdd() {
+    form.resetFields();
+    setEditingUser(null);
+    setOpenAddEditModal(true);
+  };
+
+  // Handle save (for both add and edit)
+  var handleSave = function handleSave() {
+    form.validateFields().then(function (values) {
+      if (editingUser) {
+        // Update existing user
+        axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("".concat(API_URL, "/").concat(editingUser.id), values, {
+          headers: {
+            Authorization: "Bearer ".concat(localStorage.getItem("token"))
+          }
+        }).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("User updated successfully");
+          setOpenAddEditModal(false);
+          setEditingUser(null);
+          fetchUsers();
+        })["catch"](function (err) {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update user");
+          console.error(err);
+        });
+      } else {
+        // Add new user
+        axios__WEBPACK_IMPORTED_MODULE_7__["default"].post(API_URL, values, {
+          headers: {
+            Authorization: "Bearer ".concat(localStorage.getItem("token"))
+          }
+        }).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("User added successfully");
+          setOpenAddEditModal(false);
+          fetchUsers();
+        })["catch"](function (err) {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to add user");
+          console.error(err);
+        });
+      }
+    })["catch"](function (err) {
+      console.log("Validation Failed:", err);
+    });
+  };
+
+  // Filter users based on search query.
+  var filteredUsers = users.filter(function (user) {
+    var lower = searchQuery.toLowerCase();
+    return user.username.toLowerCase().includes(lower) || user.email.toLowerCase().includes(lower) || user.role && user.role.name.toLowerCase().includes(lower) || user.status.toLowerCase().includes(lower);
+  });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
       width: 256,
@@ -160057,7 +160529,7 @@ var UserManagement = function UserManagement() {
           fontSize: "18px",
           fontWeight: "bold"
         },
-        children: "USER"
+        children: "USER MANAGEMENT"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Content, {
         style: {
           padding: 24,
@@ -160074,49 +160546,73 @@ var UserManagement = function UserManagement() {
               display: "flex",
               alignItems: "center"
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"].Search, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Search, {
               placeholder: "Search users",
-              onSearch: handleSearch,
+              onSearch: function onSearch(value) {
+                return setSearchQuery(value);
+              },
               style: {
-                width: 300,
-                marginRight: 16
+                width: 300
               }
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
               onChange: function onChange(e) {
                 return setSelectAll(e.target.checked);
               },
+              style: {
+                marginLeft: 16
+              },
               children: "Select All"
-            }), selectAll && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+            }), selectAll && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
               type: "link",
               onClick: handleArchiveAll,
               style: {
                 marginLeft: 8
               },
               title: "Archive All",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {
                 style: {
                   fontSize: "18px"
                 }
               })
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            style: {
+              display: "flex",
+              alignItems: "center"
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+              type: "primary",
+              onClick: handleAdd,
+              style: {
+                marginRight: 16
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {
+                style: {
+                  marginRight: 4
+                }
+              }), "Add User"]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
               type: "default",
               onClick: function onClick() {
                 return setOpenArchiveModal(true);
               },
-              children: "Archived View"
-            })
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+                style: {
+                  marginRight: 4
+                }
+              }), "Archived View"]
+            })]
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
           columns: mainColumns,
-          dataSource: users,
+          dataSource: filteredUsers,
+          rowKey: "id",
           scroll: {
             x: 1200
           }
         })]
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
       title: "Archived Users",
       centered: true,
       open: openArchiveModal,
@@ -160124,19 +160620,108 @@ var UserManagement = function UserManagement() {
         return setOpenArchiveModal(false);
       },
       width: 1200,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         onClick: function onClick() {
           return setOpenArchiveModal(false);
         },
         children: "Close"
       }, "close")],
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
         columns: archiveColumns,
         dataSource: archivedUsers,
-        scroll: {
-          x: 1200
-        },
+        rowKey: "id",
         pagination: false
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+      title: editingUser ? "Edit User" : "Add User",
+      centered: true,
+      open: openAddEditModal,
+      onCancel: function onCancel() {
+        setOpenAddEditModal(false);
+        setEditingUser(null);
+      },
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        onClick: function onClick() {
+          setOpenAddEditModal(false);
+          setEditingUser(null);
+        },
+        children: "Cancel"
+      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        type: "primary",
+        onClick: handleSave,
+        children: editingUser ? "Update User" : "Add User"
+      }, "save")],
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+        form: form,
+        layout: "vertical",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "username",
+          label: "Username",
+          rules: [{
+            required: true,
+            message: "Please enter username"
+          }],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            placeholder: "Enter username"
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "email",
+          label: "Email",
+          rules: [{
+            required: true,
+            message: "Please enter email"
+          }, {
+            type: "email",
+            message: "Please enter a valid email"
+          }],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            placeholder: "Enter email"
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "role_id",
+          label: "Role",
+          rules: [{
+            required: true,
+            message: "Please select a role"
+          }],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+            placeholder: "Select role",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+              value: 1,
+              children: "Admin"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+              value: 2,
+              children: "User"
+            })]
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "status",
+          label: "Status",
+          rules: [{
+            required: true,
+            message: "Please select status"
+          }],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+            placeholder: "Select status",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+              value: "active",
+              children: "Active"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+              value: "inactive",
+              children: "Inactive"
+            })]
+          })
+        }), !editingUser && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          name: "password",
+          label: "Password",
+          rules: [{
+            required: true,
+            message: "Please enter password"
+          }],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"].Password, {
+            placeholder: "Enter password"
+          })
+        })]
       })
     })]
   });

@@ -55,4 +55,8 @@ class Product extends Model
     {
         return $this->belongsTo(SubCategory::class, 'gender_id');
     }
+    public function inventory()
+    {
+        return $this->hasMany(Inventory::class); // Define the relationship
+    }
 }

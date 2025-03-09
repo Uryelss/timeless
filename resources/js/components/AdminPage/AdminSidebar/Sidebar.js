@@ -20,7 +20,7 @@ const items = [
         key: "dashboard",
         icon: <DashboardOutlined />,
         label: "Dashboard",
-        path: "/",
+        path: "/dashboard",
     },
     {
         key: "product",

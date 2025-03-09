@@ -1,5 +1,15 @@
-import React, { useState } from "react";
-import { Layout, Table, Space, Checkbox, Button, Modal, Input } from "antd";
+import React, { useState, useEffect } from "react";
+import {
+    Layout,
+    Table,
+    Space,
+    Button,
+    Modal,
+    Input,
+    Checkbox,
+    Form,
+    message,
+} from "antd";
 import {
     EditOutlined,
     DeleteOutlined,
@@ -7,92 +17,71 @@ import {
     UndoOutlined,
 } from "@ant-design/icons";
 import Sidebar from "../AdminSidebar/Sidebar";
+import axios from "axios";
 
 const { Header, Content, Sider } = Layout;
+const { Search } = Input;
 
 const InventoryManagement = () => {
-    // States for Archive modal, search query and bulk selection
+    const [inventoryItems, setInventoryItems] = useState([]);
+    const [archivedInventory, setArchivedInventory] = useState([]);
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
+    const [openEditModal, setOpenEditModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectAll, setSelectAll] = useState(false);
+    const [editingRecord, setEditingRecord] = useState(null);
+    const [form] = Form.useForm();
 
-    // Dummy data for main inventory items
-    const [inventoryItems] = useState([
-        {
-            key: "1",
-            id: 1,
-            productImage: "https://via.placeholder.com/100?text=Prod+1",
-            productName: "Classic Watch",
-            stockQuantity: 50,
-            size: "Medium",
-            sold: 20,
-            stockStatus: "In Stock",
-            lastUpdated: "2023-12-01",
-        },
-        {
-            key: "2",
-            id: 2,
-            productImage: "https://via.placeholder.com/100?text=Prod+2",
-            productName: "Sport Watch",
-            stockQuantity: 30,
-            size: "Large",
-            sold: 15,
-            stockStatus: "Low Stock",
-            lastUpdated: "2023-12-02",
-        },
-    ]);
+    // Base URL for images – adjust if needed
+    const imageBaseURL = "http://localhost:8000/storage/";
 
-    // Dummy data for archived inventory items
-    const [archivedInventory] = useState([
-        {
-            key: "3",
-            id: 3,
-            productImage:
-                "https://via.placeholder.com/100?text=Archived+Prod+1",
-            productName: "Vintage Watch",
-            stockQuantity: 10,
-            size: "Small",
-            sold: 5,
-            stockStatus: "Archived",
-            lastUpdated: "2023-11-20",
-        },
-    ]);
-
-    // Handlers for edit, archive and restore actions
-    const handleEdit = (record) => {
-        console.log("Edit inventory item:", record);
-        // Implement edit functionality here
+    // Fetch active inventory records from API (with product data)
+    const fetchInventory = () => {
+        axios
+            .get("http://localhost:8000/api/inventory", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
+            .then((res) => {
+                console.log("Fetched inventory:", res.data);
+                setInventoryItems(res.data);
+            })
+            .catch((err) => {
+                message.error("Error fetching inventory");
+                console.error(err);
+            });
     };
 
-    const handleArchive = (record) => {
-        console.log("Archive inventory item:", record);
-        // Implement individual archive functionality here
+    // Fetch archived inventory records
+    const fetchArchivedInventory = () => {
+        axios
+            .get("http://localhost:8000/api/inventory?archived=1", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            })
+            .then((res) => {
+                console.log("Fetched archived inventory:", res.data);
+                setArchivedInventory(res.data);
+            })
+            .catch((err) => {
+                message.error("Error fetching archived inventory");
+                console.error(err);
+            });
     };
 
-    const handleRestore = (key) => {
-        console.log("Restore inventory item with key:", key);
-        // Implement restore functionality here
-    };
+    useEffect(() => {
+        fetchInventory();
+    }, []);
 
-    // Handler for search action
-    const handleSearch = (value) => {
-        console.log("Search query:", value);
-        setSearchQuery(value);
-        // Optionally filter inventory items based on search query
-    };
+    useEffect(() => {
+        if (openArchiveModal) {
+            fetchArchivedInventory();
+        }
+    }, [openArchiveModal]);
 
-    // Bulk archive handler with confirmation
-    const handleArchiveAll = () => {
-        Modal.confirm({
-            title: "Are you sure you want to archive all selected inventory items?",
-            onOk: () => {
-                console.log("Bulk archiving all selected inventory items");
-                // Perform bulk archive action here
-            },
-        });
-    };
-
-    // Main table columns for inventory items
+    // Table columns for active inventory records
     const mainColumns = [
         {
             title: "Actions",
@@ -114,37 +103,170 @@ const InventoryManagement = () => {
         { title: "ID", dataIndex: "id", key: "id" },
         {
             title: "Product (Image)",
-            dataIndex: "productImage",
             key: "productImage",
-            render: (image) => (
-                <img src={image} alt="product" style={{ width: 50 }} />
-            ),
+            render: (record) => {
+                const productImage = record.product?.main_image;
+                return (
+                    <img
+                        src={
+                            productImage
+                                ? `${imageBaseURL}${productImage}`
+                                : "https://via.placeholder.com/100?text=Prod"
+                        }
+                        alt="product"
+                        style={{ width: 50 }}
+                    />
+                );
+            },
         },
-        { title: "Product Name", dataIndex: "productName", key: "productName" },
         {
-            title: "Stock Quantity",
-            dataIndex: "stockQuantity",
-            key: "stockQuantity",
+            title: "Product Name",
+            key: "productName",
+            render: (record) =>
+                record.product ? record.product.product_name : "N/A",
         },
         { title: "Size", dataIndex: "size", key: "size" },
+        { title: "Stock Quantity", dataIndex: "quantity", key: "quantity" },
         { title: "Sold", dataIndex: "sold", key: "sold" },
-        { title: "Stock Status", dataIndex: "stockStatus", key: "stockStatus" },
-        { title: "Last Updated", dataIndex: "lastUpdated", key: "lastUpdated" },
+        {
+            title: "Stock Status",
+            dataIndex: "stock_status",
+            key: "stock_status",
+        },
+        { title: "Last Updated", dataIndex: "updated_at", key: "updated_at" },
     ];
 
-    // Archive table columns: same as main, except Actions shows only the Restore icon.
+    // Archive table columns – similar to main, but with a restore button.
     const archiveColumns = [
         {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
-                <Button type="link" onClick={() => handleRestore(record.key)}>
+                <Button type="link" onClick={() => handleRestore(record.id)}>
                     <UndoOutlined style={{ fontSize: "18px" }} />
                 </Button>
             ),
         },
         ...mainColumns.slice(1),
     ];
+
+    // Handle edit action: open modal and prefill form with record data.
+    const handleEdit = (record) => {
+        console.log("Edit inventory record:", record);
+        setEditingRecord(record);
+        form.setFieldsValue({
+            size: record.size,
+            quantity: record.quantity,
+            sold: record.sold,
+        });
+        setOpenEditModal(true);
+    };
+
+    // Handle archive (soft delete) action.
+    const handleArchive = (record) => {
+        Modal.confirm({
+            title: "Are you sure you want to archive this inventory item?",
+            onOk: () => {
+                axios
+                    .delete(
+                        `http://localhost:8000/api/inventory/${record.id}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem(
+                                    "token"
+                                )}`,
+                            },
+                        }
+                    )
+                    .then(() => {
+                        message.success("Inventory item archived successfully");
+                        fetchInventory();
+                    })
+                    .catch((err) => {
+                        message.error("Failed to archive inventory item");
+                        console.error(err);
+                    });
+            },
+        });
+    };
+
+    // Handle restore action.
+    const handleRestore = (id) => {
+        axios
+            .post(
+                `http://localhost:8000/api/inventory/${id}/restore`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                }
+            )
+            .then(() => {
+                message.success("Inventory item restored successfully");
+                fetchArchivedInventory();
+                fetchInventory();
+            })
+            .catch((err) => {
+                message.error("Failed to restore inventory item");
+                console.error(err);
+            });
+    };
+
+    // Bulk archive handler (if needed).
+    const handleArchiveAll = () => {
+        Modal.confirm({
+            title: "Are you sure you want to archive all selected inventory items?",
+            onOk: () => {
+                message.success("Bulk archive executed (not implemented)");
+            },
+        });
+    };
+
+    // Filter inventory records based on the search query.
+    const filteredInventory = inventoryItems.filter((item) => {
+        const lower = searchQuery.toLowerCase();
+        return (
+            (item.product &&
+                item.product.product_name.toLowerCase().includes(lower)) ||
+            item.size.toLowerCase().includes(lower) ||
+            item.stock_status.toLowerCase().includes(lower)
+        );
+    });
+
+    // Handle update of inventory record (called from the edit modal).
+    const handleUpdate = () => {
+        form.validateFields()
+            .then((values) => {
+                axios
+                    .put(
+                        `http://localhost:8000/api/inventory/${editingRecord.id}`,
+                        values,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem(
+                                    "token"
+                                )}`,
+                            },
+                        }
+                    )
+                    .then(() => {
+                        message.success("Inventory updated successfully");
+                        setOpenEditModal(false);
+                        setEditingRecord(null);
+                        fetchInventory();
+                    })
+                    .catch((err) => {
+                        message.error("Failed to update inventory");
+                        console.error(err);
+                    });
+            })
+            .catch((err) => {
+                console.log("Validation Failed:", err);
+            });
+    };
 
     return (
         <Layout>
@@ -160,10 +282,9 @@ const InventoryManagement = () => {
                         fontWeight: "bold",
                     }}
                 >
-                    INVENTORY
+                    INVENTORY MANAGEMENT
                 </Header>
                 <Content style={{ padding: 24, background: "#fff" }}>
-                    {/* Toolbar with Search, Select All and Bulk Archive */}
                     <div
                         style={{
                             display: "flex",
@@ -171,14 +292,16 @@ const InventoryManagement = () => {
                             marginBottom: 16,
                         }}
                     >
+                        {/* Left side: Search input and Select All checkbox with bulk archive button */}
                         <div style={{ display: "flex", alignItems: "center" }}>
-                            <Input.Search
+                            <Search
                                 placeholder="Search inventory"
-                                onSearch={handleSearch}
-                                style={{ width: 300, marginRight: 16 }}
+                                onSearch={(value) => setSearchQuery(value)}
+                                style={{ width: 300 }}
                             />
                             <Checkbox
                                 onChange={(e) => setSelectAll(e.target.checked)}
+                                style={{ marginLeft: 16 }}
                             >
                                 Select All
                             </Checkbox>
@@ -187,7 +310,6 @@ const InventoryManagement = () => {
                                     type="link"
                                     onClick={handleArchiveAll}
                                     style={{ marginLeft: 8 }}
-                                    title="Archive All"
                                 >
                                     <FolderOpenOutlined
                                         style={{ fontSize: "18px" }}
@@ -195,19 +317,24 @@ const InventoryManagement = () => {
                                 </Button>
                             )}
                         </div>
+                        {/* Right side: Archived View button with trash icon */}
                         <div>
                             <Button
                                 type="default"
                                 onClick={() => setOpenArchiveModal(true)}
                             >
+                                <DeleteOutlined style={{ marginRight: 4 }} />
                                 Archived View
                             </Button>
                         </div>
                     </div>
-                    <Table columns={mainColumns} dataSource={inventoryItems} />
+                    <Table
+                        columns={mainColumns}
+                        dataSource={filteredInventory}
+                        rowKey="id"
+                    />
                 </Content>
             </Layout>
-
             {/* Archived Inventory Modal */}
             <Modal
                 title="Archived Inventory"
@@ -227,8 +354,67 @@ const InventoryManagement = () => {
                 <Table
                     columns={archiveColumns}
                     dataSource={archivedInventory}
+                    rowKey="id"
                     pagination={false}
                 />
+            </Modal>
+            {/* Edit Inventory Modal */}
+            <Modal
+                title="Edit Inventory Item"
+                centered
+                open={openEditModal}
+                onCancel={() => {
+                    setOpenEditModal(false);
+                    setEditingRecord(null);
+                }}
+                footer={[
+                    <Button
+                        key="cancel"
+                        onClick={() => {
+                            setOpenEditModal(false);
+                            setEditingRecord(null);
+                        }}
+                    >
+                        Cancel
+                    </Button>,
+                    <Button key="save" type="primary" onClick={handleUpdate}>
+                        Update Inventory
+                    </Button>,
+                ]}
+            >
+                <Form form={form} layout="vertical">
+                    <Form.Item
+                        name="size"
+                        label="Size"
+                        rules={[
+                            { required: true, message: "Size is required" },
+                        ]}
+                    >
+                        <Input disabled />{" "}
+                        {/* Size is typically not editable */}
+                    </Form.Item>
+                    <Form.Item
+                        name="quantity"
+                        label="Stock Quantity"
+                        rules={[
+                            { required: true, message: "Quantity is required" },
+                        ]}
+                    >
+                        <Input type="number" placeholder="Enter quantity" />
+                    </Form.Item>
+                    <Form.Item
+                        name="sold"
+                        label="Sold"
+                        rules={[
+                            { required: true, message: "Sold is required" },
+                        ]}
+                    >
+                        <Input
+                            type="number"
+                            placeholder="Enter sold quantity"
+                        />
+                    </Form.Item>
+                </Form>
             </Modal>
         </Layout>
     );
