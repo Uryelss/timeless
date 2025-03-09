@@ -19,10 +19,15 @@ class Profile extends Model
         'date_of_birth',
         'phone',
         'profile_image',
+        'address'
     ];
 
-    public function user()
+    // Accessor: returns merged customer name (e.g., "John H. Doe")
+    public function getCustomerNameAttribute()
     {
-        return $this->belongsTo(User::class);
+        $first = ucfirst($this->first_name);
+        $middle = $this->middle_name ? strtoupper(substr($this->middle_name, 0, 1)) . '. ' : '';
+        $last = ucfirst($this->last_name);
+        return $first . ' ' . $middle . $last;
     }
 }

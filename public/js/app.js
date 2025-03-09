@@ -158346,21 +158346,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/select/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/PlusOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -158382,7 +158380,6 @@ var Header = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Header,
   Content = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Content,
   Sider = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Sider;
 var Search = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Search;
-var Option = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Option;
 var CustomerManagement = function CustomerManagement() {
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
@@ -158398,8 +158395,8 @@ var CustomerManagement = function CustomerManagement() {
     setOpenArchiveModal = _useState6[1];
   var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState8 = _slicedToArray(_useState7, 2),
-    openAddEditModal = _useState8[0],
-    setOpenAddEditModal = _useState8[1];
+    openEditModal = _useState8[0],
+    setOpenEditModal = _useState8[1];
   var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
     _useState10 = _slicedToArray(_useState9, 2),
     searchQuery = _useState10[0],
@@ -158412,16 +158409,16 @@ var CustomerManagement = function CustomerManagement() {
     _useState14 = _slicedToArray(_useState13, 2),
     editingCustomer = _useState14[0],
     setEditingCustomer = _useState14[1];
-  var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_6__["default"].useForm(),
+  var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_5__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
 
-  // API endpoint for customers
+  // API endpoint for customer profiles
   var API_URL = "http://localhost:8000/api/customers";
 
-  // Fetch active customers
+  // Fetch active customer profiles
   var fetchCustomers = function fetchCustomers() {
-    axios__WEBPACK_IMPORTED_MODULE_7__["default"].get(API_URL, {
+    axios__WEBPACK_IMPORTED_MODULE_6__["default"].get(API_URL, {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
@@ -158429,14 +158426,14 @@ var CustomerManagement = function CustomerManagement() {
       console.log("Fetched customers:", res.data);
       setCustomers(res.data);
     })["catch"](function (err) {
-      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching customers");
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error fetching customers");
       console.error(err);
     });
   };
 
-  // Fetch archived customers
+  // Fetch archived customer profiles
   var fetchArchivedCustomers = function fetchArchivedCustomers() {
-    axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(API_URL, "?archived=1"), {
+    axios__WEBPACK_IMPORTED_MODULE_6__["default"].get("".concat(API_URL, "?archived=1"), {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
@@ -158444,7 +158441,7 @@ var CustomerManagement = function CustomerManagement() {
       console.log("Fetched archived customers:", res.data);
       setArchivedCustomers(res.data);
     })["catch"](function (err) {
-      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching archived customers");
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error fetching archived customers");
       console.error(err);
     });
   };
@@ -158457,21 +158454,20 @@ var CustomerManagement = function CustomerManagement() {
     }
   }, [openArchiveModal]);
 
-  // Table columns for active customers.
-  // We use the computed full_name from the Customer model.
+  // Table columns for active customers
   var mainColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
           onClick: function onClick() {
             return handleEdit(record);
           },
           style: {
             fontSize: "16px"
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
           onClick: function onClick() {
             return handleArchive(record);
           },
@@ -158491,7 +158487,7 @@ var CustomerManagement = function CustomerManagement() {
     key: "profile_image",
     render: function render(image) {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-        src: image || "https://via.placeholder.com/100?text=Customer",
+        src: image ? image : "https://via.placeholder.com/100?text=Customer",
         alt: "customer",
         style: {
           width: 50
@@ -158500,9 +158496,10 @@ var CustomerManagement = function CustomerManagement() {
     }
   }, {
     title: "Customer Name",
-    dataIndex: "full_name",
-    key: "full_name"
-    // full_name is computed in the model (accessor)
+    key: "customerName",
+    render: function render(record) {
+      return record.customer_name ? record.customer_name : "".concat(record.first_name, " ").concat(record.middle_name ? record.middle_name.charAt(0).toUpperCase() + ". " : "").concat(record.last_name);
+    }
   }, {
     title: "Phone",
     dataIndex: "phone",
@@ -158510,7 +158507,7 @@ var CustomerManagement = function CustomerManagement() {
   }, {
     title: "Date of Birth",
     dataIndex: "date_of_birth",
-    key: "dob"
+    key: "date_of_birth"
   }, {
     title: "Gender",
     dataIndex: "gender",
@@ -158525,17 +158522,17 @@ var CustomerManagement = function CustomerManagement() {
     key: "updated_at"
   }];
 
-  // Archive table columns – similar to main, but with a restore button.
+  // Archive table columns – similar to main, but with only restore action.
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
         type: "link",
         onClick: function onClick() {
           return handleRestore(record.id);
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
           style: {
             fontSize: "18px"
           }
@@ -158553,28 +158550,29 @@ var CustomerManagement = function CustomerManagement() {
       middle_name: record.middle_name,
       last_name: record.last_name,
       suffix: record.suffix,
-      phone: record.phone,
-      date_of_birth: record.date_of_birth,
       gender: record.gender,
+      // these fields become optional on update
+      date_of_birth: record.date_of_birth,
+      phone: record.phone,
       address: record.address
     });
-    setOpenAddEditModal(true);
+    setOpenEditModal(true);
   };
 
   // Handle archive (soft delete) action.
   var handleArchive = function handleArchive(record) {
-    antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
+    antd__WEBPACK_IMPORTED_MODULE_14__["default"].confirm({
       title: "Are you sure you want to archive this customer?",
       onOk: function onOk() {
-        axios__WEBPACK_IMPORTED_MODULE_7__["default"]["delete"]("".concat(API_URL, "/").concat(record.id), {
+        axios__WEBPACK_IMPORTED_MODULE_6__["default"]["delete"]("".concat(API_URL, "/").concat(record.id), {
           headers: {
             Authorization: "Bearer ".concat(localStorage.getItem("token"))
           }
         }).then(function () {
-          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Customer archived successfully");
+          antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Customer archived successfully");
           fetchCustomers();
         })["catch"](function (err) {
-          antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive customer");
+          antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive customer");
           console.error(err);
         });
       }
@@ -158583,80 +158581,57 @@ var CustomerManagement = function CustomerManagement() {
 
   // Handle restore action.
   var handleRestore = function handleRestore(id) {
-    axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/").concat(id, "/restore"), {}, {
+    axios__WEBPACK_IMPORTED_MODULE_6__["default"].post("".concat(API_URL, "/").concat(id, "/restore"), {}, {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function () {
-      antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Customer restored successfully");
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Customer restored successfully");
       fetchArchivedCustomers();
       fetchCustomers();
     })["catch"](function (err) {
-      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore customer");
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to restore customer");
       console.error(err);
     });
   };
 
-  // Bulk archive handler.
+  // Bulk archive handler (if needed)
   var handleArchiveAll = function handleArchiveAll() {
-    antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
+    antd__WEBPACK_IMPORTED_MODULE_14__["default"].confirm({
       title: "Are you sure you want to archive all selected customers?",
       onOk: function onOk() {
-        antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Bulk archive executed (not implemented)");
+        antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Bulk archive executed (not implemented)");
       }
-    });
-  };
-
-  // Handle adding a new customer (opens the add modal)
-  var handleAdd = function handleAdd() {
-    form.resetFields();
-    setEditingCustomer(null);
-    setOpenAddEditModal(true);
-  };
-
-  // Handle save (for both add and edit)
-  var handleSave = function handleSave() {
-    form.validateFields().then(function (values) {
-      if (editingCustomer) {
-        // Update existing customer
-        axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("".concat(API_URL, "/").concat(editingCustomer.id), values, {
-          headers: {
-            Authorization: "Bearer ".concat(localStorage.getItem("token"))
-          }
-        }).then(function () {
-          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Customer updated successfully");
-          setOpenAddEditModal(false);
-          setEditingCustomer(null);
-          fetchCustomers();
-        })["catch"](function (err) {
-          antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update customer");
-          console.error(err);
-        });
-      } else {
-        // Add new customer
-        axios__WEBPACK_IMPORTED_MODULE_7__["default"].post(API_URL, values, {
-          headers: {
-            Authorization: "Bearer ".concat(localStorage.getItem("token"))
-          }
-        }).then(function () {
-          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Customer added successfully");
-          setOpenAddEditModal(false);
-          fetchCustomers();
-        })["catch"](function (err) {
-          antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to add customer");
-          console.error(err);
-        });
-      }
-    })["catch"](function (err) {
-      console.log("Validation Failed:", err);
     });
   };
 
   // Filter customers based on search query.
   var filteredCustomers = customers.filter(function (customer) {
     var lower = searchQuery.toLowerCase();
-    return customer.full_name && customer.full_name.toLowerCase().includes(lower) || customer.phone && customer.phone.toLowerCase().includes(lower) || customer.address && customer.address.toLowerCase().includes(lower);
+    var fullName = customer.customer_name || "".concat(customer.first_name, " ").concat(customer.middle_name ? customer.middle_name.charAt(0).toUpperCase() + ". " : "").concat(customer.last_name);
+    return fullName.toLowerCase().includes(lower) || customer.email && customer.email.toLowerCase().includes(lower) || customer.status && customer.status.toLowerCase().includes(lower);
   });
+
+  // Handle update of customer profile (called from the edit modal)
+  var handleUpdate = function handleUpdate() {
+    form.validateFields().then(function (values) {
+      axios__WEBPACK_IMPORTED_MODULE_6__["default"].put("".concat(API_URL, "/").concat(editingCustomer.id), values, {
+        headers: {
+          Authorization: "Bearer ".concat(localStorage.getItem("token"))
+        }
+      }).then(function () {
+        antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Customer updated successfully");
+        setOpenEditModal(false);
+        setEditingCustomer(null);
+        fetchCustomers();
+      })["catch"](function (err) {
+        antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to update customer");
+        console.error(err);
+      });
+    })["catch"](function (err) {
+      console.log("Validation Failed:", err);
+    });
+  };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
       width: 256,
@@ -158695,9 +158670,10 @@ var CustomerManagement = function CustomerManagement() {
                 return setSearchQuery(value);
               },
               style: {
-                width: 300
+                width: 300,
+                marginRight: 16
               }
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
               onChange: function onChange(e) {
                 return setSelectAll(e.target.checked);
               },
@@ -158705,48 +158681,33 @@ var CustomerManagement = function CustomerManagement() {
                 marginLeft: 16
               },
               children: "Select All"
-            }), selectAll && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            }), selectAll && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
               type: "link",
               onClick: handleArchiveAll,
               style: {
                 marginLeft: 8
               },
               title: "Archive All",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
                 style: {
                   fontSize: "18px"
                 }
               })
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-            style: {
-              display: "flex",
-              alignItems: "center"
-            },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-              type: "primary",
-              onClick: handleAdd,
-              style: {
-                marginRight: 16
-              },
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {
-                style: {
-                  marginRight: 4
-                }
-              }), "Add Customer"]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
               type: "default",
               onClick: function onClick() {
                 return setOpenArchiveModal(true);
               },
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
                 style: {
                   marginRight: 4
                 }
               }), "Archived View"]
-            })]
+            })
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
           columns: mainColumns,
           dataSource: filteredCustomers,
           rowKey: "id",
@@ -158755,7 +158716,7 @@ var CustomerManagement = function CustomerManagement() {
           }
         })]
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
       title: "Archived Customers",
       centered: true,
       open: openArchiveModal,
@@ -158763,41 +158724,44 @@ var CustomerManagement = function CustomerManagement() {
         return setOpenArchiveModal(false);
       },
       width: 1200,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
         onClick: function onClick() {
           return setOpenArchiveModal(false);
         },
         children: "Close"
       }, "close")],
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
         columns: archiveColumns,
         dataSource: archivedCustomers,
         rowKey: "id",
-        pagination: false
+        pagination: false,
+        scroll: {
+          x: 1200
+        }
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
-      title: editingCustomer ? "Edit Customer" : "Add Customer",
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+      title: "Edit Customer",
       centered: true,
-      open: openAddEditModal,
+      open: openEditModal,
       onCancel: function onCancel() {
-        setOpenAddEditModal(false);
+        setOpenEditModal(false);
         setEditingCustomer(null);
       },
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
         onClick: function onClick() {
-          setOpenAddEditModal(false);
+          setOpenEditModal(false);
           setEditingCustomer(null);
         },
         children: "Cancel"
-      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
         type: "primary",
-        onClick: handleSave,
-        children: editingCustomer ? "Update Customer" : "Add Customer"
+        onClick: handleUpdate,
+        children: "Update Customer"
       }, "save")],
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
         form: form,
         layout: "vertical",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
           name: "first_name",
           label: "First Name",
           rules: [{
@@ -158807,13 +158771,13 @@ var CustomerManagement = function CustomerManagement() {
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
             placeholder: "Enter first name"
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
           name: "middle_name",
-          label: "Middle Name (optional)",
+          label: "Middle Name",
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
-            placeholder: "Enter middle name"
+            placeholder: "Enter middle name (optional)"
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
           name: "last_name",
           label: "Last Name",
           rules: [{
@@ -158823,55 +158787,35 @@ var CustomerManagement = function CustomerManagement() {
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
             placeholder: "Enter last name"
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
           name: "suffix",
-          label: "Suffix (optional)",
+          label: "Suffix",
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
-            placeholder: "Enter suffix (if any)"
+            placeholder: "Enter suffix (optional)"
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-          name: "phone",
-          label: "Phone",
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+          name: "gender",
+          label: "Gender",
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
-            placeholder: "Enter phone number"
+            placeholder: "Enter gender"
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
           name: "date_of_birth",
           label: "Date of Birth",
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
             placeholder: "YYYY-MM-DD"
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-          name: "gender",
-          label: "Gender",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
-            placeholder: "Select gender",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-              value: "Male",
-              children: "Male"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-              value: "Female",
-              children: "Female"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-              value: "Other",
-              children: "Other"
-            })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+          name: "phone",
+          label: "Phone",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            placeholder: "Enter phone number"
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
           name: "address",
           label: "Address",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"].TextArea, {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
             placeholder: "Enter address"
-          })
-        }), !editingCustomer && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-          name: "password",
-          label: "Password",
-          rules: [{
-            required: true,
-            message: "Please enter password"
-          }],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"].Password, {
-            placeholder: "Enter password"
           })
         })]
       })

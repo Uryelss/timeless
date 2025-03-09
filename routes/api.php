@@ -47,7 +47,6 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
 
     // Customer routes
     Route::get('/customers', [CustomerController::class, 'index']);
-    Route::post('/customers', [CustomerController::class, 'store']);
     Route::put('/customers/{id}', [CustomerController::class, 'update']);
     Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
     Route::post('/customers/{id}/restore', [CustomerController::class, 'restore']);
