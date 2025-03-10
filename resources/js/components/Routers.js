@@ -22,8 +22,26 @@ import AdminSettings from "./AdminPage/AdminSettings/AdminSettings";
 import Register from "./AccessPage/RegisterPage/Register";
 import Login from "./AccessPage/LoginPage/Login";
 
-// User page (for role 'user')
-import UserHome from "./UserPage/UserHome/HomePage";
+// Home page (accessible to everyone)
+import HomePage from "./UserHome/Homepage";
+
+// User Profile Page
+import Userprofile from "./UserHome/Userprofile";
+
+// Collection Page (accessible to both Admin and User)
+import Collection from "./UserHome/Collection"; 
+
+// About Us Page (accessible to both Admin and User)
+import AboutUs from "./UserHome/Aboutus"; 
+
+// Shipped Page (accessible to both Admin and User)
+import Shipped from "./UserHome/Shipped"; 
+
+// Checkout Page (accessible to both Admin and User)
+import Checkout from "./UserHome/Checkout"; 
+
+// Product Overview Page (accessible to both Admin and User)
+import ProductOverview from "./UserHome/productoverview"; // Import the ProductOverview component
 
 // Protected route for Admin users
 const AdminRoute = () => {
@@ -49,9 +67,27 @@ export default function Routers() {
     return (
         <Router>
             <Routes>
+                {/* Home Page (accessible to everyone) */}
+                <Route path="/" element={<HomePage />} />
+
                 {/* Authentication Routes */}
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
+
+                {/* Collection Page (accessible to both users and admins) */}
+                <Route path="/collection" element={<Collection />} />
+
+                {/* About Us Page (accessible to both users and admins) */}
+                <Route path="/aboutus" element={<AboutUs />} />
+
+                {/* Shipped Page (accessible to both users and admins) */}
+                <Route path="/shipped" element={<Shipped />} />
+
+                {/* Checkout Page (accessible to both users and admins) */}
+                <Route path="/checkout" element={<Checkout />} />
+
+                {/* Product Overview Page (accessible to both users and admins) */}
+                <Route path="/product-overview" element={<ProductOverview />} />
 
                 {/* Admin Protected Routes */}
                 <Route element={<AdminRoute />}>
@@ -60,21 +96,19 @@ export default function Routers() {
                     <Route path="/orders" element={<OrderManagement />} />
                     <Route path="/customers" element={<CustomerManagement />} />
                     <Route path="/users" element={<UserManagement />} />
-                    <Route
-                        path="/inventory"
-                        element={<InventoryManagement />}
-                    />
+                    <Route path="/inventory" element={<InventoryManagement />} />
                     <Route path="/admin-profile" element={<AdminProfile />} />
                     <Route path="/sub-category" element={<SubCategory />} />
+                    <Route path="/admin-settings" element={<AdminSettings />} />
                 </Route>
 
                 {/* User Protected Routes */}
                 <Route element={<UserRoute />}>
-                    <Route path="/user-home" element={<UserHome />} />
+                    <Route path="/profile" element={<Userprofile />} />
                 </Route>
 
                 {/* Catch-all redirect */}
-                <Route path="*" element={<Navigate to="/login" replace />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </Router>
     );

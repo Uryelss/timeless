@@ -1,0 +1,67 @@
+.hero-section {
+    position: relative;
+    height: 100vh; // Full viewport height
+    background-image: url("/images/homepage.png"); // Replace with your image path
+    background-size: cover; // Cover the entire section
+    background-position: center; // Center the background image
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff; // White text color
+
+    // Overlay to improve text readability
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); // Semi-transparent black overlay
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1; // Ensure content is above the overlay
+
+        h1 {
+            font-size: 3rem; // Large heading
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: 1.5rem; // Medium paragraph text
+            margin-bottom: 24px;
+        }
+
+        .shop-now-button {
+            background-color: #52c41a; // Green color for the button
+            border-color: #52c41a; // Green border color
+            font-size: 1rem;
+            padding: 12px 24px;
+            height: auto;
+
+            &:hover {
+                background-color: #73d13d; // Lighter green on hover
+                border-color: #73d13d;
+            }
+        }
+    }
+
+    // Responsive Styles
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 2rem; // Smaller heading on mobile
+        }
+
+        p {
+            font-size: 1rem; // Smaller paragraph text on mobile
+        }
+
+        .shop-now-button {
+            font-size: 0.875rem; // Smaller button text on mobile
+            padding: 8px 16px;
+        }
+    }
+}

@@ -14,7 +14,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
-import "C:/sample/resources/sass/AdminPage/Sidebar/Sidebar.scss";
+
 const items = [
     {
         key: "dashboard",
