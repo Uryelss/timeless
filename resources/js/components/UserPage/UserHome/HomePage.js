@@ -1,22 +1,16 @@
 import React from "react";
-import { Button } from "antd";
+import Header from "../Navbar/Navbar";
+import Hero from "../UserHome/Hero";
+import ItemSlider from "../UserHome/ItemSlider";
+import Footer from "../UserHome/Footer";
 
 const UserHome = () => {
-    const logout = () => {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-    };
-
     return (
         <div className="user-home">
-            <h1>Welcome, User!</h1>
-            <p>
-                This is your homepage. Regular users cannot access the admin
-                dashboard.
-            </p>
-            <Button type="primary" onClick={logout}>
-                Logout
-            </Button>
+            <Header />
+            <Hero />
+            <ItemSlider />
+            <Footer />
         </div>
     );
 };

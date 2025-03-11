@@ -18,11 +18,25 @@ class Profile extends Model
         'gender',
         'date_of_birth',
         'phone',
-        'profile_image',
-        'address'
+        'profile_image'
+        // Removed 'address' since addresses are managed separately.
     ];
 
-    // Accessor: returns merged customer name (e.g., "John H. Doe")
+    protected $casts = [
+        'date_of_birth' => 'date',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
+
+    // A profile can have many addresses.
+    public function addresses()
+    {
+        return $this->hasMany(\App\Models\Address::class);
+    }
+
     public function getCustomerNameAttribute()
     {
         $first = ucfirst($this->first_name);

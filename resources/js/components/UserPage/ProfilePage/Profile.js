@@ -1,0 +1,461 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import dayjs from "dayjs";
+import { Layout, Menu } from "antd";
+import Navbar from "../Navbar/Navbar";
+
+const { Sider, Content } = Layout;
+
+const UserProfile = () => {
+    const [collapsed, setCollapsed] = useState(false);
+    const [editMode, setEditMode] = useState(false);
+    const [profileData, setProfileData] = useState(null);
+    const [formValues, setFormValues] = useState({
+        username: "",
+        email: "",
+        first_name: "",
+        middle_name: "",
+        last_name: "",
+        suffix: "",
+        date_of_birth: "",
+        gender: "",
+        profile_image: null,
+    });
+    const [previewImage, setPreviewImage] = useState("");
+    const token = localStorage.getItem("token");
+
+    // Fetch profile using GET /api/profile
+    const fetchProfile = async () => {
+        try {
+            const res = await axios.get("http://localhost:8000/api/profile", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            // Format date for date input
+            if (res.data.date_of_birth) {
+                res.data.date_of_birth = dayjs(res.data.date_of_birth).format(
+                    "YYYY-MM-DD"
+                );
+            }
+            setProfileData(res.data);
+            setFormValues({ ...res.data });
+            setPreviewImage(
+                res.data.profile_image
+                    ? res.data.profile_image + "?" + new Date().getTime()
+                    : "http://localhost:8000/storage/profiles/tennis-racket.png"
+            );
+        } catch (error) {
+            console.error("Error fetching profile:", error);
+            alert("Error fetching profile");
+        }
+    };
+
+    useEffect(() => {
+        if (token) {
+            fetchProfile();
+        } else {
+            alert("No token found, please log in.");
+        }
+    }, [token]);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormValues((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleFileChange = (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            console.log("Selected file:", file);
+            setFormValues((prev) => ({ ...prev, profile_image: file }));
+            const imageUrl = URL.createObjectURL(file);
+            setPreviewImage(imageUrl);
+        }
+    };
+
+    const handleEdit = () => {
+        setEditMode(true);
+    };
+
+    const handleCancel = () => {
+        // Reset form values and preview to what is in profileData
+        setFormValues({ ...profileData });
+        setPreviewImage(
+            profileData.profile_image
+                ? profileData.profile_image + "?" + new Date().getTime()
+                : "http://localhost:8000/storage/profiles/tennis-racket.png"
+        );
+        setEditMode(false);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const formData = new FormData();
+            Object.keys(formValues).forEach((key) => {
+                if (key === "profile_image") {
+                    if (formValues.profile_image instanceof File) {
+                        formData.append(key, formValues.profile_image);
+                    }
+                } else {
+                    formData.append(key, formValues[key] || "");
+                }
+            });
+            await axios.post("http://localhost:8000/api/profile", formData, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            alert("Profile updated successfully!");
+            setEditMode(false);
+            fetchProfile();
+        } catch (error) {
+            console.error("Error updating profile:", error.response?.data);
+            alert("Please complete the required fields.");
+        }
+    };
+
+    if (!profileData) {
+        return <p>Loading...</p>;
+    }
+
+    const items = [
+        { key: "1", label: "PROFILE" },
+        { key: "2", label: "MY PURCHASE" },
+        { key: "3", label: "ADDRESSES" },
+    ];
+
+    return (
+        <Layout style={{ minHeight: "100vh" }}>
+            <Navbar />
+            <Layout>
+                <Sider
+                    collapsible
+                    collapsed={collapsed}
+                    onCollapse={(value) => setCollapsed(value)}
+                    trigger={null} // Custom trigger alignment handled via style
+                    style={{
+                        background: "#fff",
+                        height: "80vh",
+                        width: collapsed ? "80px" : "200px", // Adjusted width
+                        transition: "width 0.2s",
+                    }}
+                >
+                    <div
+                        style={{
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <Menu
+                            theme="light"
+                            defaultSelectedKeys={["1"]}
+                            mode="inline"
+                            items={items}
+                            style={{
+                                height: "100%",
+                                borderRight: 0,
+                                paddingTop: "20px",
+                            }}
+                        />
+                        <div
+                            style={{
+                                textAlign: "center",
+                                padding: "10px 0",
+                                background: collapsed
+                                    ? "transparent"
+                                    : "#001529",
+                                color: "#fff",
+                                cursor: "pointer",
+                            }}
+                            onClick={() => setCollapsed(!collapsed)}
+                        >
+                            {collapsed ? ">" : "<"}
+                        </div>
+                    </div>
+                </Sider>
+                <Content
+                    style={{
+                        margin: "0 16px",
+                        display: "flex",
+                        justifyContent: "center",
+                    }}
+                >
+                    <div
+                        style={{
+                            padding: 24,
+                            minHeight: 360,
+                            background: "#fff",
+                            borderRadius: 8,
+                            width: "70%", // Extended width to cover more area
+                            marginLeft: "10px", // Adjusted to align closer to sidebar
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                        }}
+                    >
+                        <div style={{ textAlign: "center", marginBottom: 20 }}>
+                            <img
+                                src={previewImage}
+                                alt="Profile"
+                                style={{
+                                    width: "120px",
+                                    height: "120px",
+                                    objectFit: "cover",
+                                    borderRadius: "50%",
+                                }}
+                            />
+                            <h2>{profileData.username}</h2>
+                            {!editMode && (
+                                <button
+                                    style={{
+                                        padding: "8px 16px",
+                                        backgroundColor: "#0066cc",
+                                        color: "#fff",
+                                        border: "none",
+                                        borderRadius: 4,
+                                        cursor: "pointer",
+                                    }}
+                                    onClick={handleEdit}
+                                >
+                                    Edit Profile
+                                </button>
+                            )}
+                        </div>
+                        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: 15,
+                                    flexWrap: "wrap",
+                                }}
+                            >
+                                <div style={{ flex: 1 }}>
+                                    <label>Username:</label>
+                                    <input
+                                        type="text"
+                                        name="username"
+                                        value={formValues.username}
+                                        onChange={handleInputChange}
+                                        disabled={!editMode}
+                                        style={{
+                                            width: "100%",
+                                            padding: 6,
+                                            border: "1px solid #ddd",
+                                            borderRadius: 4,
+                                        }}
+                                    />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <label>Email:</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formValues.email}
+                                        onChange={handleInputChange}
+                                        disabled={!editMode}
+                                        style={{
+                                            width: "100%",
+                                            padding: 6,
+                                            border: "1px solid #ddd",
+                                            borderRadius: 4,
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: 15,
+                                    flexWrap: "wrap",
+                                    marginTop: 15,
+                                }}
+                            >
+                                <div style={{ flex: 1 }}>
+                                    <label>First Name:</label>
+                                    <input
+                                        type="text"
+                                        name="first_name"
+                                        value={formValues.first_name}
+                                        onChange={handleInputChange}
+                                        disabled={!editMode}
+                                        style={{
+                                            width: "100%",
+                                            padding: 6,
+                                            border: "1px solid #ddd",
+                                            borderRadius: 4,
+                                        }}
+                                    />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <label>Middle Name:</label>
+                                    <input
+                                        type="text"
+                                        name="middle_name"
+                                        value={formValues.middle_name}
+                                        onChange={handleInputChange}
+                                        disabled={!editMode}
+                                        style={{
+                                            width: "100%",
+                                            padding: 6,
+                                            border: "1px solid #ddd",
+                                            borderRadius: 4,
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: 15,
+                                    flexWrap: "wrap",
+                                    marginTop: 15,
+                                }}
+                            >
+                                <div style={{ flex: 1 }}>
+                                    <label>Last Name:</label>
+                                    <input
+                                        type="text"
+                                        name="last_name"
+                                        value={formValues.last_name}
+                                        onChange={handleInputChange}
+                                        disabled={!editMode}
+                                        style={{
+                                            width: "100%",
+                                            padding: 6,
+                                            border: "1px solid #ddd",
+                                            borderRadius: 4,
+                                        }}
+                                    />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <label>Suffix:</label>
+                                    <select
+                                        name="suffix"
+                                        value={formValues.suffix}
+                                        onChange={handleInputChange}
+                                        disabled={!editMode}
+                                        style={{
+                                            width: "100%",
+                                            padding: 6,
+                                            border: "1px solid #ddd",
+                                            borderRadius: 4,
+                                        }}
+                                    >
+                                        <option value="">None</option>
+                                        <option value="Jr.">Jr.</option>
+                                        <option value="Sr.">Sr.</option>
+                                        <option value="II">II</option>
+                                        <option value="III">III</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: 15,
+                                    flexWrap: "wrap",
+                                    marginTop: 15,
+                                }}
+                            >
+                                <div style={{ flex: 1 }}>
+                                    <label>Date of Birth:</label>
+                                    <input
+                                        type="date"
+                                        name="date_of_birth"
+                                        value={formValues.date_of_birth}
+                                        onChange={handleInputChange}
+                                        disabled={!editMode}
+                                        style={{
+                                            width: "100%",
+                                            padding: 6,
+                                            border: "1px solid #ddd",
+                                            borderRadius: 4,
+                                        }}
+                                    />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <label>Gender:</label>
+                                    <select
+                                        name="gender"
+                                        value={formValues.gender || ""}
+                                        onChange={handleInputChange}
+                                        disabled={!editMode}
+                                        style={{
+                                            width: "100%",
+                                            padding: 6,
+                                            border: "1px solid #ddd",
+                                            borderRadius: 4,
+                                        }}
+                                    >
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: 15,
+                                    flexWrap: "wrap",
+                                    marginTop: 15,
+                                }}
+                            >
+                                <div style={{ flex: 2 }}>
+                                    <label>Profile Image:</label>
+                                    <input
+                                        type="file"
+                                        onChange={handleFileChange}
+                                        disabled={!editMode}
+                                        style={{ width: "100%", padding: 5 }}
+                                    />
+                                </div>
+                            </div>
+                            {editMode && (
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        gap: 10,
+                                        justifyContent: "center",
+                                        marginTop: 15,
+                                        width: "100%",
+                                    }}
+                                >
+                                    <button
+                                        type="submit"
+                                        style={{
+                                            padding: "8px 16px",
+                                            backgroundColor: "#4caf50",
+                                            color: "#fff",
+                                            border: "none",
+                                            borderRadius: 4,
+                                            cursor: "pointer",
+                                        }}
+                                    >
+                                        Save Changes
+                                    </button>
+                                    <button
+                                        type="button"
+                                        style={{
+                                            padding: "8px 16px",
+                                            backgroundColor: "#ff4444",
+                                            color: "#fff",
+                                            border: "none",
+                                            borderRadius: 4,
+                                            cursor: "pointer",
+                                        }}
+                                        onClick={handleCancel}
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            )}
+                        </form>
+                    </div>
+                </Content>
+            </Layout>
+        </Layout>
+    );
+};
+
+export default UserProfile;

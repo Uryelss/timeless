@@ -4,14 +4,13 @@ import axios from "axios";
 
 const Register = () => {
     const onFinish = (values) => {
-        // Map the form fields to the API expected fields
         const payload = {
             username: values.username,
             email: values.email,
             first_name: values.first_name,
             middle_name: values.middle_name,
             last_name: values.last_name,
-            suffix: values.suffix, // if you add a suffix field in your form
+            suffix: values.suffix, // optional
             password: values.password,
             password_confirmation: values.password_confirmation,
         };
@@ -20,7 +19,6 @@ const Register = () => {
             .post("http://localhost:8000/api/register", payload)
             .then((response) => {
                 message.success("Registration successful! Please log in.");
-                // Redirect to the login page instead of the dashboard
                 window.location.href = "/login";
             })
             .catch((error) => {
@@ -118,7 +116,7 @@ const Register = () => {
                                     return Promise.resolve();
                                 }
                                 return Promise.reject(
-                                    "The two passwords that you entered do not match!"
+                                    "The two passwords do not match!"
                                 );
                             },
                         }),

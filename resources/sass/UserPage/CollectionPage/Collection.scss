@@ -1,0 +1,73 @@
+.card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+
+    .ant-card-meta-title {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .ant-card-meta-description {
+        color: #666;
+    }
+}
+
+.ant-btn-link {
+    color: #1890ff;
+    &:hover {
+        color: #40a9ff;
+    }
+}
+
+.ant-checkbox-wrapper {
+    margin: 4px 0;
+}
+
+/* Ensure the sidebar aligns with the content area */
+.ant-layout-sider {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Adjust the content area to match the sidebar's alignment */
+.ant-layout {
+    &.ant-layout-has-sider {
+        margin-right: 24px; // Match the right padding of the content area
+    }
+}
+
+/* Add spacing to the filter section */
+.ant-layout-sider-children {
+    padding: 16px;
+}
+
+/* Style for the selected filters navigation */
+.selected-filters {
+    color: #1890ff;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+/* Style for the search bar and sort dropdown */
+.ant-space {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+/* Horizontal layout for all filter checkboxes */
+.horizontal-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* Adjust the gap between checkboxes as needed */
+}
+
+.horizontal-checkboxes .ant-checkbox-wrapper {
+    margin: 0; /* Remove default margin */
+}

@@ -1,0 +1,228 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    min-height: 70px; // Added minimum height for consistency
+    transition: all 0.3s ease; // Smooth transitions
+
+    .logo {
+        display: flex;
+        align-items: center;
+
+        img {
+            margin-top: 20px;
+            width: 100px;
+            height: 100px;
+            object-fit: contain; // Added for better image scaling
+        }
+    }
+
+    .mobile-menu-button {
+        display: none;
+        background: none;
+        border: none;
+        color: #000;
+        font-size: 24px; // Slightly larger for better touch target
+        padding: 8px;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+
+        &:hover {
+            transform: scale(1.1);
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .nav-menu {
+        flex: 1;
+        margin-left: 20px;
+        background-color: transparent;
+        transition: all 0.3s ease;
+
+        .ant-menu-item {
+            color: #000;
+            font-weight: 500;
+            padding: 0 15px;
+            transition: color 0.2s ease;
+
+            // Ensure no underline by default
+            &::after {
+                border-bottom: none !important;
+                transform: scaleX(0);
+                transition: transform 0.2s ease;
+            }
+
+            &:hover {
+                color: #1890ff;
+                &::after {
+                    transform: scaleX(1);
+                    border-bottom: 2px solid #1890ff !important;
+                }
+            }
+        }
+
+        // Remove default Ant Design selected styles
+        .ant-menu-item-selected {
+            color: #1890ff;
+            &::after {
+                border-bottom: 2px solid #1890ff !important;
+                transform: scaleX(1);
+            }
+        }
+
+        // Specific styling for Categories item when not active
+        .ant-menu-item:not(.ant-menu-item-selected) {
+            &::after {
+                border-bottom: none !important;
+            }
+        }
+    }
+    .header-icons {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        .icon-badge {
+            cursor: pointer;
+            padding: 5px;
+
+            .icon {
+                font-size: 18px;
+                color: #000;
+                transition: color 0.2s ease;
+            }
+
+            &:hover .icon {
+                color: #1890ff;
+            }
+        }
+
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+
+            .username {
+                color: #000;
+                font-weight: 500;
+                white-space: nowrap;
+            }
+        }
+    }
+
+    // Responsive Styles
+    @media (max-width: 1024px) {
+        padding: 0 15px;
+
+        .logo img {
+            width: 80px;
+            height: 80px;
+            margin-top: 15px;
+        }
+
+        .nav-menu {
+            margin-left: 15px;
+        }
+
+        .header-icons {
+            gap: 15px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        padding: 0 10px;
+
+        .mobile-menu-button {
+            display: block;
+        }
+
+        .nav-menu {
+            display: none;
+            position: fixed; // Changed to fixed for better mobile behavior
+            top: 70px; // Match header height
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 70px); // Full screen height minus header
+            background-color: #fff;
+            flex-direction: column;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+
+            &.visible {
+                display: flex;
+                opacity: 1;
+                transform: translateY(0);
+                pointer-events: auto;
+            }
+
+            .ant-menu-item {
+                text-align: center;
+                margin: 0 !important;
+                padding: 15px 0 !important; // Increased padding for touch targets
+                border-bottom: 1px solid #f0f0f0;
+                font-size: 16px;
+            }
+        }
+
+        .header-icons {
+            gap: 8px;
+
+            .username {
+                display: none;
+            }
+        }
+
+        .logo img {
+            width: 60px;
+            height: 60px;
+            margin-top: 10px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header-icons {
+            gap: 5px;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+        }
+    }
+}
+
+.white-dropdown {
+    background-color: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .ant-menu-item {
+        color: #000;
+        padding: 8px 16px;
+
+        &:hover {
+            background-color: transparent;
+            color: #1890ff; // Change color on hover instead
+        }
+
+        &.ant-menu-item-selected {
+            background-color: transparent;
+            color: #1890ff;
+            &::after {
+                border-bottom: none !important; // Prevent underline in dropdown
+            }
+        }
+    }
+}

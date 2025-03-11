@@ -16,16 +16,15 @@ class AccessController extends Controller
     public function register(Request $request)
     {
         $validatedData = $request->validate([
-            'username'          => 'required|unique:users',
-            'email'             => 'required|email|unique:users',
-            'first_name'        => 'required',
-            'last_name'         => 'required',
-            'password'          => 'required|confirmed',
-            // Optional suffix field; adjust rules as needed
-            'suffix'            => 'nullable|string',
+            'username'   => 'required|unique:users',
+            'email'      => 'required|email|unique:users',
+            'first_name' => 'required',
+            'last_name'  => 'required',
+            'password'   => 'required|confirmed',
+            'suffix'     => 'nullable|string',
         ]);
 
-        // Assign role "user" (assume role_id "2" corresponds to user)
+        // Assign role "user"
         $userRole = Role::firstOrCreate(['name' => 'user']);
 
         $user = User::create([
@@ -36,23 +35,22 @@ class AccessController extends Controller
             'status'   => 'active',
         ]);
 
-        // Create profile record including suffix
+        // Create profile record
         Profile::create([
             'user_id'     => $user->id,
             'first_name'  => $validatedData['first_name'],
-            'middle_name' => $request->input('middle_name'), // optional field
+            'middle_name' => $request->input('middle_name'),
             'last_name'   => $validatedData['last_name'],
             'suffix'      => $validatedData['suffix'] ?? null,
         ]);
 
-        // Registration complete: inform the client to redirect to login.
         return response()->json([
             'message' => 'Registration successful. Please log in.',
             'user'    => $user
         ], 201);
     }
 
-    // Login endpoint remains largely unchanged
+    // Login endpoint
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -66,12 +64,11 @@ class AccessController extends Controller
 
         $user = Auth::user();
 
-        // Prevent login if the user's status is inactive
         if ($user->status !== 'active') {
             return response()->json(['message' => 'Your account is inactive.'], 403);
         }
 
-        // Load the role relation so that the user object includes role info
+        // Load role relation
         $user->load('role');
         $token = $user->createToken('authToken')->accessToken;
 
@@ -79,5 +76,15 @@ class AccessController extends Controller
             'token' => $token,
             'user'  => $user
         ], 200);
+    }
+    public function logout(Request $request)
+    {
+        // If using Laravel Passport, you might revoke the token like:
+        $request->user()->token()->revoke();
+
+        // If using Sanctum, you can use:
+        // $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Logged out successfully']);
     }
 }

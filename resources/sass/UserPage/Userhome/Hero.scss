@@ -1,0 +1,103 @@
+.hero-container {
+    position: relative;
+    width: 100%;
+    height: 80vh; /* Adjust height as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.hero-container .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image covers the container */
+}
+
+.hero-container .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+    text-align: center;
+}
+
+.hero-container .hero-overlay .hero-text {
+    color: #fff;
+    font-size: 4rem; /* Large text for desktop */
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+}
+
+.hero-container .hero-overlay .hero-button {
+    padding: 12px 24px;
+    background: rgba(
+        255,
+        255,
+        255,
+        0.2
+    ); /* Semi-transparent white background */
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.2s;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.hero-container .hero-overlay .hero-button:hover {
+    background: rgba(255, 255, 255, 0.4); /* Slightly more opaque on hover */
+    transform: scale(1.05); /* Slight scale effect on hover */
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+    .hero-container .hero-overlay .hero-text {
+        font-size: 3rem; /* Slightly smaller text for tablets */
+    }
+
+    .hero-container .hero-overlay .hero-button {
+        font-size: 1rem; /* Smaller button text for tablets */
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-container {
+        height: 60vh; /* Adjust height for smaller screens */
+    }
+
+    .hero-container .hero-overlay .hero-text {
+        font-size: 2rem; /* Smaller text for mobile */
+        letter-spacing: 2px;
+        margin-bottom: 15px;
+    }
+
+    .hero-container .hero-overlay .hero-button {
+        padding: 10px 20px; /* Smaller button for mobile */
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-container .hero-overlay .hero-text {
+        font-size: 1.5rem; /* Even smaller text for very small screens */
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+    }
+
+    .hero-container .hero-overlay .hero-button {
+        padding: 8px 16px; /* Smaller button for very small screens */
+        font-size: 0.8rem;
+    }
+}

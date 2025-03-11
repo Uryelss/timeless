@@ -8,20 +8,25 @@ use App\Models\SubCategory;
 
 class SubCategoryController extends Controller
 {
-    // Get all sub-categories for a given type (active items)
+    // Public endpoint to fetch sub-categories by type
+    public function publicIndex(Request $request)
+    {
+        $type = $request->get('type');
+        $data = SubCategory::where('type', $type)->get();
+        return response()->json($data);
+    }
+
+    // Admin endpoint: list sub-categories (active or archived) based on query parameter.
     public function index(Request $request)
     {
         $type = $request->get('type');
         if ($request->has('archived') && $request->get('archived') == 1) {
-            // Only return soft-deleted records for archived view
             $data = SubCategory::onlyTrashed()->where('type', $type)->get();
         } else {
-            // Return active records
             $data = SubCategory::where('type', $type)->get();
         }
         return response()->json($data);
     }
-
 
     // Store a new sub-category record
     public function store(Request $request)

@@ -14,7 +14,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
-import "C:/sample/resources/sass/AdminPage/Sidebar/Sidebar.scss";
+
 const items = [
     {
         key: "dashboard",
@@ -56,7 +56,6 @@ const items = [
         key: "admin-settings",
         icon: <SettingOutlined />,
         label: "Admin Settings",
-        // Notice there is no "path" for the parent, it's just a grouping.
         children: [
             {
                 key: "admin-profile",
@@ -101,29 +100,31 @@ const Sidebar = () => {
     };
 
     const handleLogout = () => {
-        // Implement logout logic (e.g., clearing tokens)
+        localStorage.removeItem("token"); // Clear token on logout
         navigate("/login");
     };
 
     return (
-        <div className="sidebar-container">
-            <div>
-                <Button
-                    type="primary"
-                    onClick={toggleCollapsed}
-                    style={{ marginBottom: 16 }}
-                >
-                    {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                </Button>
-                <Menu
-                    defaultSelectedKeys={["dashboard"]}
-                    mode="inline"
-                    theme="dark"
-                    inlineCollapsed={collapsed}
-                    items={items}
-                    onClick={handleMenuClick}
-                />
-            </div>
+        <div
+            className="sidebar-container"
+            style={{ height: "100vh", overflow: "auto" }}
+        >
+            <Button
+                type="primary"
+                onClick={toggleCollapsed}
+                style={{ margin: "16px" }}
+            >
+                {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            </Button>
+            <Menu
+                defaultSelectedKeys={["dashboard"]}
+                mode="inline"
+                theme="dark"
+                inlineCollapsed={collapsed}
+                items={items}
+                onClick={handleMenuClick}
+                style={{ borderRight: 0 }}
+            />
             <div className="logout-container">
                 <Button
                     type="text"
@@ -131,7 +132,7 @@ const Sidebar = () => {
                     onClick={handleLogout}
                     className="logout-button"
                 >
-                    Log Out
+                    {!collapsed && "Log Out"}
                 </Button>
             </div>
         </div>

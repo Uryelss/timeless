@@ -8,10 +8,17 @@ use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
-
 class ProductController extends Controller
 {
-    // List active products or return archived ones if requested via query param.
+    // Public endpoint to fetch products with brand relationship
+    public function publicIndex()
+    {
+        $products = Product::with(['brand', 'gender', 'movement', 'strapMaterial'])->get();
+        return response()->json($products);
+    }
+
+
+    // Admin endpoint: List active products or archived ones if requested via query param.
     public function index(Request $request)
     {
         if ($request->query('archived')) {
@@ -67,11 +74,6 @@ class ProductController extends Controller
                 \App\Models\Inventory::create([
                     'product_id'   => $product->id,
                     'size'         => $size,
-                    // Here, you can decide how to set initial quantity.
-                    // For example, if the product quantity is overall stock,
-                    // you might want to divide it equally among sizes,
-                    // or set a default value.
-                    // For this example, we'll use the product's quantity:
                     'quantity'     => $product->quantity,
                     'sold'         => 0,
                     'stock_status' => $product->quantity == 0 ? 'Out of Stock' : 'In Stock',
@@ -114,12 +116,7 @@ class ProductController extends Controller
             }
         }
 
-
-
-
-        // Log the validated data for debugging purposes
         Log::info("Updating product $id", $validatedData);
-
         $product->update($validatedData);
         return response()->json($product);
     }

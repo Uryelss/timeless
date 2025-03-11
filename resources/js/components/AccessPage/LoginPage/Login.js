@@ -7,21 +7,21 @@ const Login = () => {
         axios
             .post("http://localhost:8000/api/login", values)
             .then((response) => {
-                // Save token to localStorage
+                // Save token and user details to localStorage
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem(
                     "user",
                     JSON.stringify(response.data.user)
                 );
-                // Check the user role. Assuming that the user object has a role property or role_id.
-                const user = response.data.user;
-                message.success("Login successful!");
+                localStorage.setItem("userId", response.data.user.id); // Save user ID
 
-                // Redirect based on role:
+                message.success("Login successful!");
+                const user = response.data.user;
+                // Redirect based on role
                 if (user.role && user.role.name === "admin") {
-                    window.location.href = "/dashboard"; // Admin dashboard route
+                    window.location.href = "/dashboard";
                 } else {
-                    window.location.href = "/user-home"; // Regular user homepage
+                    window.location.href = "/user-home";
                 }
             })
             .catch((error) => {

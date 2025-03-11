@@ -1,0 +1,26 @@
+.brand-slider {
+    background: #f8f8f8;
+    padding: 20px 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .brand-logo {
+        margin: 0 30px;
+        transition: transform 0.3s ease-in-out;
+
+        img {
+            height: 60px;
+            max-width: 150px;
+            object-fit: contain;
+            filter: grayscale(50%);
+            transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+
+            &:hover {
+                transform: scale(1.1);
+                filter: grayscale(0%);
+            }
+        }
+    }
+}
