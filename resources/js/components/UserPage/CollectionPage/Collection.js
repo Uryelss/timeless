@@ -11,6 +11,7 @@ import {
 } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import Navbar from "../Navbar/Navbar";
+import BrandSlider from "../UserHome/BrandSlider"; // Ensure this import path is correct
 import axios from "axios";
 
 const { Content, Sider } = Layout;
@@ -165,6 +166,8 @@ const Collection = () => {
     return (
         <Layout style={{ minHeight: "100vh" }}>
             <Navbar />
+            {/* Add BrandSlider below Navbar and above the filter/content */}
+            <BrandSlider />
             <Layout style={{ marginTop: "24px" }}>
                 {/* Filter Sidebar */}
                 <Sider
