@@ -1,18 +1,15 @@
 import React from "react";
-import { Button } from "antd";
 
-const HeroSection = () => {
-    return (
-        <div className="hero-section">
-            <div className="hero-content">
-                <h1>Welcome to Our Store</h1>
-                <p>Discover the latest trends in luxury, fashion, and smart watches.</p>
-                <Button type="primary" className="shop-now-button">
-                    Shop Now
-                </Button>
-            </div>
-        </div>
-    );
+const Hero = () => {
+  return (
+    <div className="hero-container">
+      <img src="/images/Hero.png" alt="Timeless Watches" className="hero-image" />
+      <div className="hero-overlay">
+        <h1 className="hero-text">TIMELESS</h1>
+        <a href="/collection" className="hero-button">Shop Now</a>
+      </div>
+    </div>
+  );
 };
 
-export default HeroSection;
+export default Hero;

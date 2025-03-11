@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Layout, Space, Input, Typography } from "antd";
+import { Layout, Space, Input } from "antd";
 import Header from "../Usercomponent/Header";
 import Sidebar from "../Usercomponent/Sidebar";
 import Productlist from "../Usercomponent/Productlist";
 import Footer from "../Usercomponent/Footer";
+import Brandslider from "../Usercomponent/Brandslider"; // Import the BrandSlider
 
 const { Content } = Layout;
 const { Search } = Input;
@@ -30,7 +31,6 @@ const CollectionPage = () => {
     fetchFilters();
   }, []);
 
-  // API Calls
   const fetchProducts = async () => {
     try {
       const response = await axios.get("http://localhost:8000/api/store/products");
@@ -54,7 +54,6 @@ const CollectionPage = () => {
     }
   };
 
-  // Filter Handling
   const handleFilterChange = (category, value) => {
     setFilters((prev) => ({
       ...prev,
@@ -87,6 +86,9 @@ const CollectionPage = () => {
         <Layout style={{ padding: "24px" }}>
           <Content>
             <Space direction="vertical" size="large" style={{ width: "100%" }}>
+              {/* Brand Logo Slider */}
+              <Brandslider />
+
               <Search
                 placeholder="Search products..."
                 onSearch={(value) => setSearchTerm(value)}
