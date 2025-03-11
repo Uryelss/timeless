@@ -100,7 +100,6 @@ const CustomerManagement = () => {
                 </Space>
             ),
         },
-        { title: "ID", dataIndex: "id", key: "id" },
         {
             title: "Customer Image",
             dataIndex: "profile_image",

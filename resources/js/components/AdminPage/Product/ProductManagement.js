@@ -133,7 +133,6 @@ const ProductManagement = () => {
                 </Space>
             ),
         },
-        { title: "ID", dataIndex: "id", key: "id" },
         {
             title: "Product Image",
             dataIndex: "main_image",

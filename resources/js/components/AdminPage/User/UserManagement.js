@@ -85,6 +85,7 @@ const UserManagement = () => {
     }, [openArchiveModal]);
 
     // Table columns for active users
+    // Table columns for active users
     const mainColumns = [
         {
             title: "Actions",
@@ -103,7 +104,6 @@ const UserManagement = () => {
                 </Space>
             ),
         },
-        { title: "ID", dataIndex: "id", key: "id" },
         {
             title: "Username",
             dataIndex: "username",

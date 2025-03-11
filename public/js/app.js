@@ -175036,10 +175036,6 @@ var CustomerManagement = function CustomerManagement() {
       });
     }
   }, {
-    title: "ID",
-    dataIndex: "id",
-    key: "id"
-  }, {
     title: "Customer Image",
     dataIndex: "profile_image",
     key: "profile_image",
@@ -175507,6 +175503,7 @@ var InventoryManagement = function InventoryManagement() {
   }, [openArchiveModal]);
 
   // Table columns for active inventory records
+  // Table columns for active inventory records
   var mainColumns = [{
     title: "Actions",
     key: "actions",
@@ -175529,10 +175526,6 @@ var InventoryManagement = function InventoryManagement() {
         })]
       });
     }
-  }, {
-    title: "ID",
-    dataIndex: "id",
-    key: "id"
   }, {
     title: "Product (Image)",
     key: "productImage",
@@ -176073,10 +176066,6 @@ var ProductManagement = function ProductManagement() {
         })]
       });
     }
-  }, {
-    title: "ID",
-    dataIndex: "id",
-    key: "id"
   }, {
     title: "Product Image",
     dataIndex: "main_image",
@@ -176834,6 +176823,7 @@ var UserManagement = function UserManagement() {
   }, [openArchiveModal]);
 
   // Table columns for active users
+  // Table columns for active users
   var mainColumns = [{
     title: "Actions",
     key: "actions",
@@ -176856,10 +176846,6 @@ var UserManagement = function UserManagement() {
         })]
       });
     }
-  }, {
-    title: "ID",
-    dataIndex: "id",
-    key: "id"
   }, {
     title: "Username",
     dataIndex: "username",

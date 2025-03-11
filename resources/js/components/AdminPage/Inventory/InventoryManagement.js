@@ -82,6 +82,7 @@ const InventoryManagement = () => {
     }, [openArchiveModal]);
 
     // Table columns for active inventory records
+    // Table columns for active inventory records
     const mainColumns = [
         {
             title: "Actions",
@@ -100,7 +101,6 @@ const InventoryManagement = () => {
                 </Space>
             ),
         },
-        { title: "ID", dataIndex: "id", key: "id" },
         {
             title: "Product (Image)",
             key: "productImage",
