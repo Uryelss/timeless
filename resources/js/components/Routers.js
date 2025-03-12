@@ -1,4 +1,3 @@
-// Routers.js
 import React from "react";
 import ReactDOM from "react-dom";
 import {
@@ -27,6 +26,7 @@ import Login from "./AccessPage/LoginPage/Login";
 import UserHome from "./UserPage/UserHome/HomePage";
 import Collection from "./UserPage/CollectionPage/Collection";
 import UserProfile from "./UserPage/ProfilePage/Profile";
+import ProductOverview from "./UserPage/ProductOverview/Productview";
 
 // Import helper functions from auth.js
 import { isAuthenticated, hasRole } from "./AccessPage/Auth";
@@ -37,12 +37,10 @@ const PrivateRoute = ({ allowedRoles }) => {
     if (!isAuthenticated()) {
         return <Navigate to="/login" replace />;
     }
-
-    // Redirect to login (or a Not Authorized page) if the user's role is not allowed
+    // Redirect if the user's role is not allowed
     if (!hasRole(allowedRoles)) {
         return <Navigate to="/login" replace />;
     }
-
     return <Outlet />;
 };
 
@@ -74,6 +72,7 @@ function Routers() {
                     <Route path="/user-home" element={<UserHome />} />
                     <Route path="/user-collection" element={<Collection />} />
                     <Route path="/user-profile" element={<UserProfile />} />
+                    <Route path="/product/:id" element={<ProductOverview />} />
                 </Route>
 
                 {/* Catch-all redirect */}

@@ -8,6 +8,7 @@ use App\Http\Controllers\API\InventoryController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\API\ProductViewController;
 
 // Logout route for authenticated users (using Passport)
 Route::middleware('auth:api')->group(function () {
@@ -19,6 +20,8 @@ Route::post('register', [AccessController::class, 'register']);
 Route::post('login', [AccessController::class, 'login']);
 Route::get('/products/public', [ProductController::class, 'publicIndex']);
 Route::get('/sub-categories/public', [SubCategoryController::class, 'publicIndex']);
+// Public product detail route
+Route::get('/products/{id}', [ProductViewController::class, 'show']);
 
 // Protected routes for regular users
 Route::middleware(['auth:api', 'check.role:user'])->group(function () {

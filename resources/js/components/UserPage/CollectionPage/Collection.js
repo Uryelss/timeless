@@ -11,8 +11,9 @@ import {
 } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import Navbar from "../Navbar/Navbar";
-import BrandSlider from "../UserHome/BrandSlider"; // Ensure this import path is correct
 import axios from "axios";
+import { Link } from "react-router-dom";
+import BrandSlider from "../UserHome/BrandSlider";
 
 const { Content, Sider } = Layout;
 const { Search } = Input;
@@ -36,14 +37,14 @@ const Collection = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("default");
 
-    // API endpoints (adjust base URL as needed)
+    // API endpoints
     const PRODUCTS_API = "http://localhost:8000/api/products/public";
     const SUBCATEGORIES_API = "http://localhost:8000/api/sub-categories/public";
 
     // Check logged-in state (for enabling Add to Cart)
     const isLoggedIn = Boolean(localStorage.getItem("token"));
 
-    // Fetch products from API (with brand, gender, movement, and strapMaterial relationships)
+    // Fetch products from API
     const fetchProducts = () => {
         axios
             .get(PRODUCTS_API)
@@ -85,7 +86,7 @@ const Collection = () => {
         );
     }, []);
 
-    // Handle filter change – update filters state
+    // Handle filter change
     const handleFilterChange = (category, value) => {
         setFilters((prev) => {
             const updated = prev[category].includes(value)
@@ -95,7 +96,7 @@ const Collection = () => {
         });
     };
 
-    // Apply filtering: extract relationship names if available
+    // Apply filtering: filters, search, and sort
     const getFilteredProducts = () => {
         let filtered = products.filter((product) => {
             const productBrand = product.brand?.name || product.brand;
@@ -149,7 +150,6 @@ const Collection = () => {
         return filtered;
     };
 
-    // Clear filters
     const clearFilters = () => {
         setFilters({
             brand: [],
@@ -166,10 +166,11 @@ const Collection = () => {
     return (
         <Layout style={{ minHeight: "100vh" }}>
             <Navbar />
-            {/* Add BrandSlider below Navbar and above the filter/content */}
-            <BrandSlider />
+            {/* BrandSlider */}
+            <div style={{ margin: "24px" }}>
+                <BrandSlider />
+            </div>
             <Layout style={{ marginTop: "24px" }}>
-                {/* Filter Sidebar */}
                 <Sider
                     width={250}
                     style={{
@@ -194,7 +195,6 @@ const Collection = () => {
                         </div>
                     )}
                     <div>
-                        {/* Brand Filter */}
                         <div style={{ marginBottom: "16px" }}>
                             <h3>BRAND</h3>
                             <div className="horizontal-checkboxes">
@@ -211,8 +211,6 @@ const Collection = () => {
                                 ))}
                             </div>
                         </div>
-
-                        {/* Gender Filter */}
                         <div style={{ marginBottom: "16px" }}>
                             <h3>GENDER</h3>
                             <div className="horizontal-checkboxes">
@@ -231,8 +229,6 @@ const Collection = () => {
                                 ))}
                             </div>
                         </div>
-
-                        {/* Movement Filter */}
                         <div style={{ marginBottom: "16px" }}>
                             <h3>MOVEMENT</h3>
                             <div className="horizontal-checkboxes">
@@ -254,8 +250,6 @@ const Collection = () => {
                                 ))}
                             </div>
                         </div>
-
-                        {/* Strap Material Filter */}
                         <div style={{ marginBottom: "16px" }}>
                             <h3>STRAP MATERIAL</h3>
                             <div className="horizontal-checkboxes">
@@ -277,8 +271,6 @@ const Collection = () => {
                                 ))}
                             </div>
                         </div>
-
-                        {/* Clear Filters Button */}
                         <Button
                             type="default"
                             style={{
@@ -293,7 +285,6 @@ const Collection = () => {
                     </div>
                 </Sider>
 
-                {/* Content Area with Product Cards */}
                 <Layout style={{ padding: "0 24px 24px" }}>
                     <Content style={{ padding: 24, background: "#fff" }}>
                         <Space
@@ -332,43 +323,50 @@ const Collection = () => {
                             }}
                         >
                             {filteredProducts.map((product) => (
-                                <Card
+                                <Link
                                     key={product.id}
-                                    hoverable
-                                    cover={
-                                        <img
-                                            alt={product.product_name}
-                                            src={
-                                                product.main_image
-                                                    ? `http://localhost:8000/storage/${product.main_image}`
-                                                    : "/placeholder.jpg"
+                                    to={`/product/${product.id}`}
+                                >
+                                    <Card
+                                        hoverable
+                                        cover={
+                                            <img
+                                                alt={product.product_name}
+                                                src={
+                                                    product.main_image
+                                                        ? `http://localhost:8000/storage/${product.main_image}`
+                                                        : "/placeholder.jpg"
+                                                }
+                                            />
+                                        }
+                                        style={{ width: 250 }}
+                                    >
+                                        <Card.Meta
+                                            title={product.product_name}
+                                            description={
+                                                <p>Price: {product.price}</p>
                                             }
                                         />
-                                    }
-                                    style={{ width: 250 }}
-                                >
-                                    <Card.Meta
-                                        title={product.product_name}
-                                        description={
-                                            <p>Price: {product.price}</p>
-                                        }
-                                    />
-                                    <Button
-                                        type="link"
-                                        icon={<ShoppingCartOutlined />}
-                                        disabled={!isLoggedIn}
-                                        onClick={() => {
-                                            if (!isLoggedIn) {
-                                                message.info(
-                                                    "Please log in to add to cart"
-                                                );
-                                            }
-                                        }}
-                                        style={{ padding: 0, marginTop: "8px" }}
-                                    >
-                                        Add to Cart
-                                    </Button>
-                                </Card>
+                                        <Button
+                                            type="link"
+                                            icon={<ShoppingCartOutlined />}
+                                            disabled={!isLoggedIn}
+                                            onClick={() => {
+                                                if (!isLoggedIn) {
+                                                    message.info(
+                                                        "Please log in to add to cart"
+                                                    );
+                                                }
+                                            }}
+                                            style={{
+                                                padding: 0,
+                                                marginTop: "8px",
+                                            }}
+                                        >
+                                            Add to Cart
+                                        </Button>
+                                    </Card>
+                                </Link>
                             ))}
                         </div>
                     </Content>
