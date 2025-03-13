@@ -181257,7 +181257,16 @@ var Collection = function Collection() {
                   hoverable: true,
                   cover: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
                     alt: product.product_name,
-                    src: product.main_image ? "http://localhost:8000/storage/".concat(product.main_image) : "/placeholder.jpg"
+                    src: product.main_image ? "http://localhost:8000/storage/".concat(product.main_image) : "/placeholder.jpg",
+                    style: {
+                      width: "250px",
+                      // Fixed width
+                      height: "250px",
+                      // Fixed height
+                      objectFit: "cover",
+                      // Ensures the image is cropped and scaled proportionally
+                      borderRadius: "8px 8px 0 0" // Optional rounded corners
+                    }
                   }),
                   style: {
                     width: 250
