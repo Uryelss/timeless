@@ -8,6 +8,7 @@ import {
     Select,
     Space,
     message,
+    Rate,
 } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import Navbar from "../Navbar/Navbar";
@@ -20,7 +21,6 @@ const { Search } = Input;
 const { Option } = Select;
 
 const Collection = () => {
-    // States for products and filters
     const [products, setProducts] = useState([]);
     const [filters, setFilters] = useState({
         brand: [],
@@ -37,18 +37,16 @@ const Collection = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("default");
 
-    // API endpoints
     const PRODUCTS_API = "http://localhost:8000/api/products/public";
     const SUBCATEGORIES_API = "http://localhost:8000/api/sub-categories/public";
 
-    // Check logged-in state (for enabling Add to Cart)
     const isLoggedIn = Boolean(localStorage.getItem("token"));
 
-    // Fetch products from API
     const fetchProducts = () => {
         axios
             .get(PRODUCTS_API)
             .then((res) => {
+                console.log("Fetched Products Data:", res.data); // Debug log
                 setProducts(res.data);
             })
             .catch((err) => {
@@ -57,12 +55,10 @@ const Collection = () => {
             });
     };
 
-    // Fetch dynamic filter options for a given type
     const fetchFilterOptions = (type, setter) => {
         axios
             .get(`${SUBCATEGORIES_API}?type=${type}`)
             .then((res) => {
-                // Map subcategory records to their name
                 setter(res.data.map((item) => item.name));
             })
             .catch((err) => {
@@ -86,7 +82,6 @@ const Collection = () => {
         );
     }, []);
 
-    // Handle filter change
     const handleFilterChange = (category, value) => {
         setFilters((prev) => {
             const updated = prev[category].includes(value)
@@ -96,7 +91,6 @@ const Collection = () => {
         });
     };
 
-    // Apply filtering: filters, search, and sort
     const getFilteredProducts = () => {
         let filtered = products.filter((product) => {
             const productBrand = product.brand?.name || product.brand;
@@ -166,7 +160,6 @@ const Collection = () => {
     return (
         <Layout style={{ minHeight: "100vh" }}>
             <Navbar />
-            {/* BrandSlider */}
             <div style={{ margin: "24px" }}>
                 <BrandSlider />
             </div>
@@ -338,10 +331,10 @@ const Collection = () => {
                                                         : "/placeholder.jpg"
                                                 }
                                                 style={{
-                                                    width: "250px", // Fixed width
-                                                    height: "250px", // Fixed height
-                                                    objectFit: "cover", // Ensures the image is cropped and scaled proportionally
-                                                    borderRadius: "8px 8px 0 0", // Optional rounded corners
+                                                    width: "250px",
+                                                    height: "250px",
+                                                    objectFit: "cover",
+                                                    borderRadius: "8px 8px 0 0",
                                                 }}
                                             />
                                         }
@@ -350,7 +343,38 @@ const Collection = () => {
                                         <Card.Meta
                                             title={product.product_name}
                                             description={
-                                                <p>Price: {product.price}</p>
+                                                <div>
+                                                    <p>
+                                                        Price: {product.price}
+                                                    </p>
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            alignItems:
+                                                                "center",
+                                                        }}
+                                                    >
+                                                        <Rate
+                                                            disabled
+                                                            value={
+                                                                product.average_rating ||
+                                                                0
+                                                            } // Fallback to 0 if undefined
+                                                            allowHalf
+                                                            style={{
+                                                                fontSize:
+                                                                    "14px",
+                                                                marginRight:
+                                                                    "8px",
+                                                            }}
+                                                        />
+                                                        <span>
+                                                            {product.average_rating ||
+                                                                0}
+                                                        </span>{" "}
+                                                        {/* Fallback to 0 if undefined */}
+                                                    </div>
+                                                </div>
                                             }
                                         />
                                         <Button

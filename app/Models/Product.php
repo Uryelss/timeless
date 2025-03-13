@@ -66,4 +66,11 @@ class Product extends Model
     {
         return $this->hasMany(Review::class);
     }
+    protected $appends = ['average_rating'];
+
+    public function getAverageRatingAttribute()
+    {
+        $average = $this->reviews()->avg('rating');
+        return $average ? round($average, 1) : 0; // Round to 1 decimal place, default to 0 if no reviews
+    }
 }

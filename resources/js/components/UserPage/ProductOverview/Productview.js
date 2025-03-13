@@ -31,7 +31,7 @@ const ProductOverview = () => {
     const [selectedSize, setSelectedSize] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [reviewText, setReviewText] = useState("");
-    const [reviewRating, setReviewRating] = useState(0); // New state for rating
+    const [reviewRating, setReviewRating] = useState(0);
     const [userProfile, setUserProfile] = useState(() => {
         const storedUser = localStorage.getItem("user");
         const parsedUser = storedUser ? JSON.parse(storedUser) : null;
@@ -54,6 +54,7 @@ const ProductOverview = () => {
             .get(`http://localhost:8000/api/products/${id}`)
             .then((res) => {
                 const fetchedProduct = res.data.product || res.data;
+                console.log("Fetched Product Data:", fetchedProduct); // Debug log
                 setProduct(fetchedProduct);
                 setCurrentMainImage(fetchedProduct.main_image);
                 setLoading(false);
@@ -130,7 +131,7 @@ const ProductOverview = () => {
                 {
                     product_id: id,
                     comment: reviewText,
-                    rating: reviewRating, // Include rating in the payload
+                    rating: reviewRating,
                 },
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -139,7 +140,15 @@ const ProductOverview = () => {
             .then((res) => {
                 setReviews([res.data.review, ...reviews]);
                 setReviewText("");
-                setReviewRating(0); // Reset rating after submission
+                setReviewRating(0);
+                // Refetch product to update average rating
+                axios
+                    .get(`http://localhost:8000/api/products/${id}`)
+                    .then((res) => {
+                        const fetchedProduct = res.data.product || res.data;
+                        console.log("Refetched Product Data:", fetchedProduct); // Debug log
+                        setProduct(fetchedProduct);
+                    });
                 message.success("Review posted successfully!");
             })
             .catch((err) => {
@@ -305,8 +314,21 @@ const ProductOverview = () => {
                                 style={{ textAlign: "center" }}
                             >
                                 <Title level={3}>{product.product_name}</Title>
-                                <div>
-                                    <Rate disabled value={4} />
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <Rate
+                                        disabled
+                                        value={product.average_rating || 0} // Fallback to 0 if undefined
+                                        allowHalf
+                                        style={{ marginRight: "8px" }}
+                                    />
+                                    <span>{product.average_rating || 0}</span>{" "}
+                                    {/* Fallback to 0 if undefined */}
                                 </div>
                                 <Paragraph strong>Price</Paragraph>
                                 <Paragraph strong>
@@ -541,7 +563,7 @@ const ProductOverview = () => {
                                                                     "Error:",
                                                                     e.target.src
                                                                 );
-                                                                return true; // Fallback to icon
+                                                                return true;
                                                             }}
                                                             fallback="https://via.placeholder.com/40"
                                                         />

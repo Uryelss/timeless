@@ -181176,7 +181176,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingCartOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/rate/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingCartOutlined.js");
 /* harmony import */ var _Navbar_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Navbar/Navbar */ "./resources/js/components/UserPage/Navbar/Navbar.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
@@ -181211,7 +181212,6 @@ var Content = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Content,
 var Search = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Search;
 var Option = antd__WEBPACK_IMPORTED_MODULE_6__["default"].Option;
 var Collection = function Collection() {
-  // States for products and filters
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
     products = _useState2[0],
@@ -181242,28 +181242,20 @@ var Collection = function Collection() {
     _useState10 = _slicedToArray(_useState9, 2),
     sortBy = _useState10[0],
     setSortBy = _useState10[1];
-
-  // API endpoints
   var PRODUCTS_API = "http://localhost:8000/api/products/public";
   var SUBCATEGORIES_API = "http://localhost:8000/api/sub-categories/public";
-
-  // Check logged-in state (for enabling Add to Cart)
   var isLoggedIn = Boolean(localStorage.getItem("token"));
-
-  // Fetch products from API
   var fetchProducts = function fetchProducts() {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].get(PRODUCTS_API).then(function (res) {
+      console.log("Fetched Products Data:", res.data); // Debug log
       setProducts(res.data);
     })["catch"](function (err) {
       antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching products");
       console.error(err);
     });
   };
-
-  // Fetch dynamic filter options for a given type
   var fetchFilterOptions = function fetchFilterOptions(type, setter) {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(SUBCATEGORIES_API, "?type=").concat(type)).then(function (res) {
-      // Map subcategory records to their name
       setter(res.data.map(function (item) {
         return item.name;
       }));
@@ -181302,8 +181294,6 @@ var Collection = function Collection() {
       });
     });
   }, []);
-
-  // Handle filter change
   var handleFilterChange = function handleFilterChange(category, value) {
     setFilters(function (prev) {
       var updated = prev[category].includes(value) ? prev[category].filter(function (item) {
@@ -181312,8 +181302,6 @@ var Collection = function Collection() {
       return _objectSpread(_objectSpread({}, prev), {}, _defineProperty({}, category, updated));
     });
   };
-
-  // Apply filtering: filters, search, and sort
   var getFilteredProducts = function getFilteredProducts() {
     var filtered = products.filter(function (product) {
       var _product$brand, _product$gender, _product$movement, _product$strapMateria;
@@ -181531,12 +181519,9 @@ var Collection = function Collection() {
                     src: product.main_image ? "http://localhost:8000/storage/".concat(product.main_image) : "/placeholder.jpg",
                     style: {
                       width: "250px",
-                      // Fixed width
                       height: "250px",
-                      // Fixed height
                       objectFit: "cover",
-                      // Ensures the image is cropped and scaled proportionally
-                      borderRadius: "8px 8px 0 0" // Optional rounded corners
+                      borderRadius: "8px 8px 0 0"
                     }
                   }),
                   style: {
@@ -181544,12 +181529,31 @@ var Collection = function Collection() {
                   },
                   children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"].Meta, {
                     title: product.product_name,
-                    description: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("p", {
-                      children: ["Price: ", product.price]
+                    description: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("p", {
+                        children: ["Price: ", product.price]
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                        style: {
+                          display: "flex",
+                          alignItems: "center"
+                        },
+                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+                          disabled: true,
+                          value: product.average_rating || 0 // Fallback to 0 if undefined
+                          ,
+                          allowHalf: true,
+                          style: {
+                            fontSize: "14px",
+                            marginRight: "8px"
+                          }
+                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("span", {
+                          children: product.average_rating || 0
+                        }), " "]
+                      })]
                     })
                   }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
                     type: "link",
-                    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {}),
+                    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {}),
                     disabled: !isLoggedIn,
                     onClick: function onClick() {
                       if (!isLoggedIn) {
@@ -181895,7 +181899,7 @@ var ProductOverview = function ProductOverview() {
   var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
     _useState14 = _slicedToArray(_useState13, 2),
     reviewRating = _useState14[0],
-    setReviewRating = _useState14[1]; // New state for rating
+    setReviewRating = _useState14[1];
   var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(function () {
       var storedUser = localStorage.getItem("user");
       var parsedUser = storedUser ? JSON.parse(storedUser) : null;
@@ -181918,6 +181922,7 @@ var ProductOverview = function ProductOverview() {
     console.log("UserProfile in useEffect:", userProfile);
     axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("http://localhost:8000/api/products/".concat(id)).then(function (res) {
       var fetchedProduct = res.data.product || res.data;
+      console.log("Fetched Product Data:", fetchedProduct); // Debug log
       setProduct(fetchedProduct);
       setCurrentMainImage(fetchedProduct.main_image);
       setLoading(false);
@@ -181991,7 +181996,7 @@ var ProductOverview = function ProductOverview() {
     axios__WEBPACK_IMPORTED_MODULE_8__["default"].post("http://localhost:8000/api/reviews", {
       product_id: id,
       comment: reviewText,
-      rating: reviewRating // Include rating in the payload
+      rating: reviewRating
     }, {
       headers: {
         Authorization: "Bearer ".concat(token)
@@ -181999,7 +182004,13 @@ var ProductOverview = function ProductOverview() {
     }).then(function (res) {
       setReviews([res.data.review].concat(_toConsumableArray(reviews)));
       setReviewText("");
-      setReviewRating(0); // Reset rating after submission
+      setReviewRating(0);
+      // Refetch product to update average rating
+      axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("http://localhost:8000/api/products/".concat(id)).then(function (res) {
+        var fetchedProduct = res.data.product || res.data;
+        console.log("Refetched Product Data:", fetchedProduct); // Debug log
+        setProduct(fetchedProduct);
+      });
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Review posted successfully!");
     })["catch"](function (err) {
       console.error("Error submitting review:", err);
@@ -182159,11 +182170,23 @@ var ProductOverview = function ProductOverview() {
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
                 level: 3,
                 children: product.product_name
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                style: {
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center"
+                },
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                   disabled: true,
-                  value: 4
-                })
+                  value: product.average_rating || 0 // Fallback to 0 if undefined
+                  ,
+                  allowHalf: true,
+                  style: {
+                    marginRight: "8px"
+                  }
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+                  children: product.average_rating || 0
+                }), " "]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
                 strong: true,
                 children: "Price"
@@ -182342,7 +182365,7 @@ var ProductOverview = function ProductOverview() {
                           onError: function onError(e) {
                             var _review$user2, _review$user3;
                             console.log("Failed to load review avatar for:", (_review$user2 = review.user) === null || _review$user2 === void 0 ? void 0 : _review$user2.username, (_review$user3 = review.user) === null || _review$user3 === void 0 || (_review$user3 = _review$user3.profile) === null || _review$user3 === void 0 ? void 0 : _review$user3.profile_image, "Error:", e.target.src);
-                            return true; // Fallback to icon
+                            return true;
                           },
                           fallback: "https://via.placeholder.com/40"
                         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
