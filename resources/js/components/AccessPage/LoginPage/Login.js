@@ -1,70 +1,89 @@
 import React from "react";
 import { Form, Input, Button, message } from "antd";
 import axios from "axios";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const Login = () => {
+    const navigate = useNavigate(); // Initialize navigate
+
     const onFinish = (values) => {
         axios
             .post("http://localhost:8000/api/login", values)
             .then((response) => {
-                // Save token and user details to localStorage
                 localStorage.setItem("token", response.data.token);
                 localStorage.setItem(
                     "user",
                     JSON.stringify(response.data.user)
                 );
-                localStorage.setItem("userId", response.data.user.id); // Save user ID
+                localStorage.setItem("userId", response.data.user.id);
 
                 message.success("Login successful!");
                 const user = response.data.user;
-                // Redirect based on role
                 if (user.role && user.role.name === "admin") {
-                    window.location.href = "/dashboard";
+                    navigate("/dashboard"); // Use navigate instead of window.location.href
                 } else {
-                    window.location.href = "/user-home";
+                    navigate("/homepage"); // Use navigate instead of window.location.href
                 }
             })
-            .catch((error) => {
+            .catch(() => {
                 message.error("Login failed! Check your credentials.");
-                console.error(error);
             });
     };
 
     return (
-        <div className="login-container">
-            <h2>Login</h2>
-            <Form name="login" onFinish={onFinish} layout="vertical">
-                <Form.Item
-                    name="email"
-                    label="Email"
-                    rules={[
-                        {
-                            required: true,
-                            type: "email",
-                            message: "Please input a valid email!",
-                        },
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    name="password"
-                    label="Password"
-                    rules={[
-                        {
-                            required: true,
-                            message: "Please input your password!",
-                        },
-                    ]}
-                >
-                    <Input.Password />
-                </Form.Item>
-                <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                        Login
-                    </Button>
-                </Form.Item>
-            </Form>
+        <div className="auth-page">
+            {" "}
+            {/* ✅ Add wrapper to prevent style issues */}
+            <div className="login-container">
+                <div className="login-box">
+                    <h2>Welcome Back</h2>
+                    <p className="sub-text">Please log in to your account</p>
+                    <Form name="login" onFinish={onFinish} layout="vertical">
+                        <Form.Item
+                            name="email"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please enter your email!",
+                                },
+                            ]}
+                        >
+                            <Input
+                                prefix={<UserOutlined />}
+                                placeholder="Email"
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            name="password"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please enter your password!",
+                                },
+                            ]}
+                        >
+                            <Input.Password
+                                prefix={<LockOutlined />}
+                                placeholder="Password"
+                            />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                className="login-button"
+                            >
+                                Login
+                            </Button>
+                        </Form.Item>
+                        <p className="register-text">
+                            Don’t have an account?{" "}
+                            <a href="/register">Register here</a>
+                        </p>
+                    </Form>
+                </div>
+            </div>
         </div>
     );
 };
