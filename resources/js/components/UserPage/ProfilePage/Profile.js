@@ -12,7 +12,6 @@ const UserProfile = () => {
     const [profileData, setProfileData] = useState(null);
     const [formValues, setFormValues] = useState({
         username: "",
-        email: "",
         first_name: "",
         middle_name: "",
         last_name: "",
@@ -30,17 +29,25 @@ const UserProfile = () => {
             const res = await axios.get("http://localhost:8000/api/profile", {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            console.log("API Response:", res.data); // Debug API response
             // Format date for date input
-            if (res.data.date_of_birth) {
-                res.data.date_of_birth = dayjs(res.data.date_of_birth).format(
-                    "YYYY-MM-DD"
-                );
+            const formattedData = { ...res.data };
+            if (formattedData.date_of_birth) {
+                formattedData.date_of_birth = dayjs(
+                    formattedData.date_of_birth
+                ).format("YYYY-MM-DD");
             }
-            setProfileData(res.data);
-            setFormValues({ ...res.data });
+            // Ensure gender is capitalized to match options
+            if (formattedData.gender) {
+                formattedData.gender =
+                    formattedData.gender.charAt(0).toUpperCase() +
+                    formattedData.gender.slice(1).toLowerCase();
+            }
+            setProfileData(formattedData);
+            setFormValues({ ...formattedData });
             setPreviewImage(
-                res.data.profile_image
-                    ? res.data.profile_image + "?" + new Date().getTime()
+                formattedData.profile_image
+                    ? formattedData.profile_image + "?" + new Date().getTime()
                     : "http://localhost:8000/storage/profiles/tennis-racket.png"
             );
         } catch (error) {
@@ -60,6 +67,7 @@ const UserProfile = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormValues((prev) => ({ ...prev, [name]: value }));
+        console.log(`Changed ${name} to:`, value); // Debug state change
     };
 
     const handleFileChange = (e) => {
@@ -100,9 +108,15 @@ const UserProfile = () => {
                     formData.append(key, formValues[key] || "");
                 }
             });
-            await axios.post("http://localhost:8000/api/profile", formData, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            console.log("Form data sent:", Object.fromEntries(formData)); // Debug sent data
+            const res = await axios.post(
+                "http://localhost:8000/api/profile",
+                formData,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            console.log("Update Response:", res.data); // Debug response
             alert("Profile updated successfully!");
             setEditMode(false);
             fetchProfile();
@@ -245,22 +259,6 @@ const UserProfile = () => {
                                         }}
                                     />
                                 </div>
-                                <div style={{ flex: 1 }}>
-                                    <label>Email:</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        value={formValues.email}
-                                        onChange={handleInputChange}
-                                        disabled={!editMode}
-                                        style={{
-                                            width: "100%",
-                                            padding: 6,
-                                            border: "1px solid #ddd",
-                                            borderRadius: 4,
-                                        }}
-                                    />
-                                </div>
                             </div>
                             <div
                                 style={{
@@ -377,7 +375,9 @@ const UserProfile = () => {
                                     <label>Gender:</label>
                                     <select
                                         name="gender"
-                                        value={formValues.gender || ""}
+                                        value={
+                                            formValues.gender || "Select Gender"
+                                        } // Default to fetched value or placeholder
                                         onChange={handleInputChange}
                                         disabled={!editMode}
                                         style={{
@@ -387,7 +387,9 @@ const UserProfile = () => {
                                             borderRadius: 4,
                                         }}
                                     >
-                                        <option value="">Select Gender</option>
+                                        <option value="Select Gender">
+                                            Select Gender
+                                        </option>
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
                                     </select>

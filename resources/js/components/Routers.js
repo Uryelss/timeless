@@ -30,6 +30,7 @@ import ProductOverview from "./UserPage/ProductOverview/Productview";
 
 // Import helper functions from auth.js
 import { isAuthenticated, hasRole } from "./AccessPage/Auth";
+import AboutUs from "./UserPage/AboutUsPage/Aboutus";
 
 // Unified PrivateRoute Component
 const PrivateRoute = ({ allowedRoles }) => {
@@ -73,6 +74,7 @@ function Routers() {
                     <Route path="/user-collection" element={<Collection />} />
                     <Route path="/user-profile" element={<UserProfile />} />
                     <Route path="/product/:id" element={<ProductOverview />} />
+                    <Route path="/AboutUs" element={<AboutUs />} />
                 </Route>
 
                 {/* Catch-all redirect */}
