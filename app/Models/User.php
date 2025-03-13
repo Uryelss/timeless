@@ -34,4 +34,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    // A user can have many reviews
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

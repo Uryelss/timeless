@@ -4,11 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\SubCategory;
-use App\Models\Inventory;
-// If you eventually add ratings and reviews, create and import these models
-// use App\Models\Rating;
-// use App\Models\Review;
 
 class Product extends Model
 {
@@ -35,6 +30,7 @@ class Product extends Model
         'sizes' => 'array',
     ];
 
+    // Relationships
     public function brand()
     {
         return $this->belongsTo(SubCategory::class, 'brand_id');
@@ -65,16 +61,9 @@ class Product extends Model
         return $this->hasMany(Inventory::class);
     }
 
-    // Uncomment these methods if you later create the Rating and Review models
-    /*
-    public function ratings()
-    {
-        return $this->hasMany(Rating::class, 'product_id');
-    }
-
+    // A product can have many reviews
     public function reviews()
     {
-        return $this->hasMany(Review::class, 'product_id');
+        return $this->hasMany(Review::class);
     }
-    */
 }

@@ -12,26 +12,39 @@ import {
     Space,
     Tabs,
     message,
+    Avatar,
+    Input,
 } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 import Navbar from "../Navbar/Navbar";
 
 const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
+const { TextArea } = Input;
 
 const ProductOverview = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [currentMainImage, setCurrentMainImage] = useState("");
     const [loading, setLoading] = useState(true);
-    const [selectedSize, setSelectedSize] = useState(null); // state for selected size
+    const [selectedSize, setSelectedSize] = useState(null);
+    const [reviews, setReviews] = useState([]);
+    const [reviewText, setReviewText] = useState("");
+    const [userProfile, setUserProfile] = useState(() => {
+        const storedUser = localStorage.getItem("user");
+        const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+        console.log("Stored User from localStorage:", parsedUser);
+        return parsedUser;
+    });
 
+    // Fetch product details
     useEffect(() => {
+        console.log("Token in useEffect:", localStorage.getItem("token"));
+        console.log("UserProfile in useEffect:", userProfile);
         axios
             .get(`http://localhost:8000/api/products/${id}`)
             .then((res) => {
-                const fetchedProduct = res.data.product
-                    ? res.data.product
-                    : res.data;
+                const fetchedProduct = res.data.product || res.data;
                 setProduct(fetchedProduct);
                 setCurrentMainImage(fetchedProduct.main_image);
                 setLoading(false);
@@ -43,6 +56,79 @@ const ProductOverview = () => {
             });
     }, [id]);
 
+    // Fetch reviews
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            axios
+                .get(`http://localhost:8000/api/reviews/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                .then((res) => {
+                    console.log("Fetched Reviews:", res.data);
+                    setReviews(res.data);
+                })
+                .catch((err) => {
+                    console.error("Error fetching reviews:", err);
+                    if (err.response?.status === 401) {
+                        message.warning("Please log in to view reviews.");
+                    }
+                });
+        }
+    }, [id]);
+
+    // Fetch user profile if needed (optional, only if profile might change)
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token && !userProfile) {
+            axios
+                .get("http://localhost:8000/api/profile", {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                .then((res) => {
+                    console.log("Fetched User Profile:", res.data);
+                    setUserProfile(res.data);
+                    localStorage.setItem("user", JSON.stringify(res.data)); // Update localStorage
+                })
+                .catch((err) => console.error("Error fetching profile:", err));
+        }
+    }, [userProfile]);
+
+    // Handle review submission
+    const handleSubmitReview = () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            message.warning("Please log in to post a review.");
+            return;
+        }
+        if (!reviewText.trim()) {
+            message.warning("Please enter a comment.");
+            return;
+        }
+
+        axios
+            .post(
+                "http://localhost:8000/api/reviews",
+                {
+                    product_id: id,
+                    comment: reviewText,
+                    rating: 5,
+                },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            )
+            .then((res) => {
+                setReviews([res.data.review, ...reviews]);
+                setReviewText("");
+                message.success("Review posted successfully!");
+            })
+            .catch((err) => {
+                console.error("Error submitting review:", err);
+                message.error("Failed to submit review.");
+            });
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -53,7 +139,6 @@ const ProductOverview = () => {
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
 
-    // Parse sizes dynamically from product data, fallback to ["22mm"]
     const sizes =
         typeof product.sizes === "string"
             ? JSON.parse(product.sizes)
@@ -230,7 +315,7 @@ const ProductOverview = () => {
                                                     style={{
                                                         width: "40px",
                                                         height: "40px",
-                                                        borderRadius: "4px", // Rectangular buttons
+                                                        borderRadius: "4px",
                                                         backgroundColor:
                                                             selectedSize ===
                                                             size
@@ -275,7 +360,7 @@ const ProductOverview = () => {
                         >
                             <Button
                                 style={{
-                                    backgroundColor: "#28A745", // Green color for Add to Cart
+                                    backgroundColor: "#28A745",
                                     color: "white",
                                     border: "none",
                                     width: "150px",
@@ -333,9 +418,108 @@ const ProductOverview = () => {
                                         </Paragraph>
                                     </Card>
                                 </TabPane>
+
                                 <TabPane tab="Comments" key="2">
                                     <Card>
-                                        <Paragraph>No comments yet.</Paragraph>
+                                        {/* Review Input (without username and avatar) */}
+                                        {localStorage.getItem("token") ? (
+                                            <div
+                                                style={{
+                                                    marginBottom: "15px",
+                                                }}
+                                            >
+                                                <TextArea
+                                                    placeholder="Write a comment..."
+                                                    value={reviewText}
+                                                    onChange={(e) =>
+                                                        setReviewText(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    rows={3}
+                                                    style={{ marginTop: "5px" }}
+                                                />
+                                                <Button
+                                                    type="primary"
+                                                    onClick={handleSubmitReview}
+                                                    style={{
+                                                        marginTop: "10px",
+                                                    }}
+                                                >
+                                                    Post Review
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            <Paragraph
+                                                style={{ textAlign: "center" }}
+                                            >
+                                                Please{" "}
+                                                <a href="/login">log in</a> to
+                                                leave a review.
+                                            </Paragraph>
+                                        )}
+
+                                        {/* Display Reviews (with username and avatar) */}
+                                        {reviews.length > 0 ? (
+                                            reviews.map((review) => (
+                                                <Card
+                                                    key={review.id}
+                                                    style={{
+                                                        marginBottom: "10px",
+                                                    }}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            alignItems:
+                                                                "center",
+                                                            gap: "10px",
+                                                        }}
+                                                    >
+                                                        <Avatar
+                                                            src={
+                                                                review.user
+                                                                    ?.profile
+                                                                    ?.profile_image ||
+                                                                null
+                                                            }
+                                                            icon={
+                                                                <UserOutlined />
+                                                            }
+                                                            onError={(e) => {
+                                                                console.log(
+                                                                    "Failed to load review avatar for:",
+                                                                    review.user
+                                                                        ?.username,
+                                                                    review.user
+                                                                        ?.profile
+                                                                        ?.profile_image,
+                                                                    "Error:",
+                                                                    e.target.src
+                                                                );
+                                                                return true; // Fallback to icon
+                                                            }}
+                                                        />
+                                                        <strong>
+                                                            {review.user
+                                                                ?.username ||
+                                                                "Unknown User"}
+                                                        </strong>
+                                                    </div>
+                                                    <Paragraph
+                                                        style={{
+                                                            marginTop: "5px",
+                                                        }}
+                                                    >
+                                                        {review.comment}
+                                                    </Paragraph>
+                                                </Card>
+                                            ))
+                                        ) : (
+                                            <Paragraph>
+                                                No comments yet.
+                                            </Paragraph>
+                                        )}
                                     </Card>
                                 </TabPane>
                             </Tabs>

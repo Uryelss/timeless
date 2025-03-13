@@ -19,24 +19,25 @@ class Profile extends Model
         'date_of_birth',
         'phone',
         'profile_image'
-        // Removed 'address' since addresses are managed separately.
     ];
 
     protected $casts = [
         'date_of_birth' => 'date',
     ];
 
+    // A profile belongs to a user
     public function user()
     {
-        return $this->belongsTo(\App\Models\User::class);
+        return $this->belongsTo(User::class);
     }
 
     // A profile can have many addresses.
     public function addresses()
     {
-        return $this->hasMany(\App\Models\Address::class);
+        return $this->hasMany(Address::class);
     }
 
+    // Get full customer name
     public function getCustomerNameAttribute()
     {
         $first = ucfirst($this->first_name);

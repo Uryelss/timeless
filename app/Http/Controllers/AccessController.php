@@ -68,8 +68,8 @@ class AccessController extends Controller
             return response()->json(['message' => 'Your account is inactive.'], 403);
         }
 
-        // Load role relation
-        $user->load('role');
+        // Load role and profile relations
+        $user->load('role', 'profile');
         $token = $user->createToken('authToken')->accessToken;
 
         return response()->json([
@@ -77,13 +77,12 @@ class AccessController extends Controller
             'user'  => $user
         ], 200);
     }
+
+    // Logout endpoint
     public function logout(Request $request)
     {
-        // If using Laravel Passport, you might revoke the token like:
+        // Revoke the token (Laravel Passport)
         $request->user()->token()->revoke();
-
-        // If using Sanctum, you can use:
-        // $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Logged out successfully']);
     }

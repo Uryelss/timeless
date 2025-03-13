@@ -9,10 +9,14 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ProductViewController;
+use App\Http\Controllers\API\ReviewController;
 
 // Logout route for authenticated users (using Passport)
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AccessController::class, 'logout']);
+    Route::get('/reviews/{product_id}', [ReviewController::class, 'index']); // Fetch reviews
+    Route::post('/reviews', [ReviewController::class, 'store']); // Submit review
+
 });
 
 // Public routes (accessible without authentication)
