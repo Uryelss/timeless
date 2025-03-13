@@ -337,6 +337,12 @@ const Collection = () => {
                                                         ? `http://localhost:8000/storage/${product.main_image}`
                                                         : "/placeholder.jpg"
                                                 }
+                                                style={{
+                                                    width: "250px", // Fixed width
+                                                    height: "250px", // Fixed height
+                                                    objectFit: "cover", // Ensures the image is cropped and scaled proportionally
+                                                    borderRadius: "8px 8px 0 0", // Optional rounded corners
+                                                }}
                                             />
                                         }
                                         style={{ width: 250 }}

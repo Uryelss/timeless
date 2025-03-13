@@ -62748,7 +62748,7 @@ function usePanelRef(panelSelector) {
 "use strict";
 /* provided dependency */ var process = __webpack_require__(/*! process/browser.js */ "./node_modules/process/browser.js");
 /* provided dependency */ var Buffer = __webpack_require__(/*! buffer */ "./node_modules/buffer/index.js")["Buffer"];
-/*! Axios v1.8.2 Copyright (c) 2025 Matt Zabriskie and contributors */
+/*! Axios v1.8.3 Copyright (c) 2025 Matt Zabriskie and contributors */
 
 
 function bind(fn, thisArg) {
@@ -65093,7 +65093,7 @@ var resolveConfig = (config) => {
 
   newConfig.headers = headers = AxiosHeaders$1.from(headers);
 
-  newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url), config.params, config.paramsSerializer);
+  newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls), config.params, config.paramsSerializer);
 
   // HTTP basic authentication
   if (auth) {
@@ -65818,7 +65818,7 @@ function dispatchRequest(config) {
   });
 }
 
-const VERSION = "1.8.2";
+const VERSION = "1.8.3";
 
 const validators$1 = {};
 
@@ -68727,7 +68727,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VERSION: () => (/* binding */ VERSION)
 /* harmony export */ });
-const VERSION = "1.8.2";
+const VERSION = "1.8.3";
 
 /***/ }),
 
@@ -69563,7 +69563,7 @@ __webpack_require__.r(__webpack_exports__);
 
   newConfig.headers = headers = _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_1__["default"].from(headers);
 
-  newConfig.url = (0,_buildURL_js__WEBPACK_IMPORTED_MODULE_2__["default"])((0,_core_buildFullPath_js__WEBPACK_IMPORTED_MODULE_3__["default"])(newConfig.baseURL, newConfig.url), config.params, config.paramsSerializer);
+  newConfig.url = (0,_buildURL_js__WEBPACK_IMPORTED_MODULE_2__["default"])((0,_core_buildFullPath_js__WEBPACK_IMPORTED_MODULE_3__["default"])(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls), config.params, config.paramsSerializer);
 
   // HTTP basic authentication
   if (auth) {
@@ -181098,7 +181098,16 @@ var Collection = function Collection() {
                   hoverable: true,
                   cover: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
                     alt: product.product_name,
-                    src: product.main_image ? "http://localhost:8000/storage/".concat(product.main_image) : "/placeholder.jpg"
+                    src: product.main_image ? "http://localhost:8000/storage/".concat(product.main_image) : "/placeholder.jpg",
+                    style: {
+                      width: "250px",
+                      // Fixed width
+                      height: "250px",
+                      // Fixed height
+                      objectFit: "cover",
+                      // Ensures the image is cropped and scaled proportionally
+                      borderRadius: "8px 8px 0 0" // Optional rounded corners
+                    }
                   }),
                   style: {
                     width: 250
