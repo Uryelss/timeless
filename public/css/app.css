@@ -12032,17 +12032,145 @@ textarea.form-control-lg {
   margin-right: 8px;
 }
 
-.register-container {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+/* Centering the form */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #0a5f61, #043d40);
 }
-.register-container h2, .register-container .h2 {
+
+/* Form Box */
+.auth-box {
+  background: rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   text-align: center;
+  width: 500px;
+}
+
+/* Inputs */
+.auth-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+/* Submit Button */
+.auth-button {
+  width: 100%;
+  background-color: #ff7f50;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.auth-button:hover {
+  background-color: #ff5733;
+}
+
+/* Text Under Register Button */
+.register-text {
+  margin-top: 10px;
+  color: white;
+}
+
+/* General Styling - Do not apply global changes */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Apply only to login & register pages */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #0a5f61, #043d40);
+}
+
+/* Centering the login box */
+.auth-page .login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+}
+
+/* Login Box Styling */
+.auth-page .login-box {
+  background: rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 350px;
+}
+
+/* Title and Subtitle */
+.auth-page h2, .auth-page .h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.auth-page .sub-text {
+  font-size: 14px;
+  color: #ddd;
   margin-bottom: 20px;
+}
+
+/* Input Fields */
+.auth-page .ant-input {
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* Login Button */
+.auth-page .login-button {
+  width: 100%;
+  background-color: #ff7f50;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.auth-page .login-button:hover {
+  background-color: #ff5733;
+}
+
+/* Register Link */
+.auth-page .register-text {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #ddd;
+}
+
+.auth-page .register-text a {
+  color: #ff7f50;
+  text-decoration: none;
+}
+
+.auth-page .register-text a:hover {
+  text-decoration: underline;
 }
 
 .card {
@@ -12546,4 +12674,369 @@ textarea.form-control-lg {
     padding: 8px 16px; /* Smaller button for very small screens */
     font-size: 0.8rem;
   }
+}
+.about-us {
+  font-family: "Poppins", sans-serif;
+  color: #333;
+  background-color: #f9f9f9;
+}
+
+.hero-section {
+  position: relative;
+  background: url("/images/hero-bg.jpg") center/cover no-repeat;
+  height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+}
+.hero-section .hero-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.hero-section h1, .hero-section .h1 {
+  font-size: 3rem;
+  text-transform: uppercase;
+  color: #006666;
+  font-weight: bold;
+}
+.hero-section p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin-top: 10px;
+  color: #cce7e7;
+}
+.hero-section .quote {
+  font-style: italic;
+  font-size: 1.2rem;
+  margin-top: 15px;
+  color: #cce7e7;
+}
+
+.vision-mission-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  padding: 3rem;
+  margin: 3rem auto;
+  width: 80%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+  text-align: center;
+  flex-wrap: wrap;
+}
+.vision-mission-container .vision, .vision-mission-container .mission {
+  flex: 1;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out;
+}
+.vision-mission-container .vision:hover, .vision-mission-container .mission:hover {
+  transform: translateY(-5px);
+}
+.vision-mission-container h2, .vision-mission-container .h2 {
+  font-size: 2rem;
+  color: #006666;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+.vision-mission-container h2 span, .vision-mission-container .h2 span {
+  color: #c69c6d;
+  font-weight: bold;
+}
+.vision-mission-container p {
+  font-size: 1.2rem;
+  color: #006666;
+  line-height: 1.5;
+}
+
+.meet-developers {
+  text-align: center;
+  margin-top: 4rem;
+}
+.meet-developers h2, .meet-developers .h2 {
+  font-size: 2rem;
+  color: #006666;
+  font-weight: bold;
+}
+.meet-developers h2 span, .meet-developers .h2 span {
+  color: #c69c6d;
+  font-weight: bold;
+}
+.meet-developers p {
+  font-size: 1.2rem;
+  color: #006666;
+  margin-top: 10px;
+}
+
+.flip-card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin: 3rem auto;
+  width: 80%;
+}
+
+.flip-card {
+  background-color: transparent;
+  width: 250px;
+  height: 300px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+.flip-card .flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+.flip-card .flip-card-front,
+.flip-card .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.flip-card .flip-card-front {
+  background: #fff;
+  padding: 20px;
+  border: 2px solid #006666;
+}
+.flip-card .flip-card-front img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  margin-bottom: 10px;
+  border: 3px solid #006666;
+}
+.flip-card .flip-card-front h3, .flip-card .flip-card-front .h3 {
+  color: #006666;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+.flip-card .flip-card-front p {
+  color: #006666;
+}
+.flip-card .flip-card-back {
+  background: #006666;
+  color: white;
+  transform: rotateY(180deg);
+  padding: 20px;
+}
+.flip-card .flip-card-back h3, .flip-card .flip-card-back .h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+.flip-card .flip-card-back p {
+  font-size: 1rem;
+}
+
+@media (max-width: 1024px) {
+  .vision-mission-container {
+    flex-direction: column;
+    text-align: center;
+    width: 90%;
+  }
+}
+@media (max-width: 768px) {
+  .hero-section h1, .hero-section .h1 {
+    font-size: 2.5rem;
+  }
+  .flip-card-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+.flip-card {
+  background-color: transparent;
+  width: 250px;
+  height: 300px;
+  perspective: 1000px;
+  cursor: pointer;
+}
+.flip-card .flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+.flip-card .flip-card-front,
+.flip-card .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.flip-card .flip-card-front {
+  background: #fff;
+  padding: 20px;
+  border: 2px solid #006666;
+}
+.flip-card .flip-card-front img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  margin-bottom: 10px;
+  border: 3px solid #006666;
+}
+.flip-card .flip-card-front h3, .flip-card .flip-card-front .h3 {
+  color: #006666;
+  font-size: 1.2rem;
+}
+.flip-card .flip-card-back {
+  background: #006666;
+  color: white;
+  transform: rotateY(180deg);
+  padding: 20px;
+}
+.flip-card .flip-card-back h3, .flip-card .flip-card-back .h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+.flip-card .flip-card-back p {
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .flip-card {
+    width: 200px;
+    height: 250px;
+  }
+}
+.chat-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.chat-button:hover {
+  background-color: #0056b3;
+}
+
+.chat-container {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 300px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-header {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.chat-body {
+  padding: 10px;
+  height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.chat-body p {
+  padding: 5px 10px;
+  border-radius: 5px;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+.chat-body .user-message {
+  align-self: flex-end;
+  background-color: #007bff;
+  color: white;
+}
+.chat-body .bot-message {
+  align-self: flex-start;
+  background-color: #f1f1f1;
+  color: black;
+}
+
+.chat-footer {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+.chat-footer input {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.chat-footer .send-button {
+  margin-left: 5px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.chat-footer .send-button:hover {
+  background-color: #0056b3;
 }

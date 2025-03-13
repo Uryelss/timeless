@@ -1,0 +1,87 @@
+/* General Styling - Do not apply global changes */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+}
+
+/* Apply only to login & register pages */
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #0a5f61, #043d40);
+}
+
+/* Centering the login box */
+.auth-page .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+}
+
+/* Login Box Styling */
+.auth-page .login-box {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 350px;
+}
+
+/* Title and Subtitle */
+.auth-page h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.auth-page .sub-text {
+    font-size: 14px;
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+/* Input Fields */
+.auth-page .ant-input {
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+/* Login Button */
+.auth-page .login-button {
+    width: 100%;
+    background-color: #ff7f50;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.auth-page .login-button:hover {
+    background-color: #ff5733;
+}
+
+/* Register Link */
+.auth-page .register-text {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #ddd;
+}
+
+.auth-page .register-text a {
+    color: #ff7f50;
+    text-decoration: none;
+}
+
+.auth-page .register-text a:hover {
+    text-decoration: underline;
+}

@@ -9,6 +9,7 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ProductViewController;
+use App\Http\Controllers\ChatController; // ✅ Added ChatController
 
 // Logout route for authenticated users (using Passport)
 Route::middleware('auth:api')->group(function () {
@@ -22,6 +23,12 @@ Route::get('/products/public', [ProductController::class, 'publicIndex']);
 Route::get('/sub-categories/public', [SubCategoryController::class, 'publicIndex']);
 // Public product detail route
 Route::get('/products/{id}', [ProductViewController::class, 'show']);
+
+// ✅ Chat routes for storing and retrieving messages
+Route::middleware('auth:api')->group(function () {
+    Route::post('/chat', [ChatController::class, 'store']); // Save user message
+    Route::get('/chats', [ChatController::class, 'getChats']); // Retrieve chat history
+});
 
 // Protected routes for regular users
 Route::middleware(['auth:api', 'check.role:user'])->group(function () {

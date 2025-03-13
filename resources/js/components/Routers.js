@@ -23,30 +23,40 @@ import Register from "./AccessPage/RegisterPage/Register";
 import Login from "./AccessPage/LoginPage/Login";
 
 // User pages
-import UserHome from "./UserPage/UserHome/HomePage";
+import HomePage from "./UserPage/UserHome/HomePage";
 import Collection from "./UserPage/CollectionPage/Collection";
 import UserProfile from "./UserPage/ProfilePage/Profile";
 import ProductOverview from "./UserPage/ProductOverview/Productview";
+
+// Shared pages (Admin & User)
+import AboutUs from "./UserPage/UserHome/Aboutus";
+import Categories from "./UserPage/UserHome/Categories";
+
+// Components
+import Chatbot from "./UserPage/UserHome/chatbot"; // Import the Chatbot
 
 // Import helper functions from auth.js
 import { isAuthenticated, hasRole } from "./AccessPage/Auth";
 
 // Unified PrivateRoute Component
 const PrivateRoute = ({ allowedRoles }) => {
-    // Redirect to login if the user is not authenticated
     if (!isAuthenticated()) {
         return <Navigate to="/login" replace />;
     }
-    // Redirect if the user's role is not allowed
-    if (!hasRole(allowedRoles)) {
+    
+    const userHasAccess = allowedRoles.some(role => hasRole(role));
+
+    if (!userHasAccess) {
         return <Navigate to="/login" replace />;
     }
+
     return <Outlet />;
 };
 
 function Routers() {
     return (
         <Router>
+            <Chatbot /> {/* Chatbot will appear on all pages */}
             <Routes>
                 {/* Public Routes */}
                 <Route path="/register" element={<Register />} />
@@ -59,20 +69,24 @@ function Routers() {
                     <Route path="/orders" element={<OrderManagement />} />
                     <Route path="/customers" element={<CustomerManagement />} />
                     <Route path="/users" element={<UserManagement />} />
-                    <Route
-                        path="/inventory"
-                        element={<InventoryManagement />}
-                    />
+                    <Route path="/inventory" element={<InventoryManagement />} />
                     <Route path="/admin-profile" element={<AdminProfile />} />
                     <Route path="/sub-category" element={<SubCategory />} />
                 </Route>
 
                 {/* User Protected Routes */}
                 <Route element={<PrivateRoute allowedRoles={["user"]} />}>
-                    <Route path="/user-home" element={<UserHome />} />
                     <Route path="/user-collection" element={<Collection />} />
                     <Route path="/user-profile" element={<UserProfile />} />
                     <Route path="/product/:id" element={<ProductOverview />} />
+                </Route>
+
+                {/* Shared Pages for Admin and User */}
+                <Route element={<PrivateRoute allowedRoles={["admin", "user"]} />}>
+                    <Route path="/homepage" element={<HomePage />} />
+                    <Route path="/aboutus" element={<AboutUs />} />
+                    <Route path="/collection" element={<Collection />} />
+                    <Route path="/categories" element={<Categories />} />
                 </Route>
 
                 {/* Catch-all redirect */}

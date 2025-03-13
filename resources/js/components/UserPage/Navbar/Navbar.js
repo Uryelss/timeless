@@ -42,12 +42,12 @@ const Header = () => {
             : "/images/default-avatar.png";
     const username = profile ? profile.username : "Guest";
 
-    // Categories dropdown menu (remains the same)
+    // Categories dropdown menu
     const categoriesMenu = (
         <Menu className="white-dropdown">
-            <Menu.Item key="luxury-watches">Luxury Watches</Menu.Item>
-            <Menu.Item key="fashion-watches">Fashion Watches</Menu.Item>
-            <Menu.Item key="smart-watches">Smart Watches</Menu.Item>
+            <Menu.Item key="luxury-watches" onClick={() => handleNavigation("/collection")}>Luxury Watches</Menu.Item>
+            <Menu.Item key="fashion-watches" onClick={() => handleNavigation("/collection")}>Fashion Watches</Menu.Item>
+            <Menu.Item key="smart-watches" onClick={() => handleNavigation("/collection")}>Smart Watches</Menu.Item>
         </Menu>
     );
 
@@ -67,7 +67,7 @@ const Header = () => {
     };
 
     const handleProfileClick = () => {
-        navigate("/user-Profile");
+        navigate("/user-profile");
     };
 
     const handleNavigation = (path) => {
@@ -90,13 +90,14 @@ const Header = () => {
         setIsMobileMenuVisible(!isMobileMenuVisible);
     };
 
+    // ✅ Fixed: Ensures correct active menu selection
     const getSelectedKey = () => {
         switch (location.pathname) {
-            case "/user-home":
+            case "/homepage":
                 return "home";
             case "/aboutus":
                 return "about";
-            case "/user-collection":
+            case "/collection":
                 return "collection";
             default:
                 return "";
@@ -120,19 +121,19 @@ const Header = () => {
                 <Menu.Item
                     key="home"
                     icon={<HomeOutlined style={{ fontSize: "24px" }} />}
-                    onClick={() => handleNavigation("/user-home")}
+                    onClick={() => handleNavigation("/homepage")} // ✅ Fixed: Navigates to the correct homepage
                 >
                     Home
                 </Menu.Item>
                 <Menu.Item
                     key="about"
-                    onClick={() => handleNavigation("/aboutus")}
+                    onClick={() => handleNavigation("/aboutus")} // ✅ Fixed
                 >
                     About Us
                 </Menu.Item>
                 <Menu.Item
                     key="collection"
-                    onClick={() => handleNavigation("/user-collection")}
+                    onClick={() => handleNavigation("/collection")} // ✅ Fixed
                 >
                     Collection
                 </Menu.Item>
