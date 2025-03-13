@@ -16,7 +16,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AccessController::class, 'logout']);
     Route::get('/reviews/{product_id}', [ReviewController::class, 'index']); // Fetch reviews
     Route::post('/reviews', [ReviewController::class, 'store']); // Submit review
-
+    Route::get('/validate-token', [AccessController::class, 'validateToken']);
 });
 
 // Public routes (accessible without authentication)

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -68,7 +67,6 @@ class AccessController extends Controller
             return response()->json(['message' => 'Your account is inactive.'], 403);
         }
 
-        // Load role and profile relations
         $user->load('role', 'profile');
         $token = $user->createToken('authToken')->accessToken;
 
@@ -81,9 +79,16 @@ class AccessController extends Controller
     // Logout endpoint
     public function logout(Request $request)
     {
-        // Revoke the token (Laravel Passport)
         $request->user()->token()->revoke();
+        return response()->json([
+            'message' => 'Logged out successfully',
+            'redirect' => '/login'
+        ], 200);
+    }
 
-        return response()->json(['message' => 'Logged out successfully']);
+    // Token validation endpoint
+    public function validateToken(Request $request)
+    {
+        return response()->json(['message' => 'Token is valid'], 200);
     }
 }

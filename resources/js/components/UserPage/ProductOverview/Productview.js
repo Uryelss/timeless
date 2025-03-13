@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
     Row,
     Col,
@@ -24,12 +24,14 @@ const { TextArea } = Input;
 
 const ProductOverview = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [product, setProduct] = useState(null);
     const [currentMainImage, setCurrentMainImage] = useState("");
     const [loading, setLoading] = useState(true);
     const [selectedSize, setSelectedSize] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [reviewText, setReviewText] = useState("");
+    const [reviewRating, setReviewRating] = useState(0); // New state for rating
     const [userProfile, setUserProfile] = useState(() => {
         const storedUser = localStorage.getItem("user");
         const parsedUser = storedUser ? JSON.parse(storedUser) : null;
@@ -39,6 +41,13 @@ const ProductOverview = () => {
 
     // Fetch product details
     useEffect(() => {
+        console.log("Product ID from useParams:", id);
+        if (!id || id === "undefined" || isNaN(id)) {
+            message.error("Invalid product ID.");
+            navigate("/");
+            return;
+        }
+
         console.log("Token in useEffect:", localStorage.getItem("token"));
         console.log("UserProfile in useEffect:", userProfile);
         axios
@@ -50,11 +59,16 @@ const ProductOverview = () => {
                 setLoading(false);
             })
             .catch((err) => {
-                console.error("Error fetching product details", err);
+                console.error("Error fetching product details:", err);
                 setLoading(false);
-                message.error("Error fetching product details.");
+                if (err.response?.status === 404) {
+                    message.error("Product not found.");
+                    navigate("/");
+                } else {
+                    message.error("Error fetching product details.");
+                }
             });
-    }, [id]);
+    }, [id, navigate]);
 
     // Fetch reviews
     useEffect(() => {
@@ -88,7 +102,7 @@ const ProductOverview = () => {
                 .then((res) => {
                     console.log("Fetched User Profile:", res.data);
                     setUserProfile(res.data);
-                    localStorage.setItem("user", JSON.stringify(res.data)); // Update localStorage
+                    localStorage.setItem("user", JSON.stringify(res.data));
                 })
                 .catch((err) => console.error("Error fetching profile:", err));
         }
@@ -105,6 +119,10 @@ const ProductOverview = () => {
             message.warning("Please enter a comment.");
             return;
         }
+        if (reviewRating === 0) {
+            message.warning("Please select a rating.");
+            return;
+        }
 
         axios
             .post(
@@ -112,7 +130,7 @@ const ProductOverview = () => {
                 {
                     product_id: id,
                     comment: reviewText,
-                    rating: 5,
+                    rating: reviewRating, // Include rating in the payload
                 },
                 {
                     headers: { Authorization: `Bearer ${token}` },
@@ -121,6 +139,7 @@ const ProductOverview = () => {
             .then((res) => {
                 setReviews([res.data.review, ...reviews]);
                 setReviewText("");
+                setReviewRating(0); // Reset rating after submission
                 message.success("Review posted successfully!");
             })
             .catch((err) => {
@@ -131,6 +150,10 @@ const ProductOverview = () => {
 
     if (loading) {
         return <div>Loading...</div>;
+    }
+
+    if (!product) {
+        return <div>Product not found.</div>;
     }
 
     const number_format = (number) => {
@@ -428,6 +451,27 @@ const ProductOverview = () => {
                                                     marginBottom: "15px",
                                                 }}
                                             >
+                                                <div
+                                                    style={{
+                                                        marginBottom: "10px",
+                                                    }}
+                                                >
+                                                    <label
+                                                        style={{
+                                                            marginRight: "10px",
+                                                        }}
+                                                    >
+                                                        Rate this product:
+                                                    </label>
+                                                    <Rate
+                                                        value={reviewRating}
+                                                        onChange={(value) =>
+                                                            setReviewRating(
+                                                                value
+                                                            )
+                                                        }
+                                                    />
+                                                </div>
                                                 <TextArea
                                                     placeholder="Write a comment..."
                                                     value={reviewText}
@@ -459,7 +503,7 @@ const ProductOverview = () => {
                                             </Paragraph>
                                         )}
 
-                                        {/* Display Reviews (with username and avatar) */}
+                                        {/* Display Reviews (with username, avatar, and rating) */}
                                         {reviews.length > 0 ? (
                                             reviews.map((review) => (
                                                 <Card
@@ -499,12 +543,27 @@ const ProductOverview = () => {
                                                                 );
                                                                 return true; // Fallback to icon
                                                             }}
+                                                            fallback="https://via.placeholder.com/40"
                                                         />
-                                                        <strong>
-                                                            {review.user
-                                                                ?.username ||
-                                                                "Unknown User"}
-                                                        </strong>
+                                                        <div>
+                                                            <strong>
+                                                                {review.user
+                                                                    ?.username ||
+                                                                    "Unknown User"}
+                                                            </strong>
+                                                            <div>
+                                                                <Rate
+                                                                    disabled
+                                                                    value={
+                                                                        review.rating
+                                                                    }
+                                                                    style={{
+                                                                        fontSize:
+                                                                            "14px",
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <Paragraph
                                                         style={{

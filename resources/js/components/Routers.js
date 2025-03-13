@@ -1,3 +1,4 @@
+// src/Routers.jsx - Updated to use merged PrivateRoute
 import React from "react";
 import ReactDOM from "react-dom";
 import {
@@ -5,8 +6,8 @@ import {
     Routes,
     Route,
     Navigate,
-    Outlet,
 } from "react-router-dom";
+import { getUserRole, isAuthenticated } from "./AccessPage/Auth";
 
 // Admin pages
 import AdminDashboard from "./AdminPage/AdminDashboard/AdminDashboard";
@@ -27,31 +28,38 @@ import UserHome from "./UserPage/UserHome/HomePage";
 import Collection from "./UserPage/CollectionPage/Collection";
 import UserProfile from "./UserPage/ProfilePage/Profile";
 import ProductOverview from "./UserPage/ProductOverview/Productview";
-
-// Import helper functions from auth.js
-import { isAuthenticated, hasRole } from "./AccessPage/Auth";
 import AboutUs from "./UserPage/AboutUsPage/Aboutus";
 
-// Unified PrivateRoute Component
-const PrivateRoute = ({ allowedRoles }) => {
-    // Redirect to login if the user is not authenticated
-    if (!isAuthenticated()) {
-        return <Navigate to="/login" replace />;
-    }
-    // Redirect if the user's role is not allowed
-    if (!hasRole(allowedRoles)) {
-        return <Navigate to="/login" replace />;
-    }
-    return <Outlet />;
-};
+// Single route protection component
+import PrivateRoute from "./PrivateRoute";
 
 function Routers() {
     return (
         <Router>
             <Routes>
                 {/* Public Routes */}
+                <Route
+                    path="/login"
+                    element={
+                        isAuthenticated() ? (
+                            <Navigate
+                                to={
+                                    getUserRole() === "admin"
+                                        ? "/dashboard"
+                                        : "/user-home"
+                                }
+                                replace
+                            />
+                        ) : (
+                            <Login />
+                        )
+                    }
+                />
                 <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login />} />
+                <Route
+                    path="/logout"
+                    element={<PrivateRoute isLogout={true} />}
+                />
 
                 {/* Admin Protected Routes */}
                 <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
@@ -78,7 +86,7 @@ function Routers() {
                 </Route>
 
                 {/* Catch-all redirect */}
-                <Route path="*" element={<Navigate to="/login" replace />} />
+                <Route path="*" element={<PrivateRoute allowedRoles={[]} />} />
             </Routes>
         </Router>
     );
@@ -88,3 +96,5 @@ const rootElement = document.getElementById("root");
 if (rootElement) {
     ReactDOM.render(<Routers />, rootElement);
 }
+
+export default Routers;

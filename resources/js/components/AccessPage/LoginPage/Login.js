@@ -1,11 +1,23 @@
-import React from "react";
+// Login.jsx - Modified version
+import React, { useEffect } from "react";
 import { Form, Input, Button, message } from "antd";
 import axios from "axios";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
+import { isAuthenticated } from "../Auth";
 
 const Login = () => {
-    const navigate = useNavigate(); // Initialize navigate
+    const navigate = useNavigate();
+
+    // Prevent access to login if already authenticated
+    useEffect(() => {
+        if (isAuthenticated()) {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const redirectTo =
+                user.role.name === "admin" ? "/dashboard" : "/user-home";
+            navigate(redirectTo, { replace: true });
+        }
+    }, [navigate]);
 
     const onFinish = (values) => {
         axios
@@ -20,10 +32,14 @@ const Login = () => {
 
                 message.success("Login successful!");
                 const user = response.data.user;
+
+                // Prevent back button
+                window.history.pushState(null, "", window.location.href);
+
                 if (user.role && user.role.name === "admin") {
-                    navigate("/dashboard"); // Use navigate instead of window.location.href
+                    navigate("/dashboard", { replace: true });
                 } else {
-                    navigate("/homepage"); // Use navigate instead of window.location.href
+                    navigate("/user-home", { replace: true });
                 }
             })
             .catch(() => {
@@ -31,10 +47,18 @@ const Login = () => {
             });
     };
 
+    // Prevent back button navigation
+    window.onpopstate = () => {
+        if (isAuthenticated()) {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const redirectTo =
+                user.role.name === "admin" ? "/dashboard" : "/user-home";
+            navigate(redirectTo, { replace: true });
+        }
+    };
+
     return (
         <div className="auth-page">
-            {" "}
-            {/* ✅ Add wrapper to prevent style issues */}
             <div className="login-container">
                 <div className="login-box">
                     <h2>Welcome Back</h2>
