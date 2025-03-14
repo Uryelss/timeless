@@ -181925,6 +181925,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UserOutlined.js");
 /* harmony import */ var _Navbar_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Navbar/Navbar */ "./resources/js/components/UserPage/Navbar/Navbar.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
@@ -181946,6 +181947,11 @@ var Title = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Title,
   Paragraph = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Paragraph;
 var TabPane = antd__WEBPACK_IMPORTED_MODULE_4__["default"].TabPane;
 var TextArea = antd__WEBPACK_IMPORTED_MODULE_5__["default"].TextArea;
+
+// Helper function to normalize size strings by removing all whitespace and lowercasing
+var normalizeSize = function normalizeSize(size) {
+  return size.toString().toLowerCase().replace(/\s+/g, "");
+};
 var ProductOverview = function ProductOverview() {
   var _useParams = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_6__.useParams)(),
     id = _useParams.id;
@@ -181980,33 +181986,31 @@ var ProductOverview = function ProductOverview() {
     setReviewRating = _useState14[1];
   var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(function () {
       var storedUser = localStorage.getItem("user");
-      var parsedUser = storedUser ? JSON.parse(storedUser) : null;
-      console.log("Stored User from localStorage:", parsedUser);
-      return parsedUser;
+      return storedUser ? JSON.parse(storedUser) : null;
     }),
     _useState16 = _slicedToArray(_useState15, 2),
     userProfile = _useState16[0],
     setUserProfile = _useState16[1];
+  // State for inventory records for this product
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState18 = _slicedToArray(_useState17, 2),
+    inventoryRecords = _useState18[0],
+    setInventoryRecords = _useState18[1];
 
   // Fetch product details
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    console.log("Product ID from useParams:", id);
     if (!id || id === "undefined" || isNaN(id)) {
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Invalid product ID.");
       navigate("/");
       return;
     }
-    console.log("Token in useEffect:", localStorage.getItem("token"));
-    console.log("UserProfile in useEffect:", userProfile);
     axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("http://localhost:8000/api/products/".concat(id)).then(function (res) {
       var fetchedProduct = res.data.product || res.data;
-      console.log("Fetched Product Data:", fetchedProduct); // Debug log
       setProduct(fetchedProduct);
       setCurrentMainImage(fetchedProduct.main_image);
       setLoading(false);
     })["catch"](function (err) {
       var _err$response;
-      console.error("Error fetching product details:", err);
       setLoading(false);
       if (((_err$response = err.response) === null || _err$response === void 0 ? void 0 : _err$response.status) === 404) {
         antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Product not found.");
@@ -182026,11 +182030,9 @@ var ProductOverview = function ProductOverview() {
           Authorization: "Bearer ".concat(token)
         }
       }).then(function (res) {
-        console.log("Fetched Reviews:", res.data);
-        setReviews(res.data);
+        return setReviews(res.data);
       })["catch"](function (err) {
         var _err$response2;
-        console.error("Error fetching reviews:", err);
         if (((_err$response2 = err.response) === null || _err$response2 === void 0 ? void 0 : _err$response2.status) === 401) {
           antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please log in to view reviews.");
         }
@@ -182038,7 +182040,7 @@ var ProductOverview = function ProductOverview() {
     }
   }, [id]);
 
-  // Fetch user profile if needed (optional, only if profile might change)
+  // Fetch user profile if needed
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var token = localStorage.getItem("token");
     if (token && !userProfile) {
@@ -182047,7 +182049,6 @@ var ProductOverview = function ProductOverview() {
           Authorization: "Bearer ".concat(token)
         }
       }).then(function (res) {
-        console.log("Fetched User Profile:", res.data);
         setUserProfile(res.data);
         localStorage.setItem("user", JSON.stringify(res.data));
       })["catch"](function (err) {
@@ -182055,6 +182056,23 @@ var ProductOverview = function ProductOverview() {
       });
     }
   }, [userProfile]);
+
+  // Fetch inventory records for the product from the public endpoint
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var token = localStorage.getItem("token");
+    if (token) {
+      axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("http://localhost:8000/api/inventory-public?product_id=".concat(id), {
+        headers: {
+          Authorization: "Bearer ".concat(token)
+        }
+      }).then(function (res) {
+        console.log("Fetched Inventory:", res.data);
+        setInventoryRecords(res.data);
+      })["catch"](function (err) {
+        console.error("Error fetching inventory:", err);
+      });
+    }
+  }, [id]);
 
   // Handle review submission
   var handleSubmitReview = function handleSubmitReview() {
@@ -182086,29 +182104,46 @@ var ProductOverview = function ProductOverview() {
       // Refetch product to update average rating
       axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("http://localhost:8000/api/products/".concat(id)).then(function (res) {
         var fetchedProduct = res.data.product || res.data;
-        console.log("Refetched Product Data:", fetchedProduct); // Debug log
         setProduct(fetchedProduct);
       });
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Review posted successfully!");
     })["catch"](function (err) {
-      console.error("Error submitting review:", err);
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to submit review.");
     });
   };
-  if (loading) {
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-      children: "Loading..."
-    });
-  }
-  if (!product) {
-    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-      children: "Product not found."
-    });
-  }
+  if (loading) return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+    children: "Loading..."
+  });
+  if (!product) return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+    children: "Product not found."
+  });
   var number_format = function number_format(number) {
     return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
-  var sizes = typeof product.sizes === "string" ? JSON.parse(product.sizes) : product.sizes || ["22mm"];
+
+  // Parse product sizes
+  var sizesArr = [];
+  if (typeof product.sizes === "string") {
+    try {
+      sizesArr = JSON.parse(product.sizes);
+    } catch (e) {
+      sizesArr = [];
+    }
+  } else {
+    sizesArr = product.sizes || [];
+  }
+  var sizesDisplay = Array.isArray(sizesArr) && sizesArr.length > 0 && _typeof(sizesArr[0]) === "object" && sizesArr[0].size ? sizesArr.map(function (item) {
+    return item.size;
+  }) : sizesArr;
+
+  // Debug logs (remove or comment out once confirmed)
+  console.log("Selected Size:", selectedSize);
+  console.log("Inventory Records:", inventoryRecords);
+
+  // Use normalized strings for comparison
+  var selectedInventoryRecord = inventoryRecords.find(function (inv) {
+    return normalizeSize(inv.size) === normalizeSize(selectedSize || "");
+  });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_Navbar_Navbar__WEBPACK_IMPORTED_MODULE_1__["default"], {
       style: {
@@ -182237,12 +182272,13 @@ var ProductOverview = function ProductOverview() {
           md: 12,
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
             bodyStyle: {
-              padding: "16px"
+              padding: "24px"
             },
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
               direction: "vertical",
-              size: "middle",
+              size: "large",
               style: {
+                width: "100%",
                 textAlign: "center"
               },
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
@@ -182256,22 +182292,21 @@ var ProductOverview = function ProductOverview() {
                 },
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                   disabled: true,
-                  value: product.average_rating || 0 // Fallback to 0 if undefined
-                  ,
+                  value: product.average_rating || 0,
                   allowHalf: true,
                   style: {
                     marginRight: "8px"
                   }
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                   children: product.average_rating || 0
-                }), " "]
+                })]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
                 strong: true,
                 children: "Price"
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Paragraph, {
                 strong: true,
                 children: ["\u20B1", number_format(product.price)]
-              }), sizes && sizes.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+              }), sizesDisplay && sizesDisplay.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                   style: {
                     marginBottom: "8px",
@@ -182284,7 +182319,7 @@ var ProductOverview = function ProductOverview() {
                     gap: "10px",
                     justifyContent: "center"
                   },
-                  children: sizes.map(function (size, index) {
+                  children: sizesDisplay.map(function (size, index) {
                     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
                       onClick: function onClick() {
                         return setSelectedSize(size);
@@ -182310,6 +182345,10 @@ var ProductOverview = function ProductOverview() {
                   },
                   children: ["Selected Size:", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
                     children: selectedSize
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), selectedInventoryRecord ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+                    children: ["Stock Quantity:", " ", selectedInventoryRecord.quantity]
+                  }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+                    children: "No stock info available"
                   })]
                 })]
               })]
@@ -182426,7 +182465,7 @@ var ProductOverview = function ProductOverview() {
                       children: "log in"
                     }), " to leave a review."]
                   }), reviews.length > 0 ? reviews.map(function (review) {
-                    var _review$user, _review$user4;
+                    var _review$user, _review$user2;
                     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
                       style: {
                         marginBottom: "10px"
@@ -182440,15 +182479,10 @@ var ProductOverview = function ProductOverview() {
                         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
                           src: ((_review$user = review.user) === null || _review$user === void 0 || (_review$user = _review$user.profile) === null || _review$user === void 0 ? void 0 : _review$user.profile_image) || null,
                           icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {}),
-                          onError: function onError(e) {
-                            var _review$user2, _review$user3;
-                            console.log("Failed to load review avatar for:", (_review$user2 = review.user) === null || _review$user2 === void 0 ? void 0 : _review$user2.username, (_review$user3 = review.user) === null || _review$user3 === void 0 || (_review$user3 = _review$user3.profile) === null || _review$user3 === void 0 ? void 0 : _review$user3.profile_image, "Error:", e.target.src);
-                            return true;
-                          },
                           fallback: "https://via.placeholder.com/40"
                         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
-                            children: ((_review$user4 = review.user) === null || _review$user4 === void 0 ? void 0 : _review$user4.username) || "Unknown User"
+                            children: ((_review$user2 = review.user) === null || _review$user2 === void 0 ? void 0 : _review$user2.username) || "Unknown User"
                           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                               disabled: true,

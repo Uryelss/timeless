@@ -18,6 +18,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/reviews', [ReviewController::class, 'store']); // Submit review
     Route::get('/validate-token', [AccessController::class, 'validateToken']);
 });
+Route::middleware('auth:api')->get('/inventory-public', [InventoryController::class, 'index']);
 
 // Public routes (accessible without authentication)
 Route::post('register', [AccessController::class, 'register']);

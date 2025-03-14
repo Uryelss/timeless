@@ -22,6 +22,10 @@ const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
+// Helper function to normalize size strings by removing all whitespace and lowercasing
+const normalizeSize = (size) =>
+    size.toString().toLowerCase().replace(/\s+/g, "");
+
 const ProductOverview = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -34,33 +38,27 @@ const ProductOverview = () => {
     const [reviewRating, setReviewRating] = useState(0);
     const [userProfile, setUserProfile] = useState(() => {
         const storedUser = localStorage.getItem("user");
-        const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-        console.log("Stored User from localStorage:", parsedUser);
-        return parsedUser;
+        return storedUser ? JSON.parse(storedUser) : null;
     });
+    // State for inventory records for this product
+    const [inventoryRecords, setInventoryRecords] = useState([]);
 
     // Fetch product details
     useEffect(() => {
-        console.log("Product ID from useParams:", id);
         if (!id || id === "undefined" || isNaN(id)) {
             message.error("Invalid product ID.");
             navigate("/");
             return;
         }
-
-        console.log("Token in useEffect:", localStorage.getItem("token"));
-        console.log("UserProfile in useEffect:", userProfile);
         axios
             .get(`http://localhost:8000/api/products/${id}`)
             .then((res) => {
                 const fetchedProduct = res.data.product || res.data;
-                console.log("Fetched Product Data:", fetchedProduct); // Debug log
                 setProduct(fetchedProduct);
                 setCurrentMainImage(fetchedProduct.main_image);
                 setLoading(false);
             })
             .catch((err) => {
-                console.error("Error fetching product details:", err);
                 setLoading(false);
                 if (err.response?.status === 404) {
                     message.error("Product not found.");
@@ -79,12 +77,8 @@ const ProductOverview = () => {
                 .get(`http://localhost:8000/api/reviews/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
-                .then((res) => {
-                    console.log("Fetched Reviews:", res.data);
-                    setReviews(res.data);
-                })
+                .then((res) => setReviews(res.data))
                 .catch((err) => {
-                    console.error("Error fetching reviews:", err);
                     if (err.response?.status === 401) {
                         message.warning("Please log in to view reviews.");
                     }
@@ -92,7 +86,7 @@ const ProductOverview = () => {
         }
     }, [id]);
 
-    // Fetch user profile if needed (optional, only if profile might change)
+    // Fetch user profile if needed
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token && !userProfile) {
@@ -101,13 +95,33 @@ const ProductOverview = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 .then((res) => {
-                    console.log("Fetched User Profile:", res.data);
                     setUserProfile(res.data);
                     localStorage.setItem("user", JSON.stringify(res.data));
                 })
                 .catch((err) => console.error("Error fetching profile:", err));
         }
     }, [userProfile]);
+
+    // Fetch inventory records for the product from the public endpoint
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            axios
+                .get(
+                    `http://localhost:8000/api/inventory-public?product_id=${id}`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                )
+                .then((res) => {
+                    console.log("Fetched Inventory:", res.data);
+                    setInventoryRecords(res.data);
+                })
+                .catch((err) => {
+                    console.error("Error fetching inventory:", err);
+                });
+        }
+    }, [id]);
 
     // Handle review submission
     const handleSubmitReview = () => {
@@ -124,18 +138,11 @@ const ProductOverview = () => {
             message.warning("Please select a rating.");
             return;
         }
-
         axios
             .post(
                 "http://localhost:8000/api/reviews",
-                {
-                    product_id: id,
-                    comment: reviewText,
-                    rating: reviewRating,
-                },
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
+                { product_id: id, comment: reviewText, rating: reviewRating },
+                { headers: { Authorization: `Bearer ${token}` } }
             )
             .then((res) => {
                 setReviews([res.data.review, ...reviews]);
@@ -146,35 +153,50 @@ const ProductOverview = () => {
                     .get(`http://localhost:8000/api/products/${id}`)
                     .then((res) => {
                         const fetchedProduct = res.data.product || res.data;
-                        console.log("Refetched Product Data:", fetchedProduct); // Debug log
                         setProduct(fetchedProduct);
                     });
                 message.success("Review posted successfully!");
             })
             .catch((err) => {
-                console.error("Error submitting review:", err);
                 message.error("Failed to submit review.");
             });
     };
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+    if (loading) return <div>Loading...</div>;
+    if (!product) return <div>Product not found.</div>;
 
-    if (!product) {
-        return <div>Product not found.</div>;
-    }
-
-    const number_format = (number) => {
-        return Number(number)
+    const number_format = (number) =>
+        Number(number)
             .toFixed(0)
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    };
 
-    const sizes =
-        typeof product.sizes === "string"
-            ? JSON.parse(product.sizes)
-            : product.sizes || ["22mm"];
+    // Parse product sizes
+    let sizesArr = [];
+    if (typeof product.sizes === "string") {
+        try {
+            sizesArr = JSON.parse(product.sizes);
+        } catch (e) {
+            sizesArr = [];
+        }
+    } else {
+        sizesArr = product.sizes || [];
+    }
+    const sizesDisplay =
+        Array.isArray(sizesArr) &&
+        sizesArr.length > 0 &&
+        typeof sizesArr[0] === "object" &&
+        sizesArr[0].size
+            ? sizesArr.map((item) => item.size)
+            : sizesArr;
+
+    // Debug logs (remove or comment out once confirmed)
+    console.log("Selected Size:", selectedSize);
+    console.log("Inventory Records:", inventoryRecords);
+
+    // Use normalized strings for comparison
+    const selectedInventoryRecord = inventoryRecords.find(
+        (inv) => normalizeSize(inv.size) === normalizeSize(selectedSize || "")
+    );
 
     return (
         <div>
@@ -203,7 +225,6 @@ const ProductOverview = () => {
                                 }}
                             />
                         </Card>
-
                         <Card
                             style={{
                                 width: "600px",
@@ -307,11 +328,11 @@ const ProductOverview = () => {
 
                     {/* Right Column: Product Details */}
                     <Col xs={24} md={12}>
-                        <Card bodyStyle={{ padding: "16px" }}>
+                        <Card bodyStyle={{ padding: "24px" }}>
                             <Space
                                 direction="vertical"
-                                size="middle"
-                                style={{ textAlign: "center" }}
+                                size="large"
+                                style={{ width: "100%", textAlign: "center" }}
                             >
                                 <Title level={3}>{product.product_name}</Title>
                                 <div
@@ -323,18 +344,17 @@ const ProductOverview = () => {
                                 >
                                     <Rate
                                         disabled
-                                        value={product.average_rating || 0} // Fallback to 0 if undefined
+                                        value={product.average_rating || 0}
                                         allowHalf
                                         style={{ marginRight: "8px" }}
                                     />
-                                    <span>{product.average_rating || 0}</span>{" "}
-                                    {/* Fallback to 0 if undefined */}
+                                    <span>{product.average_rating || 0}</span>
                                 </div>
                                 <Paragraph strong>Price</Paragraph>
                                 <Paragraph strong>
                                     ₱{number_format(product.price)}
                                 </Paragraph>
-                                {sizes && sizes.length > 0 && (
+                                {sizesDisplay && sizesDisplay.length > 0 && (
                                     <div>
                                         <div
                                             style={{
@@ -351,7 +371,7 @@ const ProductOverview = () => {
                                                 justifyContent: "center",
                                             }}
                                         >
-                                            {sizes.map((size, index) => (
+                                            {sizesDisplay.map((size, index) => (
                                                 <Button
                                                     key={index}
                                                     onClick={() =>
@@ -387,13 +407,25 @@ const ProductOverview = () => {
                                             <div style={{ marginTop: "8px" }}>
                                                 Selected Size:{" "}
                                                 <strong>{selectedSize}</strong>
+                                                <br />
+                                                {selectedInventoryRecord ? (
+                                                    <span>
+                                                        Stock Quantity:{" "}
+                                                        {
+                                                            selectedInventoryRecord.quantity
+                                                        }
+                                                    </span>
+                                                ) : (
+                                                    <span>
+                                                        No stock info available
+                                                    </span>
+                                                )}
                                             </div>
                                         )}
                                     </div>
                                 )}
                             </Space>
                         </Card>
-
                         <Space
                             direction="horizontal"
                             size="middle"
@@ -463,15 +495,11 @@ const ProductOverview = () => {
                                         </Paragraph>
                                     </Card>
                                 </TabPane>
-
                                 <TabPane tab="Comments" key="2">
                                     <Card>
-                                        {/* Review Input (without username and avatar) */}
                                         {localStorage.getItem("token") ? (
                                             <div
-                                                style={{
-                                                    marginBottom: "15px",
-                                                }}
+                                                style={{ marginBottom: "15px" }}
                                             >
                                                 <div
                                                     style={{
@@ -524,8 +552,6 @@ const ProductOverview = () => {
                                                 leave a review.
                                             </Paragraph>
                                         )}
-
-                                        {/* Display Reviews (with username, avatar, and rating) */}
                                         {reviews.length > 0 ? (
                                             reviews.map((review) => (
                                                 <Card
@@ -552,19 +578,6 @@ const ProductOverview = () => {
                                                             icon={
                                                                 <UserOutlined />
                                                             }
-                                                            onError={(e) => {
-                                                                console.log(
-                                                                    "Failed to load review avatar for:",
-                                                                    review.user
-                                                                        ?.username,
-                                                                    review.user
-                                                                        ?.profile
-                                                                        ?.profile_image,
-                                                                    "Error:",
-                                                                    e.target.src
-                                                                );
-                                                                return true;
-                                                            }}
                                                             fallback="https://via.placeholder.com/40"
                                                         />
                                                         <div>
