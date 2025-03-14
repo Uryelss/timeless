@@ -23,26 +23,26 @@ const UserProfile = () => {
     const [previewImage, setPreviewImage] = useState("");
     const token = localStorage.getItem("token");
 
-    // Fetch profile using GET /api/profile
+    // Fetch profile data
     const fetchProfile = async () => {
         try {
             const res = await axios.get("http://localhost:8000/api/profile", {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            console.log("API Response:", res.data); // Debug API response
-            // Format date for date input
+            console.log("API Response:", res.data);
+
             const formattedData = { ...res.data };
             if (formattedData.date_of_birth) {
                 formattedData.date_of_birth = dayjs(
                     formattedData.date_of_birth
                 ).format("YYYY-MM-DD");
             }
-            // Ensure gender is capitalized to match options
             if (formattedData.gender) {
                 formattedData.gender =
                     formattedData.gender.charAt(0).toUpperCase() +
                     formattedData.gender.slice(1).toLowerCase();
             }
+
             setProfileData(formattedData);
             setFormValues({ ...formattedData });
             setPreviewImage(
@@ -67,7 +67,7 @@ const UserProfile = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormValues((prev) => ({ ...prev, [name]: value }));
-        console.log(`Changed ${name} to:`, value); // Debug state change
+        console.log(`Changed ${name} to:`, value);
     };
 
     const handleFileChange = (e) => {
@@ -75,6 +75,7 @@ const UserProfile = () => {
             const file = e.target.files[0];
             console.log("Selected file:", file);
             setFormValues((prev) => ({ ...prev, profile_image: file }));
+            // Display the selected image immediately (optimistic preview)
             const imageUrl = URL.createObjectURL(file);
             setPreviewImage(imageUrl);
         }
@@ -85,7 +86,7 @@ const UserProfile = () => {
     };
 
     const handleCancel = () => {
-        // Reset form values and preview to what is in profileData
+        // Revert to last saved profileData
         setFormValues({ ...profileData });
         setPreviewImage(
             profileData.profile_image
@@ -97,6 +98,31 @@ const UserProfile = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Create "optimistic" data
+        const optimisticData = { ...formValues };
+        if (optimisticData.date_of_birth) {
+            optimisticData.date_of_birth = dayjs(
+                optimisticData.date_of_birth
+            ).format("YYYY-MM-DD");
+        }
+        if (optimisticData.gender) {
+            optimisticData.gender =
+                optimisticData.gender.charAt(0).toUpperCase() +
+                optimisticData.gender.slice(1).toLowerCase();
+        }
+
+        // Immediately update UI (optimistic)
+        setProfileData(optimisticData);
+        setEditMode(false);
+        setPreviewImage(
+            optimisticData.profile_image instanceof File
+                ? URL.createObjectURL(optimisticData.profile_image)
+                : optimisticData.profile_image
+                ? optimisticData.profile_image + "?" + new Date().getTime()
+                : "http://localhost:8000/storage/profiles/tennis-racket.png"
+        );
+
         try {
             const formData = new FormData();
             Object.keys(formValues).forEach((key) => {
@@ -108,7 +134,9 @@ const UserProfile = () => {
                     formData.append(key, formValues[key] || "");
                 }
             });
-            console.log("Form data sent:", Object.fromEntries(formData)); // Debug sent data
+            console.log("Form data sent:", Object.fromEntries(formData));
+
+            // Send POST request to update the profile
             const res = await axios.post(
                 "http://localhost:8000/api/profile",
                 formData,
@@ -116,13 +144,40 @@ const UserProfile = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-            console.log("Update Response:", res.data); // Debug response
+            console.log("Update Response:", res.data);
+
+            if (res.data) {
+                const updatedData = { ...res.data };
+                if (updatedData.date_of_birth) {
+                    updatedData.date_of_birth = dayjs(
+                        updatedData.date_of_birth
+                    ).format("YYYY-MM-DD");
+                }
+                if (updatedData.gender) {
+                    updatedData.gender =
+                        updatedData.gender.charAt(0).toUpperCase() +
+                        updatedData.gender.slice(1).toLowerCase();
+                }
+                // Update local state with server data
+                setProfileData(updatedData);
+                setFormValues(updatedData);
+                setPreviewImage(
+                    updatedData.profile_image
+                        ? updatedData.profile_image + "?" + new Date().getTime()
+                        : "http://localhost:8000/storage/profiles/tennis-racket.png"
+                );
+
+                // Dispatch custom event so the Navbar updates automatically
+                window.dispatchEvent(
+                    new CustomEvent("profileUpdated", { detail: updatedData })
+                );
+            }
             alert("Profile updated successfully!");
-            setEditMode(false);
-            fetchProfile();
         } catch (error) {
             console.error("Error updating profile:", error.response?.data);
-            alert("Please complete the required fields.");
+            alert("Update failed. Reverting changes.");
+            // On error, revert to the previously saved data from the server
+            fetchProfile();
         }
     };
 
@@ -144,11 +199,11 @@ const UserProfile = () => {
                     collapsible
                     collapsed={collapsed}
                     onCollapse={(value) => setCollapsed(value)}
-                    trigger={null} // Custom trigger alignment handled via style
+                    trigger={null}
                     style={{
                         background: "#fff",
                         height: "80vh",
-                        width: collapsed ? "80px" : "200px", // Adjusted width
+                        width: collapsed ? "80px" : "200px",
                         transition: "width 0.2s",
                     }}
                 >
@@ -187,11 +242,11 @@ const UserProfile = () => {
                         </div>
                     </div>
                 </Sider>
+
                 <Content
                     style={{
-                        margin: "0 16px",
-                        display: "flex",
-                        justifyContent: "center",
+                        margin: "24px 16px 0",
+                        overflow: "initial",
                     }}
                 >
                     <div
@@ -200,15 +255,12 @@ const UserProfile = () => {
                             minHeight: 360,
                             background: "#fff",
                             borderRadius: 8,
-                            width: "70%", // Extended width to cover more area
-                            marginLeft: "10px", // Adjusted to align closer to sidebar
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
                         }}
                     >
                         <div style={{ textAlign: "center", marginBottom: 20 }}>
+                            {/* Force re-render when previewImage changes */}
                             <img
+                                key={previewImage}
                                 src={previewImage}
                                 alt="Profile"
                                 style={{
@@ -235,6 +287,7 @@ const UserProfile = () => {
                                 </button>
                             )}
                         </div>
+
                         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
                             <div
                                 style={{
@@ -260,6 +313,7 @@ const UserProfile = () => {
                                     />
                                 </div>
                             </div>
+
                             <div
                                 style={{
                                     display: "flex",
@@ -301,6 +355,7 @@ const UserProfile = () => {
                                     />
                                 </div>
                             </div>
+
                             <div
                                 style={{
                                     display: "flex",
@@ -347,6 +402,7 @@ const UserProfile = () => {
                                     </select>
                                 </div>
                             </div>
+
                             <div
                                 style={{
                                     display: "flex",
@@ -377,7 +433,7 @@ const UserProfile = () => {
                                         name="gender"
                                         value={
                                             formValues.gender || "Select Gender"
-                                        } // Default to fetched value or placeholder
+                                        }
                                         onChange={handleInputChange}
                                         disabled={!editMode}
                                         style={{
@@ -395,6 +451,7 @@ const UserProfile = () => {
                                     </select>
                                 </div>
                             </div>
+
                             <div
                                 style={{
                                     display: "flex",
@@ -413,6 +470,7 @@ const UserProfile = () => {
                                     />
                                 </div>
                             </div>
+
                             {editMode && (
                                 <div
                                     style={{

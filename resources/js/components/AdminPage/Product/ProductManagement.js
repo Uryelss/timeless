@@ -114,6 +114,30 @@ const ProductManagement = () => {
     // When adding, fields are required. When updating, form is prefilled so we relax client-side rules.
     const getRule = (message) => [{ required: !currentProduct, message }];
 
+    // Utility function to clean sizes values
+    const cleanSizesArray = (sizes) => {
+        if (Array.isArray(sizes)) {
+            return sizes.map((size) => {
+                if (
+                    typeof size === "string" &&
+                    size.startsWith("[") &&
+                    size.endsWith("]")
+                ) {
+                    try {
+                        const parsed = JSON.parse(size);
+                        if (Array.isArray(parsed)) {
+                            return parsed[0] || size;
+                        }
+                    } catch (e) {
+                        return size;
+                    }
+                }
+                return size;
+            });
+        }
+        return sizes;
+    };
+
     // Table columns for active products
     const mainColumns = [
         {
@@ -200,6 +224,15 @@ const ProductManagement = () => {
             },
         },
         {
+            title: "Sizes",
+            dataIndex: "sizes",
+            key: "sizes",
+            render: (sizes) => {
+                const cleaned = cleanSizesArray(sizes);
+                return Array.isArray(cleaned) ? cleaned.join(", ") : cleaned;
+            },
+        },
+        {
             title: "Price",
             dataIndex: "price",
             key: "price",
@@ -226,6 +259,8 @@ const ProductManagement = () => {
     const handleEdit = (record) => {
         console.log("Edit product:", record);
         setCurrentProduct(record);
+        // Clean sizes before setting them in the form so they appear plain
+        const cleanedSizes = cleanSizesArray(record.sizes);
         form.setFieldsValue({
             id: record.id,
             product_name: record.product_name,
@@ -237,7 +272,7 @@ const ProductManagement = () => {
             price: record.price,
             quantity: record.quantity,
             description: record.description,
-            sizes: record.sizes,
+            sizes: cleanedSizes,
         });
         setMainImagePreview(
             record.main_image ? imageBaseURL + record.main_image : ""
@@ -337,9 +372,12 @@ const ProductManagement = () => {
                 formData.append("price", values.price);
                 formData.append("quantity", values.quantity);
                 formData.append("description", values.description);
-                formData.append("sizes", JSON.stringify(values.sizes || {}));
 
-                // Append new image files only if uploaded
+                // Clean the sizes values before storing
+                const sizesPlain = cleanSizesArray(values.sizes);
+                formData.append("sizes", JSON.stringify(sizesPlain));
+
+                // Append image files if they exist
                 if (mainImageFile) {
                     formData.append("main_image", mainImageFile);
                 }
@@ -349,7 +387,6 @@ const ProductManagement = () => {
                     }
                 });
 
-                // IMPORTANT: For update, use _method override for FormData with PUT.
                 if (values.id) {
                     formData.append("_method", "PUT");
                     axios
@@ -375,7 +412,6 @@ const ProductManagement = () => {
                             message.error("Failed to update product");
                         });
                 } else {
-                    // Adding new product – require main image.
                     if (!mainImageFile) {
                         message.error("Main product image is required.");
                         return;

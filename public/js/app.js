@@ -179578,6 +179578,26 @@ var ProductManagement = function ProductManagement() {
     }];
   };
 
+  // Utility function to clean sizes values
+  var cleanSizesArray = function cleanSizesArray(sizes) {
+    if (Array.isArray(sizes)) {
+      return sizes.map(function (size) {
+        if (typeof size === "string" && size.startsWith("[") && size.endsWith("]")) {
+          try {
+            var parsed = JSON.parse(size);
+            if (Array.isArray(parsed)) {
+              return parsed[0] || size;
+            }
+          } catch (e) {
+            return size;
+          }
+        }
+        return size;
+      });
+    }
+    return sizes;
+  };
+
   // Table columns for active products
   var mainColumns = [{
     title: "Actions",
@@ -179669,6 +179689,14 @@ var ProductManagement = function ProductManagement() {
       return option ? option.name : "";
     }
   }, {
+    title: "Sizes",
+    dataIndex: "sizes",
+    key: "sizes",
+    render: function render(sizes) {
+      var cleaned = cleanSizesArray(sizes);
+      return Array.isArray(cleaned) ? cleaned.join(", ") : cleaned;
+    }
+  }, {
     title: "Price",
     dataIndex: "price",
     key: "price",
@@ -179704,6 +179732,8 @@ var ProductManagement = function ProductManagement() {
   var handleEdit = function handleEdit(record) {
     console.log("Edit product:", record);
     setCurrentProduct(record);
+    // Clean sizes before setting them in the form so they appear plain
+    var cleanedSizes = cleanSizesArray(record.sizes);
     form.setFieldsValue({
       id: record.id,
       product_name: record.product_name,
@@ -179715,7 +179745,7 @@ var ProductManagement = function ProductManagement() {
       price: record.price,
       quantity: record.quantity,
       description: record.description,
-      sizes: record.sizes
+      sizes: cleanedSizes
     });
     setMainImagePreview(record.main_image ? imageBaseURL + record.main_image : "");
     // For simplicity, we clear side images on edit.
@@ -179793,9 +179823,12 @@ var ProductManagement = function ProductManagement() {
       formData.append("price", values.price);
       formData.append("quantity", values.quantity);
       formData.append("description", values.description);
-      formData.append("sizes", JSON.stringify(values.sizes || {}));
 
-      // Append new image files only if uploaded
+      // Clean the sizes values before storing
+      var sizesPlain = cleanSizesArray(values.sizes);
+      formData.append("sizes", JSON.stringify(sizesPlain));
+
+      // Append image files if they exist
       if (mainImageFile) {
         formData.append("main_image", mainImageFile);
       }
@@ -179804,8 +179837,6 @@ var ProductManagement = function ProductManagement() {
           formData.append("side_image_".concat(index + 1), file);
         }
       });
-
-      // IMPORTANT: For update, use _method override for FormData with PUT.
       if (values.id) {
         formData.append("_method", "PUT");
         axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("http://localhost:8000/api/products/".concat(values.id), formData, {
@@ -179822,7 +179853,6 @@ var ProductManagement = function ProductManagement() {
           antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update product");
         });
       } else {
-        // Adding new product – require main image.
         if (!mainImageFile) {
           antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Main product image is required.");
           return;
@@ -181631,11 +181661,17 @@ var Header = function Header() {
     _useState4 = _slicedToArray(_useState3, 2),
     profile = _useState4[0],
     setProfile = _useState4[1];
+
+  // A separate state just to force React to re-render the Avatar
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+    _useState6 = _slicedToArray(_useState5, 2),
+    avatarKey = _useState6[0],
+    setAvatarKey = _useState6[1];
   var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useNavigate)();
   var location = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useLocation)();
   var token = localStorage.getItem("token");
 
-  // Fetch the profile from /api/profile
+  // Fetch the profile from /api/profile when we have a token
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (token) {
       axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/profile", {
@@ -181650,11 +181686,26 @@ var Header = function Header() {
     }
   }, [token]);
 
-  // Use profile data for dynamic avatar and username
-  var avatarSrc = profile && profile.profile_image ? profile.profile_image : "/images/default-avatar.png";
-  var username = profile ? profile.username : "Guest";
+  // Listen for "profileUpdated" custom event and update the header
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var handleProfileUpdated = function handleProfileUpdated(e) {
+      // e.detail contains the updated profile from the UserProfile component
+      setProfile(e.detail);
 
-  // Categories dropdown menu (remains the same)
+      // Increment avatarKey to force a re-render of the <Avatar>
+      setAvatarKey(function (prev) {
+        return prev + 1;
+      });
+    };
+    window.addEventListener("profileUpdated", handleProfileUpdated);
+    return function () {
+      window.removeEventListener("profileUpdated", handleProfileUpdated);
+    };
+  }, []);
+
+  // Build the avatar source, appending a timestamp to bust the cache
+  var avatarSrc = profile && profile.profile_image ? profile.profile_image + "?" + new Date().getTime() : "/images/default-avatar.png";
+  var username = profile ? profile.username : "Guest";
   var categoriesMenu = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
     className: "white-dropdown",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
@@ -181665,8 +181716,6 @@ var Header = function Header() {
       children: "Smart Watches"
     }, "smart-watches")]
   });
-
-  // Logout function using API logout endpoint (Passport)
   var handleLogout = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       return _regeneratorRuntime().wrap(function _callee$(_context) {
@@ -181805,7 +181854,7 @@ var Header = function Header() {
             size: 40,
             shape: "circle",
             icon: !avatarSrc && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {})
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+          }, avatarKey), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
             className: "username",
             children: username
           })]
@@ -182478,7 +182527,7 @@ var UserProfile = function UserProfile() {
     setPreviewImage = _useState10[1];
   var token = localStorage.getItem("token");
 
-  // Fetch profile using GET /api/profile
+  // Fetch profile data
   var fetchProfile = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var res, formattedData;
@@ -182494,13 +182543,11 @@ var UserProfile = function UserProfile() {
             });
           case 3:
             res = _context.sent;
-            console.log("API Response:", res.data); // Debug API response
-            // Format date for date input
+            console.log("API Response:", res.data);
             formattedData = _objectSpread({}, res.data);
             if (formattedData.date_of_birth) {
               formattedData.date_of_birth = dayjs__WEBPACK_IMPORTED_MODULE_1___default()(formattedData.date_of_birth).format("YYYY-MM-DD");
             }
-            // Ensure gender is capitalized to match options
             if (formattedData.gender) {
               formattedData.gender = formattedData.gender.charAt(0).toUpperCase() + formattedData.gender.slice(1).toLowerCase();
             }
@@ -182538,7 +182585,7 @@ var UserProfile = function UserProfile() {
     setFormValues(function (prev) {
       return _objectSpread(_objectSpread({}, prev), {}, _defineProperty({}, name, value));
     });
-    console.log("Changed ".concat(name, " to:"), value); // Debug state change
+    console.log("Changed ".concat(name, " to:"), value);
   };
   var handleFileChange = function handleFileChange(e) {
     if (e.target.files && e.target.files.length > 0) {
@@ -182549,6 +182596,7 @@ var UserProfile = function UserProfile() {
           profile_image: file
         });
       });
+      // Display the selected image immediately (optimistic preview)
       var imageUrl = URL.createObjectURL(file);
       setPreviewImage(imageUrl);
     }
@@ -182557,19 +182605,33 @@ var UserProfile = function UserProfile() {
     setEditMode(true);
   };
   var handleCancel = function handleCancel() {
-    // Reset form values and preview to what is in profileData
+    // Revert to last saved profileData
     setFormValues(_objectSpread({}, profileData));
     setPreviewImage(profileData.profile_image ? profileData.profile_image + "?" + new Date().getTime() : "http://localhost:8000/storage/profiles/tennis-racket.png");
     setEditMode(false);
   };
   var handleSubmit = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(e) {
-      var formData, res, _error$response;
+      var optimisticData, formData, res, updatedData, _error$response;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             e.preventDefault();
-            _context2.prev = 1;
+
+            // Create "optimistic" data
+            optimisticData = _objectSpread({}, formValues);
+            if (optimisticData.date_of_birth) {
+              optimisticData.date_of_birth = dayjs__WEBPACK_IMPORTED_MODULE_1___default()(optimisticData.date_of_birth).format("YYYY-MM-DD");
+            }
+            if (optimisticData.gender) {
+              optimisticData.gender = optimisticData.gender.charAt(0).toUpperCase() + optimisticData.gender.slice(1).toLowerCase();
+            }
+
+            // Immediately update UI (optimistic)
+            setProfileData(optimisticData);
+            setEditMode(false);
+            setPreviewImage(optimisticData.profile_image instanceof File ? URL.createObjectURL(optimisticData.profile_image) : optimisticData.profile_image ? optimisticData.profile_image + "?" + new Date().getTime() : "http://localhost:8000/storage/profiles/tennis-racket.png");
+            _context2.prev = 7;
             formData = new FormData();
             Object.keys(formValues).forEach(function (key) {
               if (key === "profile_image") {
@@ -182580,31 +182642,51 @@ var UserProfile = function UserProfile() {
                 formData.append(key, formValues[key] || "");
               }
             });
-            console.log("Form data sent:", Object.fromEntries(formData)); // Debug sent data
-            _context2.next = 7;
+            console.log("Form data sent:", Object.fromEntries(formData));
+
+            // Send POST request to update the profile
+            _context2.next = 13;
             return axios__WEBPACK_IMPORTED_MODULE_5__["default"].post("http://localhost:8000/api/profile", formData, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
-          case 7:
+          case 13:
             res = _context2.sent;
-            console.log("Update Response:", res.data); // Debug response
+            console.log("Update Response:", res.data);
+            if (res.data) {
+              updatedData = _objectSpread({}, res.data);
+              if (updatedData.date_of_birth) {
+                updatedData.date_of_birth = dayjs__WEBPACK_IMPORTED_MODULE_1___default()(updatedData.date_of_birth).format("YYYY-MM-DD");
+              }
+              if (updatedData.gender) {
+                updatedData.gender = updatedData.gender.charAt(0).toUpperCase() + updatedData.gender.slice(1).toLowerCase();
+              }
+              // Update local state with server data
+              setProfileData(updatedData);
+              setFormValues(updatedData);
+              setPreviewImage(updatedData.profile_image ? updatedData.profile_image + "?" + new Date().getTime() : "http://localhost:8000/storage/profiles/tennis-racket.png");
+
+              // Dispatch custom event so the Navbar updates automatically
+              window.dispatchEvent(new CustomEvent("profileUpdated", {
+                detail: updatedData
+              }));
+            }
             alert("Profile updated successfully!");
-            setEditMode(false);
-            fetchProfile();
-            _context2.next = 18;
+            _context2.next = 24;
             break;
-          case 14:
-            _context2.prev = 14;
-            _context2.t0 = _context2["catch"](1);
+          case 19:
+            _context2.prev = 19;
+            _context2.t0 = _context2["catch"](7);
             console.error("Error updating profile:", (_error$response = _context2.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data);
-            alert("Please complete the required fields.");
-          case 18:
+            alert("Update failed. Reverting changes.");
+            // On error, revert to the previously saved data from the server
+            fetchProfile();
+          case 24:
           case "end":
             return _context2.stop();
         }
-      }, _callee2, null, [[1, 14]]);
+      }, _callee2, null, [[7, 19]]);
     }));
     return function handleSubmit(_x) {
       return _ref2.apply(this, arguments);
@@ -182636,13 +182718,11 @@ var UserProfile = function UserProfile() {
         onCollapse: function onCollapse(value) {
           return setCollapsed(value);
         },
-        trigger: null // Custom trigger alignment handled via style
-        ,
+        trigger: null,
         style: {
           background: "#fff",
           height: "80vh",
           width: collapsed ? "80px" : "200px",
-          // Adjusted width
           transition: "width 0.2s"
         },
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
@@ -182678,23 +182758,15 @@ var UserProfile = function UserProfile() {
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(Content, {
         style: {
-          margin: "0 16px",
-          display: "flex",
-          justifyContent: "center"
+          margin: "24px 16px 0",
+          overflow: "initial"
         },
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
           style: {
             padding: 24,
             minHeight: 360,
             background: "#fff",
-            borderRadius: 8,
-            width: "70%",
-            // Extended width to cover more area
-            marginLeft: "10px",
-            // Adjusted to align closer to sidebar
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center"
+            borderRadius: 8
           },
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
             style: {
@@ -182710,7 +182782,7 @@ var UserProfile = function UserProfile() {
                 objectFit: "cover",
                 borderRadius: "50%"
               }
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h2", {
+            }, previewImage), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h2", {
               children: profileData.username
             }), !editMode && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
               style: {
@@ -182896,8 +182968,7 @@ var UserProfile = function UserProfile() {
                   children: "Gender:"
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("select", {
                   name: "gender",
-                  value: formValues.gender || "Select Gender" // Default to fetched value or placeholder
-                  ,
+                  value: formValues.gender || "Select Gender",
                   onChange: handleInputChange,
                   disabled: !editMode,
                   style: {

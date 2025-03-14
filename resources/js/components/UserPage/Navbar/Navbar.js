@@ -15,11 +15,15 @@ const { Header: AntHeader } = Layout;
 const Header = () => {
     const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
     const [profile, setProfile] = useState(null);
+
+    // A separate state just to force React to re-render the Avatar
+    const [avatarKey, setAvatarKey] = useState(0);
+
     const navigate = useNavigate();
     const location = useLocation();
     const token = localStorage.getItem("token");
 
-    // Fetch the profile from /api/profile
+    // Fetch the profile from /api/profile when we have a token
     useEffect(() => {
         if (token) {
             axios
@@ -35,14 +39,30 @@ const Header = () => {
         }
     }, [token]);
 
-    // Use profile data for dynamic avatar and username
+    // Listen for "profileUpdated" custom event and update the header
+    useEffect(() => {
+        const handleProfileUpdated = (e) => {
+            // e.detail contains the updated profile from the UserProfile component
+            setProfile(e.detail);
+
+            // Increment avatarKey to force a re-render of the <Avatar>
+            setAvatarKey((prev) => prev + 1);
+        };
+
+        window.addEventListener("profileUpdated", handleProfileUpdated);
+        return () => {
+            window.removeEventListener("profileUpdated", handleProfileUpdated);
+        };
+    }, []);
+
+    // Build the avatar source, appending a timestamp to bust the cache
     const avatarSrc =
         profile && profile.profile_image
-            ? profile.profile_image
+            ? profile.profile_image + "?" + new Date().getTime()
             : "/images/default-avatar.png";
+
     const username = profile ? profile.username : "Guest";
 
-    // Categories dropdown menu (remains the same)
     const categoriesMenu = (
         <Menu className="white-dropdown">
             <Menu.Item key="luxury-watches">Luxury Watches</Menu.Item>
@@ -51,7 +71,6 @@ const Header = () => {
         </Menu>
     );
 
-    // Logout function using API logout endpoint (Passport)
     const handleLogout = async () => {
         try {
             await axios.post(
@@ -155,7 +174,9 @@ const Header = () => {
                 </Badge>
                 <Dropdown overlay={userMenu} trigger={["click"]}>
                     <div className="user-avatar">
+                        {/* Use avatarKey as the "key" prop to force re-render when it changes */}
                         <Avatar
+                            key={avatarKey}
                             src={avatarSrc}
                             size={40}
                             shape="circle"
