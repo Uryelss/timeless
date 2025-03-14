@@ -111,32 +111,7 @@ const ProductManagement = () => {
     }, [openArchiveModal]);
 
     // Helper for validation rules.
-    // When adding, fields are required. When updating, form is prefilled so we relax client-side rules.
     const getRule = (message) => [{ required: !currentProduct, message }];
-
-    // Utility function to clean sizes values
-    const cleanSizesArray = (sizes) => {
-        if (Array.isArray(sizes)) {
-            return sizes.map((size) => {
-                if (
-                    typeof size === "string" &&
-                    size.startsWith("[") &&
-                    size.endsWith("]")
-                ) {
-                    try {
-                        const parsed = JSON.parse(size);
-                        if (Array.isArray(parsed)) {
-                            return parsed[0] || size;
-                        }
-                    } catch (e) {
-                        return size;
-                    }
-                }
-                return size;
-            });
-        }
-        return sizes;
-    };
 
     // Table columns for active products
     const mainColumns = [
@@ -228,8 +203,27 @@ const ProductManagement = () => {
             dataIndex: "sizes",
             key: "sizes",
             render: (sizes) => {
-                const cleaned = cleanSizesArray(sizes);
-                return Array.isArray(cleaned) ? cleaned.join(", ") : cleaned;
+                if (Array.isArray(sizes)) {
+                    // Process each size: if it's double-encoded, fix it.
+                    const fixedSizes = sizes.map((size) => {
+                        if (typeof size === "string") {
+                            if (size.startsWith("[") && size.endsWith("]")) {
+                                try {
+                                    const parsed = JSON.parse(size);
+                                    if (Array.isArray(parsed)) {
+                                        return parsed.join(", ");
+                                    }
+                                } catch (e) {
+                                    return size.trim();
+                                }
+                            }
+                            return size.trim();
+                        }
+                        return size;
+                    });
+                    return fixedSizes.join(", ");
+                }
+                return sizes;
             },
         },
         {
@@ -259,8 +253,6 @@ const ProductManagement = () => {
     const handleEdit = (record) => {
         console.log("Edit product:", record);
         setCurrentProduct(record);
-        // Clean sizes before setting them in the form so they appear plain
-        const cleanedSizes = cleanSizesArray(record.sizes);
         form.setFieldsValue({
             id: record.id,
             product_name: record.product_name,
@@ -272,12 +264,16 @@ const ProductManagement = () => {
             price: record.price,
             quantity: record.quantity,
             description: record.description,
-            sizes: cleanedSizes,
+            // Convert plain string to array if needed.
+            sizes:
+                typeof record.sizes === "string"
+                    ? record.sizes.split(",").map((s) => s.trim())
+                    : record.sizes,
         });
         setMainImagePreview(
             record.main_image ? imageBaseURL + record.main_image : ""
         );
-        // For simplicity, we clear side images on edit.
+        // Clear side images on edit.
         setSideImagesPreview(["", "", ""]);
         setSideImagesFiles([null, null, null]);
         setOpenAddModal(true);
@@ -349,7 +345,6 @@ const ProductManagement = () => {
     };
 
     // Save product: if updating, perform PUT; if adding, perform POST.
-    // For update, only append new image files if provided.
     const handleSave = () => {
         form.validateFields()
             .then((values) => {
@@ -373,9 +368,9 @@ const ProductManagement = () => {
                 formData.append("quantity", values.quantity);
                 formData.append("description", values.description);
 
-                // Clean the sizes values before storing
-                const sizesPlain = cleanSizesArray(values.sizes);
-                formData.append("sizes", JSON.stringify(sizesPlain));
+                // Convert the sizes array into a plain comma-separated string.
+                const sizesPlain = values.sizes.map((size) => size.trim());
+                formData.append("sizes", sizesPlain.join(","));
 
                 // Append image files if they exist
                 if (mainImageFile) {

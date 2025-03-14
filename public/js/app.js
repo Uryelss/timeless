@@ -179570,32 +179570,11 @@ var ProductManagement = function ProductManagement() {
   }, [openArchiveModal]);
 
   // Helper for validation rules.
-  // When adding, fields are required. When updating, form is prefilled so we relax client-side rules.
   var getRule = function getRule(message) {
     return [{
       required: !currentProduct,
       message: message
     }];
-  };
-
-  // Utility function to clean sizes values
-  var cleanSizesArray = function cleanSizesArray(sizes) {
-    if (Array.isArray(sizes)) {
-      return sizes.map(function (size) {
-        if (typeof size === "string" && size.startsWith("[") && size.endsWith("]")) {
-          try {
-            var parsed = JSON.parse(size);
-            if (Array.isArray(parsed)) {
-              return parsed[0] || size;
-            }
-          } catch (e) {
-            return size;
-          }
-        }
-        return size;
-      });
-    }
-    return sizes;
   };
 
   // Table columns for active products
@@ -179693,8 +179672,27 @@ var ProductManagement = function ProductManagement() {
     dataIndex: "sizes",
     key: "sizes",
     render: function render(sizes) {
-      var cleaned = cleanSizesArray(sizes);
-      return Array.isArray(cleaned) ? cleaned.join(", ") : cleaned;
+      if (Array.isArray(sizes)) {
+        // Process each size: if it's double-encoded, fix it.
+        var fixedSizes = sizes.map(function (size) {
+          if (typeof size === "string") {
+            if (size.startsWith("[") && size.endsWith("]")) {
+              try {
+                var parsed = JSON.parse(size);
+                if (Array.isArray(parsed)) {
+                  return parsed.join(", ");
+                }
+              } catch (e) {
+                return size.trim();
+              }
+            }
+            return size.trim();
+          }
+          return size;
+        });
+        return fixedSizes.join(", ");
+      }
+      return sizes;
     }
   }, {
     title: "Price",
@@ -179732,8 +179730,6 @@ var ProductManagement = function ProductManagement() {
   var handleEdit = function handleEdit(record) {
     console.log("Edit product:", record);
     setCurrentProduct(record);
-    // Clean sizes before setting them in the form so they appear plain
-    var cleanedSizes = cleanSizesArray(record.sizes);
     form.setFieldsValue({
       id: record.id,
       product_name: record.product_name,
@@ -179745,10 +179741,13 @@ var ProductManagement = function ProductManagement() {
       price: record.price,
       quantity: record.quantity,
       description: record.description,
-      sizes: cleanedSizes
+      // Convert plain string to array if needed.
+      sizes: typeof record.sizes === "string" ? record.sizes.split(",").map(function (s) {
+        return s.trim();
+      }) : record.sizes
     });
     setMainImagePreview(record.main_image ? imageBaseURL + record.main_image : "");
-    // For simplicity, we clear side images on edit.
+    // Clear side images on edit.
     setSideImagesPreview(["", "", ""]);
     setSideImagesFiles([null, null, null]);
     setOpenAddModal(true);
@@ -179810,7 +179809,6 @@ var ProductManagement = function ProductManagement() {
   };
 
   // Save product: if updating, perform PUT; if adding, perform POST.
-  // For update, only append new image files if provided.
   var handleSave = function handleSave() {
     form.validateFields().then(function (values) {
       var formData = new FormData();
@@ -179824,9 +179822,11 @@ var ProductManagement = function ProductManagement() {
       formData.append("quantity", values.quantity);
       formData.append("description", values.description);
 
-      // Clean the sizes values before storing
-      var sizesPlain = cleanSizesArray(values.sizes);
-      formData.append("sizes", JSON.stringify(sizesPlain));
+      // Convert the sizes array into a plain comma-separated string.
+      var sizesPlain = values.sizes.map(function (size) {
+        return size.trim();
+      });
+      formData.append("sizes", sizesPlain.join(","));
 
       // Append image files if they exist
       if (mainImageFile) {
