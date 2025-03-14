@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Layout, Menu, Dropdown, Badge, Avatar, Button } from "antd";
 import {
@@ -8,16 +9,14 @@ import {
     UserOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
 
 const { Header: AntHeader } = Layout;
 
 const Header = () => {
     const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
     const [profile, setProfile] = useState(null);
-
-    // A separate state just to force React to re-render the Avatar
     const [avatarKey, setAvatarKey] = useState(0);
+    const [cartCount, setCartCount] = useState(0);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -42,10 +41,7 @@ const Header = () => {
     // Listen for "profileUpdated" custom event and update the header
     useEffect(() => {
         const handleProfileUpdated = (e) => {
-            // e.detail contains the updated profile from the UserProfile component
             setProfile(e.detail);
-
-            // Increment avatarKey to force a re-render of the <Avatar>
             setAvatarKey((prev) => prev + 1);
         };
 
@@ -53,6 +49,21 @@ const Header = () => {
         return () => {
             window.removeEventListener("profileUpdated", handleProfileUpdated);
         };
+    }, []);
+
+    // Load cart count from localStorage
+    useEffect(() => {
+        const storedCart = localStorage.getItem("cart");
+        if (storedCart) {
+            try {
+                const items = JSON.parse(storedCart);
+                setCartCount(Array.isArray(items) ? items.length : 0);
+            } catch (e) {
+                setCartCount(0);
+            }
+        } else {
+            setCartCount(0);
+        }
     }, []);
 
     // Build the avatar source, appending a timestamp to bust the cache
@@ -166,15 +177,15 @@ const Header = () => {
                         className="icon"
                     />
                 </Badge>
-                <Badge count={0} className="icon-badge">
+                <Badge count={cartCount} className="icon-badge">
                     <ShoppingCartOutlined
-                        style={{ fontSize: "24px" }}
+                        style={{ fontSize: "24px", cursor: "pointer" }}
                         className="icon"
+                        onClick={() => navigate("/user-cart")}
                     />
                 </Badge>
                 <Dropdown overlay={userMenu} trigger={["click"]}>
                     <div className="user-avatar">
-                        {/* Use avatarKey as the "key" prop to force re-render when it changes */}
                         <Avatar
                             key={avatarKey}
                             src={avatarSrc}

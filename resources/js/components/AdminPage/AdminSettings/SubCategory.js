@@ -63,7 +63,6 @@ const SubCategoryManagement = () => {
 
     // Fetch archived sub-categories for the current active tab
     const fetchArchivedData = () => {
-        // Assuming your backend supports an archived flag (or use a separate endpoint)
         axios
             .get(
                 `http://localhost:8000/api/sub-categories?type=${activeTab}&archived=1`,
@@ -96,7 +95,7 @@ const SubCategoryManagement = () => {
         }
     }, [activeTab, openArchiveModal]);
 
-    // Table columns for active items
+    // Table columns for active items (ID column removed)
     const columns = [
         {
             title: "Actions",
@@ -115,13 +114,12 @@ const SubCategoryManagement = () => {
                 </Space>
             ),
         },
-        { title: "ID", dataIndex: "id", key: "id" },
         { title: "Name", dataIndex: "name", key: "name" },
         { title: "Created At", dataIndex: "created_at", key: "created_at" },
         { title: "Updated At", dataIndex: "updated_at", key: "updated_at" },
     ];
 
-    // Table columns for archived items (Restore action)
+    // Table columns for archived items (ID column removed)
     const archiveColumns = [
         {
             title: "Actions",
@@ -132,7 +130,6 @@ const SubCategoryManagement = () => {
                 </Button>
             ),
         },
-        { title: "ID", dataIndex: "id", key: "id" },
         { title: "Name", dataIndex: "name", key: "name" },
         { title: "Created At", dataIndex: "created_at", key: "created_at" },
         { title: "Updated At", dataIndex: "updated_at", key: "updated_at" },

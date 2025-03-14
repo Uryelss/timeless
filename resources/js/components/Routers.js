@@ -32,6 +32,7 @@ import AboutUs from "./UserPage/AboutUsPage/Aboutus";
 
 // Single route protection component
 import PrivateRoute from "./PrivateRoute";
+import CartPage from "./UserPage/CartPage/Cart";
 
 function Routers() {
     return (
@@ -83,6 +84,7 @@ function Routers() {
                     <Route path="/user-profile" element={<UserProfile />} />
                     <Route path="/product/:id" element={<ProductOverview />} />
                     <Route path="/AboutUs" element={<AboutUs />} />
+                    <Route path="/user-cart" element={<CartPage />} />
                 </Route>
 
                 {/* Catch-all redirect */}

@@ -5675,6 +5675,24 @@ var UndoOutlined = { "icon": { "tag": "svg", "attrs": { "viewBox": "64 64 896 89
 
 /***/ }),
 
+/***/ "./node_modules/@ant-design/icons-svg/es/asn/UpOutlined.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@ant-design/icons-svg/es/asn/UpOutlined.js ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// This icon file is generated automatically.
+var UpOutlined = { "icon": { "tag": "svg", "attrs": { "viewBox": "64 64 896 896", "focusable": "false" }, "children": [{ "tag": "path", "attrs": { "d": "M890.5 755.3L537.9 269.2c-12.8-17.6-39-17.6-51.7 0L133.5 755.3A8 8 0 00140 768h75c5.1 0 9.9-2.5 12.9-6.6L512 369.8l284.1 391.6c3 4.1 7.8 6.6 12.9 6.6h75c6.5 0 10.3-7.4 6.5-12.7z" } }] }, "name": "up", "theme": "outlined" };
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (UpOutlined);
+
+
+/***/ }),
+
 /***/ "./node_modules/@ant-design/icons-svg/es/asn/UploadOutlined.js":
 /*!*********************************************************************!*\
   !*** ./node_modules/@ant-design/icons-svg/es/asn/UploadOutlined.js ***!
@@ -8099,6 +8117,44 @@ var UndoOutlined = function UndoOutlined(props, ref) {
 var RefIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(UndoOutlined);
 if (true) {
   RefIcon.displayName = 'UndoOutlined';
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RefIcon);
+
+/***/ }),
+
+/***/ "./node_modules/@ant-design/icons/es/icons/UpOutlined.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/@ant-design/icons/es/icons/UpOutlined.js ***!
+  \***************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _ant_design_icons_svg_es_asn_UpOutlined__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @ant-design/icons-svg/es/asn/UpOutlined */ "./node_modules/@ant-design/icons-svg/es/asn/UpOutlined.js");
+/* harmony import */ var _components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/AntdIcon */ "./node_modules/@ant-design/icons/es/components/AntdIcon.js");
+
+// GENERATE BY ./scripts/generate.ts
+// DON NOT EDIT IT MANUALLY
+
+
+
+
+var UpOutlined = function UpOutlined(props, ref) {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__["default"], (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, props, {
+    ref: ref,
+    icon: _ant_design_icons_svg_es_asn_UpOutlined__WEBPACK_IMPORTED_MODULE_3__["default"]
+  }));
+};
+
+/**![up](data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIGZpbGw9IiNjYWNhY2EiIHZpZXdCb3g9IjY0IDY0IDg5NiA4OTYiIGZvY3VzYWJsZT0iZmFsc2UiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTg5MC41IDc1NS4zTDUzNy45IDI2OS4yYy0xMi44LTE3LjYtMzktMTcuNi01MS43IDBMMTMzLjUgNzU1LjNBOCA4IDAgMDAxNDAgNzY4aDc1YzUuMSAwIDkuOS0yLjUgMTIuOS02LjZMNTEyIDM2OS44bDI4NC4xIDM5MS42YzMgNC4xIDcuOCA2LjYgMTIuOSA2LjZoNzVjNi41IDAgMTAuMy03LjQgNi41LTEyLjd6IiAvPjwvc3ZnPg==) */
+var RefIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(UpOutlined);
+if (true) {
+  RefIcon.displayName = 'UpOutlined';
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RefIcon);
 
@@ -15487,6 +15543,565 @@ var _createImmutable = (0,_Immutable__WEBPACK_IMPORTED_MODULE_1__["default"])(),
   responseImmutable = _createImmutable.responseImmutable,
   useImmutableMark = _createImmutable.useImmutableMark;
 
+
+/***/ }),
+
+/***/ "./node_modules/@rc-component/mini-decimal/es/BigIntDecimal.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@rc-component/mini-decimal/es/BigIntDecimal.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ BigIntDecimal)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
+/* harmony import */ var _numberUtil__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./numberUtil */ "./node_modules/@rc-component/mini-decimal/es/numberUtil.js");
+
+
+
+
+var BigIntDecimal = /*#__PURE__*/function () {
+  /** BigInt will convert `0009` to `9`. We need record the len of decimal */
+
+  function BigIntDecimal(value) {
+    (0,_babel_runtime_helpers_esm_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, BigIntDecimal);
+    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "origin", '');
+    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "negative", void 0);
+    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "integer", void 0);
+    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "decimal", void 0);
+    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "decimalLen", void 0);
+    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "empty", void 0);
+    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "nan", void 0);
+    if ((0,_numberUtil__WEBPACK_IMPORTED_MODULE_3__.isEmpty)(value)) {
+      this.empty = true;
+      return;
+    }
+    this.origin = String(value);
+
+    // Act like Number convert
+    if (value === '-' || Number.isNaN(value)) {
+      this.nan = true;
+      return;
+    }
+    var mergedValue = value;
+
+    // We need convert back to Number since it require `toFixed` to handle this
+    if ((0,_numberUtil__WEBPACK_IMPORTED_MODULE_3__.isE)(mergedValue)) {
+      mergedValue = Number(mergedValue);
+    }
+    mergedValue = typeof mergedValue === 'string' ? mergedValue : (0,_numberUtil__WEBPACK_IMPORTED_MODULE_3__.num2str)(mergedValue);
+    if ((0,_numberUtil__WEBPACK_IMPORTED_MODULE_3__.validateNumber)(mergedValue)) {
+      var trimRet = (0,_numberUtil__WEBPACK_IMPORTED_MODULE_3__.trimNumber)(mergedValue);
+      this.negative = trimRet.negative;
+      var numbers = trimRet.trimStr.split('.');
+      this.integer = BigInt(numbers[0]);
+      var decimalStr = numbers[1] || '0';
+      this.decimal = BigInt(decimalStr);
+      this.decimalLen = decimalStr.length;
+    } else {
+      this.nan = true;
+    }
+  }
+  (0,_babel_runtime_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(BigIntDecimal, [{
+    key: "getMark",
+    value: function getMark() {
+      return this.negative ? '-' : '';
+    }
+  }, {
+    key: "getIntegerStr",
+    value: function getIntegerStr() {
+      return this.integer.toString();
+    }
+
+    /**
+     * @private get decimal string
+     */
+  }, {
+    key: "getDecimalStr",
+    value: function getDecimalStr() {
+      return this.decimal.toString().padStart(this.decimalLen, '0');
+    }
+
+    /**
+     * @private Align BigIntDecimal with same decimal length. e.g. 12.3 + 5 = 1230000
+     * This is used for add function only.
+     */
+  }, {
+    key: "alignDecimal",
+    value: function alignDecimal(decimalLength) {
+      var str = "".concat(this.getMark()).concat(this.getIntegerStr()).concat(this.getDecimalStr().padEnd(decimalLength, '0'));
+      return BigInt(str);
+    }
+  }, {
+    key: "negate",
+    value: function negate() {
+      var clone = new BigIntDecimal(this.toString());
+      clone.negative = !clone.negative;
+      return clone;
+    }
+  }, {
+    key: "cal",
+    value: function cal(offset, calculator, calDecimalLen) {
+      var maxDecimalLength = Math.max(this.getDecimalStr().length, offset.getDecimalStr().length);
+      var myAlignedDecimal = this.alignDecimal(maxDecimalLength);
+      var offsetAlignedDecimal = offset.alignDecimal(maxDecimalLength);
+      var valueStr = calculator(myAlignedDecimal, offsetAlignedDecimal).toString();
+      var nextDecimalLength = calDecimalLen(maxDecimalLength);
+
+      // We need fill string length back to `maxDecimalLength` to avoid parser failed
+      var _trimNumber = (0,_numberUtil__WEBPACK_IMPORTED_MODULE_3__.trimNumber)(valueStr),
+        negativeStr = _trimNumber.negativeStr,
+        trimStr = _trimNumber.trimStr;
+      var hydrateValueStr = "".concat(negativeStr).concat(trimStr.padStart(nextDecimalLength + 1, '0'));
+      return new BigIntDecimal("".concat(hydrateValueStr.slice(0, -nextDecimalLength), ".").concat(hydrateValueStr.slice(-nextDecimalLength)));
+    }
+  }, {
+    key: "add",
+    value: function add(value) {
+      if (this.isInvalidate()) {
+        return new BigIntDecimal(value);
+      }
+      var offset = new BigIntDecimal(value);
+      if (offset.isInvalidate()) {
+        return this;
+      }
+      return this.cal(offset, function (num1, num2) {
+        return num1 + num2;
+      }, function (len) {
+        return len;
+      });
+    }
+  }, {
+    key: "multi",
+    value: function multi(value) {
+      var target = new BigIntDecimal(value);
+      if (this.isInvalidate() || target.isInvalidate()) {
+        return new BigIntDecimal(NaN);
+      }
+      return this.cal(target, function (num1, num2) {
+        return num1 * num2;
+      }, function (len) {
+        return len * 2;
+      });
+    }
+  }, {
+    key: "isEmpty",
+    value: function isEmpty() {
+      return this.empty;
+    }
+  }, {
+    key: "isNaN",
+    value: function isNaN() {
+      return this.nan;
+    }
+  }, {
+    key: "isInvalidate",
+    value: function isInvalidate() {
+      return this.isEmpty() || this.isNaN();
+    }
+  }, {
+    key: "equals",
+    value: function equals(target) {
+      return this.toString() === (target === null || target === void 0 ? void 0 : target.toString());
+    }
+  }, {
+    key: "lessEquals",
+    value: function lessEquals(target) {
+      return this.add(target.negate().toString()).toNumber() <= 0;
+    }
+  }, {
+    key: "toNumber",
+    value: function toNumber() {
+      if (this.isNaN()) {
+        return NaN;
+      }
+      return Number(this.toString());
+    }
+  }, {
+    key: "toString",
+    value: function toString() {
+      var safe = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+      if (!safe) {
+        return this.origin;
+      }
+      if (this.isInvalidate()) {
+        return '';
+      }
+      return (0,_numberUtil__WEBPACK_IMPORTED_MODULE_3__.trimNumber)("".concat(this.getMark()).concat(this.getIntegerStr(), ".").concat(this.getDecimalStr())).fullStr;
+    }
+  }]);
+  return BigIntDecimal;
+}();
+
+
+/***/ }),
+
+/***/ "./node_modules/@rc-component/mini-decimal/es/MiniDecimal.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@rc-component/mini-decimal/es/MiniDecimal.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BigIntDecimal: () => (/* reexport safe */ _BigIntDecimal__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   NumberDecimal: () => (/* reexport safe */ _NumberDecimal__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   "default": () => (/* binding */ getMiniDecimal),
+/* harmony export */   toFixed: () => (/* binding */ toFixed)
+/* harmony export */ });
+/* harmony import */ var _BigIntDecimal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BigIntDecimal */ "./node_modules/@rc-component/mini-decimal/es/BigIntDecimal.js");
+/* harmony import */ var _NumberDecimal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./NumberDecimal */ "./node_modules/@rc-component/mini-decimal/es/NumberDecimal.js");
+/* harmony import */ var _numberUtil__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./numberUtil */ "./node_modules/@rc-component/mini-decimal/es/numberUtil.js");
+/* harmony import */ var _supportUtil__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./supportUtil */ "./node_modules/@rc-component/mini-decimal/es/supportUtil.js");
+/* eslint-disable max-classes-per-file */
+
+
+
+
+
+
+// Still support origin export
+
+function getMiniDecimal(value) {
+  // We use BigInt here.
+  // Will fallback to Number if not support.
+  if ((0,_supportUtil__WEBPACK_IMPORTED_MODULE_3__.supportBigInt)()) {
+    return new _BigIntDecimal__WEBPACK_IMPORTED_MODULE_0__["default"](value);
+  }
+  return new _NumberDecimal__WEBPACK_IMPORTED_MODULE_1__["default"](value);
+}
+
+/**
+ * Align the logic of toFixed to around like 1.5 => 2.
+ * If set `cutOnly`, will just remove the over decimal part.
+ */
+function toFixed(numStr, separatorStr, precision) {
+  var cutOnly = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+  if (numStr === '') {
+    return '';
+  }
+  var _trimNumber = (0,_numberUtil__WEBPACK_IMPORTED_MODULE_2__.trimNumber)(numStr),
+    negativeStr = _trimNumber.negativeStr,
+    integerStr = _trimNumber.integerStr,
+    decimalStr = _trimNumber.decimalStr;
+  var precisionDecimalStr = "".concat(separatorStr).concat(decimalStr);
+  var numberWithoutDecimal = "".concat(negativeStr).concat(integerStr);
+  if (precision >= 0) {
+    // We will get last + 1 number to check if need advanced number
+    var advancedNum = Number(decimalStr[precision]);
+    if (advancedNum >= 5 && !cutOnly) {
+      var advancedDecimal = getMiniDecimal(numStr).add("".concat(negativeStr, "0.").concat('0'.repeat(precision)).concat(10 - advancedNum));
+      return toFixed(advancedDecimal.toString(), separatorStr, precision, cutOnly);
+    }
+    if (precision === 0) {
+      return numberWithoutDecimal;
+    }
+    return "".concat(numberWithoutDecimal).concat(separatorStr).concat(decimalStr.padEnd(precision, '0').slice(0, precision));
+  }
+  if (precisionDecimalStr === '.0') {
+    return numberWithoutDecimal;
+  }
+  return "".concat(numberWithoutDecimal).concat(precisionDecimalStr);
+}
+
+/***/ }),
+
+/***/ "./node_modules/@rc-component/mini-decimal/es/NumberDecimal.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@rc-component/mini-decimal/es/NumberDecimal.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ NumberDecimal)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/classCallCheck */ "./node_modules/@babel/runtime/helpers/esm/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/createClass */ "./node_modules/@babel/runtime/helpers/esm/createClass.js");
+/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
+/* harmony import */ var _numberUtil__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./numberUtil */ "./node_modules/@rc-component/mini-decimal/es/numberUtil.js");
+
+
+
+
+
+/**
+ * We can remove this when IE not support anymore
+ */
+var NumberDecimal = /*#__PURE__*/function () {
+  function NumberDecimal(value) {
+    (0,_babel_runtime_helpers_esm_classCallCheck__WEBPACK_IMPORTED_MODULE_0__["default"])(this, NumberDecimal);
+    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "origin", '');
+    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "number", void 0);
+    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "empty", void 0);
+    if ((0,_numberUtil__WEBPACK_IMPORTED_MODULE_3__.isEmpty)(value)) {
+      this.empty = true;
+      return;
+    }
+    this.origin = String(value);
+    this.number = Number(value);
+  }
+  (0,_babel_runtime_helpers_esm_createClass__WEBPACK_IMPORTED_MODULE_1__["default"])(NumberDecimal, [{
+    key: "negate",
+    value: function negate() {
+      return new NumberDecimal(-this.toNumber());
+    }
+  }, {
+    key: "add",
+    value: function add(value) {
+      if (this.isInvalidate()) {
+        return new NumberDecimal(value);
+      }
+      var target = Number(value);
+      if (Number.isNaN(target)) {
+        return this;
+      }
+      var number = this.number + target;
+
+      // [Legacy] Back to safe integer
+      if (number > Number.MAX_SAFE_INTEGER) {
+        return new NumberDecimal(Number.MAX_SAFE_INTEGER);
+      }
+      if (number < Number.MIN_SAFE_INTEGER) {
+        return new NumberDecimal(Number.MIN_SAFE_INTEGER);
+      }
+      var maxPrecision = Math.max((0,_numberUtil__WEBPACK_IMPORTED_MODULE_3__.getNumberPrecision)(this.number), (0,_numberUtil__WEBPACK_IMPORTED_MODULE_3__.getNumberPrecision)(target));
+      return new NumberDecimal(number.toFixed(maxPrecision));
+    }
+  }, {
+    key: "multi",
+    value: function multi(value) {
+      var target = Number(value);
+      if (this.isInvalidate() || Number.isNaN(target)) {
+        return new NumberDecimal(NaN);
+      }
+      var number = this.number * target;
+
+      // [Legacy] Back to safe integer
+      if (number > Number.MAX_SAFE_INTEGER) {
+        return new NumberDecimal(Number.MAX_SAFE_INTEGER);
+      }
+      if (number < Number.MIN_SAFE_INTEGER) {
+        return new NumberDecimal(Number.MIN_SAFE_INTEGER);
+      }
+      var maxPrecision = Math.max((0,_numberUtil__WEBPACK_IMPORTED_MODULE_3__.getNumberPrecision)(this.number), (0,_numberUtil__WEBPACK_IMPORTED_MODULE_3__.getNumberPrecision)(target));
+      return new NumberDecimal(number.toFixed(maxPrecision));
+    }
+  }, {
+    key: "isEmpty",
+    value: function isEmpty() {
+      return this.empty;
+    }
+  }, {
+    key: "isNaN",
+    value: function isNaN() {
+      return Number.isNaN(this.number);
+    }
+  }, {
+    key: "isInvalidate",
+    value: function isInvalidate() {
+      return this.isEmpty() || this.isNaN();
+    }
+  }, {
+    key: "equals",
+    value: function equals(target) {
+      return this.toNumber() === (target === null || target === void 0 ? void 0 : target.toNumber());
+    }
+  }, {
+    key: "lessEquals",
+    value: function lessEquals(target) {
+      return this.add(target.negate().toString()).toNumber() <= 0;
+    }
+  }, {
+    key: "toNumber",
+    value: function toNumber() {
+      return this.number;
+    }
+  }, {
+    key: "toString",
+    value: function toString() {
+      var safe = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+      if (!safe) {
+        return this.origin;
+      }
+      if (this.isInvalidate()) {
+        return '';
+      }
+      return (0,_numberUtil__WEBPACK_IMPORTED_MODULE_3__.num2str)(this.number);
+    }
+  }]);
+  return NumberDecimal;
+}();
+
+
+/***/ }),
+
+/***/ "./node_modules/@rc-component/mini-decimal/es/index.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/@rc-component/mini-decimal/es/index.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BigIntDecimal: () => (/* reexport safe */ _MiniDecimal__WEBPACK_IMPORTED_MODULE_0__.BigIntDecimal),
+/* harmony export */   NumberDecimal: () => (/* reexport safe */ _MiniDecimal__WEBPACK_IMPORTED_MODULE_0__.NumberDecimal),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   getNumberPrecision: () => (/* reexport safe */ _numberUtil__WEBPACK_IMPORTED_MODULE_1__.getNumberPrecision),
+/* harmony export */   num2str: () => (/* reexport safe */ _numberUtil__WEBPACK_IMPORTED_MODULE_1__.num2str),
+/* harmony export */   toFixed: () => (/* reexport safe */ _MiniDecimal__WEBPACK_IMPORTED_MODULE_0__.toFixed),
+/* harmony export */   trimNumber: () => (/* reexport safe */ _numberUtil__WEBPACK_IMPORTED_MODULE_1__.trimNumber),
+/* harmony export */   validateNumber: () => (/* reexport safe */ _numberUtil__WEBPACK_IMPORTED_MODULE_1__.validateNumber)
+/* harmony export */ });
+/* harmony import */ var _MiniDecimal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MiniDecimal */ "./node_modules/@rc-component/mini-decimal/es/MiniDecimal.js");
+/* harmony import */ var _numberUtil__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./numberUtil */ "./node_modules/@rc-component/mini-decimal/es/numberUtil.js");
+
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_MiniDecimal__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+/***/ }),
+
+/***/ "./node_modules/@rc-component/mini-decimal/es/numberUtil.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@rc-component/mini-decimal/es/numberUtil.js ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getNumberPrecision: () => (/* binding */ getNumberPrecision),
+/* harmony export */   isE: () => (/* binding */ isE),
+/* harmony export */   isEmpty: () => (/* binding */ isEmpty),
+/* harmony export */   num2str: () => (/* binding */ num2str),
+/* harmony export */   trimNumber: () => (/* binding */ trimNumber),
+/* harmony export */   validateNumber: () => (/* binding */ validateNumber)
+/* harmony export */ });
+/* harmony import */ var _supportUtil__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./supportUtil */ "./node_modules/@rc-component/mini-decimal/es/supportUtil.js");
+
+function isEmpty(value) {
+  return !value && value !== 0 && !Number.isNaN(value) || !String(value).trim();
+}
+
+/**
+ * Format string number to readable number
+ */
+function trimNumber(numStr) {
+  var str = numStr.trim();
+  var negative = str.startsWith('-');
+  if (negative) {
+    str = str.slice(1);
+  }
+  str = str
+  // Remove decimal 0. `1.000` => `1.`, `1.100` => `1.1`
+  .replace(/(\.\d*[^0])0*$/, '$1')
+  // Remove useless decimal. `1.` => `1`
+  .replace(/\.0*$/, '')
+  // Remove integer 0. `0001` => `1`, 000.1' => `.1`
+  .replace(/^0+/, '');
+  if (str.startsWith('.')) {
+    str = "0".concat(str);
+  }
+  var trimStr = str || '0';
+  var splitNumber = trimStr.split('.');
+  var integerStr = splitNumber[0] || '0';
+  var decimalStr = splitNumber[1] || '0';
+  if (integerStr === '0' && decimalStr === '0') {
+    negative = false;
+  }
+  var negativeStr = negative ? '-' : '';
+  return {
+    negative: negative,
+    negativeStr: negativeStr,
+    trimStr: trimStr,
+    integerStr: integerStr,
+    decimalStr: decimalStr,
+    fullStr: "".concat(negativeStr).concat(trimStr)
+  };
+}
+function isE(number) {
+  var str = String(number);
+  return !Number.isNaN(Number(str)) && str.includes('e');
+}
+
+/**
+ * [Legacy] Convert 1e-9 to 0.000000001.
+ * This may lose some precision if user really want 1e-9.
+ */
+function getNumberPrecision(number) {
+  var numStr = String(number);
+  if (isE(number)) {
+    var precision = Number(numStr.slice(numStr.indexOf('e-') + 2));
+    var decimalMatch = numStr.match(/\.(\d+)/);
+    if (decimalMatch !== null && decimalMatch !== void 0 && decimalMatch[1]) {
+      precision += decimalMatch[1].length;
+    }
+    return precision;
+  }
+  return numStr.includes('.') && validateNumber(numStr) ? numStr.length - numStr.indexOf('.') - 1 : 0;
+}
+
+/**
+ * Convert number (includes scientific notation) to -xxx.yyy format
+ */
+function num2str(number) {
+  var numStr = String(number);
+  if (isE(number)) {
+    if (number > Number.MAX_SAFE_INTEGER) {
+      return String((0,_supportUtil__WEBPACK_IMPORTED_MODULE_0__.supportBigInt)() ? BigInt(number).toString() : Number.MAX_SAFE_INTEGER);
+    }
+    if (number < Number.MIN_SAFE_INTEGER) {
+      return String((0,_supportUtil__WEBPACK_IMPORTED_MODULE_0__.supportBigInt)() ? BigInt(number).toString() : Number.MIN_SAFE_INTEGER);
+    }
+    numStr = number.toFixed(getNumberPrecision(numStr));
+  }
+  return trimNumber(numStr).fullStr;
+}
+function validateNumber(num) {
+  if (typeof num === 'number') {
+    return !Number.isNaN(num);
+  }
+
+  // Empty
+  if (!num) {
+    return false;
+  }
+  return (
+    // Normal type: 11.28
+    /^\s*-?\d+(\.\d+)?\s*$/.test(num) ||
+    // Pre-number: 1.
+    /^\s*-?\d+\.\s*$/.test(num) ||
+    // Post-number: .1
+    /^\s*-?\.\d+\s*$/.test(num)
+  );
+}
+
+/***/ }),
+
+/***/ "./node_modules/@rc-component/mini-decimal/es/supportUtil.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@rc-component/mini-decimal/es/supportUtil.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   supportBigInt: () => (/* binding */ supportBigInt)
+/* harmony export */ });
+function supportBigInt() {
+  return typeof BigInt === 'function';
+}
 
 /***/ }),
 
@@ -34640,6 +35255,666 @@ const prepareComponentToken = token => ({
     componentCls: previewCls
   })), genPreviewMotion(imageToken)];
 }, prepareComponentToken));
+
+/***/ }),
+
+/***/ "./node_modules/antd/es/input-number/index.js":
+/*!****************************************************!*\
+  !*** ./node_modules/antd/es/input-number/index.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _ant_design_icons_es_icons_DownOutlined__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @ant-design/icons/es/icons/DownOutlined */ "./node_modules/@ant-design/icons/es/icons/DownOutlined.js");
+/* harmony import */ var _ant_design_icons_es_icons_UpOutlined__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons/es/icons/UpOutlined */ "./node_modules/@ant-design/icons/es/icons/UpOutlined.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var rc_input_number__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rc-input-number */ "./node_modules/rc-input-number/es/index.js");
+/* harmony import */ var _util_ContextIsolator__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../_util/ContextIsolator */ "./node_modules/antd/es/_util/ContextIsolator.js");
+/* harmony import */ var _util_statusUtils__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../_util/statusUtils */ "./node_modules/antd/es/_util/statusUtils.js");
+/* harmony import */ var _util_warning__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_util/warning */ "./node_modules/antd/es/_util/warning.js");
+/* harmony import */ var _config_provider__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../config-provider */ "./node_modules/antd/es/config-provider/context.js");
+/* harmony import */ var _config_provider__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../config-provider */ "./node_modules/antd/es/config-provider/index.js");
+/* harmony import */ var _config_provider_DisabledContext__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../config-provider/DisabledContext */ "./node_modules/antd/es/config-provider/DisabledContext.js");
+/* harmony import */ var _config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../config-provider/hooks/useCSSVarCls */ "./node_modules/antd/es/config-provider/hooks/useCSSVarCls.js");
+/* harmony import */ var _config_provider_hooks_useSize__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../config-provider/hooks/useSize */ "./node_modules/antd/es/config-provider/hooks/useSize.js");
+/* harmony import */ var _form_context__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../form/context */ "./node_modules/antd/es/form/context.js");
+/* harmony import */ var _form_hooks_useVariants__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../form/hooks/useVariants */ "./node_modules/antd/es/form/hooks/useVariants.js");
+/* harmony import */ var _space_Compact__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../space/Compact */ "./node_modules/antd/es/space/Compact.js");
+/* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./style */ "./node_modules/antd/es/input-number/style/index.js");
+"use client";
+
+var __rest = undefined && undefined.__rest || function (s, e) {
+  var t = {};
+  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
+  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
+  }
+  return t;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const InputNumber = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((props, ref) => {
+  if (true) {
+    const typeWarning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_3__.devUseWarning)('InputNumber');
+    typeWarning.deprecated(!('bordered' in props), 'bordered', 'variant');
+    typeWarning(!(props.type === 'number' && props.changeOnWheel), 'usage', 'When `type=number` is used together with `changeOnWheel`, changeOnWheel may not work properly. Please delete `type=number` if it is not necessary.');
+  }
+  const {
+    getPrefixCls,
+    direction
+  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider__WEBPACK_IMPORTED_MODULE_4__.ConfigContext);
+  const inputRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef(null);
+  react__WEBPACK_IMPORTED_MODULE_0__.useImperativeHandle(ref, () => inputRef.current);
+  const {
+      className,
+      rootClassName,
+      size: customizeSize,
+      disabled: customDisabled,
+      prefixCls: customizePrefixCls,
+      addonBefore,
+      addonAfter,
+      prefix,
+      suffix,
+      bordered,
+      readOnly,
+      status: customStatus,
+      controls,
+      variant: customVariant
+    } = props,
+    others = __rest(props, ["className", "rootClassName", "size", "disabled", "prefixCls", "addonBefore", "addonAfter", "prefix", "suffix", "bordered", "readOnly", "status", "controls", "variant"]);
+  const prefixCls = getPrefixCls('input-number', customizePrefixCls);
+  // Style
+  const rootCls = (0,_config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_5__["default"])(prefixCls);
+  const [wrapCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_6__["default"])(prefixCls, rootCls);
+  const {
+    compactSize,
+    compactItemClassnames
+  } = (0,_space_Compact__WEBPACK_IMPORTED_MODULE_7__.useCompactItemContext)(prefixCls, direction);
+  let upIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_UpOutlined__WEBPACK_IMPORTED_MODULE_8__["default"], {
+    className: `${prefixCls}-handler-up-inner`
+  });
+  let downIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_DownOutlined__WEBPACK_IMPORTED_MODULE_9__["default"], {
+    className: `${prefixCls}-handler-down-inner`
+  });
+  const controlsTemp = typeof controls === 'boolean' ? controls : undefined;
+  if (typeof controls === 'object') {
+    upIcon = typeof controls.upIcon === 'undefined' ? upIcon : (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
+      className: `${prefixCls}-handler-up-inner`
+    }, controls.upIcon));
+    downIcon = typeof controls.downIcon === 'undefined' ? downIcon : (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
+      className: `${prefixCls}-handler-down-inner`
+    }, controls.downIcon));
+  }
+  const {
+    hasFeedback,
+    status: contextStatus,
+    isFormItemInput,
+    feedbackIcon
+  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_form_context__WEBPACK_IMPORTED_MODULE_10__.FormItemInputContext);
+  const mergedStatus = (0,_util_statusUtils__WEBPACK_IMPORTED_MODULE_11__.getMergedStatus)(contextStatus, customStatus);
+  const mergedSize = (0,_config_provider_hooks_useSize__WEBPACK_IMPORTED_MODULE_12__["default"])(ctx => {
+    var _a;
+    return (_a = customizeSize !== null && customizeSize !== void 0 ? customizeSize : compactSize) !== null && _a !== void 0 ? _a : ctx;
+  });
+  // ===================== Disabled =====================
+  const disabled = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider_DisabledContext__WEBPACK_IMPORTED_MODULE_13__["default"]);
+  const mergedDisabled = customDisabled !== null && customDisabled !== void 0 ? customDisabled : disabled;
+  const [variant, enableVariantCls] = (0,_form_hooks_useVariants__WEBPACK_IMPORTED_MODULE_14__["default"])('inputNumber', customVariant, bordered);
+  const suffixNode = hasFeedback && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, feedbackIcon);
+  const inputNumberClass = classnames__WEBPACK_IMPORTED_MODULE_1___default()({
+    [`${prefixCls}-lg`]: mergedSize === 'large',
+    [`${prefixCls}-sm`]: mergedSize === 'small',
+    [`${prefixCls}-rtl`]: direction === 'rtl',
+    [`${prefixCls}-in-form-item`]: isFormItemInput
+  }, hashId);
+  const wrapperClassName = `${prefixCls}-group`;
+  const element = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(rc_input_number__WEBPACK_IMPORTED_MODULE_2__["default"], Object.assign({
+    ref: inputRef,
+    disabled: mergedDisabled,
+    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(cssVarCls, rootCls, className, rootClassName, compactItemClassnames),
+    upHandler: upIcon,
+    downHandler: downIcon,
+    prefixCls: prefixCls,
+    readOnly: readOnly,
+    controls: controlsTemp,
+    prefix: prefix,
+    suffix: suffixNode || suffix,
+    addonBefore: addonBefore && (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_util_ContextIsolator__WEBPACK_IMPORTED_MODULE_15__["default"], {
+      form: true,
+      space: true
+    }, addonBefore)),
+    addonAfter: addonAfter && (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_util_ContextIsolator__WEBPACK_IMPORTED_MODULE_15__["default"], {
+      form: true,
+      space: true
+    }, addonAfter)),
+    classNames: {
+      input: inputNumberClass,
+      variant: classnames__WEBPACK_IMPORTED_MODULE_1___default()({
+        [`${prefixCls}-${variant}`]: enableVariantCls
+      }, (0,_util_statusUtils__WEBPACK_IMPORTED_MODULE_11__.getStatusClassNames)(prefixCls, mergedStatus, hasFeedback)),
+      affixWrapper: classnames__WEBPACK_IMPORTED_MODULE_1___default()({
+        [`${prefixCls}-affix-wrapper-sm`]: mergedSize === 'small',
+        [`${prefixCls}-affix-wrapper-lg`]: mergedSize === 'large',
+        [`${prefixCls}-affix-wrapper-rtl`]: direction === 'rtl',
+        [`${prefixCls}-affix-wrapper-without-controls`]: controls === false
+      }, hashId),
+      wrapper: classnames__WEBPACK_IMPORTED_MODULE_1___default()({
+        [`${wrapperClassName}-rtl`]: direction === 'rtl'
+      }, hashId),
+      groupWrapper: classnames__WEBPACK_IMPORTED_MODULE_1___default()({
+        [`${prefixCls}-group-wrapper-sm`]: mergedSize === 'small',
+        [`${prefixCls}-group-wrapper-lg`]: mergedSize === 'large',
+        [`${prefixCls}-group-wrapper-rtl`]: direction === 'rtl',
+        [`${prefixCls}-group-wrapper-${variant}`]: enableVariantCls
+      }, (0,_util_statusUtils__WEBPACK_IMPORTED_MODULE_11__.getStatusClassNames)(`${prefixCls}-group-wrapper`, mergedStatus, hasFeedback), hashId)
+    }
+  }, others));
+  return wrapCSSVar(element);
+});
+const TypedInputNumber = InputNumber;
+/** @private Internal Component. Do not use in your production. */
+const PureInputNumber = props => (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_config_provider__WEBPACK_IMPORTED_MODULE_16__["default"], {
+  theme: {
+    components: {
+      InputNumber: {
+        handleVisible: true
+      }
+    }
+  }
+}, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(InputNumber, Object.assign({}, props))));
+if (true) {
+  TypedInputNumber.displayName = 'InputNumber';
+}
+TypedInputNumber._InternalPanelDoNotUseOrYouWillBeFired = PureInputNumber;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TypedInputNumber);
+
+/***/ }),
+
+/***/ "./node_modules/antd/es/input-number/style/index.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/antd/es/input-number/style/index.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   genRadiusStyle: () => (/* binding */ genRadiusStyle)
+/* harmony export */ });
+/* harmony import */ var _ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @ant-design/cssinjs */ "./node_modules/@ant-design/cssinjs/es/index.js");
+/* harmony import */ var _input_style__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../input/style */ "./node_modules/antd/es/input/style/index.js");
+/* harmony import */ var _input_style__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../input/style */ "./node_modules/antd/es/input/style/token.js");
+/* harmony import */ var _input_style_variants__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../input/style/variants */ "./node_modules/antd/es/input/style/variants.js");
+/* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../style */ "./node_modules/antd/es/style/index.js");
+/* harmony import */ var _style_compact_item__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../style/compact-item */ "./node_modules/antd/es/style/compact-item.js");
+/* harmony import */ var _theme_internal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../theme/internal */ "./node_modules/antd/es/theme/util/genStyleUtils.js");
+/* harmony import */ var _theme_internal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../theme/internal */ "./node_modules/@ant-design/cssinjs-utils/es/index.js");
+/* harmony import */ var _token__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./token */ "./node_modules/antd/es/input-number/style/token.js");
+
+
+
+
+
+
+
+const genRadiusStyle = (_ref, size) => {
+  let {
+    componentCls,
+    borderRadiusSM,
+    borderRadiusLG
+  } = _ref;
+  const borderRadius = size === 'lg' ? borderRadiusLG : borderRadiusSM;
+  return {
+    [`&-${size}`]: {
+      [`${componentCls}-handler-wrap`]: {
+        borderStartEndRadius: borderRadius,
+        borderEndEndRadius: borderRadius
+      },
+      [`${componentCls}-handler-up`]: {
+        borderStartEndRadius: borderRadius
+      },
+      [`${componentCls}-handler-down`]: {
+        borderEndEndRadius: borderRadius
+      }
+    }
+  };
+};
+const genInputNumberStyles = token => {
+  const {
+    componentCls,
+    lineWidth,
+    lineType,
+    borderRadius,
+    inputFontSizeSM,
+    inputFontSizeLG,
+    controlHeightLG,
+    controlHeightSM,
+    colorError,
+    paddingInlineSM,
+    paddingBlockSM,
+    paddingBlockLG,
+    paddingInlineLG,
+    colorTextDescription,
+    motionDurationMid,
+    handleHoverColor,
+    handleOpacity,
+    paddingInline,
+    paddingBlock,
+    handleBg,
+    handleActiveBg,
+    colorTextDisabled,
+    borderRadiusSM,
+    borderRadiusLG,
+    controlWidth,
+    handleBorderColor,
+    filledHandleBg,
+    lineHeightLG,
+    calc
+  } = token;
+  return [{
+    [componentCls]: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (0,_style__WEBPACK_IMPORTED_MODULE_1__.resetComponent)(token)), (0,_input_style__WEBPACK_IMPORTED_MODULE_2__.genBasicInputStyle)(token)), {
+      display: 'inline-block',
+      width: controlWidth,
+      margin: 0,
+      padding: 0,
+      borderRadius
+    }), (0,_input_style_variants__WEBPACK_IMPORTED_MODULE_3__.genOutlinedStyle)(token, {
+      [`${componentCls}-handler-wrap`]: {
+        background: handleBg,
+        [`${componentCls}-handler-down`]: {
+          borderBlockStart: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(lineWidth)} ${lineType} ${handleBorderColor}`
+        }
+      }
+    })), (0,_input_style_variants__WEBPACK_IMPORTED_MODULE_3__.genFilledStyle)(token, {
+      [`${componentCls}-handler-wrap`]: {
+        background: filledHandleBg,
+        [`${componentCls}-handler-down`]: {
+          borderBlockStart: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(lineWidth)} ${lineType} ${handleBorderColor}`
+        }
+      },
+      '&:focus-within': {
+        [`${componentCls}-handler-wrap`]: {
+          background: handleBg
+        }
+      }
+    })), (0,_input_style_variants__WEBPACK_IMPORTED_MODULE_3__.genUnderlinedStyle)(token, {
+      [`${componentCls}-handler-wrap`]: {
+        background: handleBg,
+        [`${componentCls}-handler-down`]: {
+          borderBlockStart: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(lineWidth)} ${lineType} ${handleBorderColor}`
+        }
+      }
+    })), (0,_input_style_variants__WEBPACK_IMPORTED_MODULE_3__.genBorderlessStyle)(token)), {
+      '&-rtl': {
+        direction: 'rtl',
+        [`${componentCls}-input`]: {
+          direction: 'rtl'
+        }
+      },
+      '&-lg': {
+        padding: 0,
+        fontSize: inputFontSizeLG,
+        lineHeight: lineHeightLG,
+        borderRadius: borderRadiusLG,
+        [`input${componentCls}-input`]: {
+          height: calc(controlHeightLG).sub(calc(lineWidth).mul(2)).equal(),
+          padding: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(paddingBlockLG)} ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(paddingInlineLG)}`
+        }
+      },
+      '&-sm': {
+        padding: 0,
+        fontSize: inputFontSizeSM,
+        borderRadius: borderRadiusSM,
+        [`input${componentCls}-input`]: {
+          height: calc(controlHeightSM).sub(calc(lineWidth).mul(2)).equal(),
+          padding: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(paddingBlockSM)} ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(paddingInlineSM)}`
+        }
+      },
+      // ===================== Out Of Range =====================
+      '&-out-of-range': {
+        [`${componentCls}-input-wrap`]: {
+          input: {
+            color: colorError
+          }
+        }
+      },
+      // Style for input-group: input with label, with button or dropdown...
+      '&-group': Object.assign(Object.assign(Object.assign({}, (0,_style__WEBPACK_IMPORTED_MODULE_1__.resetComponent)(token)), (0,_input_style__WEBPACK_IMPORTED_MODULE_2__.genInputGroupStyle)(token)), {
+        '&-wrapper': Object.assign(Object.assign(Object.assign({
+          display: 'inline-block',
+          textAlign: 'start',
+          verticalAlign: 'top',
+          [`${componentCls}-affix-wrapper`]: {
+            width: '100%'
+          },
+          // Size
+          '&-lg': {
+            [`${componentCls}-group-addon`]: {
+              borderRadius: borderRadiusLG,
+              fontSize: token.fontSizeLG
+            }
+          },
+          '&-sm': {
+            [`${componentCls}-group-addon`]: {
+              borderRadius: borderRadiusSM
+            }
+          }
+        }, (0,_input_style_variants__WEBPACK_IMPORTED_MODULE_3__.genOutlinedGroupStyle)(token)), (0,_input_style_variants__WEBPACK_IMPORTED_MODULE_3__.genFilledGroupStyle)(token)), {
+          // Fix the issue of using icons in Space Compact mode
+          // https://github.com/ant-design/ant-design/issues/45764
+          [`&:not(${componentCls}-compact-first-item):not(${componentCls}-compact-last-item)${componentCls}-compact-item`]: {
+            [`${componentCls}, ${componentCls}-group-addon`]: {
+              borderRadius: 0
+            }
+          },
+          [`&:not(${componentCls}-compact-last-item)${componentCls}-compact-first-item`]: {
+            [`${componentCls}, ${componentCls}-group-addon`]: {
+              borderStartEndRadius: 0,
+              borderEndEndRadius: 0
+            }
+          },
+          [`&:not(${componentCls}-compact-first-item)${componentCls}-compact-last-item`]: {
+            [`${componentCls}, ${componentCls}-group-addon`]: {
+              borderStartStartRadius: 0,
+              borderEndStartRadius: 0
+            }
+          }
+        })
+      }),
+      [`&-disabled ${componentCls}-input`]: {
+        cursor: 'not-allowed'
+      },
+      [componentCls]: {
+        '&-input': Object.assign(Object.assign(Object.assign(Object.assign({}, (0,_style__WEBPACK_IMPORTED_MODULE_1__.resetComponent)(token)), {
+          width: '100%',
+          padding: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(paddingBlock)} ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(paddingInline)}`,
+          textAlign: 'start',
+          backgroundColor: 'transparent',
+          border: 0,
+          borderRadius,
+          outline: 0,
+          transition: `all ${motionDurationMid} linear`,
+          appearance: 'textfield',
+          fontSize: 'inherit'
+        }), (0,_input_style__WEBPACK_IMPORTED_MODULE_2__.genPlaceholderStyle)(token.colorTextPlaceholder)), {
+          '&[type="number"]::-webkit-inner-spin-button, &[type="number"]::-webkit-outer-spin-button': {
+            margin: 0,
+            webkitAppearance: 'none',
+            appearance: 'none'
+          }
+        })
+      },
+      [`&:hover ${componentCls}-handler-wrap, &-focused ${componentCls}-handler-wrap`]: {
+        width: token.handleWidth,
+        opacity: 1
+      }
+    })
+  },
+  // Handler
+  {
+    [componentCls]: Object.assign(Object.assign(Object.assign({
+      [`${componentCls}-handler-wrap`]: {
+        position: 'absolute',
+        insetBlockStart: 0,
+        insetInlineEnd: 0,
+        width: token.handleVisibleWidth,
+        opacity: handleOpacity,
+        height: '100%',
+        borderStartStartRadius: 0,
+        borderStartEndRadius: borderRadius,
+        borderEndEndRadius: borderRadius,
+        borderEndStartRadius: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        transition: `all ${motionDurationMid}`,
+        overflow: 'hidden',
+        // Fix input number inside Menu makes icon too large
+        // We arise the selector priority by nest selector here
+        // https://github.com/ant-design/ant-design/issues/14367
+        [`${componentCls}-handler`]: {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flex: 'auto',
+          height: '40%',
+          [`
+              ${componentCls}-handler-up-inner,
+              ${componentCls}-handler-down-inner
+            `]: {
+            marginInlineEnd: 0,
+            fontSize: token.handleFontSize
+          }
+        }
+      },
+      [`${componentCls}-handler`]: {
+        height: '50%',
+        overflow: 'hidden',
+        color: colorTextDescription,
+        fontWeight: 'bold',
+        lineHeight: 0,
+        textAlign: 'center',
+        cursor: 'pointer',
+        borderInlineStart: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(lineWidth)} ${lineType} ${handleBorderColor}`,
+        transition: `all ${motionDurationMid} linear`,
+        '&:active': {
+          background: handleActiveBg
+        },
+        // Hover
+        '&:hover': {
+          height: `60%`,
+          [`
+              ${componentCls}-handler-up-inner,
+              ${componentCls}-handler-down-inner
+            `]: {
+            color: handleHoverColor
+          }
+        },
+        '&-up-inner, &-down-inner': Object.assign(Object.assign({}, (0,_style__WEBPACK_IMPORTED_MODULE_1__.resetIcon)()), {
+          color: colorTextDescription,
+          transition: `all ${motionDurationMid} linear`,
+          userSelect: 'none'
+        })
+      },
+      [`${componentCls}-handler-up`]: {
+        borderStartEndRadius: borderRadius
+      },
+      [`${componentCls}-handler-down`]: {
+        borderEndEndRadius: borderRadius
+      }
+    }, genRadiusStyle(token, 'lg')), genRadiusStyle(token, 'sm')), {
+      // Disabled
+      '&-disabled, &-readonly': {
+        [`${componentCls}-handler-wrap`]: {
+          display: 'none'
+        },
+        [`${componentCls}-input`]: {
+          color: 'inherit'
+        }
+      },
+      [`
+          ${componentCls}-handler-up-disabled,
+          ${componentCls}-handler-down-disabled
+        `]: {
+        cursor: 'not-allowed'
+      },
+      [`
+          ${componentCls}-handler-up-disabled:hover &-handler-up-inner,
+          ${componentCls}-handler-down-disabled:hover &-handler-down-inner
+        `]: {
+        color: colorTextDisabled
+      }
+    })
+  }];
+};
+const genAffixWrapperStyles = token => {
+  const {
+    componentCls,
+    paddingBlock,
+    paddingInline,
+    inputAffixPadding,
+    controlWidth,
+    borderRadiusLG,
+    borderRadiusSM,
+    paddingInlineLG,
+    paddingInlineSM,
+    paddingBlockLG,
+    paddingBlockSM,
+    motionDurationMid
+  } = token;
+  return {
+    [`${componentCls}-affix-wrapper`]: Object.assign(Object.assign({
+      [`input${componentCls}-input`]: {
+        padding: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(paddingBlock)} 0`
+      }
+    }, (0,_input_style__WEBPACK_IMPORTED_MODULE_2__.genBasicInputStyle)(token)), {
+      // or number handler will cover form status
+      position: 'relative',
+      display: 'inline-flex',
+      alignItems: 'center',
+      width: controlWidth,
+      padding: 0,
+      paddingInlineStart: paddingInline,
+      '&-lg': {
+        borderRadius: borderRadiusLG,
+        paddingInlineStart: paddingInlineLG,
+        [`input${componentCls}-input`]: {
+          padding: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(paddingBlockLG)} 0`
+        }
+      },
+      '&-sm': {
+        borderRadius: borderRadiusSM,
+        paddingInlineStart: paddingInlineSM,
+        [`input${componentCls}-input`]: {
+          padding: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(paddingBlockSM)} 0`
+        }
+      },
+      [`&:not(${componentCls}-disabled):hover`]: {
+        zIndex: 1
+      },
+      '&-focused, &:focus': {
+        zIndex: 1
+      },
+      [`&-disabled > ${componentCls}-disabled`]: {
+        background: 'transparent'
+      },
+      [`> div${componentCls}`]: {
+        width: '100%',
+        border: 'none',
+        outline: 'none',
+        [`&${componentCls}-focused`]: {
+          boxShadow: 'none !important'
+        }
+      },
+      '&::before': {
+        display: 'inline-block',
+        width: 0,
+        visibility: 'hidden',
+        content: '"\\a0"'
+      },
+      [`${componentCls}-handler-wrap`]: {
+        zIndex: 2
+      },
+      [componentCls]: {
+        position: 'static',
+        color: 'inherit',
+        '&-prefix, &-suffix': {
+          display: 'flex',
+          flex: 'none',
+          alignItems: 'center',
+          pointerEvents: 'none'
+        },
+        '&-prefix': {
+          marginInlineEnd: inputAffixPadding
+        },
+        '&-suffix': {
+          insetBlockStart: 0,
+          insetInlineEnd: 0,
+          height: '100%',
+          marginInlineEnd: paddingInline,
+          marginInlineStart: inputAffixPadding,
+          transition: `margin ${motionDurationMid}`
+        }
+      },
+      [`&:hover ${componentCls}-handler-wrap, &-focused ${componentCls}-handler-wrap`]: {
+        width: token.handleWidth,
+        opacity: 1
+      },
+      [`&:not(${componentCls}-affix-wrapper-without-controls):hover ${componentCls}-suffix`]: {
+        marginInlineEnd: token.calc(token.handleWidth).add(paddingInline).equal()
+      }
+    })
+  };
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_theme_internal__WEBPACK_IMPORTED_MODULE_4__.genStyleHooks)('InputNumber', token => {
+  const inputNumberToken = (0,_theme_internal__WEBPACK_IMPORTED_MODULE_5__.mergeToken)(token, (0,_input_style__WEBPACK_IMPORTED_MODULE_6__.initInputToken)(token));
+  return [genInputNumberStyles(inputNumberToken), genAffixWrapperStyles(inputNumberToken),
+  // =====================================================
+  // ==             Space Compact                       ==
+  // =====================================================
+  (0,_style_compact_item__WEBPACK_IMPORTED_MODULE_7__.genCompactItemStyle)(inputNumberToken)];
+}, _token__WEBPACK_IMPORTED_MODULE_8__.prepareComponentToken, {
+  unitless: {
+    handleOpacity: true
+  }
+}));
+
+/***/ }),
+
+/***/ "./node_modules/antd/es/input-number/style/token.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/antd/es/input-number/style/token.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   prepareComponentToken: () => (/* binding */ prepareComponentToken)
+/* harmony export */ });
+/* harmony import */ var _ant_design_fast_color__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @ant-design/fast-color */ "./node_modules/@ant-design/fast-color/es/index.js");
+/* harmony import */ var _input_style_token__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../input/style/token */ "./node_modules/antd/es/input/style/token.js");
+
+
+const prepareComponentToken = token => {
+  var _a;
+  const handleVisible = (_a = token.handleVisible) !== null && _a !== void 0 ? _a : 'auto';
+  const handleWidth = token.controlHeightSM - token.lineWidth * 2;
+  return Object.assign(Object.assign({}, (0,_input_style_token__WEBPACK_IMPORTED_MODULE_1__.initComponentToken)(token)), {
+    controlWidth: 90,
+    handleWidth,
+    handleFontSize: token.fontSize / 2,
+    handleVisible,
+    handleActiveBg: token.colorFillAlter,
+    handleBg: token.colorBgContainer,
+    filledHandleBg: new _ant_design_fast_color__WEBPACK_IMPORTED_MODULE_0__.FastColor(token.colorFillSecondary).onBackground(token.colorBgContainer).toHexString(),
+    handleHoverColor: token.colorPrimary,
+    handleBorderColor: token.colorBorder,
+    handleOpacity: handleVisible === true ? 1 : 0,
+    handleVisibleWidth: handleVisible === true ? handleWidth : 0
+  });
+};
 
 /***/ }),
 
@@ -102008,6 +103283,894 @@ function isImageValid(src) {
 
 /***/ }),
 
+/***/ "./node_modules/rc-input-number/es/InputNumber.js":
+/*!********************************************************!*\
+  !*** ./node_modules/rc-input-number/es/InputNumber.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_esm_typeof__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/esm/typeof */ "./node_modules/@babel/runtime/helpers/esm/typeof.js");
+/* harmony import */ var _babel_runtime_helpers_esm_slicedToArray__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/esm/slicedToArray */ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js");
+/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutProperties */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js");
+/* harmony import */ var _rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @rc-component/mini-decimal */ "./node_modules/@rc-component/mini-decimal/es/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var rc_input__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! rc-input */ "./node_modules/rc-input/es/index.js");
+/* harmony import */ var rc_util_es_hooks_useLayoutEffect__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! rc-util/es/hooks/useLayoutEffect */ "./node_modules/rc-util/es/hooks/useLayoutEffect.js");
+/* harmony import */ var rc_util_es_proxyObject__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! rc-util/es/proxyObject */ "./node_modules/rc-util/es/proxyObject.js");
+/* harmony import */ var rc_util_es_ref__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! rc-util/es/ref */ "./node_modules/rc-util/es/ref.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _hooks_useCursor__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./hooks/useCursor */ "./node_modules/rc-input-number/es/hooks/useCursor.js");
+/* harmony import */ var _StepHandler__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./StepHandler */ "./node_modules/rc-input-number/es/StepHandler.js");
+/* harmony import */ var _utils_numberUtil__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./utils/numberUtil */ "./node_modules/rc-input-number/es/utils/numberUtil.js");
+/* harmony import */ var rc_input_es_utils_commonUtils__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! rc-input/es/utils/commonUtils */ "./node_modules/rc-input/es/utils/commonUtils.js");
+/* harmony import */ var _hooks_useFrame__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./hooks/useFrame */ "./node_modules/rc-input-number/es/hooks/useFrame.js");
+
+
+
+
+
+var _excluded = ["prefixCls", "className", "style", "min", "max", "step", "defaultValue", "value", "disabled", "readOnly", "upHandler", "downHandler", "keyboard", "changeOnWheel", "controls", "classNames", "stringMode", "parser", "formatter", "precision", "decimalSeparator", "onChange", "onInput", "onPressEnter", "onStep", "changeOnBlur", "domRef"],
+  _excluded2 = ["disabled", "style", "prefixCls", "value", "prefix", "suffix", "addonBefore", "addonAfter", "className", "classNames"];
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * We support `stringMode` which need handle correct type when user call in onChange
+ * format max or min value
+ * 1. if isInvalid return null
+ * 2. if precision is undefined, return decimal
+ * 3. format with precision
+ *    I. if max > 0, round down with precision. Example: max= 3.5, precision=0  afterFormat: 3
+ *    II. if max < 0, round up with precision. Example: max= -3.5, precision=0  afterFormat: -4
+ *    III. if min > 0, round up with precision. Example: min= 3.5, precision=0  afterFormat: 4
+ *    IV. if min < 0, round down with precision. Example: max= -3.5, precision=0  afterFormat: -3
+ */
+var getDecimalValue = function getDecimalValue(stringMode, decimalValue) {
+  if (stringMode || decimalValue.isEmpty()) {
+    return decimalValue.toString();
+  }
+  return decimalValue.toNumber();
+};
+var getDecimalIfValidate = function getDecimalIfValidate(value) {
+  var decimal = (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__["default"])(value);
+  return decimal.isInvalidate() ? null : decimal;
+};
+var InternalInputNumber = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_11__.forwardRef(function (props, ref) {
+  var prefixCls = props.prefixCls,
+    className = props.className,
+    style = props.style,
+    min = props.min,
+    max = props.max,
+    _props$step = props.step,
+    step = _props$step === void 0 ? 1 : _props$step,
+    defaultValue = props.defaultValue,
+    value = props.value,
+    disabled = props.disabled,
+    readOnly = props.readOnly,
+    upHandler = props.upHandler,
+    downHandler = props.downHandler,
+    keyboard = props.keyboard,
+    _props$changeOnWheel = props.changeOnWheel,
+    changeOnWheel = _props$changeOnWheel === void 0 ? false : _props$changeOnWheel,
+    _props$controls = props.controls,
+    controls = _props$controls === void 0 ? true : _props$controls,
+    classNames = props.classNames,
+    stringMode = props.stringMode,
+    parser = props.parser,
+    formatter = props.formatter,
+    precision = props.precision,
+    decimalSeparator = props.decimalSeparator,
+    onChange = props.onChange,
+    onInput = props.onInput,
+    onPressEnter = props.onPressEnter,
+    onStep = props.onStep,
+    _props$changeOnBlur = props.changeOnBlur,
+    changeOnBlur = _props$changeOnBlur === void 0 ? true : _props$changeOnBlur,
+    domRef = props.domRef,
+    inputProps = (0,_babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_4__["default"])(props, _excluded);
+  var inputClassName = "".concat(prefixCls, "-input");
+  var inputRef = react__WEBPACK_IMPORTED_MODULE_11__.useRef(null);
+  var _React$useState = react__WEBPACK_IMPORTED_MODULE_11__.useState(false),
+    _React$useState2 = (0,_babel_runtime_helpers_esm_slicedToArray__WEBPACK_IMPORTED_MODULE_3__["default"])(_React$useState, 2),
+    focus = _React$useState2[0],
+    setFocus = _React$useState2[1];
+  var userTypingRef = react__WEBPACK_IMPORTED_MODULE_11__.useRef(false);
+  var compositionRef = react__WEBPACK_IMPORTED_MODULE_11__.useRef(false);
+  var shiftKeyRef = react__WEBPACK_IMPORTED_MODULE_11__.useRef(false);
+
+  // ============================ Value =============================
+  // Real value control
+  var _React$useState3 = react__WEBPACK_IMPORTED_MODULE_11__.useState(function () {
+      return (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__["default"])(value !== null && value !== void 0 ? value : defaultValue);
+    }),
+    _React$useState4 = (0,_babel_runtime_helpers_esm_slicedToArray__WEBPACK_IMPORTED_MODULE_3__["default"])(_React$useState3, 2),
+    decimalValue = _React$useState4[0],
+    setDecimalValue = _React$useState4[1];
+  function setUncontrolledDecimalValue(newDecimal) {
+    if (value === undefined) {
+      setDecimalValue(newDecimal);
+    }
+  }
+
+  // ====================== Parser & Formatter ======================
+  /**
+   * `precision` is used for formatter & onChange.
+   * It will auto generate by `value` & `step`.
+   * But it will not block user typing.
+   *
+   * Note: Auto generate `precision` is used for legacy logic.
+   * We should remove this since we already support high precision with BigInt.
+   *
+   * @param number  Provide which number should calculate precision
+   * @param userTyping  Change by user typing
+   */
+  var getPrecision = react__WEBPACK_IMPORTED_MODULE_11__.useCallback(function (numStr, userTyping) {
+    if (userTyping) {
+      return undefined;
+    }
+    if (precision >= 0) {
+      return precision;
+    }
+    return Math.max((0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__.getNumberPrecision)(numStr), (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__.getNumberPrecision)(step));
+  }, [precision, step]);
+
+  // >>> Parser
+  var mergedParser = react__WEBPACK_IMPORTED_MODULE_11__.useCallback(function (num) {
+    var numStr = String(num);
+    if (parser) {
+      return parser(numStr);
+    }
+    var parsedStr = numStr;
+    if (decimalSeparator) {
+      parsedStr = parsedStr.replace(decimalSeparator, '.');
+    }
+
+    // [Legacy] We still support auto convert `$ 123,456` to `123456`
+    return parsedStr.replace(/[^\w.-]+/g, '');
+  }, [parser, decimalSeparator]);
+
+  // >>> Formatter
+  var inputValueRef = react__WEBPACK_IMPORTED_MODULE_11__.useRef('');
+  var mergedFormatter = react__WEBPACK_IMPORTED_MODULE_11__.useCallback(function (number, userTyping) {
+    if (formatter) {
+      return formatter(number, {
+        userTyping: userTyping,
+        input: String(inputValueRef.current)
+      });
+    }
+    var str = typeof number === 'number' ? (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__.num2str)(number) : number;
+
+    // User typing will not auto format with precision directly
+    if (!userTyping) {
+      var mergedPrecision = getPrecision(str, userTyping);
+      if ((0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__.validateNumber)(str) && (decimalSeparator || mergedPrecision >= 0)) {
+        // Separator
+        var separatorStr = decimalSeparator || '.';
+        str = (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__.toFixed)(str, separatorStr, mergedPrecision);
+      }
+    }
+    return str;
+  }, [formatter, getPrecision, decimalSeparator]);
+
+  // ========================== InputValue ==========================
+  /**
+   * Input text value control
+   *
+   * User can not update input content directly. It updates with follow rules by priority:
+   *  1. controlled `value` changed
+   *    * [SPECIAL] Typing like `1.` should not immediately convert to `1`
+   *  2. User typing with format (not precision)
+   *  3. Blur or Enter trigger revalidate
+   */
+  var _React$useState5 = react__WEBPACK_IMPORTED_MODULE_11__.useState(function () {
+      var initValue = defaultValue !== null && defaultValue !== void 0 ? defaultValue : value;
+      if (decimalValue.isInvalidate() && ['string', 'number'].includes((0,_babel_runtime_helpers_esm_typeof__WEBPACK_IMPORTED_MODULE_2__["default"])(initValue))) {
+        return Number.isNaN(initValue) ? '' : initValue;
+      }
+      return mergedFormatter(decimalValue.toString(), false);
+    }),
+    _React$useState6 = (0,_babel_runtime_helpers_esm_slicedToArray__WEBPACK_IMPORTED_MODULE_3__["default"])(_React$useState5, 2),
+    inputValue = _React$useState6[0],
+    setInternalInputValue = _React$useState6[1];
+  inputValueRef.current = inputValue;
+
+  // Should always be string
+  function setInputValue(newValue, userTyping) {
+    setInternalInputValue(mergedFormatter(
+    // Invalidate number is sometime passed by external control, we should let it go
+    // Otherwise is controlled by internal interactive logic which check by userTyping
+    // You can ref 'show limited value when input is not focused' test for more info.
+    newValue.isInvalidate() ? newValue.toString(false) : newValue.toString(!userTyping), userTyping));
+  }
+
+  // >>> Max & Min limit
+  var maxDecimal = react__WEBPACK_IMPORTED_MODULE_11__.useMemo(function () {
+    return getDecimalIfValidate(max);
+  }, [max, precision]);
+  var minDecimal = react__WEBPACK_IMPORTED_MODULE_11__.useMemo(function () {
+    return getDecimalIfValidate(min);
+  }, [min, precision]);
+  var upDisabled = react__WEBPACK_IMPORTED_MODULE_11__.useMemo(function () {
+    if (!maxDecimal || !decimalValue || decimalValue.isInvalidate()) {
+      return false;
+    }
+    return maxDecimal.lessEquals(decimalValue);
+  }, [maxDecimal, decimalValue]);
+  var downDisabled = react__WEBPACK_IMPORTED_MODULE_11__.useMemo(function () {
+    if (!minDecimal || !decimalValue || decimalValue.isInvalidate()) {
+      return false;
+    }
+    return decimalValue.lessEquals(minDecimal);
+  }, [minDecimal, decimalValue]);
+
+  // Cursor controller
+  var _useCursor = (0,_hooks_useCursor__WEBPACK_IMPORTED_MODULE_12__["default"])(inputRef.current, focus),
+    _useCursor2 = (0,_babel_runtime_helpers_esm_slicedToArray__WEBPACK_IMPORTED_MODULE_3__["default"])(_useCursor, 2),
+    recordCursor = _useCursor2[0],
+    restoreCursor = _useCursor2[1];
+
+  // ============================= Data =============================
+  /**
+   * Find target value closet within range.
+   * e.g. [11, 28]:
+   *    3  => 11
+   *    23 => 23
+   *    99 => 28
+   */
+  var getRangeValue = function getRangeValue(target) {
+    // target > max
+    if (maxDecimal && !target.lessEquals(maxDecimal)) {
+      return maxDecimal;
+    }
+
+    // target < min
+    if (minDecimal && !minDecimal.lessEquals(target)) {
+      return minDecimal;
+    }
+    return null;
+  };
+
+  /**
+   * Check value is in [min, max] range
+   */
+  var isInRange = function isInRange(target) {
+    return !getRangeValue(target);
+  };
+
+  /**
+   * Trigger `onChange` if value validated and not equals of origin.
+   * Return the value that re-align in range.
+   */
+  var triggerValueUpdate = function triggerValueUpdate(newValue, userTyping) {
+    var updateValue = newValue;
+    var isRangeValidate = isInRange(updateValue) || updateValue.isEmpty();
+
+    // Skip align value when trigger value is empty.
+    // We just trigger onChange(null)
+    // This should not block user typing
+    if (!updateValue.isEmpty() && !userTyping) {
+      // Revert value in range if needed
+      updateValue = getRangeValue(updateValue) || updateValue;
+      isRangeValidate = true;
+    }
+    if (!readOnly && !disabled && isRangeValidate) {
+      var numStr = updateValue.toString();
+      var mergedPrecision = getPrecision(numStr, userTyping);
+      if (mergedPrecision >= 0) {
+        updateValue = (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__["default"])((0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__.toFixed)(numStr, '.', mergedPrecision));
+
+        // When to fixed. The value may out of min & max range.
+        // 4 in [0, 3.8] => 3.8 => 4 (toFixed)
+        if (!isInRange(updateValue)) {
+          updateValue = (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__["default"])((0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__.toFixed)(numStr, '.', mergedPrecision, true));
+        }
+      }
+
+      // Trigger event
+      if (!updateValue.equals(decimalValue)) {
+        setUncontrolledDecimalValue(updateValue);
+        onChange === null || onChange === void 0 || onChange(updateValue.isEmpty() ? null : getDecimalValue(stringMode, updateValue));
+
+        // Reformat input if value is not controlled
+        if (value === undefined) {
+          setInputValue(updateValue, userTyping);
+        }
+      }
+      return updateValue;
+    }
+    return decimalValue;
+  };
+
+  // ========================== User Input ==========================
+  var onNextPromise = (0,_hooks_useFrame__WEBPACK_IMPORTED_MODULE_16__["default"])();
+
+  // >>> Collect input value
+  var collectInputValue = function collectInputValue(inputStr) {
+    recordCursor();
+
+    // Update inputValue in case input can not parse as number
+    // Refresh ref value immediately since it may used by formatter
+    inputValueRef.current = inputStr;
+    setInternalInputValue(inputStr);
+
+    // Parse number
+    if (!compositionRef.current) {
+      var finalValue = mergedParser(inputStr);
+      var finalDecimal = (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__["default"])(finalValue);
+      if (!finalDecimal.isNaN()) {
+        triggerValueUpdate(finalDecimal, true);
+      }
+    }
+
+    // Trigger onInput later to let user customize value if they want to handle something after onChange
+    onInput === null || onInput === void 0 || onInput(inputStr);
+
+    // optimize for chinese input experience
+    // https://github.com/ant-design/ant-design/issues/8196
+    onNextPromise(function () {
+      var nextInputStr = inputStr;
+      if (!parser) {
+        nextInputStr = inputStr.replace(/。/g, '.');
+      }
+      if (nextInputStr !== inputStr) {
+        collectInputValue(nextInputStr);
+      }
+    });
+  };
+
+  // >>> Composition
+  var onCompositionStart = function onCompositionStart() {
+    compositionRef.current = true;
+  };
+  var onCompositionEnd = function onCompositionEnd() {
+    compositionRef.current = false;
+    collectInputValue(inputRef.current.value);
+  };
+
+  // >>> Input
+  var onInternalInput = function onInternalInput(e) {
+    collectInputValue(e.target.value);
+  };
+
+  // ============================= Step =============================
+  var onInternalStep = function onInternalStep(up) {
+    var _inputRef$current;
+    // Ignore step since out of range
+    if (up && upDisabled || !up && downDisabled) {
+      return;
+    }
+
+    // Clear typing status since it may be caused by up & down key.
+    // We should sync with input value.
+    userTypingRef.current = false;
+    var stepDecimal = (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__["default"])(shiftKeyRef.current ? (0,_utils_numberUtil__WEBPACK_IMPORTED_MODULE_14__.getDecupleSteps)(step) : step);
+    if (!up) {
+      stepDecimal = stepDecimal.negate();
+    }
+    var target = (decimalValue || (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__["default"])(0)).add(stepDecimal.toString());
+    var updatedValue = triggerValueUpdate(target, false);
+    onStep === null || onStep === void 0 || onStep(getDecimalValue(stringMode, updatedValue), {
+      offset: shiftKeyRef.current ? (0,_utils_numberUtil__WEBPACK_IMPORTED_MODULE_14__.getDecupleSteps)(step) : step,
+      type: up ? 'up' : 'down'
+    });
+    (_inputRef$current = inputRef.current) === null || _inputRef$current === void 0 || _inputRef$current.focus();
+  };
+
+  // ============================ Flush =============================
+  /**
+   * Flush current input content to trigger value change & re-formatter input if needed.
+   * This will always flush input value for update.
+   * If it's invalidate, will fallback to last validate value.
+   */
+  var flushInputValue = function flushInputValue(userTyping) {
+    var parsedValue = (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__["default"])(mergedParser(inputValue));
+    var formatValue;
+    if (!parsedValue.isNaN()) {
+      // Only validate value or empty value can be re-fill to inputValue
+      // Reassign the formatValue within ranged of trigger control
+      formatValue = triggerValueUpdate(parsedValue, userTyping);
+    } else {
+      formatValue = triggerValueUpdate(decimalValue, userTyping);
+    }
+    if (value !== undefined) {
+      // Reset back with controlled value first
+      setInputValue(decimalValue, false);
+    } else if (!formatValue.isNaN()) {
+      // Reset input back since no validate value
+      setInputValue(formatValue, false);
+    }
+  };
+
+  // Solve the issue of the event triggering sequence when entering numbers in chinese input (Safari)
+  var onBeforeInput = function onBeforeInput() {
+    userTypingRef.current = true;
+  };
+  var onKeyDown = function onKeyDown(event) {
+    var key = event.key,
+      shiftKey = event.shiftKey;
+    userTypingRef.current = true;
+    shiftKeyRef.current = shiftKey;
+    if (key === 'Enter') {
+      if (!compositionRef.current) {
+        userTypingRef.current = false;
+      }
+      flushInputValue(false);
+      onPressEnter === null || onPressEnter === void 0 || onPressEnter(event);
+    }
+    if (keyboard === false) {
+      return;
+    }
+
+    // Do step
+    if (!compositionRef.current && ['Up', 'ArrowUp', 'Down', 'ArrowDown'].includes(key)) {
+      onInternalStep(key === 'Up' || key === 'ArrowUp');
+      event.preventDefault();
+    }
+  };
+  var onKeyUp = function onKeyUp() {
+    userTypingRef.current = false;
+    shiftKeyRef.current = false;
+  };
+  react__WEBPACK_IMPORTED_MODULE_11__.useEffect(function () {
+    if (changeOnWheel && focus) {
+      var onWheel = function onWheel(event) {
+        // moving mouse wheel rises wheel event with deltaY < 0
+        // scroll value grows from top to bottom, as screen Y coordinate
+        onInternalStep(event.deltaY < 0);
+        event.preventDefault();
+      };
+      var input = inputRef.current;
+      if (input) {
+        // React onWheel is passive and we can't preventDefault() in it.
+        // That's why we should subscribe with DOM listener
+        // https://stackoverflow.com/questions/63663025/react-onwheel-handler-cant-preventdefault-because-its-a-passive-event-listenev
+        input.addEventListener('wheel', onWheel, {
+          passive: false
+        });
+        return function () {
+          return input.removeEventListener('wheel', onWheel);
+        };
+      }
+    }
+  });
+
+  // >>> Focus & Blur
+  var onBlur = function onBlur() {
+    if (changeOnBlur) {
+      flushInputValue(false);
+    }
+    setFocus(false);
+    userTypingRef.current = false;
+  };
+
+  // ========================== Controlled ==========================
+  // Input by precision & formatter
+  (0,rc_util_es_hooks_useLayoutEffect__WEBPACK_IMPORTED_MODULE_8__.useLayoutUpdateEffect)(function () {
+    if (!decimalValue.isInvalidate()) {
+      setInputValue(decimalValue, false);
+    }
+  }, [precision, formatter]);
+
+  // Input by value
+  (0,rc_util_es_hooks_useLayoutEffect__WEBPACK_IMPORTED_MODULE_8__.useLayoutUpdateEffect)(function () {
+    var newValue = (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__["default"])(value);
+    setDecimalValue(newValue);
+    var currentParsedValue = (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_5__["default"])(mergedParser(inputValue));
+
+    // When user typing from `1.2` to `1.`, we should not convert to `1` immediately.
+    // But let it go if user set `formatter`
+    if (!newValue.equals(currentParsedValue) || !userTypingRef.current || formatter) {
+      // Update value as effect
+      setInputValue(newValue, userTypingRef.current);
+    }
+  }, [value]);
+
+  // ============================ Cursor ============================
+  (0,rc_util_es_hooks_useLayoutEffect__WEBPACK_IMPORTED_MODULE_8__.useLayoutUpdateEffect)(function () {
+    if (formatter) {
+      restoreCursor();
+    }
+  }, [inputValue]);
+
+  // ============================ Render ============================
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_11__.createElement("div", {
+    ref: domRef,
+    className: classnames__WEBPACK_IMPORTED_MODULE_6___default()(prefixCls, className, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])((0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])((0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])((0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])((0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])({}, "".concat(prefixCls, "-focused"), focus), "".concat(prefixCls, "-disabled"), disabled), "".concat(prefixCls, "-readonly"), readOnly), "".concat(prefixCls, "-not-a-number"), decimalValue.isNaN()), "".concat(prefixCls, "-out-of-range"), !decimalValue.isInvalidate() && !isInRange(decimalValue))),
+    style: style,
+    onFocus: function onFocus() {
+      setFocus(true);
+    },
+    onBlur: onBlur,
+    onKeyDown: onKeyDown,
+    onKeyUp: onKeyUp,
+    onCompositionStart: onCompositionStart,
+    onCompositionEnd: onCompositionEnd,
+    onBeforeInput: onBeforeInput
+  }, controls && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_11__.createElement(_StepHandler__WEBPACK_IMPORTED_MODULE_13__["default"], {
+    prefixCls: prefixCls,
+    upNode: upHandler,
+    downNode: downHandler,
+    upDisabled: upDisabled,
+    downDisabled: downDisabled,
+    onStep: onInternalStep
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_11__.createElement("div", {
+    className: "".concat(inputClassName, "-wrap")
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_11__.createElement("input", (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
+    autoComplete: "off",
+    role: "spinbutton",
+    "aria-valuemin": min,
+    "aria-valuemax": max,
+    "aria-valuenow": decimalValue.isInvalidate() ? null : decimalValue.toString(),
+    step: step
+  }, inputProps, {
+    ref: (0,rc_util_es_ref__WEBPACK_IMPORTED_MODULE_10__.composeRef)(inputRef, ref),
+    className: inputClassName,
+    value: inputValue,
+    onChange: onInternalInput,
+    disabled: disabled,
+    readOnly: readOnly
+  }))));
+});
+var InputNumber = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_11__.forwardRef(function (props, ref) {
+  var disabled = props.disabled,
+    style = props.style,
+    _props$prefixCls = props.prefixCls,
+    prefixCls = _props$prefixCls === void 0 ? 'rc-input-number' : _props$prefixCls,
+    value = props.value,
+    prefix = props.prefix,
+    suffix = props.suffix,
+    addonBefore = props.addonBefore,
+    addonAfter = props.addonAfter,
+    className = props.className,
+    classNames = props.classNames,
+    rest = (0,_babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_4__["default"])(props, _excluded2);
+  var holderRef = react__WEBPACK_IMPORTED_MODULE_11__.useRef(null);
+  var inputNumberDomRef = react__WEBPACK_IMPORTED_MODULE_11__.useRef(null);
+  var inputFocusRef = react__WEBPACK_IMPORTED_MODULE_11__.useRef(null);
+  var focus = function focus(option) {
+    if (inputFocusRef.current) {
+      (0,rc_input_es_utils_commonUtils__WEBPACK_IMPORTED_MODULE_15__.triggerFocus)(inputFocusRef.current, option);
+    }
+  };
+  react__WEBPACK_IMPORTED_MODULE_11__.useImperativeHandle(ref, function () {
+    return (0,rc_util_es_proxyObject__WEBPACK_IMPORTED_MODULE_9__["default"])(inputFocusRef.current, {
+      focus: focus,
+      nativeElement: holderRef.current.nativeElement || inputNumberDomRef.current
+    });
+  });
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_11__.createElement(rc_input__WEBPACK_IMPORTED_MODULE_7__.BaseInput, {
+    className: className,
+    triggerFocus: focus,
+    prefixCls: prefixCls,
+    value: value,
+    disabled: disabled,
+    style: style,
+    prefix: prefix,
+    suffix: suffix,
+    addonAfter: addonAfter,
+    addonBefore: addonBefore,
+    classNames: classNames,
+    components: {
+      affixWrapper: 'div',
+      groupWrapper: 'div',
+      wrapper: 'div',
+      groupAddon: 'div'
+    },
+    ref: holderRef
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_11__.createElement(InternalInputNumber, (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
+    prefixCls: prefixCls,
+    disabled: disabled,
+    ref: inputFocusRef,
+    domRef: inputNumberDomRef,
+    className: classNames === null || classNames === void 0 ? void 0 : classNames.input
+  }, rest)));
+});
+if (true) {
+  InputNumber.displayName = 'InputNumber';
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (InputNumber);
+
+/***/ }),
+
+/***/ "./node_modules/rc-input-number/es/StepHandler.js":
+/*!********************************************************!*\
+  !*** ./node_modules/rc-input-number/es/StepHandler.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ StepHandler)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var rc_util_es_hooks_useMobile__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rc-util/es/hooks/useMobile */ "./node_modules/rc-util/es/hooks/useMobile.js");
+/* harmony import */ var rc_util_es_raf__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! rc-util/es/raf */ "./node_modules/rc-util/es/raf.js");
+
+
+/* eslint-disable react/no-unknown-property */
+
+
+
+
+
+/**
+ * When click and hold on a button - the speed of auto changing the value.
+ */
+var STEP_INTERVAL = 200;
+
+/**
+ * When click and hold on a button - the delay before auto changing the value.
+ */
+var STEP_DELAY = 600;
+function StepHandler(_ref) {
+  var prefixCls = _ref.prefixCls,
+    upNode = _ref.upNode,
+    downNode = _ref.downNode,
+    upDisabled = _ref.upDisabled,
+    downDisabled = _ref.downDisabled,
+    onStep = _ref.onStep;
+  // ======================== Step ========================
+  var stepTimeoutRef = react__WEBPACK_IMPORTED_MODULE_2__.useRef();
+  var frameIds = react__WEBPACK_IMPORTED_MODULE_2__.useRef([]);
+  var onStepRef = react__WEBPACK_IMPORTED_MODULE_2__.useRef();
+  onStepRef.current = onStep;
+  var onStopStep = function onStopStep() {
+    clearTimeout(stepTimeoutRef.current);
+  };
+
+  // We will interval update step when hold mouse down
+  var onStepMouseDown = function onStepMouseDown(e, up) {
+    e.preventDefault();
+    onStopStep();
+    onStepRef.current(up);
+
+    // Loop step for interval
+    function loopStep() {
+      onStepRef.current(up);
+      stepTimeoutRef.current = setTimeout(loopStep, STEP_INTERVAL);
+    }
+
+    // First time press will wait some time to trigger loop step update
+    stepTimeoutRef.current = setTimeout(loopStep, STEP_DELAY);
+  };
+  react__WEBPACK_IMPORTED_MODULE_2__.useEffect(function () {
+    return function () {
+      onStopStep();
+      frameIds.current.forEach(function (id) {
+        return rc_util_es_raf__WEBPACK_IMPORTED_MODULE_5__["default"].cancel(id);
+      });
+    };
+  }, []);
+
+  // ======================= Render =======================
+  var isMobile = (0,rc_util_es_hooks_useMobile__WEBPACK_IMPORTED_MODULE_4__["default"])();
+  if (isMobile) {
+    return null;
+  }
+  var handlerClassName = "".concat(prefixCls, "-handler");
+  var upClassName = classnames__WEBPACK_IMPORTED_MODULE_3___default()(handlerClassName, "".concat(handlerClassName, "-up"), (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])({}, "".concat(handlerClassName, "-up-disabled"), upDisabled));
+  var downClassName = classnames__WEBPACK_IMPORTED_MODULE_3___default()(handlerClassName, "".concat(handlerClassName, "-down"), (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])({}, "".concat(handlerClassName, "-down-disabled"), downDisabled));
+
+  // fix: https://github.com/ant-design/ant-design/issues/43088
+  // In Safari, When we fire onmousedown and onmouseup events in quick succession, 
+  // there may be a problem that the onmouseup events are executed first, 
+  // resulting in a disordered program execution.
+  // So, we need to use requestAnimationFrame to ensure that the onmouseup event is executed after the onmousedown event.
+  var safeOnStopStep = function safeOnStopStep() {
+    return frameIds.current.push((0,rc_util_es_raf__WEBPACK_IMPORTED_MODULE_5__["default"])(onStopStep));
+  };
+  var sharedHandlerProps = {
+    unselectable: 'on',
+    role: 'button',
+    onMouseUp: safeOnStopStep,
+    onMouseLeave: safeOnStopStep
+  };
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement("div", {
+    className: "".concat(handlerClassName, "-wrap")
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement("span", (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, sharedHandlerProps, {
+    onMouseDown: function onMouseDown(e) {
+      onStepMouseDown(e, true);
+    },
+    "aria-label": "Increase Value",
+    "aria-disabled": upDisabled,
+    className: upClassName
+  }), upNode || /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement("span", {
+    unselectable: "on",
+    className: "".concat(prefixCls, "-handler-up-inner")
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement("span", (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, sharedHandlerProps, {
+    onMouseDown: function onMouseDown(e) {
+      onStepMouseDown(e, false);
+    },
+    "aria-label": "Decrease Value",
+    "aria-disabled": downDisabled,
+    className: downClassName
+  }), downNode || /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement("span", {
+    unselectable: "on",
+    className: "".concat(prefixCls, "-handler-down-inner")
+  })));
+}
+
+/***/ }),
+
+/***/ "./node_modules/rc-input-number/es/hooks/useCursor.js":
+/*!************************************************************!*\
+  !*** ./node_modules/rc-input-number/es/hooks/useCursor.js ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ useCursor)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var rc_util_es_warning__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rc-util/es/warning */ "./node_modules/rc-util/es/warning.js");
+
+
+/**
+ * Keep input cursor in the correct position if possible.
+ * Is this necessary since we have `formatter` which may mass the content?
+ */
+function useCursor(input, focused) {
+  var selectionRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
+  function recordCursor() {
+    // Record position
+    try {
+      var start = input.selectionStart,
+        end = input.selectionEnd,
+        value = input.value;
+      var beforeTxt = value.substring(0, start);
+      var afterTxt = value.substring(end);
+      selectionRef.current = {
+        start: start,
+        end: end,
+        value: value,
+        beforeTxt: beforeTxt,
+        afterTxt: afterTxt
+      };
+    } catch (e) {
+      // Fix error in Chrome:
+      // Failed to read the 'selectionStart' property from 'HTMLInputElement'
+      // http://stackoverflow.com/q/21177489/3040605
+    }
+  }
+
+  /**
+   * Restore logic:
+   *  1. back string same
+   *  2. start string same
+   */
+  function restoreCursor() {
+    if (input && selectionRef.current && focused) {
+      try {
+        var value = input.value;
+        var _selectionRef$current = selectionRef.current,
+          beforeTxt = _selectionRef$current.beforeTxt,
+          afterTxt = _selectionRef$current.afterTxt,
+          start = _selectionRef$current.start;
+        var startPos = value.length;
+        if (value.startsWith(beforeTxt)) {
+          startPos = beforeTxt.length;
+        } else if (value.endsWith(afterTxt)) {
+          startPos = value.length - selectionRef.current.afterTxt.length;
+        } else {
+          var beforeLastChar = beforeTxt[start - 1];
+          var newIndex = value.indexOf(beforeLastChar, start - 1);
+          if (newIndex !== -1) {
+            startPos = newIndex + 1;
+          }
+        }
+        input.setSelectionRange(startPos, startPos);
+      } catch (e) {
+        (0,rc_util_es_warning__WEBPACK_IMPORTED_MODULE_1__["default"])(false, "Something warning of cursor restore. Please fire issue about this: ".concat(e.message));
+      }
+    }
+  }
+  return [recordCursor, restoreCursor];
+}
+
+/***/ }),
+
+/***/ "./node_modules/rc-input-number/es/hooks/useFrame.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/rc-input-number/es/hooks/useFrame.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var rc_util_es_raf__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rc-util/es/raf */ "./node_modules/rc-util/es/raf.js");
+
+
+
+/**
+ * Always trigger latest once when call multiple time
+ */
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (function () {
+  var idRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(0);
+  var cleanUp = function cleanUp() {
+    rc_util_es_raf__WEBPACK_IMPORTED_MODULE_1__["default"].cancel(idRef.current);
+  };
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    return cleanUp;
+  }, []);
+  return function (callback) {
+    cleanUp();
+    idRef.current = (0,rc_util_es_raf__WEBPACK_IMPORTED_MODULE_1__["default"])(function () {
+      callback();
+    });
+  };
+});
+
+/***/ }),
+
+/***/ "./node_modules/rc-input-number/es/index.js":
+/*!**************************************************!*\
+  !*** ./node_modules/rc-input-number/es/index.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _InputNumber__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./InputNumber */ "./node_modules/rc-input-number/es/InputNumber.js");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_InputNumber__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+/***/ }),
+
+/***/ "./node_modules/rc-input-number/es/utils/numberUtil.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/rc-input-number/es/utils/numberUtil.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getDecupleSteps: () => (/* binding */ getDecupleSteps)
+/* harmony export */ });
+/* harmony import */ var _rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @rc-component/mini-decimal */ "./node_modules/@rc-component/mini-decimal/es/index.js");
+
+function getDecupleSteps(step) {
+  var stepStr = typeof step === 'number' ? (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_0__.num2str)(step) : (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_0__.trimNumber)(step).fullStr;
+  var hasPoint = stepStr.includes('.');
+  if (!hasPoint) {
+    return step + '0';
+  }
+  return (0,_rc_component_mini_decimal__WEBPACK_IMPORTED_MODULE_0__.trimNumber)(stepStr.replace(/(\d)\.(\d)/g, '$1$2.')).fullStr;
+}
+
+/***/ }),
+
 /***/ "./node_modules/rc-input/es/BaseInput.js":
 /*!***********************************************!*\
   !*** ./node_modules/rc-input/es/BaseInput.js ***!
@@ -126711,6 +128874,44 @@ function useMergedState(defaultStateValue, option) {
 
 /***/ }),
 
+/***/ "./node_modules/rc-util/es/hooks/useMobile.js":
+/*!****************************************************!*\
+  !*** ./node_modules/rc-util/es/hooks/useMobile.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_slicedToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/slicedToArray */ "./node_modules/@babel/runtime/helpers/esm/slicedToArray.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _isMobile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../isMobile */ "./node_modules/rc-util/es/isMobile.js");
+/* harmony import */ var _useLayoutEffect__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./useLayoutEffect */ "./node_modules/rc-util/es/hooks/useLayoutEffect.js");
+
+
+
+
+
+/**
+ * Hook to detect if the user is on a mobile device
+ * Notice that this hook will only detect the device type in effect, so it will always be false in server side
+ */
+var useMobile = function useMobile() {
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_1__.useState)(false),
+    _useState2 = (0,_babel_runtime_helpers_esm_slicedToArray__WEBPACK_IMPORTED_MODULE_0__["default"])(_useState, 2),
+    mobile = _useState2[0],
+    setMobile = _useState2[1];
+  (0,_useLayoutEffect__WEBPACK_IMPORTED_MODULE_3__["default"])(function () {
+    setMobile((0,_isMobile__WEBPACK_IMPORTED_MODULE_2__["default"])());
+  }, []);
+  return mobile;
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (useMobile);
+
+/***/ }),
+
 /***/ "./node_modules/rc-util/es/hooks/useState.js":
 /*!***************************************************!*\
   !*** ./node_modules/rc-util/es/hooks/useState.js ***!
@@ -127000,6 +129201,39 @@ function pickAttrs(props) {
     }
   });
   return attrs;
+}
+
+/***/ }),
+
+/***/ "./node_modules/rc-util/es/proxyObject.js":
+/*!************************************************!*\
+  !*** ./node_modules/rc-util/es/proxyObject.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ proxyObject)
+/* harmony export */ });
+/**
+ * Proxy object if environment supported
+ */
+function proxyObject(obj, extendProps) {
+  if (typeof Proxy !== 'undefined' && obj) {
+    return new Proxy(obj, {
+      get: function get(target, prop) {
+        if (extendProps[prop]) {
+          return extendProps[prop];
+        }
+
+        // Proxy origin property
+        var originProp = target[prop];
+        return typeof originProp === 'function' ? originProp.bind(target) : originProp;
+      }
+    });
+  }
+  return obj;
 }
 
 /***/ }),
@@ -177911,7 +180145,6 @@ var SubCategoryManagement = function SubCategoryManagement() {
 
   // Fetch archived sub-categories for the current active tab
   var fetchArchivedData = function fetchArchivedData() {
-    // Assuming your backend supports an archived flag (or use a separate endpoint)
     axios__WEBPACK_IMPORTED_MODULE_6__["default"].get("http://localhost:8000/api/sub-categories?type=".concat(activeTab, "&archived=1"), {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
@@ -177934,7 +180167,7 @@ var SubCategoryManagement = function SubCategoryManagement() {
     }
   }, [activeTab, openArchiveModal]);
 
-  // Table columns for active items
+  // Table columns for active items (ID column removed)
   var columns = [{
     title: "Actions",
     key: "actions",
@@ -177958,10 +180191,6 @@ var SubCategoryManagement = function SubCategoryManagement() {
       });
     }
   }, {
-    title: "ID",
-    dataIndex: "id",
-    key: "id"
-  }, {
     title: "Name",
     dataIndex: "name",
     key: "name"
@@ -177975,7 +180204,7 @@ var SubCategoryManagement = function SubCategoryManagement() {
     key: "updated_at"
   }];
 
-  // Table columns for archived items (Restore action)
+  // Table columns for archived items (ID column removed)
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
@@ -177992,10 +180221,6 @@ var SubCategoryManagement = function SubCategoryManagement() {
         })
       });
     }
-  }, {
-    title: "ID",
-    dataIndex: "id",
-    key: "id"
   }, {
     title: "Name",
     dataIndex: "name",
@@ -179704,11 +181929,9 @@ var ProductManagement = function ProductManagement() {
     render: function render(price) {
       return "$".concat(price);
     }
-  }, {
-    title: "Quantity",
-    dataIndex: "quantity",
-    key: "quantity"
-  }];
+  }
+  // Removed the "Quantity" column
+  ];
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
@@ -180926,8 +183149,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var _AccessPage_Auth__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AccessPage/Auth */ "./resources/js/components/AccessPage/Auth.js");
 /* harmony import */ var _AdminPage_AdminDashboard_AdminDashboard__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./AdminPage/AdminDashboard/AdminDashboard */ "./resources/js/components/AdminPage/AdminDashboard/AdminDashboard.js");
 /* harmony import */ var _AdminPage_Product_ProductManagement__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./AdminPage/Product/ProductManagement */ "./resources/js/components/AdminPage/Product/ProductManagement.js");
@@ -180947,7 +183170,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _UserPage_ProductOverview_Productview__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./UserPage/ProductOverview/Productview */ "./resources/js/components/UserPage/ProductOverview/Productview.js");
 /* harmony import */ var _UserPage_AboutUsPage_Aboutus__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./UserPage/AboutUsPage/Aboutus */ "./resources/js/components/UserPage/AboutUsPage/Aboutus.js");
 /* harmony import */ var _PrivateRoute__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./PrivateRoute */ "./resources/js/components/PrivateRoute.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _UserPage_CartPage_Cart__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./UserPage/CartPage/Cart */ "./resources/js/components/UserPage/CartPage/Cart.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 // src/Routers.jsx - Updated to use merged PrivateRoute
 
 
@@ -180978,75 +183202,79 @@ __webpack_require__.r(__webpack_exports__);
 // Single route protection component
 
 
+
 function Routers() {
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_20__.BrowserRouter, {
-    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Routes, {
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.BrowserRouter, {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Routes, {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
         path: "/login",
-        element: (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_2__.isAuthenticated)() ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Navigate, {
+        element: (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_2__.isAuthenticated)() ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Navigate, {
           to: (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_2__.getUserRole)() === "admin" ? "/dashboard" : "/user-home",
           replace: true
-        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_AccessPage_LoginPage_Login__WEBPACK_IMPORTED_MODULE_12__["default"], {})
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_AccessPage_LoginPage_Login__WEBPACK_IMPORTED_MODULE_12__["default"], {})
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
         path: "/register",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_AccessPage_RegisterPage_Register__WEBPACK_IMPORTED_MODULE_11__["default"], {})
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_AccessPage_RegisterPage_Register__WEBPACK_IMPORTED_MODULE_11__["default"], {})
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
         path: "/logout",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_18__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_18__["default"], {
           isLogout: true
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_18__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_18__["default"], {
           allowedRoles: ["admin"]
         }),
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
           path: "/dashboard",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_AdminPage_AdminDashboard_AdminDashboard__WEBPACK_IMPORTED_MODULE_3__["default"], {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_AdminPage_AdminDashboard_AdminDashboard__WEBPACK_IMPORTED_MODULE_3__["default"], {})
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
           path: "/products",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_AdminPage_Product_ProductManagement__WEBPACK_IMPORTED_MODULE_4__["default"], {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_AdminPage_Product_ProductManagement__WEBPACK_IMPORTED_MODULE_4__["default"], {})
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
           path: "/orders",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)((_AdminPage_Order_OrderManagement__WEBPACK_IMPORTED_MODULE_5___default()), {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)((_AdminPage_Order_OrderManagement__WEBPACK_IMPORTED_MODULE_5___default()), {})
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
           path: "/customers",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_AdminPage_Customer_CustomerManagement__WEBPACK_IMPORTED_MODULE_10__["default"], {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_AdminPage_Customer_CustomerManagement__WEBPACK_IMPORTED_MODULE_10__["default"], {})
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
           path: "/users",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_AdminPage_User_UserManagement__WEBPACK_IMPORTED_MODULE_6__["default"], {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_AdminPage_User_UserManagement__WEBPACK_IMPORTED_MODULE_6__["default"], {})
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
           path: "/inventory",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_AdminPage_Inventory_InventoryManagement__WEBPACK_IMPORTED_MODULE_7__["default"], {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_AdminPage_Inventory_InventoryManagement__WEBPACK_IMPORTED_MODULE_7__["default"], {})
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
           path: "/admin-profile",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)((_AdminPage_AdminSettings_AdminProfile__WEBPACK_IMPORTED_MODULE_8___default()), {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)((_AdminPage_AdminSettings_AdminProfile__WEBPACK_IMPORTED_MODULE_8___default()), {})
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
           path: "/sub-category",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_AdminPage_AdminSettings_SubCategory__WEBPACK_IMPORTED_MODULE_9__["default"], {})
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_AdminPage_AdminSettings_SubCategory__WEBPACK_IMPORTED_MODULE_9__["default"], {})
         })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_18__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_18__["default"], {
           allowedRoles: ["user"]
         }),
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
           path: "/user-home",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_UserPage_UserHome_HomePage__WEBPACK_IMPORTED_MODULE_13__["default"], {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_UserPage_UserHome_HomePage__WEBPACK_IMPORTED_MODULE_13__["default"], {})
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
           path: "/user-collection",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_UserPage_CollectionPage_Collection__WEBPACK_IMPORTED_MODULE_14__["default"], {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_UserPage_CollectionPage_Collection__WEBPACK_IMPORTED_MODULE_14__["default"], {})
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
           path: "/user-profile",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_UserPage_ProfilePage_Profile__WEBPACK_IMPORTED_MODULE_15__["default"], {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_UserPage_ProfilePage_Profile__WEBPACK_IMPORTED_MODULE_15__["default"], {})
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
           path: "/product/:id",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_UserPage_ProductOverview_Productview__WEBPACK_IMPORTED_MODULE_16__["default"], {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_UserPage_ProductOverview_Productview__WEBPACK_IMPORTED_MODULE_16__["default"], {})
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
           path: "/AboutUs",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_UserPage_AboutUsPage_Aboutus__WEBPACK_IMPORTED_MODULE_17__["default"], {})
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_UserPage_AboutUsPage_Aboutus__WEBPACK_IMPORTED_MODULE_17__["default"], {})
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
+          path: "/user-cart",
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_UserPage_CartPage_Cart__WEBPACK_IMPORTED_MODULE_19__["default"], {})
         })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_21__.Route, {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_22__.Route, {
         path: "*",
-        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_18__["default"], {
+        element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_18__["default"], {
           allowedRoles: []
         })
       })]
@@ -181055,7 +183283,7 @@ function Routers() {
 }
 var rootElement = document.getElementById("root");
 if (rootElement) {
-  react_dom__WEBPACK_IMPORTED_MODULE_1__.render(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_19__.jsx)(Routers, {}), rootElement);
+  react_dom__WEBPACK_IMPORTED_MODULE_1__.render(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_20__.jsx)(Routers, {}), rootElement);
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Routers);
 
@@ -181212,6 +183440,216 @@ var Flipcard = function Flipcard(_ref) {
   });
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Flipcard);
+
+/***/ }),
+
+/***/ "./resources/js/components/UserPage/CartPage/Cart.js":
+/*!***********************************************************!*\
+  !*** ./resources/js/components/UserPage/CartPage/Cart.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/typography/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input-number/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+
+
+
+
+
+var Title = antd__WEBPACK_IMPORTED_MODULE_2__["default"].Title;
+var CartPage = function CartPage() {
+  var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useNavigate)();
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState2 = _slicedToArray(_useState, 2),
+    cartItems = _useState2[0],
+    setCartItems = _useState2[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState4 = _slicedToArray(_useState3, 2),
+    selectedRowKeys = _useState4[0],
+    setSelectedRowKeys = _useState4[1];
+
+  // Load cart items from localStorage on mount
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      var items = JSON.parse(storedCart);
+      // Ensure each item has a total field calculated
+      var updatedItems = items.map(function (item) {
+        return _objectSpread(_objectSpread({}, item), {}, {
+          total: item.price * item.quantity
+        });
+      });
+      setCartItems(updatedItems);
+    }
+  }, []);
+
+  // Update localStorage whenever cartItems change
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+  }, [cartItems]);
+  var updateQuantity = function updateQuantity(id, newQuantity) {
+    var updated = cartItems.map(function (item) {
+      return item.id === id ? _objectSpread(_objectSpread({}, item), {}, {
+        quantity: newQuantity,
+        total: newQuantity * item.price
+      }) : item;
+    });
+    setCartItems(updated);
+  };
+  var handleDeleteSelected = function handleDeleteSelected() {
+    if (selectedRowKeys.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_4__["default"].warning("No items selected");
+      return;
+    }
+    var remaining = cartItems.filter(function (item) {
+      return !selectedRowKeys.includes(item.id);
+    });
+    setCartItems(remaining);
+    setSelectedRowKeys([]);
+    antd__WEBPACK_IMPORTED_MODULE_4__["default"].success("Selected items removed");
+  };
+  var columns = [{
+    title: "Product",
+    dataIndex: "image",
+    key: "image",
+    render: function render(image) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+        src: image,
+        alt: "product",
+        style: {
+          width: 80
+        }
+      });
+    }
+  }, {
+    title: "Name",
+    dataIndex: "productName",
+    key: "productName"
+  }, {
+    title: "Size",
+    dataIndex: "size",
+    key: "size"
+  }, {
+    title: "Price",
+    dataIndex: "price",
+    key: "price",
+    render: function render(price) {
+      return "$".concat(price);
+    }
+  }, {
+    title: "Quantity",
+    dataIndex: "quantity",
+    key: "quantity",
+    render: function render(quantity, record) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+          onClick: function onClick() {
+            return updateQuantity(record.id, Math.max(1, record.quantity - 1));
+          },
+          children: "-"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
+          min: 1,
+          value: quantity,
+          onChange: function onChange(value) {
+            return updateQuantity(record.id, value);
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+          onClick: function onClick() {
+            return updateQuantity(record.id, record.quantity + 1);
+          },
+          children: "+"
+        })]
+      });
+    }
+  }, {
+    title: "Total",
+    dataIndex: "total",
+    key: "total",
+    render: function render(total) {
+      return "$".concat(total.toFixed(2));
+    }
+  }];
+  var rowSelection = {
+    selectedRowKeys: selectedRowKeys,
+    onChange: function onChange(selectedKeys) {
+      return setSelectedRowKeys(selectedKeys);
+    }
+  };
+  var subtotal = cartItems.reduce(function (sum, item) {
+    return sum + item.total;
+  }, 0);
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    style: {
+      padding: "20px"
+    },
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(Title, {
+      level: 2,
+      children: "Checkout"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+      rowKey: "id",
+      rowSelection: rowSelection,
+      columns: columns,
+      dataSource: cartItems,
+      pagination: false
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      style: {
+        marginTop: "20px",
+        textAlign: "right",
+        fontSize: "18px"
+      },
+      children: ["Subtotal: ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("strong", {
+        children: ["$", subtotal.toFixed(2)]
+      })]
+    }), selectedRowKeys.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      danger: true,
+      icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {}),
+      onClick: handleDeleteSelected,
+      style: {
+        marginTop: "10px"
+      },
+      children: "Remove Selected"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      style: {
+        marginTop: "20px",
+        textAlign: "right"
+      },
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+        type: "primary",
+        size: "large",
+        onClick: function onClick() {
+          return navigate("/payment");
+        },
+        children: "Proceed to Payment"
+      })
+    })]
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (CartPage);
 
 /***/ }),
 
@@ -181649,6 +184087,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/menu/index.js");
@@ -181662,7 +184101,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingCartOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UserOutlined.js");
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
@@ -181690,12 +184128,14 @@ var Header = function Header() {
     _useState4 = _slicedToArray(_useState3, 2),
     profile = _useState4[0],
     setProfile = _useState4[1];
-
-  // A separate state just to force React to re-render the Avatar
   var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
     _useState6 = _slicedToArray(_useState5, 2),
     avatarKey = _useState6[0],
     setAvatarKey = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+    _useState8 = _slicedToArray(_useState7, 2),
+    cartCount = _useState8[0],
+    setCartCount = _useState8[1];
   var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useNavigate)();
   var location = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useLocation)();
   var token = localStorage.getItem("token");
@@ -181718,10 +184158,7 @@ var Header = function Header() {
   // Listen for "profileUpdated" custom event and update the header
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var handleProfileUpdated = function handleProfileUpdated(e) {
-      // e.detail contains the updated profile from the UserProfile component
       setProfile(e.detail);
-
-      // Increment avatarKey to force a re-render of the <Avatar>
       setAvatarKey(function (prev) {
         return prev + 1;
       });
@@ -181730,6 +184167,21 @@ var Header = function Header() {
     return function () {
       window.removeEventListener("profileUpdated", handleProfileUpdated);
     };
+  }, []);
+
+  // Load cart count from localStorage
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      try {
+        var items = JSON.parse(storedCart);
+        setCartCount(Array.isArray(items) ? items.length : 0);
+      } catch (e) {
+        setCartCount(0);
+      }
+    } else {
+      setCartCount(0);
+    }
   }, []);
 
   // Build the avatar source, appending a timestamp to bust the cache
@@ -181865,13 +184317,17 @@ var Header = function Header() {
           className: "icon"
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-        count: 0,
+        count: cartCount,
         className: "icon-badge",
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
           style: {
-            fontSize: "24px"
+            fontSize: "24px",
+            cursor: "pointer"
           },
-          className: "icon"
+          className: "icon",
+          onClick: function onClick() {
+            return navigate("/user-cart");
+          }
         })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
         overlay: userMenu,

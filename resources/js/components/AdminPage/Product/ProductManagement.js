@@ -229,7 +229,7 @@ const ProductManagement = () => {
             key: "price",
             render: (price) => `$${price}`,
         },
-        { title: "Quantity", dataIndex: "quantity", key: "quantity" },
+        // Removed the "Quantity" column
     ];
 
     const archiveColumns = [
