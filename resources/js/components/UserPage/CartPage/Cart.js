@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, InputNumber, Space, Typography, message } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../Navbar/Navbar";
 
 const { Title } = Typography;
 
@@ -15,7 +16,7 @@ const CartPage = () => {
         const storedCart = localStorage.getItem("cart");
         if (storedCart) {
             const items = JSON.parse(storedCart);
-            // Ensure each item has a total field calculated
+            // Calculate total for each item
             const updatedItems = items.map((item) => ({
                 ...item,
                 total: item.price * item.quantity,
@@ -127,42 +128,45 @@ const CartPage = () => {
     const subtotal = cartItems.reduce((sum, item) => sum + item.total, 0);
 
     return (
-        <div style={{ padding: "20px" }}>
-            <Title level={2}>Checkout</Title>
-            <Table
-                rowKey="id"
-                rowSelection={rowSelection}
-                columns={columns}
-                dataSource={cartItems}
-                pagination={false}
-            />
-            <div
-                style={{
-                    marginTop: "20px",
-                    textAlign: "right",
-                    fontSize: "18px",
-                }}
-            >
-                Subtotal: <strong>${subtotal.toFixed(2)}</strong>
-            </div>
-            {selectedRowKeys.length > 0 && (
-                <Button
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={handleDeleteSelected}
-                    style={{ marginTop: "10px" }}
+        <div>
+            <Navbar style={{ width: "100%" }} />
+            <div style={{ padding: "20px" }}>
+                <Title level={2}>Checkout</Title>
+                <Table
+                    rowKey="id"
+                    rowSelection={rowSelection}
+                    columns={columns}
+                    dataSource={cartItems}
+                    pagination={false}
+                />
+                <div
+                    style={{
+                        marginTop: "20px",
+                        textAlign: "right",
+                        fontSize: "18px",
+                    }}
                 >
-                    Remove Selected
-                </Button>
-            )}
-            <div style={{ marginTop: "20px", textAlign: "right" }}>
-                <Button
-                    type="primary"
-                    size="large"
-                    onClick={() => navigate("/payment")}
-                >
-                    Proceed to Payment
-                </Button>
+                    Subtotal: <strong>${subtotal.toFixed(2)}</strong>
+                </div>
+                {selectedRowKeys.length > 0 && (
+                    <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={handleDeleteSelected}
+                        style={{ marginTop: "10px" }}
+                    >
+                        Remove Selected
+                    </Button>
+                )}
+                <div style={{ marginTop: "20px", textAlign: "right" }}>
+                    <Button
+                        type="primary"
+                        size="large"
+                        onClick={() => navigate("/payment")}
+                    >
+                        Proceed to Payment
+                    </Button>
+                </div>
             </div>
         </div>
     );

@@ -114,7 +114,6 @@ const ProductOverview = () => {
                     }
                 )
                 .then((res) => {
-                    console.log("Fetched Inventory:", res.data);
                     setInventoryRecords(res.data);
                 })
                 .catch((err) => {
@@ -148,7 +147,6 @@ const ProductOverview = () => {
                 setReviews([res.data.review, ...reviews]);
                 setReviewText("");
                 setReviewRating(0);
-                // Refetch product to update average rating
                 axios
                     .get(`http://localhost:8000/api/products/${id}`)
                     .then((res) => {
@@ -189,14 +187,38 @@ const ProductOverview = () => {
             ? sizesArr.map((item) => item.size)
             : sizesArr;
 
-    // Debug logs (remove or comment out once confirmed)
-    console.log("Selected Size:", selectedSize);
-    console.log("Inventory Records:", inventoryRecords);
-
     // Use normalized strings for comparison
     const selectedInventoryRecord = inventoryRecords.find(
         (inv) => normalizeSize(inv.size) === normalizeSize(selectedSize || "")
     );
+
+    // Handle "Add to Cart": Save product to localStorage cart and notify header
+    const handleAddToCart = () => {
+        if (!selectedSize) {
+            message.warning("Please select a size.");
+            return;
+        }
+        const cartItem = {
+            id: new Date().getTime(), // temporary unique id
+            productId: product.id,
+            productName: product.product_name,
+            image: `http://localhost:8000/storage/${product.main_image}`,
+            size: selectedSize,
+            price: product.price,
+            quantity: 1,
+            total: product.price,
+        };
+        const storedCart = localStorage.getItem("cart");
+        let cart = storedCart ? JSON.parse(storedCart) : [];
+        cart.push(cartItem);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        // Dispatch event to update header cart count
+        window.dispatchEvent(new Event("cartUpdated"));
+        message.success(
+            `Successfully added ${product.product_name} (${selectedSize}) to your cart!`
+        );
+        // Do not redirect—just update the notification.
+    };
 
     return (
         <div>
@@ -443,17 +465,7 @@ const ProductOverview = () => {
                                     width: "150px",
                                     height: "40px",
                                 }}
-                                onClick={() => {
-                                    if (!selectedSize) {
-                                        message.warning(
-                                            "Please select a size."
-                                        );
-                                        return;
-                                    }
-                                    alert(
-                                        `Added to cart with size ${selectedSize}!`
-                                    );
-                                }}
+                                onClick={handleAddToCart}
                             >
                                 ADD TO CART
                             </Button>
@@ -472,9 +484,7 @@ const ProductOverview = () => {
                                         );
                                         return;
                                     }
-                                    alert(
-                                        `Redirecting to checkout with size ${selectedSize}!`
-                                    );
+                                    navigate("/user-cart");
                                 }}
                             >
                                 BUY NOW

@@ -22,7 +22,7 @@ const Header = () => {
     const location = useLocation();
     const token = localStorage.getItem("token");
 
-    // Fetch the profile from /api/profile when we have a token
+    // Fetch profile when token is available
     useEffect(() => {
         if (token) {
             axios
@@ -38,7 +38,7 @@ const Header = () => {
         }
     }, [token]);
 
-    // Listen for "profileUpdated" custom event and update the header
+    // Listen for profile updates
     useEffect(() => {
         const handleProfileUpdated = (e) => {
             setProfile(e.detail);
@@ -51,22 +51,32 @@ const Header = () => {
         };
     }, []);
 
-    // Load cart count from localStorage
+    // Listen for cart updates and update badge count without reload
     useEffect(() => {
-        const storedCart = localStorage.getItem("cart");
-        if (storedCart) {
-            try {
-                const items = JSON.parse(storedCart);
-                setCartCount(Array.isArray(items) ? items.length : 0);
-            } catch (e) {
+        const updateCartCount = () => {
+            const storedCart = localStorage.getItem("cart");
+            if (storedCart) {
+                try {
+                    const items = JSON.parse(storedCart);
+                    setCartCount(Array.isArray(items) ? items.length : 0);
+                } catch (e) {
+                    setCartCount(0);
+                }
+            } else {
                 setCartCount(0);
             }
-        } else {
-            setCartCount(0);
-        }
+        };
+
+        // Update on mount
+        updateCartCount();
+        // Listen for the custom event
+        window.addEventListener("cartUpdated", updateCartCount);
+        return () => {
+            window.removeEventListener("cartUpdated", updateCartCount);
+        };
     }, []);
 
-    // Build the avatar source, appending a timestamp to bust the cache
+    // Build the avatar source (cache busting with timestamp)
     const avatarSrc =
         profile && profile.profile_image
             ? profile.profile_image + "?" + new Date().getTime()
