@@ -179412,10 +179412,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+var _excluded = ["key", "name", "fieldKey"];
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
+function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -179463,7 +179472,6 @@ var ProductManagement = function ProductManagement() {
     _useState12 = _slicedToArray(_useState11, 2),
     archivedProducts = _useState12[0],
     setArchivedProducts = _useState12[1];
-  // currentProduct: if null, we're adding; if not, we're updating.
   var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState14 = _slicedToArray(_useState13, 2),
     currentProduct = _useState14[0],
@@ -179564,12 +179572,8 @@ var ProductManagement = function ProductManagement() {
     fetchSubCategoryOptions("sizes", setSizesOptions);
   }, []);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    if (openArchiveModal) {
-      fetchArchivedProducts();
-    }
+    if (openArchiveModal) fetchArchivedProducts();
   }, [openArchiveModal]);
-
-  // Helper for validation rules.
   var getRule = function getRule(message) {
     return [{
       required: !currentProduct,
@@ -179672,27 +179676,26 @@ var ProductManagement = function ProductManagement() {
     dataIndex: "sizes",
     key: "sizes",
     render: function render(sizes) {
-      if (Array.isArray(sizes)) {
-        // Process each size: if it's double-encoded, fix it.
-        var fixedSizes = sizes.map(function (size) {
-          if (typeof size === "string") {
-            if (size.startsWith("[") && size.endsWith("]")) {
-              try {
-                var parsed = JSON.parse(size);
-                if (Array.isArray(parsed)) {
-                  return parsed.join(", ");
-                }
-              } catch (e) {
-                return size.trim();
-              }
-            }
-            return size.trim();
-          }
-          return size;
-        });
-        return fixedSizes.join(", ");
+      var parsedSizes = sizes;
+      // If sizes is a string, try to parse it
+      if (typeof sizes === "string") {
+        try {
+          parsedSizes = JSON.parse(sizes);
+        } catch (e) {
+          // If parsing fails, fallback to original value
+          return sizes;
+        }
       }
-      return sizes;
+      // If parsedSizes is an array, extract the 'size' property if available
+      if (Array.isArray(parsedSizes)) {
+        if (parsedSizes.length > 0 && _typeof(parsedSizes[0]) === "object" && parsedSizes[0].size) {
+          return parsedSizes.map(function (item) {
+            return item.size;
+          }).join(", ");
+        }
+        return parsedSizes.join(", ");
+      }
+      return parsedSizes;
     }
   }, {
     title: "Price",
@@ -179706,8 +179709,6 @@ var ProductManagement = function ProductManagement() {
     dataIndex: "quantity",
     key: "quantity"
   }];
-
-  // Archive table columns – similar to main, but only restore action
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
@@ -179726,7 +179727,7 @@ var ProductManagement = function ProductManagement() {
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
 
-  // When editing, prefill the form and load current images into previews.
+  // When editing, prefill form values. For sizes, parse sizesDetails from the JSON string.
   var handleEdit = function handleEdit(record) {
     console.log("Edit product:", record);
     setCurrentProduct(record);
@@ -179739,21 +179740,14 @@ var ProductManagement = function ProductManagement() {
       strap_material_id: record.strap_material_id,
       gender_id: record.gender_id,
       price: record.price,
-      quantity: record.quantity,
       description: record.description,
-      // Convert plain string to array if needed.
-      sizes: typeof record.sizes === "string" ? record.sizes.split(",").map(function (s) {
-        return s.trim();
-      }) : record.sizes
+      sizesDetails: typeof record.sizes === "string" ? JSON.parse(record.sizes) : record.sizes
     });
     setMainImagePreview(record.main_image ? imageBaseURL + record.main_image : "");
-    // Clear side images on edit.
     setSideImagesPreview(["", "", ""]);
     setSideImagesFiles([null, null, null]);
     setOpenAddModal(true);
   };
-
-  // Archive a product
   var handleArchive = function handleArchive(record) {
     antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
       title: "Are you sure you want to archive this product?",
@@ -179771,8 +179765,6 @@ var ProductManagement = function ProductManagement() {
       }
     });
   };
-
-  // Restore a product
   var handleRestore = function handleRestore(id) {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("http://localhost:8000/api/products/".concat(id, "/restore"), {}, {
       headers: {
@@ -179786,18 +179778,14 @@ var ProductManagement = function ProductManagement() {
       return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore product");
     });
   };
-
-  // Bulk archive (placeholder)
   var handleArchiveAll = function handleArchiveAll() {
     antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
       title: "Are you sure you want to archive all selected products?",
       onOk: function onOk() {
-        antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Bulk archive executed (not implemented)");
+        return antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Bulk archive executed (not implemented)");
       }
     });
   };
-
-  // Open Add Product modal (reset form and images)
   var handleAdd = function handleAdd() {
     form.resetFields();
     setCurrentProduct(null);
@@ -179808,7 +179796,7 @@ var ProductManagement = function ProductManagement() {
     setOpenAddModal(true);
   };
 
-  // Save product: if updating, perform PUT; if adding, perform POST.
+  // Save product: calculate overall quantity from sizesDetails and send sizes as a JSON string.
   var handleSave = function handleSave() {
     form.validateFields().then(function (values) {
       var formData = new FormData();
@@ -179819,23 +179807,19 @@ var ProductManagement = function ProductManagement() {
       formData.append("strap_material_id", parseInt(values.strap_material_id, 10));
       formData.append("gender_id", parseInt(values.gender_id, 10));
       formData.append("price", values.price);
-      formData.append("quantity", values.quantity);
       formData.append("description", values.description);
 
-      // Convert the sizes array into a plain comma-separated string.
-      var sizesPlain = values.sizes.map(function (size) {
-        return size.trim();
-      });
-      formData.append("sizes", sizesPlain.join(","));
-
-      // Append image files if they exist
-      if (mainImageFile) {
-        formData.append("main_image", mainImageFile);
-      }
+      // sizesDetails is an array of objects: { size, quantity }
+      var sizesDetails = values.sizesDetails || [];
+      var overallQuantity = sizesDetails.reduce(function (sum, item) {
+        return sum + Number(item.quantity);
+      }, 0);
+      formData.append("quantity", overallQuantity);
+      // Store sizes as a JSON string
+      formData.append("sizes", JSON.stringify(sizesDetails));
+      if (mainImageFile) formData.append("main_image", mainImageFile);
       sideImagesFiles.forEach(function (file, index) {
-        if (file) {
-          formData.append("side_image_".concat(index + 1), file);
-        }
+        if (file) formData.append("side_image_".concat(index + 1), file);
       });
       if (values.id) {
         formData.append("_method", "PUT");
@@ -179897,7 +179881,7 @@ var ProductManagement = function ProductManagement() {
     var file = _ref.file,
       onSuccess = _ref.onSuccess;
     setTimeout(function () {
-      onSuccess("ok");
+      return onSuccess("ok");
     }, 0);
   };
   var filteredProducts = products.filter(function (product) {
@@ -180122,9 +180106,9 @@ var ProductManagement = function ProductManagement() {
               })
             })
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
           gutter: 16,
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
             span: 12,
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
               name: "price",
@@ -180135,32 +180119,77 @@ var ProductManagement = function ProductManagement() {
                 placeholder: "Enter price"
               })
             })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
-            span: 12,
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-              name: "quantity",
-              label: "Quantity",
-              rules: getRule("Please enter quantity"),
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
-                type: "number",
-                placeholder: "Enter quantity"
-              })
-            })
-          })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-          name: "sizes",
-          label: "Available Sizes",
-          rules: getRule("Please select sizes"),
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
-            mode: "multiple",
-            placeholder: "Select sizes",
-            children: sizesOptions.map(function (s) {
-              return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-                value: s.name,
-                children: s.name
-              }, s.id);
-            })
           })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].List, {
+          name: "sizesDetails",
+          children: function children(fields, _ref2) {
+            var add = _ref2.add,
+              remove = _ref2.remove;
+            return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
+              children: [fields.map(function (_ref3) {
+                var key = _ref3.key,
+                  name = _ref3.name,
+                  fieldKey = _ref3.fieldKey,
+                  restField = _objectWithoutProperties(_ref3, _excluded);
+                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+                  gutter: 16,
+                  align: "middle",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+                    span: 12,
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, _objectSpread(_objectSpread({}, restField), {}, {
+                      name: [name, "size"],
+                      fieldKey: [fieldKey, "size"],
+                      rules: [{
+                        required: true,
+                        message: "Size is required"
+                      }],
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+                        placeholder: "Select size",
+                        children: sizesOptions.map(function (s) {
+                          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+                            value: s.name,
+                            children: s.name
+                          }, s.id);
+                        })
+                      })
+                    }))
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+                    span: 8,
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, _objectSpread(_objectSpread({}, restField), {}, {
+                      name: [name, "quantity"],
+                      fieldKey: [fieldKey, "quantity"],
+                      rules: [{
+                        required: true,
+                        message: "Quantity is required"
+                      }],
+                      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+                        type: "number",
+                        placeholder: "Enter quantity"
+                      })
+                    }))
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+                    span: 4,
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                      type: "link",
+                      onClick: function onClick() {
+                        return remove(name);
+                      },
+                      children: "Remove"
+                    })
+                  })]
+                }, key);
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                  type: "dashed",
+                  onClick: function onClick() {
+                    return add();
+                  },
+                  block: true,
+                  children: "Add Size"
+                })
+              })]
+            });
+          }
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
           name: "description",
           label: "Description",

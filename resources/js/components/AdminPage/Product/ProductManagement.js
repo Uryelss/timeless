@@ -38,7 +38,6 @@ const ProductManagement = () => {
     const [selectAll, setSelectAll] = useState(false);
     const [products, setProducts] = useState([]);
     const [archivedProducts, setArchivedProducts] = useState([]);
-    // currentProduct: if null, we're adding; if not, we're updating.
     const [currentProduct, setCurrentProduct] = useState(null);
 
     // Image states for main and side images
@@ -105,12 +104,9 @@ const ProductManagement = () => {
     }, []);
 
     useEffect(() => {
-        if (openArchiveModal) {
-            fetchArchivedProducts();
-        }
+        if (openArchiveModal) fetchArchivedProducts();
     }, [openArchiveModal]);
 
-    // Helper for validation rules.
     const getRule = (message) => [{ required: !currentProduct, message }];
 
     // Table columns for active products
@@ -203,27 +199,28 @@ const ProductManagement = () => {
             dataIndex: "sizes",
             key: "sizes",
             render: (sizes) => {
-                if (Array.isArray(sizes)) {
-                    // Process each size: if it's double-encoded, fix it.
-                    const fixedSizes = sizes.map((size) => {
-                        if (typeof size === "string") {
-                            if (size.startsWith("[") && size.endsWith("]")) {
-                                try {
-                                    const parsed = JSON.parse(size);
-                                    if (Array.isArray(parsed)) {
-                                        return parsed.join(", ");
-                                    }
-                                } catch (e) {
-                                    return size.trim();
-                                }
-                            }
-                            return size.trim();
-                        }
-                        return size;
-                    });
-                    return fixedSizes.join(", ");
+                let parsedSizes = sizes;
+                // If sizes is a string, try to parse it
+                if (typeof sizes === "string") {
+                    try {
+                        parsedSizes = JSON.parse(sizes);
+                    } catch (e) {
+                        // If parsing fails, fallback to original value
+                        return sizes;
+                    }
                 }
-                return sizes;
+                // If parsedSizes is an array, extract the 'size' property if available
+                if (Array.isArray(parsedSizes)) {
+                    if (
+                        parsedSizes.length > 0 &&
+                        typeof parsedSizes[0] === "object" &&
+                        parsedSizes[0].size
+                    ) {
+                        return parsedSizes.map((item) => item.size).join(", ");
+                    }
+                    return parsedSizes.join(", ");
+                }
+                return parsedSizes;
             },
         },
         {
@@ -235,7 +232,6 @@ const ProductManagement = () => {
         { title: "Quantity", dataIndex: "quantity", key: "quantity" },
     ];
 
-    // Archive table columns – similar to main, but only restore action
     const archiveColumns = [
         {
             title: "Actions",
@@ -249,7 +245,7 @@ const ProductManagement = () => {
         ...mainColumns.slice(1),
     ];
 
-    // When editing, prefill the form and load current images into previews.
+    // When editing, prefill form values. For sizes, parse sizesDetails from the JSON string.
     const handleEdit = (record) => {
         console.log("Edit product:", record);
         setCurrentProduct(record);
@@ -262,24 +258,20 @@ const ProductManagement = () => {
             strap_material_id: record.strap_material_id,
             gender_id: record.gender_id,
             price: record.price,
-            quantity: record.quantity,
             description: record.description,
-            // Convert plain string to array if needed.
-            sizes:
+            sizesDetails:
                 typeof record.sizes === "string"
-                    ? record.sizes.split(",").map((s) => s.trim())
+                    ? JSON.parse(record.sizes)
                     : record.sizes,
         });
         setMainImagePreview(
             record.main_image ? imageBaseURL + record.main_image : ""
         );
-        // Clear side images on edit.
         setSideImagesPreview(["", "", ""]);
         setSideImagesFiles([null, null, null]);
         setOpenAddModal(true);
     };
 
-    // Archive a product
     const handleArchive = (record) => {
         Modal.confirm({
             title: "Are you sure you want to archive this product?",
@@ -301,7 +293,6 @@ const ProductManagement = () => {
         });
     };
 
-    // Restore a product
     const handleRestore = (id) => {
         axios
             .post(
@@ -323,17 +314,14 @@ const ProductManagement = () => {
             .catch((err) => message.error("Failed to restore product"));
     };
 
-    // Bulk archive (placeholder)
     const handleArchiveAll = () => {
         Modal.confirm({
             title: "Are you sure you want to archive all selected products?",
-            onOk: () => {
-                message.success("Bulk archive executed (not implemented)");
-            },
+            onOk: () =>
+                message.success("Bulk archive executed (not implemented)"),
         });
     };
 
-    // Open Add Product modal (reset form and images)
     const handleAdd = () => {
         form.resetFields();
         setCurrentProduct(null);
@@ -344,7 +332,7 @@ const ProductManagement = () => {
         setOpenAddModal(true);
     };
 
-    // Save product: if updating, perform PUT; if adding, perform POST.
+    // Save product: calculate overall quantity from sizesDetails and send sizes as a JSON string.
     const handleSave = () => {
         form.validateFields()
             .then((values) => {
@@ -365,21 +353,21 @@ const ProductManagement = () => {
                 );
                 formData.append("gender_id", parseInt(values.gender_id, 10));
                 formData.append("price", values.price);
-                formData.append("quantity", values.quantity);
                 formData.append("description", values.description);
 
-                // Convert the sizes array into a plain comma-separated string.
-                const sizesPlain = values.sizes.map((size) => size.trim());
-                formData.append("sizes", sizesPlain.join(","));
+                // sizesDetails is an array of objects: { size, quantity }
+                const sizesDetails = values.sizesDetails || [];
+                const overallQuantity = sizesDetails.reduce(
+                    (sum, item) => sum + Number(item.quantity),
+                    0
+                );
+                formData.append("quantity", overallQuantity);
+                // Store sizes as a JSON string
+                formData.append("sizes", JSON.stringify(sizesDetails));
 
-                // Append image files if they exist
-                if (mainImageFile) {
-                    formData.append("main_image", mainImageFile);
-                }
+                if (mainImageFile) formData.append("main_image", mainImageFile);
                 sideImagesFiles.forEach((file, index) => {
-                    if (file) {
-                        formData.append(`side_image_${index + 1}`, file);
-                    }
+                    if (file) formData.append(`side_image_${index + 1}`, file);
                 });
 
                 if (values.id) {
@@ -455,9 +443,7 @@ const ProductManagement = () => {
     };
 
     const customUploadRequest = ({ file, onSuccess }) => {
-        setTimeout(() => {
-            onSuccess("ok");
-        }, 0);
+        setTimeout(() => onSuccess("ok"), 0);
     };
 
     const filteredProducts = products.filter((product) => {
@@ -566,7 +552,6 @@ const ProductManagement = () => {
                 ]}
             >
                 <Form form={form} layout="vertical">
-                    {/* Hidden field for product id (for update) */}
                     <Form.Item name="id" style={{ display: "none" }}>
                         <Input type="hidden" />
                     </Form.Item>
@@ -678,32 +663,95 @@ const ProductManagement = () => {
                                 />
                             </Form.Item>
                         </Col>
-                        <Col span={12}>
-                            <Form.Item
-                                name="quantity"
-                                label="Quantity"
-                                rules={getRule("Please enter quantity")}
-                            >
-                                <Input
-                                    type="number"
-                                    placeholder="Enter quantity"
-                                />
-                            </Form.Item>
-                        </Col>
                     </Row>
-                    <Form.Item
-                        name="sizes"
-                        label="Available Sizes"
-                        rules={getRule("Please select sizes")}
-                    >
-                        <Select mode="multiple" placeholder="Select sizes">
-                            {sizesOptions.map((s) => (
-                                <Option key={s.id} value={s.name}>
-                                    {s.name}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
+                    {/* Use Form.List to capture size–quantity pairs */}
+                    <Form.List name="sizesDetails">
+                        {(fields, { add, remove }) => (
+                            <>
+                                {fields.map(
+                                    ({ key, name, fieldKey, ...restField }) => (
+                                        <Row
+                                            key={key}
+                                            gutter={16}
+                                            align="middle"
+                                        >
+                                            <Col span={12}>
+                                                <Form.Item
+                                                    {...restField}
+                                                    name={[name, "size"]}
+                                                    fieldKey={[
+                                                        fieldKey,
+                                                        "size",
+                                                    ]}
+                                                    rules={[
+                                                        {
+                                                            required: true,
+                                                            message:
+                                                                "Size is required",
+                                                        },
+                                                    ]}
+                                                >
+                                                    <Select placeholder="Select size">
+                                                        {sizesOptions.map(
+                                                            (s) => (
+                                                                <Option
+                                                                    key={s.id}
+                                                                    value={
+                                                                        s.name
+                                                                    }
+                                                                >
+                                                                    {s.name}
+                                                                </Option>
+                                                            )
+                                                        )}
+                                                    </Select>
+                                                </Form.Item>
+                                            </Col>
+                                            <Col span={8}>
+                                                <Form.Item
+                                                    {...restField}
+                                                    name={[name, "quantity"]}
+                                                    fieldKey={[
+                                                        fieldKey,
+                                                        "quantity",
+                                                    ]}
+                                                    rules={[
+                                                        {
+                                                            required: true,
+                                                            message:
+                                                                "Quantity is required",
+                                                        },
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        type="number"
+                                                        placeholder="Enter quantity"
+                                                    />
+                                                </Form.Item>
+                                            </Col>
+                                            <Col span={4}>
+                                                <Button
+                                                    type="link"
+                                                    onClick={() => remove(name)}
+                                                >
+                                                    Remove
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    )
+                                )}
+                                <Form.Item>
+                                    <Button
+                                        type="dashed"
+                                        onClick={() => add()}
+                                        block
+                                    >
+                                        Add Size
+                                    </Button>
+                                </Form.Item>
+                            </>
+                        )}
+                    </Form.List>
                     <Form.Item
                         name="description"
                         label="Description"

@@ -43,7 +43,8 @@ class ProductController extends Controller
             'price'              => 'required|numeric',
             'quantity'           => 'required|integer',
             'description'        => 'required|string',
-            'sizes'              => 'required', // JSON string, e.g., '["21mm", "22mm"]'
+            'sizes'              => 'required', // Expected JSON string, e.g.: 
+            // '[{"size": "22mm", "quantity":3}, {"size": "24mm", "quantity":4}]'
             'main_image'         => 'required|file|image',
             'side_image_1'       => 'nullable|file|image',
             'side_image_2'       => 'nullable|file|image',
@@ -60,30 +61,46 @@ class ProductController extends Controller
             }
         }
 
-        // Create the product
+        // Create the product.
         $product = Product::create($validatedData);
 
-        // Decode sizes (ensure sizes is a valid JSON array)
+        // Retrieve sizes. With the cast on the model, $product->sizes should already be an array.
         $sizes = $product->sizes;
         if (is_string($sizes)) {
             $sizes = json_decode($sizes, true);
         }
 
-        // For each size, create an inventory record.
+        // Create an inventory record for each size.
         if (is_array($sizes)) {
-            foreach ($sizes as $size) {
-                \App\Models\Inventory::create([
-                    'product_id'   => $product->id,
-                    'size'         => $size,
-                    'quantity'     => $product->quantity,
-                    'sold'         => 0,
-                    'stock_status' => $product->quantity == 0 ? 'Out of Stock' : 'In Stock',
-                ]);
+            foreach ($sizes as $detail) {
+                if (is_array($detail) && isset($detail['size']) && isset($detail['quantity'])) {
+                    // Ensure the 'size' value is a string.
+                    $sizeValue = is_array($detail['size'])
+                        ? implode(", ", $detail['size'])
+                        : $detail['size'];
+                    \App\Models\Inventory::create([
+                        'product_id'   => $product->id,
+                        'size'         => $sizeValue,
+                        'quantity'     => $detail['quantity'],
+                        'sold'         => 0,
+                        'stock_status' => $detail['quantity'] == 0 ? 'Out of Stock' : 'In Stock',
+                    ]);
+                } elseif (is_string($detail)) {
+                    // Fallback for older records stored as plain strings.
+                    \App\Models\Inventory::create([
+                        'product_id'   => $product->id,
+                        'size'         => $detail,
+                        'quantity'     => $product->quantity,
+                        'sold'         => 0,
+                        'stock_status' => $product->quantity == 0 ? 'Out of Stock' : 'In Stock',
+                    ]);
+                }
             }
         }
 
         return response()->json($product, 201);
     }
+
 
     // Update an existing product
     public function update(Request $request, $id)
