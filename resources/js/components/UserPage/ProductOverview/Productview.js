@@ -54,7 +54,7 @@ const ProductOverview = () => {
             .get(`http://localhost:8000/api/products/${id}`)
             .then((res) => {
                 const fetchedProduct = res.data.product || res.data;
-                console.log("Fetched Product Data:", fetchedProduct); // Debug log
+                console.log("Fetched Product Data:", fetchedProduct);
                 setProduct(fetchedProduct);
                 setCurrentMainImage(fetchedProduct.main_image);
                 setLoading(false);
@@ -92,7 +92,7 @@ const ProductOverview = () => {
         }
     }, [id]);
 
-    // Fetch user profile if needed (optional, only if profile might change)
+    // Fetch user profile if needed
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token && !userProfile) {
@@ -141,12 +141,11 @@ const ProductOverview = () => {
                 setReviews([res.data.review, ...reviews]);
                 setReviewText("");
                 setReviewRating(0);
-                // Refetch product to update average rating
                 axios
                     .get(`http://localhost:8000/api/products/${id}`)
                     .then((res) => {
                         const fetchedProduct = res.data.product || res.data;
-                        console.log("Refetched Product Data:", fetchedProduct); // Debug log
+                        console.log("Refetched Product Data:", fetchedProduct);
                         setProduct(fetchedProduct);
                     });
                 message.success("Review posted successfully!");
@@ -305,41 +304,100 @@ const ProductOverview = () => {
                         </Card>
                     </Col>
 
-                    {/* Right Column: Product Details */}
+                    {/* Enhanced Right Column: Product Details */}
                     <Col xs={24} md={12}>
-                        <Card bodyStyle={{ padding: "16px" }}>
+                        <Card
+                            bodyStyle={{ padding: "24px" }}
+                            style={{
+                                borderRadius: "8px",
+                                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                                maxWidth: "450px",
+                                margin: "0 auto",
+                            }}
+                        >
                             <Space
                                 direction="vertical"
-                                size="middle"
-                                style={{ textAlign: "center" }}
+                                size="large"
+                                style={{ width: "100%", textAlign: "center" }}
                             >
-                                <Title level={3}>{product.product_name}</Title>
+                                {/* Product Name */}
+                                <Title
+                                    level={3}
+                                    style={{ margin: 0, fontWeight: 600 }}
+                                >
+                                    {product.product_name}
+                                </Title>
+
+                                {/* Rating */}
                                 <div
                                     style={{
                                         display: "flex",
                                         justifyContent: "center",
                                         alignItems: "center",
+                                        gap: "8px",
                                     }}
                                 >
                                     <Rate
                                         disabled
-                                        value={product.average_rating || 0} // Fallback to 0 if undefined
+                                        value={product.average_rating || 0}
                                         allowHalf
-                                        style={{ marginRight: "8px" }}
+                                        style={{ color: "#fadb14" }}
                                     />
-                                    <span>{product.average_rating || 0}</span>{" "}
-                                    {/* Fallback to 0 if undefined */}
+                                    <span
+                                        style={{
+                                            fontSize: "16px",
+                                            color: "#888",
+                                        }}
+                                    >
+                                        ({product.average_rating || 0} / 5)
+                                    </span>
                                 </div>
-                                <Paragraph strong>Price</Paragraph>
-                                <Paragraph strong>
-                                    ₱{number_format(product.price)}
+
+                                {/* Price */}
+                                <div>
+                                    <Paragraph
+                                        style={{
+                                            margin: 0,
+                                            fontSize: "14px",
+                                            color: "#888",
+                                        }}
+                                    >
+                                        Price
+                                    </Paragraph>
+                                    <Paragraph
+                                        strong
+                                        style={{
+                                            fontSize: "24px",
+                                            color: "#000000",
+                                        }}
+                                    >
+                                        ₱{number_format(product.price)}
+                                    </Paragraph>
+                                </div>
+
+                                {/* Stock Availability */}
+                                <Paragraph
+                                    style={{
+                                        margin: 0,
+                                        color:
+                                            product.stock > 0
+                                                ? "#000000"
+                                                : "#ff4d4f",
+                                    }}
+                                >
+                                    {product.stock > 0
+                                        ? `In Stock (${product.stock} available)`
+                                        : "Out of Stock"}
                                 </Paragraph>
+
+                                {/* Size Selection */}
                                 {sizes && sizes.length > 0 && (
                                     <div>
                                         <div
                                             style={{
-                                                marginBottom: "8px",
+                                                marginBottom: "12px",
                                                 fontWeight: "bold",
+                                                fontSize: "16px",
                                             }}
                                         >
                                             Size (mm)
@@ -347,8 +405,9 @@ const ProductOverview = () => {
                                         <div
                                             style={{
                                                 display: "flex",
-                                                gap: "10px",
+                                                gap: "12px",
                                                 justifyContent: "center",
+                                                flexWrap: "wrap",
                                             }}
                                         >
                                             {sizes.map((size, index) => (
@@ -358,25 +417,45 @@ const ProductOverview = () => {
                                                         setSelectedSize(size)
                                                     }
                                                     style={{
-                                                        width: "40px",
-                                                        height: "40px",
-                                                        borderRadius: "4px",
+                                                        width: "50px",
+                                                        height: "50px",
+                                                        borderRadius: "50%",
                                                         backgroundColor:
                                                             selectedSize ===
                                                             size
-                                                                ? "black"
-                                                                : "white",
+                                                                ? "#000000"
+                                                                : "#f5f5f5",
                                                         color:
                                                             selectedSize ===
                                                             size
                                                                 ? "white"
                                                                 : "black",
-                                                        border: "1px solid gray",
+                                                        border: "1px solid #d9d9d9",
                                                         display: "flex",
                                                         alignItems: "center",
                                                         justifyContent:
                                                             "center",
                                                         cursor: "pointer",
+                                                        transition: "all 0.3s",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        if (
+                                                            selectedSize !==
+                                                            size
+                                                        ) {
+                                                            e.target.style.backgroundColor =
+                                                                "#e6e6e6";
+                                                        }
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        if (
+                                                            selectedSize !==
+                                                            size
+                                                        ) {
+                                                            e.target.style.backgroundColor =
+                                                                "#f5f5f5";
+                                                        }
                                                     }}
                                                 >
                                                     {size}
@@ -384,7 +463,12 @@ const ProductOverview = () => {
                                             ))}
                                         </div>
                                         {selectedSize && (
-                                            <div style={{ marginTop: "8px" }}>
+                                            <div
+                                                style={{
+                                                    marginTop: "12px",
+                                                    fontSize: "14px",
+                                                }}
+                                            >
                                                 Selected Size:{" "}
                                                 <strong>{selectedSize}</strong>
                                             </div>
@@ -392,62 +476,108 @@ const ProductOverview = () => {
                                     </div>
                                 )}
                             </Space>
-                        </Card>
 
-                        <Space
-                            direction="horizontal"
-                            size="middle"
-                            style={{
-                                width: "100%",
-                                marginTop: "16px",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <Button
+                            {/* Action Buttons */}
+                            <Space
+                                direction="horizontal"
+                                size="middle"
                                 style={{
-                                    backgroundColor: "#28A745",
-                                    color: "white",
-                                    border: "none",
-                                    width: "150px",
-                                    height: "40px",
-                                }}
-                                onClick={() => {
-                                    if (!selectedSize) {
-                                        message.warning(
-                                            "Please select a size."
-                                        );
-                                        return;
-                                    }
-                                    alert(
-                                        `Added to cart with size ${selectedSize}!`
-                                    );
+                                    width: "100%",
+                                    marginTop: "24px",
+                                    justifyContent: "center",
+                                    gap: "16px",
                                 }}
                             >
-                                ADD TO CART
-                            </Button>
-                            <Button
-                                style={{
-                                    backgroundColor: "black",
-                                    color: "white",
-                                    border: "none",
-                                    width: "150px",
-                                    height: "40px",
-                                }}
-                                onClick={() => {
-                                    if (!selectedSize) {
-                                        message.warning(
-                                            "Please select a size."
+                                <Button
+                                    style={{
+                                        backgroundColor: "#000000", // Black background
+                                        color: "white", // White text
+                                        border: "none",
+                                        width: "160px",
+                                        height: "48px",
+                                        borderRadius: "8px", // Slightly rounded for 3D effect
+                                        fontSize: "16px",
+                                        fontWeight: "bold",
+                                        boxShadow:
+                                            "0 4px 8px rgba(0, 0, 0, 0.2)", // 3D shadow
+                                        transition: "all 0.2s ease",
+                                    }}
+                                    onClick={() => {
+                                        if (!selectedSize) {
+                                            message.warning(
+                                                "Please select a size."
+                                            );
+                                            return;
+                                        }
+                                        alert(
+                                            `Added to cart with size ${selectedSize}!`
                                         );
-                                        return;
-                                    }
-                                    alert(
-                                        `Redirecting to checkout with size ${selectedSize}!`
-                                    );
-                                }}
-                            >
-                                BUY NOW
-                            </Button>
-                        </Space>
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.backgroundColor =
+                                            "#1a1a1a"; // Slightly lighter black
+                                        e.target.style.boxShadow =
+                                            "0 2px 4px rgba(0, 0, 0, 0.3)"; // Reduced shadow
+                                        e.target.style.transform =
+                                            "translateY(2px)"; // Pressed effect
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.backgroundColor =
+                                            "#000000";
+                                        e.target.style.boxShadow =
+                                            "0 4px 8px rgba(0, 0, 0, 0.2)";
+                                        e.target.style.transform =
+                                            "translateY(0)";
+                                    }}
+                                >
+                                    ADD TO CART
+                                </Button>
+                                <Button
+                                    style={{
+                                        backgroundColor: "#ffffff", // White background
+                                        color: "#000000", // Black text
+                                        border: "2px solid #000000", // Black border for contrast
+                                        width: "160px",
+                                        height: "48px",
+                                        borderRadius: "8px", // Slightly rounded for 3D effect
+                                        fontSize: "16px",
+                                        fontWeight: "bold",
+                                        boxShadow:
+                                            "0 4px 8px rgba(0, 0, 0, 0.2)", // 3D shadow
+                                        transition: "all 0.2s ease",
+                                    }}
+                                    onClick={() => {
+                                        if (!selectedSize) {
+                                            message.warning(
+                                                "Please select a size."
+                                            );
+                                            return;
+                                        }
+                                        alert(
+                                            `Redirecting to checkout with size ${selectedSize}!`
+                                        );
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.backgroundColor =
+                                            "#f0f0f0"; // Light gray hover
+                                        e.target.style.boxShadow =
+                                            "0 2px 4px rgba(0, 0, 0, 0.3)"; // Reduced shadow
+                                        e.target.style.transform =
+                                            "translateY(2px)"; // Pressed effect
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.backgroundColor =
+                                            "#ffffff";
+                                        e.target.style.boxShadow =
+                                            "0 4px 8px rgba(0, 0, 0, 0.2)";
+                                        e.target.style.transform =
+                                            "translateY(0)";
+                                    }}
+                                >
+                                    BUY NOW
+                                </Button>
+                            </Space>
+                        </Card>
                     </Col>
                 </Row>
 
@@ -466,12 +596,10 @@ const ProductOverview = () => {
 
                                 <TabPane tab="Comments" key="2">
                                     <Card>
-                                        {/* Review Input (without username and avatar) */}
+                                        {/* Review Input */}
                                         {localStorage.getItem("token") ? (
                                             <div
-                                                style={{
-                                                    marginBottom: "15px",
-                                                }}
+                                                style={{ marginBottom: "15px" }}
                                             >
                                                 <div
                                                     style={{
@@ -525,7 +653,7 @@ const ProductOverview = () => {
                                             </Paragraph>
                                         )}
 
-                                        {/* Display Reviews (with username, avatar, and rating) */}
+                                        {/* Display Reviews */}
                                         {reviews.length > 0 ? (
                                             reviews.map((review) => (
                                                 <Card

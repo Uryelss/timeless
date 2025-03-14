@@ -62804,7 +62804,7 @@ function usePanelRef(panelSelector) {
 "use strict";
 /* provided dependency */ var process = __webpack_require__(/*! process/browser.js */ "./node_modules/process/browser.js");
 /* provided dependency */ var Buffer = __webpack_require__(/*! buffer */ "./node_modules/buffer/index.js")["Buffer"];
-/*! Axios v1.8.2 Copyright (c) 2025 Matt Zabriskie and contributors */
+/*! Axios v1.8.3 Copyright (c) 2025 Matt Zabriskie and contributors */
 
 
 function bind(fn, thisArg) {
@@ -65149,7 +65149,7 @@ var resolveConfig = (config) => {
 
   newConfig.headers = headers = AxiosHeaders$1.from(headers);
 
-  newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url), config.params, config.paramsSerializer);
+  newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls), config.params, config.paramsSerializer);
 
   // HTTP basic authentication
   if (auth) {
@@ -65874,7 +65874,7 @@ function dispatchRequest(config) {
   });
 }
 
-const VERSION = "1.8.2";
+const VERSION = "1.8.3";
 
 const validators$1 = {};
 
@@ -68783,7 +68783,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VERSION: () => (/* binding */ VERSION)
 /* harmony export */ });
-const VERSION = "1.8.2";
+const VERSION = "1.8.3";
 
 /***/ }),
 
@@ -69619,7 +69619,7 @@ __webpack_require__.r(__webpack_exports__);
 
   newConfig.headers = headers = _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_1__["default"].from(headers);
 
-  newConfig.url = (0,_buildURL_js__WEBPACK_IMPORTED_MODULE_2__["default"])((0,_core_buildFullPath_js__WEBPACK_IMPORTED_MODULE_3__["default"])(newConfig.baseURL, newConfig.url), config.params, config.paramsSerializer);
+  newConfig.url = (0,_buildURL_js__WEBPACK_IMPORTED_MODULE_2__["default"])((0,_core_buildFullPath_js__WEBPACK_IMPORTED_MODULE_3__["default"])(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls), config.params, config.paramsSerializer);
 
   // HTTP basic authentication
   if (auth) {
@@ -181971,7 +181971,7 @@ var ProductOverview = function ProductOverview() {
     console.log("UserProfile in useEffect:", userProfile);
     axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("http://localhost:8000/api/products/".concat(id)).then(function (res) {
       var fetchedProduct = res.data.product || res.data;
-      console.log("Fetched Product Data:", fetchedProduct); // Debug log
+      console.log("Fetched Product Data:", fetchedProduct);
       setProduct(fetchedProduct);
       setCurrentMainImage(fetchedProduct.main_image);
       setLoading(false);
@@ -182009,7 +182009,7 @@ var ProductOverview = function ProductOverview() {
     }
   }, [id]);
 
-  // Fetch user profile if needed (optional, only if profile might change)
+  // Fetch user profile if needed
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var token = localStorage.getItem("token");
     if (token && !userProfile) {
@@ -182054,10 +182054,9 @@ var ProductOverview = function ProductOverview() {
       setReviews([res.data.review].concat(_toConsumableArray(reviews)));
       setReviewText("");
       setReviewRating(0);
-      // Refetch product to update average rating
       axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("http://localhost:8000/api/products/".concat(id)).then(function (res) {
         var fetchedProduct = res.data.product || res.data;
-        console.log("Refetched Product Data:", fetchedProduct); // Debug log
+        console.log("Refetched Product Data:", fetchedProduct);
         setProduct(fetchedProduct);
       });
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Review posted successfully!");
@@ -182203,57 +182202,90 @@ var ProductOverview = function ProductOverview() {
               })]
             })
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
           xs: 24,
           md: 12,
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
             bodyStyle: {
-              padding: "16px"
+              padding: "24px"
             },
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            style: {
+              borderRadius: "8px",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+              maxWidth: "450px",
+              margin: "0 auto"
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
               direction: "vertical",
-              size: "middle",
+              size: "large",
               style: {
+                width: "100%",
                 textAlign: "center"
               },
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
                 level: 3,
+                style: {
+                  margin: 0,
+                  fontWeight: 600
+                },
                 children: product.product_name
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 style: {
                   display: "flex",
                   justifyContent: "center",
-                  alignItems: "center"
+                  alignItems: "center",
+                  gap: "8px"
                 },
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                   disabled: true,
-                  value: product.average_rating || 0 // Fallback to 0 if undefined
-                  ,
+                  value: product.average_rating || 0,
                   allowHalf: true,
                   style: {
-                    marginRight: "8px"
+                    color: "#fadb14"
                   }
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
-                  children: product.average_rating || 0
-                }), " "]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+                  style: {
+                    fontSize: "16px",
+                    color: "#888"
+                  },
+                  children: ["(", product.average_rating || 0, " / 5)"]
+                })]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
+                  style: {
+                    margin: 0,
+                    fontSize: "14px",
+                    color: "#888"
+                  },
+                  children: "Price"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Paragraph, {
+                  strong: true,
+                  style: {
+                    fontSize: "24px",
+                    color: "#000000"
+                  },
+                  children: ["\u20B1", number_format(product.price)]
+                })]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
-                strong: true,
-                children: "Price"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Paragraph, {
-                strong: true,
-                children: ["\u20B1", number_format(product.price)]
+                style: {
+                  margin: 0,
+                  color: product.stock > 0 ? "#000000" : "#ff4d4f"
+                },
+                children: product.stock > 0 ? "In Stock (".concat(product.stock, " available)") : "Out of Stock"
               }), sizes && sizes.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                   style: {
-                    marginBottom: "8px",
-                    fontWeight: "bold"
+                    marginBottom: "12px",
+                    fontWeight: "bold",
+                    fontSize: "16px"
                   },
                   children: "Size (mm)"
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                   style: {
                     display: "flex",
-                    gap: "10px",
-                    justifyContent: "center"
+                    gap: "12px",
+                    justifyContent: "center",
+                    flexWrap: "wrap"
                   },
                   children: sizes.map(function (size, index) {
                     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
@@ -182261,72 +182293,125 @@ var ProductOverview = function ProductOverview() {
                         return setSelectedSize(size);
                       },
                       style: {
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "4px",
-                        backgroundColor: selectedSize === size ? "black" : "white",
+                        width: "50px",
+                        height: "50px",
+                        borderRadius: "50%",
+                        backgroundColor: selectedSize === size ? "#000000" : "#f5f5f5",
                         color: selectedSize === size ? "white" : "black",
-                        border: "1px solid gray",
+                        border: "1px solid #d9d9d9",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        cursor: "pointer"
+                        cursor: "pointer",
+                        transition: "all 0.3s",
+                        fontWeight: "bold"
+                      },
+                      onMouseEnter: function onMouseEnter(e) {
+                        if (selectedSize !== size) {
+                          e.target.style.backgroundColor = "#e6e6e6";
+                        }
+                      },
+                      onMouseLeave: function onMouseLeave(e) {
+                        if (selectedSize !== size) {
+                          e.target.style.backgroundColor = "#f5f5f5";
+                        }
                       },
                       children: size
                     }, index);
                   })
                 }), selectedSize && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                   style: {
-                    marginTop: "8px"
+                    marginTop: "12px",
+                    fontSize: "14px"
                   },
                   children: ["Selected Size:", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
                     children: selectedSize
                   })]
                 })]
               })]
-            })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-            direction: "horizontal",
-            size: "middle",
-            style: {
-              width: "100%",
-              marginTop: "16px",
-              justifyContent: "center"
-            },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+              direction: "horizontal",
+              size: "middle",
               style: {
-                backgroundColor: "#28A745",
-                color: "white",
-                border: "none",
-                width: "150px",
-                height: "40px"
+                width: "100%",
+                marginTop: "24px",
+                justifyContent: "center",
+                gap: "16px"
               },
-              onClick: function onClick() {
-                if (!selectedSize) {
-                  antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select a size.");
-                  return;
-                }
-                alert("Added to cart with size ".concat(selectedSize, "!"));
-              },
-              children: "ADD TO CART"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
-              style: {
-                backgroundColor: "black",
-                color: "white",
-                border: "none",
-                width: "150px",
-                height: "40px"
-              },
-              onClick: function onClick() {
-                if (!selectedSize) {
-                  antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select a size.");
-                  return;
-                }
-                alert("Redirecting to checkout with size ".concat(selectedSize, "!"));
-              },
-              children: "BUY NOW"
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+                style: {
+                  backgroundColor: "#000000",
+                  // Black background
+                  color: "white",
+                  // White text
+                  border: "none",
+                  width: "160px",
+                  height: "48px",
+                  borderRadius: "8px",
+                  // Slightly rounded for 3D effect
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                  // 3D shadow
+                  transition: "all 0.2s ease"
+                },
+                onClick: function onClick() {
+                  if (!selectedSize) {
+                    antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select a size.");
+                    return;
+                  }
+                  alert("Added to cart with size ".concat(selectedSize, "!"));
+                },
+                onMouseEnter: function onMouseEnter(e) {
+                  e.target.style.backgroundColor = "#1a1a1a"; // Slightly lighter black
+                  e.target.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.3)"; // Reduced shadow
+                  e.target.style.transform = "translateY(2px)"; // Pressed effect
+                },
+                onMouseLeave: function onMouseLeave(e) {
+                  e.target.style.backgroundColor = "#000000";
+                  e.target.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+                  e.target.style.transform = "translateY(0)";
+                },
+                children: "ADD TO CART"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+                style: {
+                  backgroundColor: "#ffffff",
+                  // White background
+                  color: "#000000",
+                  // Black text
+                  border: "2px solid #000000",
+                  // Black border for contrast
+                  width: "160px",
+                  height: "48px",
+                  borderRadius: "8px",
+                  // Slightly rounded for 3D effect
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                  // 3D shadow
+                  transition: "all 0.2s ease"
+                },
+                onClick: function onClick() {
+                  if (!selectedSize) {
+                    antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select a size.");
+                    return;
+                  }
+                  alert("Redirecting to checkout with size ".concat(selectedSize, "!"));
+                },
+                onMouseEnter: function onMouseEnter(e) {
+                  e.target.style.backgroundColor = "#f0f0f0"; // Light gray hover
+                  e.target.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.3)"; // Reduced shadow
+                  e.target.style.transform = "translateY(2px)"; // Pressed effect
+                },
+                onMouseLeave: function onMouseLeave(e) {
+                  e.target.style.backgroundColor = "#ffffff";
+                  e.target.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+                  e.target.style.transform = "translateY(0)";
+                },
+                children: "BUY NOW"
+              })]
             })]
-          })]
+          })
         })]
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
         justify: "center",
