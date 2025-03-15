@@ -1,45 +1,506 @@
-.horizontal-table-container {
-    display: flex;
-    overflow-x: auto;
-}
+// Base Layout Styles
+.product-management {
+    height: 100vh;
+    overflow: hidden;
 
-.image-preview-card {
-    border: 1px dashed #d9d9d9;
-    padding: 10px;
-    margin-top: 10px;
-    text-align: center;
-    border-radius: 4px;
-    background-color: #fafafa;
+    // Override Antd Layout
+    .ant-layout {
+        min-height: 100vh;
+    }
 
-    img {
-        max-width: 100%;
-        height: auto;
-        display: block;
-        margin: 0 auto;
+    .ant-layout-sider {
+        background: #006666;
+        color: white;
+    }
+
+    .ant-layout-header {
+        background: #fff;
+        padding: 0 24px;
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 64px;
+        border-bottom: 1px solid #e8e8e8;
+    }
+
+    .ant-layout-content {
+        padding: 24px;
+        background: #fff;
+        overflow-y: auto;
     }
 }
 
-.modal-footer-buttons {
+.buttons {
     display: flex;
-    justify-content: flex-end; // Align buttons to the right
-    padding: 10px 0;
-
-    .ant-space {
-        .ant-btn {
-            min-width: 100px; // Ensure buttons have a minimum width for consistency
-        }
-    }
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
 }
 
-// Optional: Style for the top section buttons
-.top-actions {
-    .ant-space {
-        .ant-btn {
-            min-width: 120px; // Ensure consistent button width
-        }
+// Header Section
+.product-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    .ant-search {
+        width: 200px;
+        margin-right: 8px;
     }
 
     .ant-checkbox-wrapper {
-        margin-right: 16px; // Add spacing between checkbox and buttons
+        margin-right: 8px;
+    }
+
+    .ant-btn {
+        margin-right: 8px;
+    }
+
+    .ant-btn-primary {
+        background: #006666;
+        border-color: #006666;
+        margin-top: 5px;
+
+        &:hover,
+        &:focus {
+            background: darken(#006666, 10%);
+            border-color: darken(#006666, 10%);
+        }
+    }
+
+    .ant-btn-default {
+        &:hover,
+        &:focus {
+            background: #f5f5f5;
+            border-color: #d9d9d9;
+        }
+    }
+}
+
+// Table Styles
+.product-table {
+    .ant-table {
+        background: #fff;
+
+        .ant-table-thead > tr > th {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 12px;
+            font-weight: 500;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .ant-table-tbody > tr > td {
+            text-align: center;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .ant-table-tbody > tr.ant-table-row:hover > td {
+            background: #fafafa;
+        }
+
+        .ant-table-cell img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .ant-table-cell .ant-space {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+
+            .ant-checkbox-wrapper {
+                margin: 0;
+            }
+
+            .anticon {
+                font-size: 16px;
+                cursor: pointer;
+                color: #006666;
+
+                &:hover {
+                    color: #007545;
+                }
+            }
+        }
+    }
+}
+
+// Modal Styles
+.product-modal {
+    .ant-modal {
+        top: 20px;
+        max-width: 1000px;
+    }
+
+    .ant-modal-content {
+        border-radius: 0;
+        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    }
+
+    .ant-modal-header {
+        background: #fff;
+        border-bottom: 1px solid #e8e8e8;
+    }
+
+    .ant-modal-title {
+        color: #007545;
+        font-size: 24px;
+        font-weight: 400;
+        font-family: "Helvetica", Arial, sans-serif;
+    }
+
+    .ant-modal-body {
+        padding: 24px;
+        overflow-y: auto;
+        max-height: 80vh;
+    }
+
+    .ant-modal-footer {
+        border-top: 1px solid #e8e8e8;
+        padding: 10px 24px;
+    }
+}
+
+// Form Styles
+.product-form {
+    .ant-form-item {
+        margin-bottom: 16px;
+    }
+
+    .ant-form-item-label {
+        padding-bottom: 4px;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .ant-input,
+    .ant-select-selector,
+    .ant-textarea {
+        border-radius: 4px;
+        border: 1px solid #d9d9d9;
+        font-size: 14px;
+        font-family: "Helvetica", Arial, sans-serif;
+
+        &:focus,
+        &:hover {
+            border-color: #006666;
+            box-shadow: 0 0 0 2px rgba(0, 102, 102, 0.2);
+        }
+    }
+
+    .ant-form-item-control-input-content .ant-btn-dashed {
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .ant-upload {
+        .ant-btn {
+            background: #006666;
+            color: white;
+            border-color: #006666;
+
+            &:hover,
+            &:focus {
+                background: darken(#006666, 10%);
+                border-color: darken(#006666, 10%);
+            }
+        }
+    }
+
+    .ant-form-item-control-input-content img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        margin-top: 8px;
+    }
+
+    .ant-row {
+        margin-bottom: 16px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    .ant-col {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+// Archived Modal Table Styles
+.archive-table {
+    .ant-table {
+        background: #fff;
+
+        .ant-table-thead > tr > th {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 12px;
+            font-weight: 500;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .ant-table-tbody > tr > td {
+            text-align: center;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .ant-table-cell .ant-btn {
+            padding: 0;
+            color: #006666;
+
+            &:hover,
+            &:focus {
+                color: #007545;
+                background: transparent;
+            }
+        }
+    }
+}
+
+// Responsive Adjustments
+@media (max-width: 1024px) {
+    .product-management {
+        .ant-layout-content {
+            padding: 16px;
+        }
+
+        .product-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+
+            .ant-search {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .ant-btn {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+
+        .product-table {
+            .ant-table-cell img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .ant-table-cell .ant-space .anticon {
+                font-size: 14px;
+            }
+        }
+
+        .product-modal {
+            .ant-modal {
+                max-width: 90%;
+            }
+
+            .ant-modal-body {
+                padding: 16px;
+            }
+        }
+
+        .product-form {
+            .ant-input,
+            .ant-select-selector,
+            .ant-textarea {
+                font-size: 13px;
+            }
+
+            .ant-form-item-control-input-content img {
+                width: 120px;
+                height: 120px;
+            }
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .product-management {
+        .ant-layout {
+            flex-direction: column;
+        }
+
+        .ant-layout-sider {
+            width: 100% !important;
+            min-height: 0;
+            height: auto;
+        }
+
+        .ant-layout-header {
+            font-size: 16px;
+            line-height: 48px;
+        }
+
+        .ant-layout-content {
+            padding: 12px;
+        }
+
+        .product-header {
+            gap: 8px;
+
+            .ant-search {
+                max-width: 250px;
+            }
+        }
+
+        .product-table {
+            .ant-table-cell img {
+                width: 30px;
+                height: 30px;
+            }
+
+            .ant-table-cell .ant-space .anticon {
+                font-size: 12px;
+            }
+        }
+
+        .product-modal {
+            .ant-modal {
+                max-width: 95%;
+                top: 10px;
+            }
+
+            .ant-modal-body {
+                padding: 12px;
+            }
+
+            .ant-form-item-control-input-content img {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        .product-form {
+            .ant-input,
+            .ant-select-selector,
+            .ant-textarea {
+                font-size: 12px;
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .product-management {
+        .ant-layout-header {
+            font-size: 14px;
+            line-height: 40px;
+        }
+
+        .ant-layout-content {
+            padding: 8px;
+        }
+
+        .product-header {
+            .ant-search {
+                max-width: 200px;
+            }
+
+            .ant-btn {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+        }
+
+        .product-table {
+            .ant-table-cell img {
+                width: 25px;
+                height: 25px;
+            }
+
+            .ant-table-cell .ant-space .anticon {
+                font-size: 10px;
+            }
+        }
+
+        .product-modal {
+            .ant-modal-body {
+                padding: 8px;
+            }
+
+            .ant-form-item-control-input-content img {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        .product-form {
+            .ant-input,
+            .ant-select-selector,
+            .ant-textarea {
+                font-size: 10px;
+            }
+
+            .ant-form-item-control-input-content .ant-btn {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+        }
+    }
+}
+
+@media (max-width: 320px) {
+    .product-management {
+        .ant-layout-header {
+            font-size: 12px;
+            line-height: 32px;
+        }
+
+        .ant-layout-content {
+            padding: 4px;
+        }
+
+        .product-header {
+            .ant-search {
+                max-width: 150px;
+            }
+
+            .ant-btn {
+                padding: 2px 6px;
+                font-size: 10px;
+            }
+        }
+
+        .product-table {
+            .ant-table-cell img {
+                width: 20px;
+                height: 20px;
+            }
+
+            .ant-table-cell .ant-space .anticon {
+                font-size: 8px;
+            }
+        }
+
+        .product-modal {
+            .ant-modal-body {
+                padding: 4px;
+            }
+
+            .ant-form-item-control-input-content img {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        .product-form {
+            .ant-input,
+            .ant-select-selector,
+            .ant-textarea {
+                font-size: 8px;
+            }
+        }
     }
 }

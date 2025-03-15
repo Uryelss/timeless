@@ -25,20 +25,16 @@ const { Header, Content, Sider } = Layout;
 const { TabPane } = Tabs;
 
 const SubCategoryManagement = () => {
-    // Active tab (values: brand, categories, gender, movement, strap_materials, sizes)
     const [activeTab, setActiveTab] = useState("brand");
-    // Modal states
     const [openAddModal, setOpenAddModal] = useState(false);
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
     const [form] = Form.useForm();
-    // Bulk selection and search state
     const [selectAll, setSelectAll] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    // Data state for active and archived records
     const [data, setData] = useState([]);
     const [archivedData, setArchivedData] = useState([]);
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
-    // Fetch active sub-categories for the current active tab
     const fetchData = () => {
         axios
             .get(`http://localhost:8000/api/sub-categories?type=${activeTab}`, {
@@ -47,7 +43,6 @@ const SubCategoryManagement = () => {
                 },
             })
             .then((res) => {
-                // Ensure each record has a unique "key" for Ant Design table
                 setData(
                     res.data.map((item) => ({
                         ...item,
@@ -61,7 +56,6 @@ const SubCategoryManagement = () => {
             });
     };
 
-    // Fetch archived sub-categories for the current active tab
     const fetchArchivedData = () => {
         axios
             .get(
@@ -95,14 +89,18 @@ const SubCategoryManagement = () => {
         }
     }, [activeTab, openArchiveModal]);
 
-    // Table columns for active items (ID column removed)
     const columns = [
         {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
                 <Space>
-                    <Checkbox />
+                    <Checkbox
+                        checked={selectedRowKeys.includes(record.key)}
+                        onChange={(e) =>
+                            handleSelect(record.key, e.target.checked)
+                        }
+                    />
                     <EditOutlined
                         onClick={() => handleEdit(record)}
                         style={{ fontSize: "16px" }}
@@ -119,7 +117,6 @@ const SubCategoryManagement = () => {
         { title: "Updated At", dataIndex: "updated_at", key: "updated_at" },
     ];
 
-    // Table columns for archived items (ID column removed)
     const archiveColumns = [
         {
             title: "Actions",
@@ -138,10 +135,10 @@ const SubCategoryManagement = () => {
     const handleTabChange = (key) => {
         setActiveTab(key);
         setSelectAll(false);
+        setSelectedRowKeys([]);
     };
 
     const handleEdit = (record) => {
-        // Set form values for editing; include record id if editing
         form.setFieldsValue(record);
         setOpenAddModal(true);
     };
@@ -169,6 +166,13 @@ const SubCategoryManagement = () => {
                         console.error(err);
                         message.error("Failed to archive");
                     });
+            },
+            okButtonProps: {
+                style: { width: "80px" },
+            },
+            cancelText: "Cancel",
+            cancelButtonProps: {
+                style: { width: "80px" },
             },
         });
     };
@@ -205,7 +209,6 @@ const SubCategoryManagement = () => {
     const handleModalOk = () => {
         form.validateFields()
             .then((values) => {
-                // If an id exists, we are editing; otherwise, we add new
                 if (values.id) {
                     axios
                         .put(
@@ -270,6 +273,19 @@ const SubCategoryManagement = () => {
         });
     };
 
+    const handleSelect = (key, checked) => {
+        setSelectedRowKeys((prevSelectedRowKeys) =>
+            checked
+                ? [...prevSelectedRowKeys, key]
+                : prevSelectedRowKeys.filter((k) => k !== key)
+        );
+    };
+
+    const handleSelectAll = (checked) => {
+        setSelectAll(checked);
+        setSelectedRowKeys(checked ? data.map((item) => item.key) : []);
+    };
+
     return (
         <Layout>
             <Sider width={256} style={{ minHeight: "100vh" }}>
@@ -295,7 +311,6 @@ const SubCategoryManagement = () => {
                         <TabPane tab="Strap Materials" key="strap_materials" />
                         <TabPane tab="Sizes" key="sizes" />
                     </Tabs>
-                    {/* Toolbar */}
                     <div
                         style={{
                             display: "flex",
@@ -310,7 +325,10 @@ const SubCategoryManagement = () => {
                                 style={{ width: 300, marginRight: 16 }}
                             />
                             <Checkbox
-                                onChange={(e) => setSelectAll(e.target.checked)}
+                                checked={selectAll}
+                                onChange={(e) =>
+                                    handleSelectAll(e.target.checked)
+                                }
                             >
                                 Select All
                             </Checkbox>
@@ -327,18 +345,34 @@ const SubCategoryManagement = () => {
                                 </Button>
                             )}
                         </div>
-                        <div>
+                        <div
+                            style={{
+                                flexDirection: "column",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                            }}
+                        >
                             <Button
                                 type="default"
+                                icon={<DeleteOutlined />}
                                 onClick={() => setOpenArchiveModal(true)}
-                                style={{ marginRight: 8 }}
+                                style={{
+                                    marginRight: 8,
+                                    width: "131px",
+                                }}
                             >
                                 Archived View
                             </Button>
                             <Button
                                 type="primary"
-                                onClick={handleAdd}
                                 icon={<PlusOutlined />}
+                                onClick={handleAdd}
+                                style={{
+                                    width: "131px",
+                                    marginRight: 8,
+                                    marginTop: "5px",
+                                }}
                             >
                                 Add
                             </Button>
@@ -351,11 +385,14 @@ const SubCategoryManagement = () => {
                                 .toLowerCase()
                                 .includes(searchQuery.toLowerCase())
                         )}
+                        rowSelection={{
+                            selectedRowKeys,
+                            onChange: setSelectedRowKeys,
+                        }}
                     />
                 </Content>
             </Layout>
 
-            {/* Add/Edit Modal */}
             <Modal
                 title="Sub-Category"
                 centered
@@ -363,10 +400,15 @@ const SubCategoryManagement = () => {
                 onCancel={() => setOpenAddModal(false)}
                 onOk={handleModalOk}
                 okText="Save"
+                okButtonProps={{
+                    style: { width: "80px" },
+                }}
                 cancelText="Cancel"
+                cancelButtonProps={{
+                    style: { width: "80px" },
+                }}
             >
                 <Form form={form} layout="vertical">
-                    {/* Hidden field for editing */}
                     <Form.Item name="id" style={{ display: "none" }}>
                         <Input type="hidden" />
                     </Form.Item>
@@ -385,20 +427,12 @@ const SubCategoryManagement = () => {
                 </Form>
             </Modal>
 
-            {/* Archive Modal */}
             <Modal
                 title="Archived Sub-Categories"
                 centered
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
                 width={1200}
             >
                 <Table

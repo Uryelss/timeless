@@ -180066,6 +180066,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -180088,12 +180092,10 @@ var Header = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Header,
   Sider = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Sider;
 var TabPane = antd__WEBPACK_IMPORTED_MODULE_4__["default"].TabPane;
 var SubCategoryManagement = function SubCategoryManagement() {
-  // Active tab (values: brand, categories, gender, movement, strap_materials, sizes)
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("brand"),
     _useState2 = _slicedToArray(_useState, 2),
     activeTab = _useState2[0],
     setActiveTab = _useState2[1];
-  // Modal states
   var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState4 = _slicedToArray(_useState3, 2),
     openAddModal = _useState4[0],
@@ -180105,7 +180107,6 @@ var SubCategoryManagement = function SubCategoryManagement() {
   var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_5__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
-  // Bulk selection and search state
   var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState8 = _slicedToArray(_useState7, 2),
     selectAll = _useState8[0],
@@ -180114,7 +180115,6 @@ var SubCategoryManagement = function SubCategoryManagement() {
     _useState10 = _slicedToArray(_useState9, 2),
     searchQuery = _useState10[0],
     setSearchQuery = _useState10[1];
-  // Data state for active and archived records
   var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState12 = _slicedToArray(_useState11, 2),
     data = _useState12[0],
@@ -180123,15 +180123,16 @@ var SubCategoryManagement = function SubCategoryManagement() {
     _useState14 = _slicedToArray(_useState13, 2),
     archivedData = _useState14[0],
     setArchivedData = _useState14[1];
-
-  // Fetch active sub-categories for the current active tab
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState16 = _slicedToArray(_useState15, 2),
+    selectedRowKeys = _useState16[0],
+    setSelectedRowKeys = _useState16[1];
   var fetchData = function fetchData() {
     axios__WEBPACK_IMPORTED_MODULE_6__["default"].get("http://localhost:8000/api/sub-categories?type=".concat(activeTab), {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      // Ensure each record has a unique "key" for Ant Design table
       setData(res.data.map(function (item) {
         return _objectSpread(_objectSpread({}, item), {}, {
           key: item.id.toString()
@@ -180142,8 +180143,6 @@ var SubCategoryManagement = function SubCategoryManagement() {
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error fetching data");
     });
   };
-
-  // Fetch archived sub-categories for the current active tab
   var fetchArchivedData = function fetchArchivedData() {
     axios__WEBPACK_IMPORTED_MODULE_6__["default"].get("http://localhost:8000/api/sub-categories?type=".concat(activeTab, "&archived=1"), {
       headers: {
@@ -180166,14 +180165,17 @@ var SubCategoryManagement = function SubCategoryManagement() {
       fetchArchivedData();
     }
   }, [activeTab, openArchiveModal]);
-
-  // Table columns for active items (ID column removed)
   var columns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+          checked: selectedRowKeys.includes(record.key),
+          onChange: function onChange(e) {
+            return handleSelect(record.key, e.target.checked);
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
           onClick: function onClick() {
             return handleEdit(record);
           },
@@ -180203,8 +180205,6 @@ var SubCategoryManagement = function SubCategoryManagement() {
     dataIndex: "updated_at",
     key: "updated_at"
   }];
-
-  // Table columns for archived items (ID column removed)
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
@@ -180237,9 +180237,9 @@ var SubCategoryManagement = function SubCategoryManagement() {
   var handleTabChange = function handleTabChange(key) {
     setActiveTab(key);
     setSelectAll(false);
+    setSelectedRowKeys([]);
   };
   var handleEdit = function handleEdit(record) {
-    // Set form values for editing; include record id if editing
     form.setFieldsValue(record);
     setOpenAddModal(true);
   };
@@ -180258,6 +180258,17 @@ var SubCategoryManagement = function SubCategoryManagement() {
           console.error(err);
           antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive");
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelText: "Cancel",
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
       }
     });
   };
@@ -180281,7 +180292,6 @@ var SubCategoryManagement = function SubCategoryManagement() {
   };
   var handleModalOk = function handleModalOk() {
     form.validateFields().then(function (values) {
-      // If an id exists, we are editing; otherwise, we add new
       if (values.id) {
         axios__WEBPACK_IMPORTED_MODULE_6__["default"].put("http://localhost:8000/api/sub-categories/".concat(values.id), {
           name: values.name
@@ -180326,6 +180336,19 @@ var SubCategoryManagement = function SubCategoryManagement() {
         antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Bulk archive executed (not implemented)");
       }
     });
+  };
+  var handleSelect = function handleSelect(key, checked) {
+    setSelectedRowKeys(function (prevSelectedRowKeys) {
+      return checked ? [].concat(_toConsumableArray(prevSelectedRowKeys), [key]) : prevSelectedRowKeys.filter(function (k) {
+        return k !== key;
+      });
+    });
+  };
+  var handleSelectAll = function handleSelectAll(checked) {
+    setSelectAll(checked);
+    setSelectedRowKeys(checked ? data.map(function (item) {
+      return item.key;
+    }) : []);
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
@@ -180385,8 +180408,9 @@ var SubCategoryManagement = function SubCategoryManagement() {
                 marginRight: 16
               }
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+              checked: selectAll,
               onChange: function onChange(e) {
-                return setSelectAll(e.target.checked);
+                return handleSelectAll(e.target.checked);
               },
               children: "Select All"
             }), selectAll && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
@@ -180403,19 +180427,32 @@ var SubCategoryManagement = function SubCategoryManagement() {
               })
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            style: {
+              flexDirection: "column",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between"
+            },
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
               type: "default",
+              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {}),
               onClick: function onClick() {
                 return setOpenArchiveModal(true);
               },
               style: {
-                marginRight: 8
+                marginRight: 8,
+                width: "131px"
               },
               children: "Archived View"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
               type: "primary",
-              onClick: handleAdd,
               icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {}),
+              onClick: handleAdd,
+              style: {
+                width: "131px",
+                marginRight: 8,
+                marginTop: "5px"
+              },
               children: "Add"
             })]
           })]
@@ -180423,7 +180460,11 @@ var SubCategoryManagement = function SubCategoryManagement() {
           columns: columns,
           dataSource: data.filter(function (item) {
             return item.name.toLowerCase().includes(searchQuery.toLowerCase());
-          })
+          }),
+          rowSelection: {
+            selectedRowKeys: selectedRowKeys,
+            onChange: setSelectedRowKeys
+          }
         })]
       })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
@@ -180435,7 +180476,17 @@ var SubCategoryManagement = function SubCategoryManagement() {
       },
       onOk: handleModalOk,
       okText: "Save",
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
       cancelText: "Cancel",
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
         form: form,
         layout: "vertical",
@@ -180466,12 +180517,7 @@ var SubCategoryManagement = function SubCategoryManagement() {
       onCancel: function onCancel() {
         return setOpenArchiveModal(false);
       },
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-        onClick: function onClick() {
-          return setOpenArchiveModal(false);
-        },
-        children: "Close"
-      }, "close")],
+      footer: [],
       width: 1200,
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
         columns: archiveColumns,
@@ -180804,7 +180850,8 @@ var CustomerManagement = function CustomerManagement() {
         src: image ? image : "https://via.placeholder.com/100?text=Customer",
         alt: "customer",
         style: {
-          width: 50
+          width: "60px",
+          height: "60px"
         }
       });
     }
@@ -180889,6 +180936,17 @@ var CustomerManagement = function CustomerManagement() {
           antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive customer");
           console.error(err);
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        } // Adjust the width to match the Cancel button
+      },
+      cancelText: "Cancel",
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        } // Adjust the width to match the OK button
       }
     });
   };
@@ -181038,12 +181096,7 @@ var CustomerManagement = function CustomerManagement() {
         return setOpenArchiveModal(false);
       },
       width: 1200,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-        onClick: function onClick() {
-          return setOpenArchiveModal(false);
-        },
-        children: "Close"
-      }, "close")],
+      footer: [],
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
         columns: archiveColumns,
         dataSource: archivedCustomers,
@@ -181066,10 +181119,16 @@ var CustomerManagement = function CustomerManagement() {
           setOpenEditModal(false);
           setEditingCustomer(null);
         },
+        style: {
+          width: "131px"
+        },
         children: "Cancel"
       }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
         type: "primary",
         onClick: handleUpdate,
+        style: {
+          width: "131px"
+        },
         children: "Update Customer"
       }, "save")],
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
@@ -181838,7 +181897,8 @@ var ProductManagement = function ProductManagement() {
         src: image ? "".concat(imageBaseURL).concat(image) : "https://via.placeholder.com/100?text=Prod",
         alt: "product",
         style: {
-          width: 50
+          width: "60px",
+          height: "70px"
         }
       });
     }
@@ -181985,6 +182045,17 @@ var ProductManagement = function ProductManagement() {
         })["catch"](function (err) {
           return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive product");
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        } // Adjust the width to match the Cancel button
+      },
+      cancelText: "Cancel",
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        } // Adjust the width to match the OK button
       }
     });
   };
@@ -182176,6 +182247,7 @@ var ProductManagement = function ProductManagement() {
               })
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            "class": "buttons",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
               type: "default",
               icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
@@ -182183,13 +182255,19 @@ var ProductManagement = function ProductManagement() {
                 return setOpenArchiveModal(true);
               },
               style: {
-                marginRight: 8
+                marginRight: 8,
+                width: "131px"
               },
-              children: "Archived View"
+              children: "View Archived"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
               type: "primary",
               icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {}),
               onClick: handleAdd,
+              style: {
+                width: "131px",
+                marginRight: 8,
+                marginTop: "5px"
+              },
               children: "Add Product"
             })]
           })]
@@ -182212,6 +182290,10 @@ var ProductManagement = function ProductManagement() {
       footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         onClick: function onClick() {
           return setOpenAddModal(false);
+        },
+        style: {
+          marginRight: 8,
+          width: "131px"
         },
         children: "Cancel"
       }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
@@ -182493,12 +182575,7 @@ var ProductManagement = function ProductManagement() {
         return setOpenArchiveModal(false);
       },
       width: 1200,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-        onClick: function onClick() {
-          return setOpenArchiveModal(false);
-        },
-        children: "Close"
-      }, "close")],
+      footer: [],
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
         columns: archiveColumns,
         dataSource: archivedProducts,
@@ -182739,6 +182816,17 @@ var UserManagement = function UserManagement() {
           antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive user");
           console.error(err);
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        } // Adjust the width to match the Cancel button
+      },
+      cancelText: "Cancel",
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        } // Adjust the width to match the OK button
       }
     });
   };
@@ -182882,30 +182970,32 @@ var UserManagement = function UserManagement() {
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             style: {
+              flexDirection: "column",
               display: "flex",
-              alignItems: "center"
+              alignItems: "center",
+              justifyContent: "space-between"
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-              type: "primary",
-              onClick: handleAdd,
-              style: {
-                marginRight: 16
-              },
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {
-                style: {
-                  marginRight: 4
-                }
-              }), "Add User"]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
               type: "default",
+              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
               onClick: function onClick() {
                 return setOpenArchiveModal(true);
               },
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
-                style: {
-                  marginRight: 4
-                }
-              }), "Archived View"]
+              style: {
+                marginRight: 8,
+                width: "131px"
+              },
+              children: "Archived View"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+              type: "primary",
+              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {}),
+              onClick: handleAdd,
+              style: {
+                width: "131px",
+                marginRight: 8,
+                marginTop: "5px"
+              },
+              children: "Add User"
             })]
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
@@ -182925,12 +183015,7 @@ var UserManagement = function UserManagement() {
         return setOpenArchiveModal(false);
       },
       width: 1200,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-        onClick: function onClick() {
-          return setOpenArchiveModal(false);
-        },
-        children: "Close"
-      }, "close")],
+      footer: [],
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
         columns: archiveColumns,
         dataSource: archivedUsers,
@@ -182950,10 +183035,17 @@ var UserManagement = function UserManagement() {
           setOpenAddEditModal(false);
           setEditingUser(null);
         },
+        style: {
+          marginRight: 8,
+          width: 100
+        },
         children: "Cancel"
       }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         type: "primary",
         onClick: handleSave,
+        style: {
+          width: 100
+        },
         children: editingUser ? "Update User" : "Add User"
       }, "save")],
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {

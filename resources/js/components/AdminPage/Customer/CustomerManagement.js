@@ -112,7 +112,7 @@ const CustomerManagement = () => {
                             : "https://via.placeholder.com/100?text=Customer"
                     }
                     alt="customer"
-                    style={{ width: 50 }}
+                    style={{ width: "60px", height: "60px" }}
                 />
             ),
         },
@@ -192,6 +192,14 @@ const CustomerManagement = () => {
                         message.error("Failed to archive customer");
                         console.error(err);
                     });
+            },
+
+            okButtonProps: {
+                style: { width: "80px" }, // Adjust the width to match the Cancel button
+            },
+            cancelText: "Cancel",
+            cancelButtonProps: {
+                style: { width: "80px" }, // Adjust the width to match the OK button
             },
         });
     };
@@ -352,14 +360,7 @@ const CustomerManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1200}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
             >
                 <Table
                     columns={archiveColumns}
@@ -385,10 +386,16 @@ const CustomerManagement = () => {
                             setOpenEditModal(false);
                             setEditingCustomer(null);
                         }}
+                        style={{ width: "131px" }}
                     >
                         Cancel
                     </Button>,
-                    <Button key="save" type="primary" onClick={handleUpdate}>
+                    <Button
+                        key="save"
+                        type="primary"
+                        onClick={handleUpdate}
+                        style={{ width: "131px" }}
+                    >
                         Update Customer
                     </Button>,
                 ]}

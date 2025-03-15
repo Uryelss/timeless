@@ -186,6 +186,14 @@ const UserManagement = () => {
                         console.error(err);
                     });
             },
+
+            okButtonProps: {
+                style: { width: "80px" }, // Adjust the width to match the Cancel button
+            },
+            cancelText: "Cancel",
+            cancelButtonProps: {
+                style: { width: "80px" }, // Adjust the width to match the OK button
+            },
         });
     };
 
@@ -343,21 +351,36 @@ const UserManagement = () => {
                             )}
                         </div>
                         {/* Right side: Add User and Archived View */}
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                            <Button
-                                type="primary"
-                                onClick={handleAdd}
-                                style={{ marginRight: 16 }}
-                            >
-                                <PlusOutlined style={{ marginRight: 4 }} />
-                                Add User
-                            </Button>
+                        <div
+                            style={{
+                                flexDirection: "column",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                            }}
+                        >
                             <Button
                                 type="default"
+                                icon={<DeleteOutlined />}
                                 onClick={() => setOpenArchiveModal(true)}
+                                style={{
+                                    marginRight: 8,
+                                    width: "131px",
+                                }}
                             >
-                                <DeleteOutlined style={{ marginRight: 4 }} />
                                 Archived View
+                            </Button>
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={handleAdd}
+                                style={{
+                                    width: "131px",
+                                    marginRight: 8,
+                                    marginTop: "5px",
+                                }}
+                            >
+                                Add User
                             </Button>
                         </div>
                     </div>
@@ -376,14 +399,7 @@ const UserManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1200}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
             >
                 <Table
                     columns={archiveColumns}
@@ -408,10 +424,16 @@ const UserManagement = () => {
                             setOpenAddEditModal(false);
                             setEditingUser(null);
                         }}
+                        style={{ marginRight: 8, width: 100 }}
                     >
                         Cancel
                     </Button>,
-                    <Button key="save" type="primary" onClick={handleSave}>
+                    <Button
+                        key="save"
+                        type="primary"
+                        onClick={handleSave}
+                        style={{ width: 100 }}
+                    >
                         {editingUser ? "Update User" : "Add User"}
                     </Button>,
                 ]}

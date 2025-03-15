@@ -140,7 +140,10 @@ const ProductManagement = () => {
                             : "https://via.placeholder.com/100?text=Prod"
                     }
                     alt="product"
-                    style={{ width: 50 }}
+                    style={{
+                        width: "60px",
+                        height: "70px",
+                    }}
                 />
             ),
         },
@@ -289,6 +292,14 @@ const ProductManagement = () => {
                         fetchProducts();
                     })
                     .catch((err) => message.error("Failed to archive product"));
+            },
+
+            okButtonProps: {
+                style: { width: "80px" }, // Adjust the width to match the Cancel button
+            },
+            cancelText: "Cancel",
+            cancelButtonProps: {
+                style: { width: "80px" }, // Adjust the width to match the OK button
             },
         });
     };
@@ -509,19 +520,27 @@ const ProductManagement = () => {
                                 </Button>
                             )}
                         </div>
-                        <div>
+                        <div class="buttons">
                             <Button
                                 type="default"
                                 icon={<DeleteOutlined />}
                                 onClick={() => setOpenArchiveModal(true)}
-                                style={{ marginRight: 8 }}
+                                style={{
+                                    marginRight: 8,
+                                    width: "131px",
+                                }}
                             >
-                                Archived View
+                                View Archived
                             </Button>
                             <Button
                                 type="primary"
                                 icon={<PlusOutlined />}
                                 onClick={handleAdd}
+                                style={{
+                                    width: "131px",
+                                    marginRight: 8,
+                                    marginTop: "5px",
+                                }}
                             >
                                 Add Product
                             </Button>
@@ -543,7 +562,11 @@ const ProductManagement = () => {
                 onCancel={() => setOpenAddModal(false)}
                 width={1000}
                 footer={[
-                    <Button key="cancel" onClick={() => setOpenAddModal(false)}>
+                    <Button
+                        key="cancel"
+                        onClick={() => setOpenAddModal(false)}
+                        style={{ marginRight: 8, width: "131px" }}
+                    >
                         Cancel
                     </Button>,
                     <Button key="save" type="primary" onClick={handleSave}>
@@ -832,14 +855,7 @@ const ProductManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1200}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
             >
                 <Table
                     columns={archiveColumns}

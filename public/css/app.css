@@ -11966,42 +11966,380 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
-.horizontal-table-container {
-  display: flex;
-  overflow-x: auto;
+.product-management {
+  height: 100vh;
+  overflow: hidden;
+}
+.product-management .ant-layout {
+  min-height: 100vh;
+}
+.product-management .ant-layout-sider {
+  background: #006666;
+  color: white;
+}
+.product-management .ant-layout-header {
+  background: #fff;
+  padding: 0 24px;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 64px;
+  border-bottom: 1px solid #e8e8e8;
+}
+.product-management .ant-layout-content {
+  padding: 24px;
+  background: #fff;
+  overflow-y: auto;
 }
 
-.image-preview-card {
-  border: 1px dashed #d9d9d9;
-  padding: 10px;
-  margin-top: 10px;
+.buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.product-header .ant-search {
+  width: 200px;
+  margin-right: 8px;
+}
+.product-header .ant-checkbox-wrapper {
+  margin-right: 8px;
+}
+.product-header .ant-btn {
+  margin-right: 8px;
+}
+.product-header .ant-btn-primary {
+  background: #006666;
+  border-color: #006666;
+  margin-top: 5px;
+}
+.product-header .ant-btn-primary:hover, .product-header .ant-btn-primary:focus {
+  background: #003333;
+  border-color: #003333;
+}
+.product-header .ant-btn-default:hover, .product-header .ant-btn-default:focus {
+  background: #f5f5f5;
+  border-color: #d9d9d9;
+}
+
+.product-table .ant-table {
+  background: #fff;
+}
+.product-table .ant-table .ant-table-thead > tr > th {
+  background: #f0f0f0;
   text-align: center;
+  padding: 12px;
+  font-weight: 500;
+  border-bottom: 1px solid #ddd;
+}
+.product-table .ant-table .ant-table-tbody > tr > td {
+  text-align: center;
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+.product-table .ant-table .ant-table-tbody > tr.ant-table-row:hover > td {
+  background: #fafafa;
+}
+.product-table .ant-table .ant-table-cell img {
+  width: 50px;
+  height: 50px;
+  -o-object-fit: cover;
+     object-fit: cover;
   border-radius: 4px;
-  background-color: #fafafa;
 }
-.image-preview-card img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-}
-
-.modal-footer-buttons {
+.product-table .ant-table .ant-table-cell .ant-space {
   display: flex;
-  justify-content: flex-end;
-  padding: 10px 0;
+  justify-content: center;
+  gap: 8px;
 }
-.modal-footer-buttons .ant-space .ant-btn {
-  min-width: 100px;
+.product-table .ant-table .ant-table-cell .ant-space .ant-checkbox-wrapper {
+  margin: 0;
+}
+.product-table .ant-table .ant-table-cell .ant-space .anticon {
+  font-size: 16px;
+  cursor: pointer;
+  color: #006666;
+}
+.product-table .ant-table .ant-table-cell .ant-space .anticon:hover {
+  color: #007545;
 }
 
-.top-actions .ant-space .ant-btn {
-  min-width: 120px;
+.product-modal .ant-modal {
+  top: 20px;
+  max-width: 1000px;
 }
-.top-actions .ant-checkbox-wrapper {
-  margin-right: 16px;
+.product-modal .ant-modal-content {
+  border-radius: 0;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+.product-modal .ant-modal-header {
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+}
+.product-modal .ant-modal-title {
+  color: #007545;
+  font-size: 24px;
+  font-weight: 400;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+.product-modal .ant-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: 80vh;
+}
+.product-modal .ant-modal-footer {
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 24px;
 }
 
+.product-form .ant-form-item {
+  margin-bottom: 16px;
+}
+.product-form .ant-form-item-label {
+  padding-bottom: 4px;
+  font-size: 14px;
+  color: #333;
+}
+.product-form .ant-input,
+.product-form .ant-select-selector,
+.product-form .ant-textarea {
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+  font-size: 14px;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+.product-form .ant-input:focus, .product-form .ant-input:hover,
+.product-form .ant-select-selector:focus,
+.product-form .ant-select-selector:hover,
+.product-form .ant-textarea:focus,
+.product-form .ant-textarea:hover {
+  border-color: #006666;
+  box-shadow: 0 0 0 2px rgba(0, 102, 102, 0.2);
+}
+.product-form .ant-form-item-control-input-content .ant-btn-dashed {
+  width: 100%;
+  margin-top: 8px;
+}
+.product-form .ant-upload .ant-btn {
+  background: #006666;
+  color: white;
+  border-color: #006666;
+}
+.product-form .ant-upload .ant-btn:hover, .product-form .ant-upload .ant-btn:focus {
+  background: #003333;
+  border-color: #003333;
+}
+.product-form .ant-form-item-control-input-content img {
+  width: 150px;
+  height: 150px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+.product-form .ant-row {
+  margin-bottom: 16px;
+}
+.product-form .ant-row:last-child {
+  margin-bottom: 0;
+}
+.product-form .ant-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.archive-table .ant-table {
+  background: #fff;
+}
+.archive-table .ant-table .ant-table-thead > tr > th {
+  background: #f0f0f0;
+  text-align: center;
+  padding: 12px;
+  font-weight: 500;
+  border-bottom: 1px solid #ddd;
+}
+.archive-table .ant-table .ant-table-tbody > tr > td {
+  text-align: center;
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+.archive-table .ant-table .ant-table-cell .ant-btn {
+  padding: 0;
+  color: #006666;
+}
+.archive-table .ant-table .ant-table-cell .ant-btn:hover, .archive-table .ant-table .ant-table-cell .ant-btn:focus {
+  color: #007545;
+  background: transparent;
+}
+
+@media (max-width: 1024px) {
+  .product-management .ant-layout-content {
+    padding: 16px;
+  }
+  .product-management .product-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .product-management .product-header .ant-search {
+    width: 100%;
+    max-width: 300px;
+  }
+  .product-management .product-header .ant-btn {
+    width: 100%;
+    margin-right: 0;
+  }
+  .product-management .product-table .ant-table-cell img {
+    width: 40px;
+    height: 40px;
+  }
+  .product-management .product-table .ant-table-cell .ant-space .anticon {
+    font-size: 14px;
+  }
+  .product-management .product-modal .ant-modal {
+    max-width: 90%;
+  }
+  .product-management .product-modal .ant-modal-body {
+    padding: 16px;
+  }
+  .product-management .product-form .ant-input,
+  .product-management .product-form .ant-select-selector,
+  .product-management .product-form .ant-textarea {
+    font-size: 13px;
+  }
+  .product-management .product-form .ant-form-item-control-input-content img {
+    width: 120px;
+    height: 120px;
+  }
+}
+@media (max-width: 768px) {
+  .product-management .ant-layout {
+    flex-direction: column;
+  }
+  .product-management .ant-layout-sider {
+    width: 100% !important;
+    min-height: 0;
+    height: auto;
+  }
+  .product-management .ant-layout-header {
+    font-size: 16px;
+    line-height: 48px;
+  }
+  .product-management .ant-layout-content {
+    padding: 12px;
+  }
+  .product-management .product-header {
+    gap: 8px;
+  }
+  .product-management .product-header .ant-search {
+    max-width: 250px;
+  }
+  .product-management .product-table .ant-table-cell img {
+    width: 30px;
+    height: 30px;
+  }
+  .product-management .product-table .ant-table-cell .ant-space .anticon {
+    font-size: 12px;
+  }
+  .product-management .product-modal .ant-modal {
+    max-width: 95%;
+    top: 10px;
+  }
+  .product-management .product-modal .ant-modal-body {
+    padding: 12px;
+  }
+  .product-management .product-modal .ant-form-item-control-input-content img {
+    width: 100px;
+    height: 100px;
+  }
+  .product-management .product-form .ant-input,
+  .product-management .product-form .ant-select-selector,
+  .product-management .product-form .ant-textarea {
+    font-size: 12px;
+  }
+}
+@media (max-width: 480px) {
+  .product-management .ant-layout-header {
+    font-size: 14px;
+    line-height: 40px;
+  }
+  .product-management .ant-layout-content {
+    padding: 8px;
+  }
+  .product-management .product-header .ant-search {
+    max-width: 200px;
+  }
+  .product-management .product-header .ant-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  .product-management .product-table .ant-table-cell img {
+    width: 25px;
+    height: 25px;
+  }
+  .product-management .product-table .ant-table-cell .ant-space .anticon {
+    font-size: 10px;
+  }
+  .product-management .product-modal .ant-modal-body {
+    padding: 8px;
+  }
+  .product-management .product-modal .ant-form-item-control-input-content img {
+    width: 80px;
+    height: 80px;
+  }
+  .product-management .product-form .ant-input,
+  .product-management .product-form .ant-select-selector,
+  .product-management .product-form .ant-textarea {
+    font-size: 10px;
+  }
+  .product-management .product-form .ant-form-item-control-input-content .ant-btn {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+}
+@media (max-width: 320px) {
+  .product-management .ant-layout-header {
+    font-size: 12px;
+    line-height: 32px;
+  }
+  .product-management .ant-layout-content {
+    padding: 4px;
+  }
+  .product-management .product-header .ant-search {
+    max-width: 150px;
+  }
+  .product-management .product-header .ant-btn {
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+  .product-management .product-table .ant-table-cell img {
+    width: 20px;
+    height: 20px;
+  }
+  .product-management .product-table .ant-table-cell .ant-space .anticon {
+    font-size: 8px;
+  }
+  .product-management .product-modal .ant-modal-body {
+    padding: 4px;
+  }
+  .product-management .product-modal .ant-form-item-control-input-content img {
+    width: 60px;
+    height: 60px;
+  }
+  .product-management .product-form .ant-input,
+  .product-management .product-form .ant-select-selector,
+  .product-management .product-form .ant-textarea {
+    font-size: 8px;
+  }
+}
 .sidebar-container {
   width: 256px;
   display: flex;
