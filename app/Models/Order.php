@@ -9,7 +9,7 @@ class Order extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['profile_id', 'shipping_id', 'total_amount', 'order_status', 'order_date'];
+    protected $fillable = ['profile_id', 'total_amount', 'order_status', 'order_date', 'shipping_id'];
 
     public function profile()
     {
@@ -18,7 +18,7 @@ class Order extends Model
 
     public function shipping()
     {
-        return $this->belongsTo(Shipping::class);
+        return $this->hasOne(Shipping::class);
     }
 
     public function orderDetails()

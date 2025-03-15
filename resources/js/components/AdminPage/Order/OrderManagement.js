@@ -8,6 +8,11 @@ import {
     Select,
     Input,
     message,
+    Row,
+    Col,
+    Image,
+    Typography,
+    Avatar,
 } from "antd";
 import {
     EditOutlined,
@@ -19,12 +24,14 @@ import axios from "axios";
 
 const { Header, Content, Sider } = Layout;
 const { Option } = Select;
+const { Title, Text } = Typography;
 
 const OrderManagement = () => {
     const [orders, setOrders] = useState([]);
     const [archivedOrders, setArchivedOrders] = useState([]);
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
+    const [openViewModal, setOpenViewModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
 
     const API_URL = "http://localhost:8000/api/orders";
@@ -224,30 +231,118 @@ const OrderManagement = () => {
     };
 
     const handleView = (record) => {
-        Modal.info({
-            title: `Order #${record.id} Details`,
-            content: (
-                <div>
-                    <p>
-                        Customer: {record.profile?.first_name || ""}{" "}
-                        {record.profile?.last_name || ""}
-                    </p>
-                    <p>
-                        Items:{" "}
-                        {record.order_details
-                            ?.map((d) => d.product?.product_name || "Unknown")
-                            .join(", ") || "No items"}
-                    </p>
-                    <p>
-                        Total: ₱
-                        {record.total_amount
-                            ? parseFloat(record.total_amount).toLocaleString()
-                            : "0"}
-                    </p>
-                    <p>Status: {record.order_status || "N/A"}</p>
-                </div>
-            ),
-        });
+        setSelectedOrder(record);
+        setOpenViewModal(true);
+    };
+
+    const renderOrderDetails = () => {
+        if (!selectedOrder) return null;
+
+        const { order_details, shipping, profile } = selectedOrder;
+        const subtotal =
+            order_details?.reduce(
+                (sum, detail) => sum + detail.quantity * detail.price,
+                0
+            ) || 0;
+        const deliveryCharge = shipping?.shipping_total_amount || 0;
+        const totalAmount =
+            selectedOrder.total_amount || subtotal + deliveryCharge;
+
+        return (
+            <Row gutter={[16, 16]}>
+                {/* Order Summary */}
+                <Col span={24}>
+                    <Title level={4}>Order Summary</Title>
+                    {order_details?.map((detail) => (
+                        <Row
+                            key={detail.id}
+                            style={{ marginBottom: 16, alignItems: "center" }}
+                        >
+                            <Col span={4}>
+                                <Image
+                                    src={
+                                        detail.product?.main_image
+                                            ? `http://localhost:8000/storage/${detail.product.main_image}`
+                                            : "https://via.placeholder.com/50"
+                                    }
+                                    width={50}
+                                    preview={false}
+                                />
+                            </Col>
+                            <Col span={8}>
+                                <Text>
+                                    {detail.product?.product_name || "Unknown"}
+                                </Text>
+                            </Col>
+                            <Col span={4}>
+                                <Text>Qty: {detail.quantity}</Text>
+                            </Col>
+                            <Col span={4}>
+                                <Text>
+                                    ₱{parseFloat(detail.price).toLocaleString()}
+                                </Text>
+                            </Col>
+                            <Col span={4}>
+                                <Text>
+                                    ₱
+                                    {(
+                                        detail.quantity * detail.price
+                                    ).toLocaleString()}
+                                </Text>
+                            </Col>
+                        </Row>
+                    ))}
+                    <div style={{ textAlign: "right", marginTop: 16 }}>
+                        <Text>Sub Total: ₱{subtotal.toLocaleString()}</Text>
+                        <br />
+                        <Text>
+                            Delivery Charge: ₱
+                            {parseFloat(deliveryCharge).toLocaleString()}
+                        </Text>
+                        <br />
+                        <Text strong>
+                            Total Amount: ₱
+                            {parseFloat(totalAmount).toLocaleString()}
+                        </Text>
+                    </div>
+                </Col>
+
+                {/* Customer Details */}
+                <Col span={24}>
+                    <Title level={4}>Customer Details</Title>
+                    <Row align="middle">
+                        <Col span={4}>
+                            <Avatar
+                                src={
+                                    profile?.profile_image ||
+                                    "https://via.placeholder.com/50"
+                                }
+                                size={50}
+                            />
+                        </Col>
+                        <Col span={20}>
+                            <Text strong>Username: </Text>
+                            <Text>{profile?.user?.username || "N/A"}</Text>
+                            <br />
+                            <Text strong>Email: </Text>
+                            <Text>{profile?.user?.email || "N/A"}</Text>
+                            <br />
+                            <Text strong>Phone: </Text>
+                            <Text>{profile?.phone || "N/A"}</Text>
+                        </Col>
+                    </Row>
+                </Col>
+
+                {/* Payment Information */}
+                <Col span={24}>
+                    <Title level={4}>Payment Information</Title>
+                    <Text>
+                        {shipping?.payment_method?.name ||
+                            "Unknown Payment Method"}
+                    </Text>
+                </Col>
+            </Row>
+        );
     };
 
     return (
@@ -336,6 +431,19 @@ const OrderManagement = () => {
                         />
                     </div>
                 )}
+            </Modal>
+            <Modal
+                title={`Order #${selectedOrder?.id || ""} Details`}
+                open={openViewModal}
+                onCancel={() => setOpenViewModal(false)}
+                footer={[
+                    <Button key="close" onClick={() => setOpenViewModal(false)}>
+                        Close
+                    </Button>,
+                ]}
+                width={800}
+            >
+                {renderOrderDetails()}
             </Modal>
         </Layout>
     );

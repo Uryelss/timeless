@@ -9,23 +9,35 @@ use Illuminate\Http\Request;
 class OrderController extends Controller
 {
     // Fetch all orders for admin
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with([
-            'profile',
-            'shipping.shippingMethod', // Add shippingMethod relationship
-            'orderDetails.product'
-        ])
-            ->withTrashed()
-            ->get();
+        $query = Order::with([
+            'profile.user', // Include user for username and email
+            'shipping.shippingMethod', // Shipping method details
+            'shipping.paymentMethod', // Payment method for COD, etc.
+            'orderDetails.product', // Product details for order summary
+        ]);
 
+        if ($request->query('archived')) {
+            $query->onlyTrashed();
+        } else {
+            $query->withTrashed(); // Still include trashed for flexibility
+        }
+
+        $orders = $query->get();
         return response()->json($orders);
     }
 
     // Show a specific order
     public function show($id)
     {
-        $order = Order::with(['profile', 'shipping', 'orderDetails.product'])
+        $order = Order::with([
+            'profile.user', // User details (username, email)
+            'shipping.shippingMethod', // Shipping method
+            'shipping.paymentMethod', // Payment method (COD, etc.)
+            'shipping.address', // Address for phone (if stored there)
+            'orderDetails.product', // Product details
+        ])
             ->withTrashed()
             ->findOrFail($id);
 
@@ -48,7 +60,7 @@ class OrderController extends Controller
             $order->shipping->update($request->input('shipping'));
         }
 
-        return response()->json(['message' => 'Order updated successfully', 'order' => $order]);
+        return response()->json(['message' => 'Order updated successfully', 'order' => $order->fresh()]);
     }
 
     // Archive (soft delete) an order

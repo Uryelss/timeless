@@ -22,7 +22,6 @@ const { Title, Paragraph } = Typography;
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 
-// Helper function to normalize size strings by removing all whitespace and lowercasing
 const normalizeSize = (size) =>
     size.toString().toLowerCase().replace(/\s+/g, "");
 
@@ -40,10 +39,8 @@ const ProductOverview = () => {
         const storedUser = localStorage.getItem("user");
         return storedUser ? JSON.parse(storedUser) : null;
     });
-    // State for inventory records for this product
     const [inventoryRecords, setInventoryRecords] = useState([]);
 
-    // Fetch product details
     useEffect(() => {
         if (!id || id === "undefined" || isNaN(id)) {
             message.error("Invalid product ID.");
@@ -69,7 +66,6 @@ const ProductOverview = () => {
             });
     }, [id, navigate]);
 
-    // Fetch reviews
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -86,7 +82,6 @@ const ProductOverview = () => {
         }
     }, [id]);
 
-    // Fetch user profile if needed
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token && !userProfile) {
@@ -102,7 +97,6 @@ const ProductOverview = () => {
         }
     }, [userProfile]);
 
-    // Fetch inventory records for the product from the public endpoint
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -122,7 +116,6 @@ const ProductOverview = () => {
         }
     }, [id]);
 
-    // Handle review submission
     const handleSubmitReview = () => {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -168,7 +161,6 @@ const ProductOverview = () => {
             .toFixed(0)
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-    // Parse product sizes
     let sizesArr = [];
     if (typeof product.sizes === "string") {
         try {
@@ -187,13 +179,10 @@ const ProductOverview = () => {
             ? sizesArr.map((item) => item.size)
             : sizesArr;
 
-    // Use normalized strings for comparison
     const selectedInventoryRecord = inventoryRecords.find(
         (inv) => normalizeSize(inv.size) === normalizeSize(selectedSize || "")
     );
 
-    // Handle "Add to Cart": Save product to localStorage cart and notify header
-    // In ProductOverview.jsx
     const handleAddToCart = () => {
         if (!selectedSize) {
             message.warning("Please select a size.");
@@ -203,16 +192,16 @@ const ProductOverview = () => {
         const selectedInventory = inventoryRecords.find(
             (inv) => normalizeSize(inv.size) === normalizeSize(selectedSize)
         );
-        if (!selectedInventory) {
+        if (!selectedInventory || selectedInventory.quantity === 0) {
             message.error(
-                `Size ${selectedSize} is not available for ${product.product_name}.`
+                `Size ${selectedSize} is out of stock for ${product.product_name}.`
             );
             return;
         }
 
         const cartItem = {
-            id: product.id, // Use actual product_id from backend
-            inventory_id: selectedInventory.id, // Use inventory_id from inventoryRecords
+            id: product.id,
+            inventory_id: selectedInventory.id,
             productName: product.product_name,
             image: `http://localhost:8000/storage/${product.main_image}`,
             size: selectedSize,
@@ -223,7 +212,6 @@ const ProductOverview = () => {
 
         const storedCart = localStorage.getItem("cart");
         let cart = storedCart ? JSON.parse(storedCart) : [];
-        // Prevent duplicates by checking product_id and size
         const existingItemIndex = cart.findIndex(
             (item) => item.id === cartItem.id && item.size === cartItem.size
         );
@@ -248,7 +236,6 @@ const ProductOverview = () => {
             <Navbar style={{ width: "100%" }} />
             <div style={{ marginTop: "90px" }}>
                 <Row gutter={16} justify="center">
-                    {/* Left Column: Product Image */}
                     <Col xs={24} md={12}>
                         <Card
                             style={{
@@ -269,7 +256,7 @@ const ProductOverview = () => {
                                     width: "600px",
                                     height: "600px",
                                     objectFit: "cover",
-                                    dipslay: "block",
+                                    display: "block",
                                 }}
                             />
                         </Card>
@@ -374,7 +361,6 @@ const ProductOverview = () => {
                         </Card>
                     </Col>
 
-                    {/* Right Column: Product Details */}
                     <Col xs={24} md={12}>
                         <Card bodyStyle={{ padding: "24px" }}>
                             <Space
@@ -417,39 +403,89 @@ const ProductOverview = () => {
                                                 display: "flex",
                                                 gap: "10px",
                                                 justifyContent: "center",
+                                                flexWrap: "wrap",
                                             }}
                                         >
-                                            {sizesDisplay.map((size, index) => (
-                                                <Button
-                                                    key={index}
-                                                    onClick={() =>
-                                                        setSelectedSize(size)
-                                                    }
-                                                    style={{
-                                                        width: "40px",
-                                                        height: "40px",
-                                                        borderRadius: "4px",
-                                                        backgroundColor:
-                                                            selectedSize ===
-                                                            size
-                                                                ? "black"
-                                                                : "white",
-                                                        color:
-                                                            selectedSize ===
-                                                            size
-                                                                ? "white"
-                                                                : "black",
-                                                        border: "1px solid gray",
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent:
-                                                            "center",
-                                                        cursor: "pointer",
-                                                    }}
-                                                >
-                                                    {size}
-                                                </Button>
-                                            ))}
+                                            {sizesDisplay.map((size, index) => {
+                                                const inventory =
+                                                    inventoryRecords.find(
+                                                        (inv) =>
+                                                            normalizeSize(
+                                                                inv.size
+                                                            ) ===
+                                                            normalizeSize(size)
+                                                    );
+                                                const isOutOfStock =
+                                                    inventory &&
+                                                    inventory.quantity === 0;
+                                                return (
+                                                    <Button
+                                                        key={index}
+                                                        onClick={() =>
+                                                            !isOutOfStock &&
+                                                            setSelectedSize(
+                                                                size
+                                                            )
+                                                        }
+                                                        disabled={isOutOfStock}
+                                                        style={{
+                                                            width: "40px",
+                                                            height: "40px",
+                                                            borderRadius: "4px",
+                                                            backgroundColor:
+                                                                selectedSize ===
+                                                                    size &&
+                                                                !isOutOfStock
+                                                                    ? "black"
+                                                                    : "white",
+                                                            color:
+                                                                selectedSize ===
+                                                                    size &&
+                                                                !isOutOfStock
+                                                                    ? "white"
+                                                                    : isOutOfStock
+                                                                    ? "red"
+                                                                    : "black",
+                                                            border: `1px solid ${
+                                                                isOutOfStock
+                                                                    ? "red"
+                                                                    : "gray"
+                                                            }`,
+                                                            display: "flex",
+                                                            alignItems:
+                                                                "center",
+                                                            justifyContent:
+                                                                "center",
+                                                            cursor: isOutOfStock
+                                                                ? "not-allowed"
+                                                                : "pointer",
+                                                            position:
+                                                                "relative",
+                                                        }}
+                                                    >
+                                                        {size}
+                                                        {isOutOfStock && (
+                                                            <span
+                                                                style={{
+                                                                    position:
+                                                                        "absolute",
+                                                                    top: "100%",
+                                                                    left: "50%",
+                                                                    transform:
+                                                                        "translateX(-50%)",
+                                                                    color: "red",
+                                                                    fontSize:
+                                                                        "10px",
+                                                                    whiteSpace:
+                                                                        "nowrap",
+                                                                }}
+                                                            >
+                                                                Out of Stock
+                                                            </span>
+                                                        )}
+                                                    </Button>
+                                                );
+                                            })}
                                         </div>
                                         {selectedSize && (
                                             <div style={{ marginTop: "8px" }}>
@@ -519,7 +555,6 @@ const ProductOverview = () => {
                     </Col>
                 </Row>
 
-                {/* Tabs for Details and Comments */}
                 <Row justify="center" style={{ marginTop: "20px" }}>
                     <Col xs={24} md={24}>
                         <Card>
