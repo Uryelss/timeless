@@ -209,7 +209,9 @@ const ProductOverview = () => {
                             style={{
                                 width: "600px",
                                 height: "600px",
-                                margin: "0 auto",
+                                display: "block",
+                                margin: "0px auto",
+                                position: "relative",
                                 overflow: "hidden",
                             }}
                             bodyStyle={{ padding: 0 }}
@@ -219,9 +221,10 @@ const ProductOverview = () => {
                                 alt={product.product_name}
                                 preview={false}
                                 style={{
-                                    width: "100%",
-                                    height: "100%",
-                                    objectFit: "contain",
+                                    width: "600px",
+                                    height: "600px",
+                                    objectFit: "cover",
+                                    dipslay: "block",
                                 }}
                             />
                         </Card>

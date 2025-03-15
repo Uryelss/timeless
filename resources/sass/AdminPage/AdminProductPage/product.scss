@@ -18,3 +18,28 @@
         margin: 0 auto;
     }
 }
+
+.modal-footer-buttons {
+    display: flex;
+    justify-content: flex-end; // Align buttons to the right
+    padding: 10px 0;
+
+    .ant-space {
+        .ant-btn {
+            min-width: 100px; // Ensure buttons have a minimum width for consistency
+        }
+    }
+}
+
+// Optional: Style for the top section buttons
+.top-actions {
+    .ant-space {
+        .ant-btn {
+            min-width: 120px; // Ensure consistent button width
+        }
+    }
+
+    .ant-checkbox-wrapper {
+        margin-right: 16px; // Add spacing between checkbox and buttons
+    }
+}

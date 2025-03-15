@@ -11986,6 +11986,22 @@ textarea.form-control-lg {
   margin: 0 auto;
 }
 
+.modal-footer-buttons {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 0;
+}
+.modal-footer-buttons .ant-space .ant-btn {
+  min-width: 100px;
+}
+
+.top-actions .ant-space .ant-btn {
+  min-width: 120px;
+}
+.top-actions .ant-checkbox-wrapper {
+  margin-right: 16px;
+}
+
 .sidebar-container {
   width: 256px;
   display: flex;
