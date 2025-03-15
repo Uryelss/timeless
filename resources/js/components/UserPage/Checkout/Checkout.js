@@ -36,7 +36,6 @@ const CheckoutPage = () => {
 
     const API_URL = "http://localhost:8000/api";
 
-    // Fetch payment and shipping methods from backend
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -73,7 +72,6 @@ const CheckoutPage = () => {
         }
     }, [cartItems, navigate]);
 
-    // Update shipping cost when shipping method changes
     useEffect(() => {
         const selectedMethod = shippingMethods.find(
             (m) => m.id === shippingMethod
@@ -83,7 +81,6 @@ const CheckoutPage = () => {
 
     const total = subtotal + shippingCost;
 
-    // Handle form submission
     const onFinish = async (values) => {
         if (!paymentMethod) {
             message.warning("Please select a payment method!");
@@ -111,8 +108,8 @@ const CheckoutPage = () => {
                 phone: values.phone,
             },
             cart_items: cartItems.map((item) => ({
-                id: item.id, // product_id
-                inventory_id: item.inventory_id, // Ensure this is included in cart
+                id: item.id,
+                inventory_id: item.inventory_id,
                 quantity: item.quantity,
                 price: item.price,
             })),
@@ -122,10 +119,9 @@ const CheckoutPage = () => {
             payment_method_id: paymentMethod,
             shipping_method_id: shippingMethod,
         };
-
         try {
             const response = await axios.post(
-                `${API_URL}/orders/create`,
+                `${API_URL}/orders`, // Updated endpoint
                 orderData,
                 {
                     headers: {
@@ -138,9 +134,9 @@ const CheckoutPage = () => {
             if (response.status === 201) {
                 message.success("Order placed successfully!");
                 localStorage.removeItem("cart");
+                window.dispatchEvent(new Event("cartUpdated"));
                 const { order_id } = response.data;
 
-                // Redirect based on payment method ID (assuming IDs: 1=COD, 2=Credit Card, 3=Digital Wallet)
                 if (paymentMethod === 2 || paymentMethod === 3) {
                     navigate("/payment", {
                         state: { orderId: order_id, total },
@@ -203,7 +199,6 @@ const CheckoutPage = () => {
                                         <Option value="Philippines">
                                             Philippines
                                         </Option>
-                                        {/* Add more countries as needed */}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item
@@ -343,7 +338,7 @@ const CheckoutPage = () => {
                                 width: "100%",
                                 height: "40px",
                             }}
-                            onClick={() => form.submit()} // Improved form submission trigger
+                            onClick={() => form.submit()}
                         >
                             COMPLETE ORDER
                         </Button>

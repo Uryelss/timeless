@@ -32,10 +32,8 @@ const CustomerManagement = () => {
     const [editingCustomer, setEditingCustomer] = useState(null);
     const [form] = Form.useForm();
 
-    // API endpoint for customer profiles
     const API_URL = "http://localhost:8000/api/customers";
 
-    // Fetch active customer profiles
     const fetchCustomers = () => {
         axios
             .get(API_URL, {
@@ -53,7 +51,6 @@ const CustomerManagement = () => {
             });
     };
 
-    // Fetch archived customer profiles
     const fetchArchivedCustomers = () => {
         axios
             .get(`${API_URL}?archived=1`, {
@@ -81,7 +78,6 @@ const CustomerManagement = () => {
         }
     }, [openArchiveModal]);
 
-    // Table columns for active customers
     const mainColumns = [
         {
             title: "Actions",
@@ -129,18 +125,33 @@ const CustomerManagement = () => {
                               : ""
                       }${record.last_name}`,
         },
-        { title: "Phone", dataIndex: "phone", key: "phone" },
+        {
+            title: "Phone",
+            dataIndex: "phone",
+            key: "phone",
+            render: (phone) => phone || "N/A",
+        },
         {
             title: "Date of Birth",
             dataIndex: "date_of_birth",
             key: "date_of_birth",
+            render: (dob) => dob || "N/A",
         },
-        { title: "Gender", dataIndex: "gender", key: "gender" },
-        { title: "Address", dataIndex: "address", key: "address" },
+        {
+            title: "Gender",
+            dataIndex: "gender",
+            key: "gender",
+            render: (gender) => gender || "N/A",
+        },
+        {
+            title: "Address",
+            dataIndex: "address",
+            key: "address",
+            render: (address) => address || "N/A",
+        },
         { title: "Last Updated", dataIndex: "updated_at", key: "updated_at" },
     ];
 
-    // Archive table columns – similar to main, but with only restore action.
     const archiveColumns = [
         {
             title: "Actions",
@@ -154,7 +165,6 @@ const CustomerManagement = () => {
         ...mainColumns.slice(1),
     ];
 
-    // Handle edit action: open modal and prefill form with record data.
     const handleEdit = (record) => {
         console.log("Edit customer:", record);
         setEditingCustomer(record);
@@ -163,15 +173,14 @@ const CustomerManagement = () => {
             middle_name: record.middle_name,
             last_name: record.last_name,
             suffix: record.suffix,
-            gender: record.gender, // these fields become optional on update
+            gender: record.gender,
             date_of_birth: record.date_of_birth,
             phone: record.phone,
-            address: record.address,
+            address: record.address, // Pre-fill with formatted address
         });
         setOpenEditModal(true);
     };
 
-    // Handle archive (soft delete) action.
     const handleArchive = (record) => {
         Modal.confirm({
             title: "Are you sure you want to archive this customer?",
@@ -196,7 +205,6 @@ const CustomerManagement = () => {
         });
     };
 
-    // Handle restore action.
     const handleRestore = (id) => {
         axios
             .post(
@@ -221,7 +229,6 @@ const CustomerManagement = () => {
             });
     };
 
-    // Bulk archive handler (if needed)
     const handleArchiveAll = () => {
         Modal.confirm({
             title: "Are you sure you want to archive all selected customers?",
@@ -231,7 +238,6 @@ const CustomerManagement = () => {
         });
     };
 
-    // Filter customers based on search query.
     const filteredCustomers = customers.filter((customer) => {
         const lower = searchQuery.toLowerCase();
         const fullName =
@@ -244,11 +250,11 @@ const CustomerManagement = () => {
         return (
             fullName.toLowerCase().includes(lower) ||
             (customer.email && customer.email.toLowerCase().includes(lower)) ||
-            (customer.status && customer.status.toLowerCase().includes(lower))
+            (customer.phone && customer.phone.toLowerCase().includes(lower)) ||
+            (customer.address && customer.address.toLowerCase().includes(lower))
         );
     });
 
-    // Handle update of customer profile (called from the edit modal)
     const handleUpdate = () => {
         form.validateFields()
             .then((values) => {
@@ -300,7 +306,6 @@ const CustomerManagement = () => {
                             marginBottom: 16,
                         }}
                     >
-                        {/* Left side: Search input and Bulk Archive controls */}
                         <div style={{ display: "flex", alignItems: "center" }}>
                             <Search
                                 placeholder="Search customers"
@@ -326,7 +331,6 @@ const CustomerManagement = () => {
                                 </Button>
                             )}
                         </div>
-                        {/* Right side: Archived View */}
                         <div>
                             <Button
                                 type="default"
@@ -345,7 +349,6 @@ const CustomerManagement = () => {
                     />
                 </Content>
             </Layout>
-            {/* Archived Customers Modal */}
             <Modal
                 title="Archived Customers"
                 centered
@@ -369,7 +372,6 @@ const CustomerManagement = () => {
                     scroll={{ x: 1200 }}
                 />
             </Modal>
-            {/* Edit Customer Modal */}
             <Modal
                 title="Edit Customer"
                 centered
@@ -424,7 +426,6 @@ const CustomerManagement = () => {
                     <Form.Item name="suffix" label="Suffix">
                         <Input placeholder="Enter suffix (optional)" />
                     </Form.Item>
-                    {/* For update, make these fields optional */}
                     <Form.Item name="gender" label="Gender">
                         <Input placeholder="Enter gender" />
                     </Form.Item>
@@ -435,7 +436,8 @@ const CustomerManagement = () => {
                         <Input placeholder="Enter phone number" />
                     </Form.Item>
                     <Form.Item name="address" label="Address">
-                        <Input placeholder="Enter address" />
+                        <Input placeholder="Enter address" disabled />{" "}
+                        {/* Display only */}
                     </Form.Item>
                 </Form>
             </Modal>

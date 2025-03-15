@@ -39,7 +39,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/reviews/{product_id}', [ReviewController::class, 'index'])->name('reviews.index');
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
-    // Inventory public route (fixed duplication)
+    // Inventory public route
     Route::get('/inventory-public', [InventoryController::class, 'index'])->name('inventory.public');
 
     // Lookup table routes
@@ -57,8 +57,8 @@ Route::middleware(['auth:api', 'check.role:user'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    // Order creation route
-    Route::post('/orders/create', [UserOrderController::class, 'store'])->name('orders.store');
+    // Order creation route (adjusted to match CheckoutPage)
+    Route::post('/orders', [UserOrderController::class, 'store'])->name('orders.store');
 });
 
 /*

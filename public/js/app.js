@@ -180730,11 +180730,7 @@ var CustomerManagement = function CustomerManagement() {
   var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_5__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
-
-  // API endpoint for customer profiles
   var API_URL = "http://localhost:8000/api/customers";
-
-  // Fetch active customer profiles
   var fetchCustomers = function fetchCustomers() {
     axios__WEBPACK_IMPORTED_MODULE_6__["default"].get(API_URL, {
       headers: {
@@ -180748,8 +180744,6 @@ var CustomerManagement = function CustomerManagement() {
       console.error(err);
     });
   };
-
-  // Fetch archived customer profiles
   var fetchArchivedCustomers = function fetchArchivedCustomers() {
     axios__WEBPACK_IMPORTED_MODULE_6__["default"].get("".concat(API_URL, "?archived=1"), {
       headers: {
@@ -180771,8 +180765,6 @@ var CustomerManagement = function CustomerManagement() {
       fetchArchivedCustomers();
     }
   }, [openArchiveModal]);
-
-  // Table columns for active customers
   var mainColumns = [{
     title: "Actions",
     key: "actions",
@@ -180817,26 +180809,36 @@ var CustomerManagement = function CustomerManagement() {
   }, {
     title: "Phone",
     dataIndex: "phone",
-    key: "phone"
+    key: "phone",
+    render: function render(phone) {
+      return phone || "N/A";
+    }
   }, {
     title: "Date of Birth",
     dataIndex: "date_of_birth",
-    key: "date_of_birth"
+    key: "date_of_birth",
+    render: function render(dob) {
+      return dob || "N/A";
+    }
   }, {
     title: "Gender",
     dataIndex: "gender",
-    key: "gender"
+    key: "gender",
+    render: function render(gender) {
+      return gender || "N/A";
+    }
   }, {
     title: "Address",
     dataIndex: "address",
-    key: "address"
+    key: "address",
+    render: function render(address) {
+      return address || "N/A";
+    }
   }, {
     title: "Last Updated",
     dataIndex: "updated_at",
     key: "updated_at"
   }];
-
-  // Archive table columns – similar to main, but with only restore action.
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
@@ -180854,8 +180856,6 @@ var CustomerManagement = function CustomerManagement() {
       });
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
-
-  // Handle edit action: open modal and prefill form with record data.
   var handleEdit = function handleEdit(record) {
     console.log("Edit customer:", record);
     setEditingCustomer(record);
@@ -180865,15 +180865,12 @@ var CustomerManagement = function CustomerManagement() {
       last_name: record.last_name,
       suffix: record.suffix,
       gender: record.gender,
-      // these fields become optional on update
       date_of_birth: record.date_of_birth,
       phone: record.phone,
-      address: record.address
+      address: record.address // Pre-fill with formatted address
     });
     setOpenEditModal(true);
   };
-
-  // Handle archive (soft delete) action.
   var handleArchive = function handleArchive(record) {
     antd__WEBPACK_IMPORTED_MODULE_14__["default"].confirm({
       title: "Are you sure you want to archive this customer?",
@@ -180892,8 +180889,6 @@ var CustomerManagement = function CustomerManagement() {
       }
     });
   };
-
-  // Handle restore action.
   var handleRestore = function handleRestore(id) {
     axios__WEBPACK_IMPORTED_MODULE_6__["default"].post("".concat(API_URL, "/").concat(id, "/restore"), {}, {
       headers: {
@@ -180908,8 +180903,6 @@ var CustomerManagement = function CustomerManagement() {
       console.error(err);
     });
   };
-
-  // Bulk archive handler (if needed)
   var handleArchiveAll = function handleArchiveAll() {
     antd__WEBPACK_IMPORTED_MODULE_14__["default"].confirm({
       title: "Are you sure you want to archive all selected customers?",
@@ -180918,15 +180911,11 @@ var CustomerManagement = function CustomerManagement() {
       }
     });
   };
-
-  // Filter customers based on search query.
   var filteredCustomers = customers.filter(function (customer) {
     var lower = searchQuery.toLowerCase();
     var fullName = customer.customer_name || "".concat(customer.first_name, " ").concat(customer.middle_name ? customer.middle_name.charAt(0).toUpperCase() + ". " : "").concat(customer.last_name);
-    return fullName.toLowerCase().includes(lower) || customer.email && customer.email.toLowerCase().includes(lower) || customer.status && customer.status.toLowerCase().includes(lower);
+    return fullName.toLowerCase().includes(lower) || customer.email && customer.email.toLowerCase().includes(lower) || customer.phone && customer.phone.toLowerCase().includes(lower) || customer.address && customer.address.toLowerCase().includes(lower);
   });
-
-  // Handle update of customer profile (called from the edit modal)
   var handleUpdate = function handleUpdate() {
     form.validateFields().then(function (values) {
       axios__WEBPACK_IMPORTED_MODULE_6__["default"].put("".concat(API_URL, "/").concat(editingCustomer.id), values, {
@@ -181125,12 +181114,13 @@ var CustomerManagement = function CustomerManagement() {
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
             placeholder: "Enter phone number"
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
           name: "address",
           label: "Address",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
-            placeholder: "Enter address"
-          })
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            placeholder: "Enter address",
+            disabled: true
+          }), " "]
         })]
       })
     })]
@@ -184187,8 +184177,6 @@ var CheckoutPage = function CheckoutPage() {
     shippingCost = _useState12[0],
     setShippingCost = _useState12[1];
   var API_URL = "http://localhost:8000/api";
-
-  // Fetch payment and shipping methods from backend
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var fetchData = /*#__PURE__*/function () {
       var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -184246,8 +184234,6 @@ var CheckoutPage = function CheckoutPage() {
       navigate("/user-cart");
     }
   }, [cartItems, navigate]);
-
-  // Update shipping cost when shipping method changes
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var selectedMethod = shippingMethods.find(function (m) {
       return m.id === shippingMethod;
@@ -184255,8 +184241,6 @@ var CheckoutPage = function CheckoutPage() {
     setShippingCost(selectedMethod ? parseFloat(selectedMethod.cost) : 0);
   }, [shippingMethod, shippingMethods]);
   var total = subtotal + shippingCost;
-
-  // Handle form submission
   var onFinish = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(values) {
       var token, orderData, response, order_id, _error$response, _error$response2;
@@ -184298,9 +184282,7 @@ var CheckoutPage = function CheckoutPage() {
               cart_items: cartItems.map(function (item) {
                 return {
                   id: item.id,
-                  // product_id
                   inventory_id: item.inventory_id,
-                  // Ensure this is included in cart
                   quantity: item.quantity,
                   price: item.price
                 };
@@ -184313,7 +184295,9 @@ var CheckoutPage = function CheckoutPage() {
             };
             _context2.prev = 12;
             _context2.next = 15;
-            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/orders/create"), orderData, {
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/orders"),
+            // Updated endpoint
+            orderData, {
               headers: {
                 Authorization: "Bearer ".concat(token),
                 "Content-Type": "application/json"
@@ -184324,7 +184308,8 @@ var CheckoutPage = function CheckoutPage() {
             if (response.status === 201) {
               antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Order placed successfully!");
               localStorage.removeItem("cart");
-              order_id = response.data.order_id; // Redirect based on payment method ID (assuming IDs: 1=COD, 2=Credit Card, 3=Digital Wallet)
+              window.dispatchEvent(new Event("cartUpdated"));
+              order_id = response.data.order_id;
               if (paymentMethod === 2 || paymentMethod === 3) {
                 navigate("/payment", {
                   state: {
@@ -184502,8 +184487,7 @@ var CheckoutPage = function CheckoutPage() {
             },
             onClick: function onClick() {
               return form.submit();
-            } // Improved form submission trigger
-            ,
+            },
             children: "COMPLETE ORDER"
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
