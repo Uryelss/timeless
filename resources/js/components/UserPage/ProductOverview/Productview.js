@@ -193,14 +193,26 @@ const ProductOverview = () => {
     );
 
     // Handle "Add to Cart": Save product to localStorage cart and notify header
+    // In ProductOverview.jsx
     const handleAddToCart = () => {
         if (!selectedSize) {
             message.warning("Please select a size.");
             return;
         }
+
+        const selectedInventory = inventoryRecords.find(
+            (inv) => normalizeSize(inv.size) === normalizeSize(selectedSize)
+        );
+        if (!selectedInventory) {
+            message.error(
+                `Size ${selectedSize} is not available for ${product.product_name}.`
+            );
+            return;
+        }
+
         const cartItem = {
-            id: new Date().getTime(), // temporary unique id
-            productId: product.id,
+            id: product.id, // Use actual product_id from backend
+            inventory_id: selectedInventory.id, // Use inventory_id from inventoryRecords
             productName: product.product_name,
             image: `http://localhost:8000/storage/${product.main_image}`,
             size: selectedSize,
@@ -208,16 +220,27 @@ const ProductOverview = () => {
             quantity: 1,
             total: product.price,
         };
+
         const storedCart = localStorage.getItem("cart");
         let cart = storedCart ? JSON.parse(storedCart) : [];
-        cart.push(cartItem);
+        // Prevent duplicates by checking product_id and size
+        const existingItemIndex = cart.findIndex(
+            (item) => item.id === cartItem.id && item.size === cartItem.size
+        );
+        if (existingItemIndex > -1) {
+            cart[existingItemIndex].quantity += 1;
+            cart[existingItemIndex].total =
+                cart[existingItemIndex].price *
+                cart[existingItemIndex].quantity;
+        } else {
+            cart.push(cartItem);
+        }
+
         localStorage.setItem("cart", JSON.stringify(cart));
-        // Dispatch event to update header cart count
         window.dispatchEvent(new Event("cartUpdated"));
         message.success(
             `Successfully added ${product.product_name} (${selectedSize}) to your cart!`
         );
-        // Do not redirect—just update the notification.
     };
 
     return (

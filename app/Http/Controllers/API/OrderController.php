@@ -3,96 +3,69 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Order;
-use App\Models\Address;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    // Create a new order (for checkout)
-    public function store(Request $request)
-    {
-        try {
-            // Validate incoming request data
-            $validatedData = $request->validate([
-                'address.country'       => 'required|string',
-                'address.streetAddress' => 'required|string',
-                'address.barangay'      => 'required|string',
-                'address.province'      => 'required|string',
-                'address.city'          => 'required|string',
-                'address.postalCode'    => 'required|string',
-                'address.phone'         => 'required|string',
-                'cartItems'             => 'required|array',
-                'subtotal'              => 'required|numeric',
-                'shippingCost'          => 'required|numeric',
-                'total'                 => 'required|numeric',
-                'paymentMethod'         => 'required|string',
-                'shippingMethod'        => 'required|string',
-                'userId'                => 'required|integer',
-            ]);
-
-            // Create the address record first
-            $address = Address::create([
-                'profile_id'     => $validatedData['userId'],
-                'country'        => $validatedData['address']['country'],
-                'street_address' => $validatedData['address']['streetAddress'],
-                'barangay'       => $validatedData['address']['barangay'],
-                'province'       => $validatedData['address']['province'],
-                'city'           => $validatedData['address']['city'],
-                'postal_code'    => $validatedData['address']['postalCode'],
-                'phone'          => $validatedData['address']['phone'],
-            ]);
-
-            // Map shipping method to shipping priority
-            $shippingPriority = $validatedData['shippingMethod'] === 'expedited' ? 'expedited' : 'standard';
-
-            // Create the order using the new address id
-            $order = Order::create([
-                'profile_id'        => $validatedData['userId'],
-                'profile_name'      => 'Test User', // Replace with the actual profile name when available
-                'address_id'        => $address->id,
-                'items'             => $validatedData['cartItems'],
-                'shipping_priority' => $shippingPriority,
-                'status'            => 'pending',
-                'total_amount'      => $validatedData['total'],
-                'order_date'        => now(),
-            ]);
-
-            return response()->json(['orderId' => $order->id, 'message' => 'Order created successfully'], 201);
-        } catch (\Exception $e) {
-            Log::error('Order creation failed: ' . $e->getMessage());
-            return response()->json(['message' => 'Order creation failed'], 500);
-        }
-    }
-
-    // List orders
+    // Fetch all orders for admin
     public function index()
     {
-        $orders = Order::orderBy('order_date', 'desc')->get();
+        $orders = Order::with([
+            'profile',
+            'shipping.shippingMethod', // Add shippingMethod relationship
+            'orderDetails.product'
+        ])
+            ->withTrashed()
+            ->get();
+
         return response()->json($orders);
     }
 
     // Show a specific order
     public function show($id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with(['profile', 'shipping', 'orderDetails.product'])
+            ->withTrashed()
+            ->findOrFail($id);
+
         return response()->json($order);
     }
 
-    // Update an order
+    // Update order status or details
     public function update(Request $request, $id)
     {
-        $order = Order::findOrFail($id);
-        $order->update($request->all());
-        return response()->json($order);
+        $order = Order::withTrashed()->findOrFail($id);
+
+        $request->validate([
+            'order_status' => 'sometimes|in:pending,completed,cancelled,processing',
+            'shipping.tracking_number' => 'sometimes|string',
+            'shipping.shipping_status_id' => 'sometimes|exists:shipping_statuses,id',
+        ]);
+
+        $order->update($request->only('order_status'));
+        if ($request->has('shipping')) {
+            $order->shipping->update($request->input('shipping'));
+        }
+
+        return response()->json(['message' => 'Order updated successfully', 'order' => $order]);
     }
 
-    // Archive an order (soft delete)
+    // Archive (soft delete) an order
     public function archive($id)
     {
         $order = Order::findOrFail($id);
         $order->delete();
+
         return response()->json(['message' => 'Order archived successfully']);
+    }
+
+    // Restore an archived order
+    public function restore($id)
+    {
+        $order = Order::withTrashed()->findOrFail($id);
+        $order->restore();
+
+        return response()->json(['message' => 'Order restored successfully']);
     }
 }

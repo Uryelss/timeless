@@ -13,6 +13,7 @@ import {
     Card,
     Image,
 } from "antd";
+import axios from "axios";
 import Navbar from "../Navbar/Navbar";
 
 const { Option } = Select;
@@ -25,16 +26,64 @@ const CheckoutPage = () => {
         subtotal: 0,
     };
 
-    const [paymentMethod, setPaymentMethod] = useState("");
-    const [shippingMethod, setShippingMethod] = useState("");
+    const [form] = Form.useForm();
+    const [paymentMethods, setPaymentMethods] = useState([]);
+    const [shippingMethods, setShippingMethods] = useState([]);
+    const [paymentMethod, setPaymentMethod] = useState(null);
+    const [shippingMethod, setShippingMethod] = useState(null);
     const [saveInfo, setSaveInfo] = useState(false);
+    const [shippingCost, setShippingCost] = useState(0);
 
-    const shippingCosts = { standard: 75, expedited: 150 };
-    const shippingCost = shippingMethod
-        ? shippingCosts[shippingMethod] || 0
-        : 0;
+    const API_URL = "http://localhost:8000/api";
+
+    // Fetch payment and shipping methods from backend
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    message.error(
+                        "You need to log in to proceed with checkout!"
+                    );
+                    navigate("/login");
+                    return;
+                }
+
+                const [paymentRes, shippingRes] = await Promise.all([
+                    axios.get(`${API_URL}/payment-methods`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }),
+                    axios.get(`${API_URL}/shipping-methods`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }),
+                ]);
+                setPaymentMethods(paymentRes.data);
+                setShippingMethods(shippingRes.data);
+            } catch (error) {
+                message.error("Failed to load payment or shipping options");
+                console.error("Fetch error:", error);
+            }
+        };
+
+        fetchData();
+
+        if (!cartItems.length) {
+            message.warning("No items in cart. Redirecting to cart...");
+            navigate("/user-cart");
+        }
+    }, [cartItems, navigate]);
+
+    // Update shipping cost when shipping method changes
+    useEffect(() => {
+        const selectedMethod = shippingMethods.find(
+            (m) => m.id === shippingMethod
+        );
+        setShippingCost(selectedMethod ? parseFloat(selectedMethod.cost) : 0);
+    }, [shippingMethod, shippingMethods]);
+
     const total = subtotal + shippingCost;
 
+    // Handle form submission
     const onFinish = async (values) => {
         if (!paymentMethod) {
             message.warning("Please select a payment method!");
@@ -46,77 +95,73 @@ const CheckoutPage = () => {
         }
 
         const token = localStorage.getItem("token");
-        console.log("Token being sent:", token); // Debug token
         if (!token) {
-            message.error("You need to log in to place an order!");
+            message.error("Authentication token missing!");
             navigate("/login");
             return;
         }
 
         const orderData = {
             address: {
-                country: values.country,
-                streetAddress: values.streetAddress,
-                barangay: values.barangay,
-                province: values.province,
+                street: values.streetAddress,
                 city: values.city,
-                postalCode: values.postalCode,
+                state: values.province,
+                postal_code: values.postalCode,
+                country: values.country,
                 phone: values.phone,
             },
-            cartItems,
+            cart_items: cartItems.map((item) => ({
+                id: item.id, // product_id
+                inventory_id: item.inventory_id, // Ensure this is included in cart
+                quantity: item.quantity,
+                price: item.price,
+            })),
             subtotal,
-            shippingCost,
+            shipping_cost: shippingCost,
             total,
-            paymentMethod,
-            shippingMethod,
-            userId: 2, // Replace with Auth.user.id if available
+            payment_method_id: paymentMethod,
+            shipping_method_id: shippingMethod,
         };
 
         try {
-            const response = await fetch(
-                "http://localhost:8000/api/orders/create",
+            const response = await axios.post(
+                `${API_URL}/orders/create`,
+                orderData,
                 {
-                    method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(orderData),
                 }
             );
 
-            const data = await response.json();
-            console.log("Response:", data); // Debug response
-            if (response.ok) {
+            if (response.status === 201) {
                 message.success("Order placed successfully!");
                 localStorage.removeItem("cart");
-                if (
-                    paymentMethod === "creditCard" ||
-                    paymentMethod === "digitalWallet"
-                ) {
+                const { order_id } = response.data;
+
+                // Redirect based on payment method ID (assuming IDs: 1=COD, 2=Credit Card, 3=Digital Wallet)
+                if (paymentMethod === 2 || paymentMethod === 3) {
                     navigate("/payment", {
-                        state: { orderId: data.orderId, total },
+                        state: { orderId: order_id, total },
                     });
                 } else {
                     navigate("/order-confirmation", {
-                        state: { orderId: data.orderId },
+                        state: { orderId: order_id },
                     });
                 }
-            } else {
-                message.error(data.message || "Failed to place order.");
             }
         } catch (error) {
-            console.error("Error:", error);
-            message.error("Something went wrong. Please try again.");
+            console.error(
+                "Order submission error:",
+                error.response?.data || error
+            );
+            message.error(
+                error.response?.data?.message ||
+                    "Failed to place order. Please try again."
+            );
         }
     };
-
-    useEffect(() => {
-        if (!cartItems || cartItems.length === 0) {
-            message.warning("No items in cart. Redirecting to cart...");
-            navigate("/user-cart");
-        }
-    }, [cartItems, navigate]);
 
     return (
         <div>
@@ -138,6 +183,7 @@ const CheckoutPage = () => {
                             style={{ marginBottom: "20px" }}
                         >
                             <Form
+                                form={form}
                                 layout="vertical"
                                 onFinish={onFinish}
                                 initialValues={{ country: "Philippines" }}
@@ -145,53 +191,95 @@ const CheckoutPage = () => {
                                 <Form.Item
                                     label="Country/Region"
                                     name="country"
-                                    rules={[{ required: true }]}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please select your country!",
+                                        },
+                                    ]}
                                 >
                                     <Select>
                                         <Option value="Philippines">
                                             Philippines
                                         </Option>
+                                        {/* Add more countries as needed */}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item
                                     label="Street Address"
                                     name="streetAddress"
-                                    rules={[{ required: true }]}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your street address!",
+                                        },
+                                    ]}
                                 >
                                     <Input />
                                 </Form.Item>
                                 <Form.Item
                                     label="Barangay"
                                     name="barangay"
-                                    rules={[{ required: true }]}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your barangay!",
+                                        },
+                                    ]}
                                 >
                                     <Input />
                                 </Form.Item>
                                 <Form.Item
                                     label="Province"
                                     name="province"
-                                    rules={[{ required: true }]}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your province!",
+                                        },
+                                    ]}
                                 >
                                     <Input />
                                 </Form.Item>
                                 <Form.Item
                                     label="City"
                                     name="city"
-                                    rules={[{ required: true }]}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Please enter your city!",
+                                        },
+                                    ]}
                                 >
                                     <Input />
                                 </Form.Item>
                                 <Form.Item
                                     label="Postal Code"
                                     name="postalCode"
-                                    rules={[{ required: true }]}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your postal code!",
+                                        },
+                                    ]}
                                 >
                                     <Input />
                                 </Form.Item>
                                 <Form.Item
                                     label="Phone"
                                     name="phone"
-                                    rules={[{ required: true }]}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your phone number!",
+                                        },
+                                    ]}
                                 >
                                     <Input />
                                 </Form.Item>
@@ -207,6 +295,7 @@ const CheckoutPage = () => {
                                 </Form.Item>
                             </Form>
                         </Card>
+
                         <Card
                             title="PAYMENT METHOD"
                             style={{ marginBottom: "20px" }}
@@ -217,13 +306,14 @@ const CheckoutPage = () => {
                                 }
                                 value={paymentMethod}
                             >
-                                <Radio value="cod">Cash on Delivery</Radio>
-                                <Radio value="creditCard">Credit Card</Radio>
-                                <Radio value="digitalWallet">
-                                    Digital Wallet
-                                </Radio>
+                                {paymentMethods.map((method) => (
+                                    <Radio key={method.id} value={method.id}>
+                                        {method.name}
+                                    </Radio>
+                                ))}
                             </Radio.Group>
                         </Card>
+
                         <Card
                             title="SHIPPING METHOD"
                             style={{ marginBottom: "20px" }}
@@ -234,14 +324,17 @@ const CheckoutPage = () => {
                                 }
                                 value={shippingMethod}
                             >
-                                <Radio value="standard">
-                                    Standard Shipping (5-7 days) - ₱75.00
-                                </Radio>
-                                <Radio value="expedited">
-                                    Expedited Shipping (3-5 days) - ₱150.00
-                                </Radio>
+                                {shippingMethods.map((method) => (
+                                    <Radio key={method.id} value={method.id}>
+                                        {method.name} - ₱
+                                        {parseFloat(
+                                            method.cost
+                                        ).toLocaleString()}
+                                    </Radio>
+                                ))}
                             </Radio.Group>
                         </Card>
+
                         <Button
                             type="primary"
                             style={{
@@ -250,20 +343,12 @@ const CheckoutPage = () => {
                                 width: "100%",
                                 height: "40px",
                             }}
-                            onClick={() =>
-                                document
-                                    .querySelector("form")
-                                    .dispatchEvent(
-                                        new Event("submit", {
-                                            cancelable: true,
-                                            bubbles: true,
-                                        })
-                                    )
-                            }
+                            onClick={() => form.submit()} // Improved form submission trigger
                         >
                             COMPLETE ORDER
                         </Button>
                     </Col>
+
                     <Col xs={24} md={8}>
                         <Card title="ORDER SUMMARY">
                             {cartItems.map((item) => (

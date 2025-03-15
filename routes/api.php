@@ -11,74 +11,117 @@ use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ProductViewController;
 use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\UserOrderController;
 
-// Logout route for authenticated users (using Passport)
+/*
+|--------------------------------------------------------------------------
+| Public Routes (No Authentication Required)
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/register', [AccessController::class, 'register'])->name('register');
+Route::post('/login', [AccessController::class, 'login'])->name('login');
+Route::get('/products/public', [ProductController::class, 'publicIndex'])->name('products.public');
+Route::get('/sub-categories/public', [SubCategoryController::class, 'publicIndex'])->name('subcategories.public');
+Route::get('/products/{id}', [ProductViewController::class, 'show'])->name('products.show');
+
+/*
+|--------------------------------------------------------------------------
+| Authenticated Routes (Requires API Token)
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth:api')->group(function () {
-    Route::post('/logout', [AccessController::class, 'logout']);
-    Route::get('/reviews/{product_id}', [ReviewController::class, 'index']); // Fetch reviews
-    Route::post('/reviews', [ReviewController::class, 'store']); // Submit review
-    Route::get('/validate-token', [AccessController::class, 'validateToken']);
+    // Authentication-related routes
+    Route::post('/logout', [AccessController::class, 'logout'])->name('logout');
+    Route::get('/validate-token', [AccessController::class, 'validateToken'])->name('validate.token');
+
+    // Review routes
+    Route::get('/reviews/{product_id}', [ReviewController::class, 'index'])->name('reviews.index');
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+    // Inventory public route (fixed duplication)
+    Route::get('/inventory-public', [InventoryController::class, 'index'])->name('inventory.public');
+
+    // Lookup table routes
+    Route::get('/payment-methods', fn() => App\Models\PaymentMethod::all())->name('payment.methods');
+    Route::get('/shipping-methods', fn() => App\Models\ShippingMethod::all())->name('shipping.methods');
 });
-Route::middleware('auth:api')->get('/inventory-public', [InventoryController::class, 'index']);
 
-// Public routes (accessible without authentication)
-Route::post('register', [AccessController::class, 'register']);
-Route::post('login', [AccessController::class, 'login']);
-Route::get('/products/public', [ProductController::class, 'publicIndex']);
-Route::get('/sub-categories/public', [SubCategoryController::class, 'publicIndex']);
-// Public product detail route
-Route::get('/products/{id}', [ProductViewController::class, 'show']);
-
-// Protected routes for regular users
+/*
+|--------------------------------------------------------------------------
+| User Routes (Requires 'user' Role)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth:api', 'check.role:user'])->group(function () {
-    Route::get('/profile', [ProfileController::class, 'show']);
-    Route::post('/profile', [ProfileController::class, 'update']);
-    Route::post('/orders/create', [OrderController::class, 'store']);
+    // Profile routes
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Order creation route
+    Route::post('/orders/create', [UserOrderController::class, 'store'])->name('orders.store');
 });
 
-// Protected routes for admin
+/*
+|--------------------------------------------------------------------------
+| Admin Routes (Requires 'admin' Role)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth:api', 'admin'])->group(function () {
-    Route::get('admin-dashboard', function () {
-        return response()->json(['message' => 'Welcome to the Admin Dashboard']);
-    });
+    // Admin dashboard
+    Route::get('/admin-dashboard', fn() => response()->json(['message' => 'Welcome to the Admin Dashboard']))
+        ->name('admin.dashboard');
 
     // SubCategory routes
-    Route::get('/sub-categories', [SubCategoryController::class, 'index']);
-    Route::post('/sub-categories', [SubCategoryController::class, 'store']);
-    Route::put('/sub-categories/{id}', [SubCategoryController::class, 'update']);
-    Route::delete('/sub-categories/{id}', [SubCategoryController::class, 'destroy']);
-    Route::post('/sub-categories/{id}/restore', [SubCategoryController::class, 'restore']);
+    Route::prefix('sub-categories')->name('subcategories.')->group(function () {
+        Route::get('/', [SubCategoryController::class, 'index'])->name('index');
+        Route::post('/', [SubCategoryController::class, 'store'])->name('store');
+        Route::put('/{id}', [SubCategoryController::class, 'update'])->name('update');
+        Route::delete('/{id}', [SubCategoryController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/restore', [SubCategoryController::class, 'restore'])->name('restore');
+    });
 
     // Product routes
-    Route::get('/products', [ProductController::class, 'index']);
-    Route::post('/products', [ProductController::class, 'store']);
-    Route::put('/products/{id}', [ProductController::class, 'update']);
-    Route::delete('/products/{id}', [ProductController::class, 'destroy']);
-    Route::post('/products/{id}/restore', [ProductController::class, 'restore']);
+    Route::prefix('products')->name('products.')->group(function () {
+        Route::get('/', [ProductController::class, 'index'])->name('index');
+        Route::post('/', [ProductController::class, 'store'])->name('store');
+        Route::put('/{id}', [ProductController::class, 'update'])->name('update');
+        Route::delete('/{id}', [ProductController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/restore', [ProductController::class, 'restore'])->name('restore');
+    });
 
     // Inventory routes
-    Route::get('/inventory', [InventoryController::class, 'index']);
-    Route::post('/inventory/{product_id}', [InventoryController::class, 'store']);
-    Route::put('/inventory/{id}', [InventoryController::class, 'update']);
-    Route::delete('/inventory/{id}', [InventoryController::class, 'destroy']);
-    Route::post('/inventory/{id}/restore', [InventoryController::class, 'restore']);
+    Route::prefix('inventory')->name('inventory.')->group(function () {
+        Route::get('/', [InventoryController::class, 'index'])->name('index');
+        Route::post('/{product_id}', [InventoryController::class, 'store'])->name('store');
+        Route::put('/{id}', [InventoryController::class, 'update'])->name('update');
+        Route::delete('/{id}', [InventoryController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/restore', [InventoryController::class, 'restore'])->name('restore');
+    });
 
-    // User Management routes
-    Route::get('/users', [UserController::class, 'index']);
-    Route::post('/users', [UserController::class, 'store']);
-    Route::put('/users/{id}', [UserController::class, 'update']);
-    Route::delete('/users/{id}', [UserController::class, 'destroy']);
-    Route::post('/users/{id}/restore', [UserController::class, 'restore']);
+    // User management routes
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::post('/', [UserController::class, 'store'])->name('store');
+        Route::put('/{id}', [UserController::class, 'update'])->name('update');
+        Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/restore', [UserController::class, 'restore'])->name('restore');
+    });
 
     // Customer routes
-    Route::get('/customers', [CustomerController::class, 'index']);
-    Route::get('/customers/{id}', [CustomerController::class, 'show']);
-    Route::put('/customers/{id}', [CustomerController::class, 'update']);
-    Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
-    Route::post('/customers/{id}/restore', [CustomerController::class, 'restore']);
+    Route::prefix('customers')->name('customers.')->group(function () {
+        Route::get('/', [CustomerController::class, 'index'])->name('index');
+        Route::get('/{id}', [CustomerController::class, 'show'])->name('show');
+        Route::put('/{id}', [CustomerController::class, 'update'])->name('update');
+        Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/restore', [CustomerController::class, 'restore'])->name('restore');
+    });
 
-    Route::get('/orders', [OrderController::class, 'index']);
-    Route::get('/orders/{id}', [OrderController::class, 'show']);
-    Route::put('/orders/{id}', [OrderController::class, 'update']);
-    Route::post('/orders/{id}/archive', [OrderController::class, 'archive']);
+    // Order management routes (admin)
+    Route::prefix('orders')->name('orders.')->group(function () {
+        Route::get('/', [OrderController::class, 'index'])->name('index');
+        Route::get('/{id}', [OrderController::class, 'show'])->name('show');
+        Route::put('/{id}', [OrderController::class, 'update'])->name('update');
+        Route::post('/{id}/archive', [OrderController::class, 'archive'])->name('archive');
+        Route::post('/{id}/restore', [OrderController::class, 'restore'])->name('restore');
+    });
 });

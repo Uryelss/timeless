@@ -3,6 +3,7 @@ import { Table, Button, InputNumber, Space, Typography, message } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
+import axios from "axios";
 
 const { Title } = Typography;
 
@@ -11,28 +12,70 @@ const CartPage = () => {
     const [cartItems, setCartItems] = useState([]);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
-    // Load cart items from localStorage on mount
+    const API_URL = "http://localhost:8000/api";
+
     useEffect(() => {
         const storedCart = localStorage.getItem("cart");
         if (storedCart) {
             const items = JSON.parse(storedCart);
-            // Calculate total for each item
-            const updatedItems = items.map((item) => ({
+            fetchProductData(items);
+        }
+    }, []);
+
+    const fetchProductData = async (storedItems) => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                message.error("Please log in to view your cart.");
+                navigate("/login");
+                return;
+            }
+
+            const response = await axios.get(`${API_URL}/products/public`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const products = response.data;
+
+            const updatedItems = storedItems
+                .map((item) => {
+                    const product = products.find((p) => p.id === item.id);
+                    if (!product) {
+                        message.warning(
+                            `Product ${item.productName} is no longer available.`
+                        );
+                        return null;
+                    }
+                    return {
+                        ...item,
+                        id: product.id,
+                        inventory_id: item.inventory_id, // Preserve from cart
+                        price: product.price,
+                        total: product.price * item.quantity,
+                        image: `http://localhost:8000/storage/${product.main_image}`,
+                    };
+                })
+                .filter(Boolean);
+
+            setCartItems(updatedItems);
+            localStorage.setItem("cart", JSON.stringify(updatedItems));
+        } catch (error) {
+            console.error("Error fetching product data:", error);
+            message.error("Failed to validate cart items. Using stored data.");
+            const updatedItems = storedItems.map((item) => ({
                 ...item,
                 total: item.price * item.quantity,
             }));
             setCartItems(updatedItems);
         }
-    }, []);
+    };
 
-    // Update localStorage whenever cartItems change
     useEffect(() => {
         localStorage.setItem("cart", JSON.stringify(cartItems));
     }, [cartItems]);
 
-    const updateQuantity = (id, newQuantity) => {
+    const updateQuantity = (id, size, newQuantity) => {
         const updated = cartItems.map((item) =>
-            item.id === id
+            item.id === id && item.size === size
                 ? {
                       ...item,
                       quantity: newQuantity,
@@ -49,7 +92,7 @@ const CartPage = () => {
             return;
         }
         const remaining = cartItems.filter(
-            (item) => !selectedRowKeys.includes(item.id)
+            (item) => !selectedRowKeys.includes(`${item.id}-${item.size}`)
         );
         setCartItems(remaining);
         setSelectedRowKeys([]);
@@ -79,7 +122,7 @@ const CartPage = () => {
             title: "Price",
             dataIndex: "price",
             key: "price",
-            render: (price) => `$${price}`,
+            render: (price) => `₱${price.toLocaleString()}`,
         },
         {
             title: "Quantity",
@@ -91,6 +134,7 @@ const CartPage = () => {
                         onClick={() =>
                             updateQuantity(
                                 record.id,
+                                record.size,
                                 Math.max(1, record.quantity - 1)
                             )
                         }
@@ -100,11 +144,17 @@ const CartPage = () => {
                     <InputNumber
                         min={1}
                         value={quantity}
-                        onChange={(value) => updateQuantity(record.id, value)}
+                        onChange={(value) =>
+                            updateQuantity(record.id, record.size, value)
+                        }
                     />
                     <Button
                         onClick={() =>
-                            updateQuantity(record.id, record.quantity + 1)
+                            updateQuantity(
+                                record.id,
+                                record.size,
+                                record.quantity + 1
+                            )
                         }
                     >
                         +
@@ -116,16 +166,36 @@ const CartPage = () => {
             title: "Total",
             dataIndex: "total",
             key: "total",
-            render: (total) => `$${total.toFixed(2)}`,
+            render: (total) => `₱${total.toLocaleString()}`,
         },
     ];
 
     const rowSelection = {
         selectedRowKeys,
         onChange: (selectedKeys) => setSelectedRowKeys(selectedKeys),
+        getCheckboxProps: (record) => ({
+            name: `${record.id}-${record.size}`, // Unique key per product and size
+        }),
     };
 
     const subtotal = cartItems.reduce((sum, item) => sum + item.total, 0);
+
+    const handleProceedToCheckout = () => {
+        if (!cartItems.length) {
+            message.warning("Your cart is empty!");
+            return;
+        }
+        const invalidItems = cartItems.some(
+            (item) => !item.id || !item.inventory_id
+        );
+        if (invalidItems) {
+            message.error(
+                "Some cart items are invalid. Please refresh or re-add items."
+            );
+            return;
+        }
+        navigate("/user-checkout", { state: { cartItems, subtotal } });
+    };
 
     return (
         <div>
@@ -133,7 +203,7 @@ const CartPage = () => {
             <div style={{ padding: "20px" }}>
                 <Title level={2}>Cart</Title>
                 <Table
-                    rowKey="id"
+                    rowKey={(record) => `${record.id}-${record.size}`} // Unique key per product and size
                     rowSelection={rowSelection}
                     columns={columns}
                     dataSource={cartItems}
@@ -146,7 +216,7 @@ const CartPage = () => {
                         fontSize: "18px",
                     }}
                 >
-                    Subtotal: <strong>${subtotal.toFixed(2)}</strong>
+                    Subtotal: <strong>₱{subtotal.toLocaleString()}</strong>
                 </div>
                 {selectedRowKeys.length > 0 && (
                     <Button
@@ -159,17 +229,12 @@ const CartPage = () => {
                     </Button>
                 )}
                 <div style={{ marginTop: "20px", textAlign: "right" }}>
-                    {/* Navigate to the defined checkout route */}
                     <Button
                         type="primary"
                         size="large"
-                        onClick={() =>
-                            navigate("/user-checkout", {
-                                state: { cartItems, subtotal },
-                            })
-                        }
+                        onClick={handleProceedToCheckout}
                     >
-                        Proceed to Payment
+                        Proceed to Checkout
                     </Button>
                 </div>
             </div>
