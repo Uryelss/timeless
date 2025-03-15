@@ -129,9 +129,9 @@ const CartPage = () => {
 
     return (
         <div>
-            <Navbar style={{ width: "100%" }} />
+            <Navbar />
             <div style={{ padding: "20px" }}>
-                <Title level={2}>Checkout</Title>
+                <Title level={2}>Cart</Title>
                 <Table
                     rowKey="id"
                     rowSelection={rowSelection}
@@ -159,10 +159,15 @@ const CartPage = () => {
                     </Button>
                 )}
                 <div style={{ marginTop: "20px", textAlign: "right" }}>
+                    {/* Navigate to the defined checkout route */}
                     <Button
                         type="primary"
                         size="large"
-                        onClick={() => navigate("/payment")}
+                        onClick={() =>
+                            navigate("/user-checkout", {
+                                state: { cartItems, subtotal },
+                            })
+                        }
                     >
                         Proceed to Payment
                     </Button>

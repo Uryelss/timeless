@@ -80,4 +80,10 @@ class CustomerController extends Controller
         $profile->restore();
         return response()->json(['message' => 'Customer restored successfully']);
     }
+    public function profile(Request $request)
+    {
+        // This assumes the user is authenticated and their profile exists
+        $profile = Profile::where('user_id', $request->user()->id)->first();
+        return response()->json($profile);
+    }
 }

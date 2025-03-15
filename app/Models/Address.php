@@ -2,22 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Address extends Model
 {
+    use HasFactory, SoftDeletes;
+
     protected $fillable = [
         'profile_id',
-        'street',
-        'city',
-        'brgy',
         'country',
-        'postal_code'
+        'street_address',
+        'barangay',
+        'province',
+        'city',
+        'postal_code',
+        'phone',
     ];
-
-    // Each address belongs to a profile.
-    public function profile()
-    {
-        return $this->belongsTo(Profile::class);
-    }
 }

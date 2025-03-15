@@ -10,18 +10,14 @@ class CreateAddressesTable extends Migration
     {
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('profile_id');
+            $table->foreignId('profile_id')->constrained('profiles')->onDelete('cascade');
             $table->string('street');
             $table->string('city');
-            $table->string('brgy');       // Barangay (or district)
-            $table->string('country');
+            $table->string('state');
             $table->string('postal_code');
+            $table->string('country');
             $table->timestamps();
-
-            // Set up foreign key relation to profiles table.
-            $table->foreign('profile_id')
-                ->references('id')->on('profiles')
-                ->onDelete('cascade');
+            $table->softDeletes();
         });
     }
 

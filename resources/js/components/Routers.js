@@ -1,4 +1,3 @@
-// src/Routers.jsx - Updated to use merged PrivateRoute
 import React from "react";
 import ReactDOM from "react-dom";
 import {
@@ -29,10 +28,11 @@ import Collection from "./UserPage/CollectionPage/Collection";
 import UserProfile from "./UserPage/ProfilePage/Profile";
 import ProductOverview from "./UserPage/ProductOverview/Productview";
 import AboutUs from "./UserPage/AboutUsPage/Aboutus";
+import CartPage from "./UserPage/CartPage/Cart";
+import OrderCheckout from "./UserPage/Checkout/Checkout";
 
 // Single route protection component
 import PrivateRoute from "./PrivateRoute";
-import CartPage from "./UserPage/CartPage/Cart";
 
 function Routers() {
     return (
@@ -85,6 +85,7 @@ function Routers() {
                     <Route path="/product/:id" element={<ProductOverview />} />
                     <Route path="/AboutUs" element={<AboutUs />} />
                     <Route path="/user-cart" element={<CartPage />} />
+                    <Route path="/user-checkout" element={<OrderCheckout />} />
                 </Route>
 
                 {/* Catch-all redirect */}

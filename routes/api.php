@@ -10,6 +10,7 @@ use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ProductViewController;
 use App\Http\Controllers\API\ReviewController;
+use App\Http\Controllers\API\OrderController;
 
 // Logout route for authenticated users (using Passport)
 Route::middleware('auth:api')->group(function () {
@@ -32,6 +33,7 @@ Route::get('/products/{id}', [ProductViewController::class, 'show']);
 Route::middleware(['auth:api', 'check.role:user'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::post('/profile', [ProfileController::class, 'update']);
+    Route::post('/orders/create', [OrderController::class, 'store']);
 });
 
 // Protected routes for admin
@@ -74,4 +76,9 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::put('/customers/{id}', [CustomerController::class, 'update']);
     Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
     Route::post('/customers/{id}/restore', [CustomerController::class, 'restore']);
+
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{id}', [OrderController::class, 'show']);
+    Route::put('/orders/{id}', [OrderController::class, 'update']);
+    Route::post('/orders/{id}/archive', [OrderController::class, 'archive']);
 });

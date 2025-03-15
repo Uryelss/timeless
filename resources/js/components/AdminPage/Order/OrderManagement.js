@@ -1,119 +1,174 @@
-import React, { useState } from "react";
-import { Table, Space, Button, message } from "antd";
-import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Table, Button, Space, Modal, Tag, message } from "antd";
+import axios from "axios";
 
-const OrderManagement = () => {
-    // Static order data
-    const [orders, setOrders] = useState([
-        {
-            key: "1",
-            orderId: "ORD1001",
-            customerName: "John Doe",
-            items: "3 items",
-            priority: "Expedited",
-            orderStatus: "Completed",
-            totalAmount: 150.0,
-            orderDate: "2023-03-01",
-        },
-        {
-            key: "2",
-            orderId: "ORD1002",
-            customerName: "Jane Smith",
-            items: "2 items",
-            priority: "Standard Shipping",
-            orderStatus: "Pending",
-            totalAmount: 90.0,
-            orderDate: "2023-03-02",
-        },
-        {
-            key: "3",
-            orderId: "ORD1003",
-            customerName: "Bob Johnson",
-            items: "1 item",
-            priority: "Standard Shipping",
-            orderStatus: "Processing",
-            totalAmount: 45.0,
-            orderDate: "2023-03-03",
-        },
-    ]);
+const OrdersAdmin = () => {
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const navigate = useNavigate();
+    const fetchOrders = async () => {
+        setLoading(true);
+        try {
+            const token =
+                localStorage.getItem("adminToken") || "YOUR_VALID_ADMIN_TOKEN";
+            const res = await axios.get("/api/orders", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setOrders(res.data);
+        } catch (error) {
+            message.error("Failed to fetch orders");
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
+    const handleView = (order) => {
+        setSelectedOrder(order);
+        setIsModalVisible(true);
+    };
+
+    const handleEdit = (order) => {
+        message.info("Edit functionality not implemented yet");
+    };
+
+    const handleArchive = async (orderId) => {
+        try {
+            await axios.post(`/api/orders/${orderId}/archive`);
+            message.success("Order archived successfully");
+            fetchOrders();
+        } catch (error) {
+            message.error("Failed to archive order");
+        }
+    };
 
     const columns = [
         {
-            title: "Action",
-            key: "action",
+            title: "Order ID",
+            dataIndex: "id",
+            key: "id",
             render: (text, record) => (
-                <Space size="middle">
-                    <Button
-                        type="link"
-                        icon={<EditOutlined />}
-                        onClick={() =>
-                            message.info(`Edit order ${record.orderId}`)
-                        }
-                    />
-                    <Button
-                        type="link"
-                        icon={<DeleteOutlined />}
-                        onClick={() =>
-                            message.info(`Archive order ${record.orderId}`)
-                        }
-                    />
-                    <Button
-                        type="link"
-                        icon={<EyeOutlined />}
-                        onClick={() =>
-                            navigate(`/admin/order-details/${record.orderId}`)
-                        }
-                    />
+                <Space>
+                    <Button onClick={() => handleEdit(record)}>Edit</Button>
+                    <Button onClick={() => handleArchive(record.id)}>
+                        Archive
+                    </Button>
+                    <Button onClick={() => handleView(record)}>View</Button>
                 </Space>
             ),
         },
         {
-            title: "Order ID",
-            dataIndex: "orderId",
-            key: "orderId",
-        },
-        {
-            title: "Customer Name",
-            dataIndex: "customerName",
-            key: "customerName",
+            title: "Profile Name",
+            dataIndex: "profile_name",
+            key: "profile_name",
         },
         {
             title: "Items",
             dataIndex: "items",
             key: "items",
+            render: (items) =>
+                items.map((item, idx) => (
+                    <div key={idx}>
+                        {item.productName} (Qty: {item.quantity})
+                    </div>
+                )),
         },
         {
             title: "Priority",
-            dataIndex: "priority",
-            key: "priority",
+            dataIndex: "shipping_priority",
+            key: "shipping_priority",
+            render: (priority) => (
+                <Tag color={priority === "expedited" ? "red" : "blue"}>
+                    {priority.toUpperCase()}
+                </Tag>
+            ),
         },
         {
-            title: "Order Status",
-            dataIndex: "orderStatus",
-            key: "orderStatus",
+            title: "Status",
+            dataIndex: "status",
+            key: "status",
+            render: (status) => {
+                let color = "gray";
+                if (status === "completed") color = "green";
+                else if (status === "pending") color = "orange";
+                return <Tag color={color}>{status.toUpperCase()}</Tag>;
+            },
         },
         {
             title: "Total Amount",
-            dataIndex: "totalAmount",
-            key: "totalAmount",
-            render: (amount) => `$${amount.toFixed(2)}`,
+            dataIndex: "total_amount",
+            key: "total_amount",
+            render: (amount) => <>₱{Number(amount).toLocaleString()}</>,
         },
         {
             title: "Order Date",
-            dataIndex: "orderDate",
-            key: "orderDate",
+            dataIndex: "order_date",
+            key: "order_date",
+            render: (date) => new Date(date).toLocaleString(),
         },
     ];
 
     return (
-        <div style={{ padding: "20px" }}>
-            <h2>Order Management</h2>
-            <Table columns={columns} dataSource={orders} />
+        <div style={{ padding: 20 }}>
+            <h2>Admin Orders</h2>
+            <Table
+                columns={columns}
+                dataSource={orders}
+                rowKey="id"
+                loading={loading}
+            />
+
+            <Modal
+                title="Order Details"
+                visible={isModalVisible}
+                onCancel={() => setIsModalVisible(false)}
+                footer={null}
+            >
+                {selectedOrder && (
+                    <div>
+                        <p>
+                            <strong>Order ID:</strong> {selectedOrder.id}
+                        </p>
+                        <p>
+                            <strong>Profile Name:</strong>{" "}
+                            {selectedOrder.profile_name}
+                        </p>
+                        <p>
+                            <strong>Total Amount:</strong> ₱
+                            {Number(
+                                selectedOrder.total_amount
+                            ).toLocaleString()}
+                        </p>
+                        <p>
+                            <strong>Status:</strong> {selectedOrder.status}
+                        </p>
+                        <p>
+                            <strong>Shipping Priority:</strong>{" "}
+                            {selectedOrder.shipping_priority}
+                        </p>
+                        <p>
+                            <strong>Order Date:</strong>{" "}
+                            {new Date(
+                                selectedOrder.order_date
+                            ).toLocaleString()}
+                        </p>
+                        <div>
+                            <strong>Items:</strong>
+                            {selectedOrder.items.map((item, index) => (
+                                <div key={index}>
+                                    {item.productName} - Qty: {item.quantity}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </Modal>
         </div>
     );
 };
 
-export default OrderManagement;
+export default OrdersAdmin;
