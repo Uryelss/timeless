@@ -25,20 +25,15 @@ const { Header, Content, Sider } = Layout;
 const { TabPane } = Tabs;
 
 const SubCategoryManagement = () => {
-    // Active tab (values: brand, categories, gender, movement, strap_materials, sizes)
     const [activeTab, setActiveTab] = useState("brand");
-    // Modal states
     const [openAddModal, setOpenAddModal] = useState(false);
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
     const [form] = Form.useForm();
-    // Bulk selection and search state
     const [selectAll, setSelectAll] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    // Data state for active and archived records
     const [data, setData] = useState([]);
     const [archivedData, setArchivedData] = useState([]);
 
-    // Fetch active sub-categories for the current active tab
     const fetchData = () => {
         axios
             .get(`http://localhost:8000/api/sub-categories?type=${activeTab}`, {
@@ -47,7 +42,6 @@ const SubCategoryManagement = () => {
                 },
             })
             .then((res) => {
-                // Ensure each record has a unique "key" for Ant Design table
                 setData(
                     res.data.map((item) => ({
                         ...item,
@@ -61,7 +55,6 @@ const SubCategoryManagement = () => {
             });
     };
 
-    // Fetch archived sub-categories for the current active tab
     const fetchArchivedData = () => {
         axios
             .get(
@@ -95,7 +88,6 @@ const SubCategoryManagement = () => {
         }
     }, [activeTab, openArchiveModal]);
 
-    // Table columns for active items (ID column removed)
     const columns = [
         {
             title: "Actions",
@@ -119,7 +111,6 @@ const SubCategoryManagement = () => {
         { title: "Updated At", dataIndex: "updated_at", key: "updated_at" },
     ];
 
-    // Table columns for archived items (ID column removed)
     const archiveColumns = [
         {
             title: "Actions",
@@ -141,7 +132,6 @@ const SubCategoryManagement = () => {
     };
 
     const handleEdit = (record) => {
-        // Set form values for editing; include record id if editing
         form.setFieldsValue(record);
         setOpenAddModal(true);
     };
@@ -205,7 +195,6 @@ const SubCategoryManagement = () => {
     const handleModalOk = () => {
         form.validateFields()
             .then((values) => {
-                // If an id exists, we are editing; otherwise, we add new
                 if (values.id) {
                     axios
                         .put(
@@ -264,7 +253,6 @@ const SubCategoryManagement = () => {
         Modal.confirm({
             title: "Are you sure you want to archive all selected items?",
             onOk: () => {
-                // Implement bulk archive logic here (e.g., send array of selected IDs)
                 message.success("Bulk archive executed (not implemented)");
             },
         });
@@ -300,6 +288,7 @@ const SubCategoryManagement = () => {
                         style={{
                             display: "flex",
                             justifyContent: "space-between",
+                            alignItems: "center",
                             marginBottom: 16,
                         }}
                     >
@@ -327,11 +316,16 @@ const SubCategoryManagement = () => {
                                 </Button>
                             )}
                         </div>
-                        <div>
+                        <div
+                            style={{
+                                display: "flex",
+                                gap: 8,
+                                alignItems: "center",
+                            }}
+                        >
                             <Button
                                 type="default"
                                 onClick={() => setOpenArchiveModal(true)}
-                                style={{ marginRight: 8 }}
                             >
                                 Archived View
                             </Button>
@@ -366,7 +360,6 @@ const SubCategoryManagement = () => {
                 cancelText="Cancel"
             >
                 <Form form={form} layout="vertical">
-                    {/* Hidden field for editing */}
                     <Form.Item name="id" style={{ display: "none" }}>
                         <Input type="hidden" />
                     </Form.Item>

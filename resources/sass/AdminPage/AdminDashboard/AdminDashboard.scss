@@ -1,0 +1,121 @@
+.admin-dashboard {
+    .ant-layout-header {
+      background: #fff;
+      padding: 0 24px;
+      border-bottom: 1px solid #f0f0f0;
+      height: 64px;
+      line-height: 64px;
+      
+      h1, h4 {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin: 0;
+      }
+    }
+  
+    .ant-layout-content {
+      padding: 24px;
+      background: #f0f2f5;
+  
+      .ant-card {
+        border: none;
+        border-radius: 8px;
+        overflow: hidden;
+        
+        .ant-card-body {
+          padding: 0;
+        }
+  
+        .dashboard-card {
+          transition: all 0.3s ease;
+          border: 1px solid #f0f0f0;
+          border-radius: 6px;
+          min-height: 180px;
+          padding: 16px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+  
+          &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: transparent;
+          }
+  
+          .ant-statistic {
+            .ant-statistic-title {
+              color: #595959;
+              font-size: 16px;
+              margin-bottom: 12px;
+              font-weight: 500;
+            }
+  
+            .ant-statistic-content {
+              font-size: 32px;
+              font-weight: 600;
+              margin-bottom: 16px;
+  
+              .anticon {
+                margin-right: 12px;
+                font-size: 28px;
+                vertical-align: middle;
+              }
+            }
+          }
+  
+          .ant-typography-secondary {
+            font-size: 14px;
+            color: #8c8c8c;
+            line-height: 1.5;
+          }
+        }
+      }
+    }
+  
+    .ant-layout-footer {
+      background: #fff;
+      color: #595959;
+      border-top: 1px solid #f0f0f0;
+      padding: 16px 24px;
+      font-size: 14px;
+    }
+  
+    .loading-container {
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  
+    @media (max-width: 768px) {
+      .ant-layout-content {
+        padding: 16px;
+  
+        .ant-card {
+          .dashboard-card {
+            min-height: 150px;
+            padding: 12px;
+  
+            .ant-statistic {
+              .ant-statistic-content {
+                font-size: 24px;
+  
+                .anticon {
+                  font-size: 20px;
+                }
+              }
+  
+              .ant-statistic-title {
+                font-size: 14px;
+              }
+            }
+  
+            .ant-typography-secondary {
+              font-size: 12px;
+            }
+          }
+        }
+      }
+    }
+  }

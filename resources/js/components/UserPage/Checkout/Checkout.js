@@ -81,6 +81,29 @@ const CheckoutPage = () => {
 
     const total = subtotal + shippingCost;
 
+    const updateUserProfile = async (phone) => {
+        try {
+            const token = localStorage.getItem("token");
+            await axios.put(
+                `${API_URL}/profile`, // Adjust this endpoint based on your API
+                { phone },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            message.success("Phone number saved to profile successfully!");
+        } catch (error) {
+            console.error(
+                "Profile update error:",
+                error.response?.data || error
+            );
+            message.error("Failed to save phone number to profile.");
+        }
+    };
+
     const onFinish = async (values) => {
         if (!paymentMethod) {
             message.warning("Please select a payment method!");
@@ -119,9 +142,10 @@ const CheckoutPage = () => {
             payment_method_id: paymentMethod,
             shipping_method_id: shippingMethod,
         };
+
         try {
             const response = await axios.post(
-                `${API_URL}/orders`, // Updated endpoint
+                `${API_URL}/orders`,
                 orderData,
                 {
                     headers: {
@@ -136,6 +160,11 @@ const CheckoutPage = () => {
                 localStorage.removeItem("cart");
                 window.dispatchEvent(new Event("cartUpdated"));
                 const { order_id } = response.data;
+
+                // Save phone to profile if "Save this information" is checked
+                if (saveInfo) {
+                    await updateUserProfile(values.phone);
+                }
 
                 if (paymentMethod === 2 || paymentMethod === 3) {
                     navigate("/payment", {

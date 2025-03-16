@@ -55,7 +55,7 @@ Route::middleware('auth:api')->group(function () {
 Route::middleware(['auth:api', 'check.role:user'])->group(function () {
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update'); // Changed from POST to PUT
 
     // Order creation route (adjusted to match CheckoutPage)
     Route::post('/orders', [UserOrderController::class, 'store'])->name('orders.store');

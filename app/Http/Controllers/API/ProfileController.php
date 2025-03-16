@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
-    // Get the authenticated user's profile including the username
     public function show()
     {
         $user = Auth::user();
@@ -20,7 +19,7 @@ class ProfileController extends Controller
                 'middle_name'   => '',
                 'last_name'     => '',
                 'suffix'        => '',
-                'gender'        => null,  // Set default as null
+                'gender'        => null,
                 'date_of_birth' => null,
                 'phone'         => '',
                 'profile_image' => null,
@@ -30,10 +29,12 @@ class ProfileController extends Controller
 
         $response = $profile->toArray();
         $response['username'] = $user->username;
+        if ($response['profile_image']) {
+            $response['profile_image'] = asset('storage/' . $response['profile_image']);
+        }
         return response()->json($response);
     }
 
-    // Update the authenticated user's profile
     public function update(Request $request)
     {
         $user = Auth::user();
@@ -44,7 +45,7 @@ class ProfileController extends Controller
                 'middle_name'   => '',
                 'last_name'     => '',
                 'suffix'        => '',
-                'gender'        => null,  // Use null as default
+                'gender'        => null,
                 'date_of_birth' => null,
                 'phone'         => '',
                 'profile_image' => null,
@@ -53,19 +54,18 @@ class ProfileController extends Controller
         );
 
         $validatedData = $request->validate([
-            'username'      => 'sometimes|required|string',
-            'first_name'    => 'sometimes|required|string',
+            'username'      => 'nullable|string',
+            'first_name'    => 'nullable|string',
             'middle_name'   => 'nullable|string',
-            'last_name'     => 'sometimes|required|string',
+            'last_name'     => 'nullable|string',
             'suffix'        => 'nullable|string',
-            'gender'        => 'nullable|string', // Allow null
+            'gender'        => 'nullable|string',
             'date_of_birth' => 'nullable|date',
             'phone'         => 'nullable|string',
             'profile_image' => 'nullable|file|image',
             'address'       => 'nullable|string',
         ]);
 
-        // Convert gender to null if it's empty
         if (isset($validatedData['gender']) && trim($validatedData['gender']) === "") {
             $validatedData['gender'] = null;
         }
@@ -73,19 +73,21 @@ class ProfileController extends Controller
         if (isset($validatedData['username'])) {
             $user->username = $validatedData['username'];
             $user->save();
+            unset($validatedData['username']);
         }
 
         if ($request->hasFile('profile_image')) {
             $path = $request->file('profile_image')->store('profiles', 'public');
-            $validatedData['profile_image'] = asset('storage/' . $path);
+            $validatedData['profile_image'] = $path;
         }
 
-        unset($validatedData['username']);
-
-        $profile->update($validatedData);
+        $profile->update(array_filter($validatedData, fn($value) => !is_null($value)));
 
         $response = $profile->toArray();
         $response['username'] = $user->username;
-        return response()->json($response);
+        if ($response['profile_image']) {
+            $response['profile_image'] = asset('storage/' . $response['profile_image']);
+        }
+        return response()->json($response, 200);
     }
 }

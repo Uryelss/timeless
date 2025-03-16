@@ -200,16 +200,13 @@ const ProductManagement = () => {
             key: "sizes",
             render: (sizes) => {
                 let parsedSizes = sizes;
-                // If sizes is a string, try to parse it
                 if (typeof sizes === "string") {
                     try {
                         parsedSizes = JSON.parse(sizes);
                     } catch (e) {
-                        // If parsing fails, fallback to original value
                         return sizes;
                     }
                 }
-                // If parsedSizes is an array, extract the 'size' property if available
                 if (Array.isArray(parsedSizes)) {
                     if (
                         parsedSizes.length > 0 &&
@@ -229,7 +226,6 @@ const ProductManagement = () => {
             key: "price",
             render: (price) => `$${price}`,
         },
-        // Removed the "Quantity" column
     ];
 
     const archiveColumns = [
@@ -245,7 +241,6 @@ const ProductManagement = () => {
         ...mainColumns.slice(1),
     ];
 
-    // When editing, prefill form values. For sizes, parse sizesDetails from the JSON string.
     const handleEdit = (record) => {
         console.log("Edit product:", record);
         setCurrentProduct(record);
@@ -332,7 +327,6 @@ const ProductManagement = () => {
         setOpenAddModal(true);
     };
 
-    // Save product: calculate overall quantity from sizesDetails and send sizes as a JSON string.
     const handleSave = () => {
         form.validateFields()
             .then((values) => {
@@ -355,14 +349,12 @@ const ProductManagement = () => {
                 formData.append("price", values.price);
                 formData.append("description", values.description);
 
-                // sizesDetails is an array of objects: { size, quantity }
                 const sizesDetails = values.sizesDetails || [];
                 const overallQuantity = sizesDetails.reduce(
                     (sum, item) => sum + Number(item.quantity),
                     0
                 );
                 formData.append("quantity", overallQuantity);
-                // Store sizes as a JSON string
                 formData.append("sizes", JSON.stringify(sizesDetails));
 
                 if (mainImageFile) formData.append("main_image", mainImageFile);
@@ -482,6 +474,7 @@ const ProductManagement = () => {
                         style={{
                             display: "flex",
                             justifyContent: "space-between",
+                            alignItems: "center",
                             marginBottom: 16,
                         }}
                     >
@@ -509,12 +502,17 @@ const ProductManagement = () => {
                                 </Button>
                             )}
                         </div>
-                        <div>
+                        <div
+                            style={{
+                                display: "flex",
+                                gap: 8,
+                                alignItems: "center",
+                            }}
+                        >
                             <Button
                                 type="default"
                                 icon={<DeleteOutlined />}
                                 onClick={() => setOpenArchiveModal(true)}
-                                style={{ marginRight: 8 }}
                             >
                                 Archived View
                             </Button>
@@ -664,7 +662,6 @@ const ProductManagement = () => {
                             </Form.Item>
                         </Col>
                     </Row>
-                    {/* Use Form.List to capture size–quantity pairs */}
                     <Form.List name="sizesDetails">
                         {(fields, { add, remove }) => (
                             <>
