@@ -184893,6 +184893,26 @@ var Collection = function Collection() {
       return prev + 1;
     });
   };
+
+  // Helper function to display filter names
+  var getDisplayFilters = function getDisplayFilters() {
+    var displays = [];
+    Object.keys(filters).forEach(function (key) {
+      if (filters[key].length > 0) {
+        filters[key].forEach(function (value) {
+          if (key === "strapMaterial") {
+            var match = filterOptions.strapMaterial.find(function (item) {
+              return item.id === value;
+            });
+            displays.push(match ? match.name : value);
+          } else {
+            displays.push(value);
+          }
+        });
+      }
+    });
+    return displays;
+  };
   var getFilteredProducts = function getFilteredProducts() {
     var filtered = products.filter(function (product) {
       var _product$brand, _product$gender, _product$movement;
@@ -184945,6 +184965,7 @@ var Collection = function Collection() {
     });
   };
   var filteredProducts = getFilteredProducts();
+  var displayFilters = getDisplayFilters();
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
     style: {
       minHeight: "100vh"
@@ -184973,12 +184994,12 @@ var Collection = function Collection() {
             fontWeight: "bold"
           },
           children: "FILTER"
-        }), Object.values(filters).flat().length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+        }), displayFilters.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
           style: {
             marginBottom: "16px",
             color: "#1890ff"
           },
-          children: Object.values(filters).flat().join(" > ")
+          children: displayFilters.join(" > ")
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
             style: {

@@ -116,6 +116,26 @@ const Collection = () => {
         setFilterKey((prev) => prev + 1);
     };
 
+    // Helper function to display filter names
+    const getDisplayFilters = () => {
+        const displays = [];
+        Object.keys(filters).forEach((key) => {
+            if (filters[key].length > 0) {
+                filters[key].forEach((value) => {
+                    if (key === "strapMaterial") {
+                        const match = filterOptions.strapMaterial.find(
+                            (item) => item.id === value
+                        );
+                        displays.push(match ? match.name : value);
+                    } else {
+                        displays.push(value);
+                    }
+                });
+            }
+        });
+        return displays;
+    };
+
     const getFilteredProducts = () => {
         let filtered = products.filter((product) => {
             // For brand, gender, and movement, we compare names (normalized to lower-case)
@@ -208,6 +228,7 @@ const Collection = () => {
     };
 
     const filteredProducts = getFilteredProducts();
+    const displayFilters = getDisplayFilters();
 
     return (
         <Layout style={{ minHeight: "100vh" }} key={filterKey}>
@@ -234,9 +255,9 @@ const Collection = () => {
                     >
                         FILTER
                     </div>
-                    {Object.values(filters).flat().length > 0 && (
+                    {displayFilters.length > 0 && (
                         <div style={{ marginBottom: "16px", color: "#1890ff" }}>
-                            {Object.values(filters).flat().join(" > ")}
+                            {displayFilters.join(" > ")}
                         </div>
                     )}
                     <div>
