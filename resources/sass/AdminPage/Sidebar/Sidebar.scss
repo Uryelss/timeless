@@ -17,12 +17,12 @@
     flex: 1; // Allow menu to take available space
     background: transparent; // Match sidebar background
     border-right: 0; // Remove default border
-}
 
-.ant-menu-item {
-    &.ant-menu-item-selected {
-        background: #1890ff; // Highlight selected item
-        color: #fff;
+    .ant-menu-item {
+        &.ant-menu-item-selected {
+            background: #1890ff; // Highlight selected item
+            color: #fff;
+        }
     }
 }
 
@@ -37,10 +37,13 @@
     align-items: center;
     font-size: 16px;
     color: rgba(255, 255, 255, 0.65); // Default light color for dark theme
+    width: 100%;
+    text-align: left;
+    padding-left: 20px;
     transition: color 0.3s ease;
 
     &:hover {
-        color: red;
+        color: red; // Red on hover
     }
 
     .anticon {

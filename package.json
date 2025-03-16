@@ -30,6 +30,7 @@
         "dayjs": "^1.11.13",
         "react-fast-marquee": "^1.6.5",
         "react-router-dom": "^6.17.0",
+        "styled-components": "^6.1.15",
         "swiper": "^11.2.5"
     }
 }

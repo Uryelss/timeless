@@ -9,7 +9,7 @@ class Address extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['profile_id', 'street', 'city', 'state', 'postal_code', 'country'];
+    protected $fillable = ['profile_id', 'street', 'city', 'state', 'postal_code', 'country', 'phone'];
 
     public function profile()
     {

@@ -12,22 +12,22 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $query = Order::with([
-            'profile.user', // Include user for username and email
-            'shipping.shippingMethod', // Shipping method details
-            'shipping.paymentMethod', // Payment method for COD, etc.
-            'orderDetails.product', // Product details for order summary
+            'profile.user',             // User details (username, email)
+            'shipping.shippingMethod',  // Shipping method details
+            'shipping.paymentMethod',   // Payment method details
+            'shipping.address',         // Address details (including phone)
+            'orderDetails.product',     // Product details
         ]);
 
         if ($request->query('archived')) {
             $query->onlyTrashed();
         } else {
-            $query->withTrashed(); // Still include trashed for flexibility
+            $query->withTrashed();
         }
 
         $orders = $query->get();
         return response()->json($orders);
     }
-
     // Show a specific order
     public function show($id)
     {

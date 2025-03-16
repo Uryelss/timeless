@@ -17,12 +17,13 @@ class UserOrderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'address.street' => 'required|string',
-            'address.city' => 'required|string',
-            'address.state' => 'required|string',
-            'address.postal_code' => 'required|string',
-            'address.country' => 'required|string',
-            'address.phone' => 'required|string',
+            'address_id' => 'sometimes|exists:addresses,id', // Optional, must exist if provided
+            'address.street' => 'required_without:address_id|string',
+            'address.city' => 'required_without:address_id|string',
+            'address.state' => 'required_without:address_id|string',
+            'address.postal_code' => 'required_without:address_id|string',
+            'address.country' => 'required_without:address_id|string',
+            'address.phone' => 'required_without:address_id|string',
             'cart_items' => 'required|array',
             'cart_items.*.id' => 'required|exists:products,id',
             'cart_items.*.inventory_id' => 'required|exists:inventory,id',
@@ -38,20 +39,26 @@ class UserOrderController extends Controller
         $user = Auth::user();
         $profile = $user->profile;
 
-        // Use a transaction to ensure atomicity
         return DB::transaction(function () use ($request, $profile) {
-            // Create or update address
-            $addressData = $request->input('address');
-            $address = Address::updateOrCreate(
-                ['profile_id' => $profile->id, 'street' => $addressData['street']],
-                [
-                    'city' => $addressData['city'],
-                    'state' => $addressData['state'],
-                    'postal_code' => $addressData['postal_code'],
-                    'country' => $addressData['country'],
-                    'phone' => $addressData['phone'],
-                ]
-            );
+            // Determine or create the address
+            if ($request->has('address_id')) {
+                $address = Address::findOrFail($request->address_id);
+            } else {
+                $addressData = $request->input('address');
+                $address = Address::updateOrCreate(
+                    [
+                        'profile_id' => $profile->id,
+                        'street' => $addressData['street'],
+                    ],
+                    [
+                        'city' => $addressData['city'],
+                        'state' => $addressData['state'],
+                        'postal_code' => $addressData['postal_code'],
+                        'country' => $addressData['country'],
+                        'phone' => $addressData['phone'],
+                    ]
+                );
+            }
 
             // Create order
             $order = Order::create([
@@ -64,15 +71,12 @@ class UserOrderController extends Controller
             // Process cart items and update inventory
             foreach ($request->cart_items as $item) {
                 $inventory = Inventory::findOrFail($item['inventory_id']);
-
-                // Check if enough stock is available
                 if ($inventory->quantity < $item['quantity']) {
                     throw new \Exception(
                         "Insufficient stock for {$inventory->product->product_name} (Size: {$inventory->size}). Available: {$inventory->quantity}"
                     );
                 }
 
-                // Create order detail
                 OrderDetail::create([
                     'order_id' => $order->id,
                     'product_id' => $item['id'],
@@ -81,7 +85,6 @@ class UserOrderController extends Controller
                     'price' => $item['price'],
                 ]);
 
-                // Update inventory: reduce quantity and increment sold
                 $inventory->quantity -= $item['quantity'];
                 $inventory->sold += $item['quantity'];
                 $inventory->stock_status = $inventory->quantity == 0 ? 'Out of Stock' : ($inventory->quantity < 10 ? 'Low Stock' : 'In Stock');
@@ -104,7 +107,8 @@ class UserOrderController extends Controller
             return response()->json([
                 'message' => 'Order created successfully',
                 'order_id' => $order->id,
+                'address_id' => $address->id, // Optional: Return the address used
             ], 201);
-        }, 5); // Retry transaction 5 times on deadlock
+        }, 5);
     }
 }

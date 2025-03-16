@@ -17,7 +17,6 @@ class Profile extends Model
         'suffix',
         'gender',
         'date_of_birth',
-        'phone',
         'profile_image'
     ];
 

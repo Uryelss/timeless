@@ -73,9 +73,7 @@ const CustomerManagement = () => {
     }, []);
 
     useEffect(() => {
-        if (openArchiveModal) {
-            fetchArchivedCustomers();
-        }
+        if (openArchiveModal) fetchArchivedCustomers();
     }, [openArchiveModal]);
 
     const mainColumns = [
@@ -103,9 +101,7 @@ const CustomerManagement = () => {
             render: (image) => (
                 <img
                     src={
-                        image
-                            ? image
-                            : "https://via.placeholder.com/100?text=Customer"
+                        image || "https://via.placeholder.com/100?text=Customer"
                     }
                     alt="customer"
                     style={{ width: 50 }}
@@ -116,14 +112,12 @@ const CustomerManagement = () => {
             title: "Customer Name",
             key: "customerName",
             render: (record) =>
-                record.customer_name
-                    ? record.customer_name
-                    : `${record.first_name} ${
-                          record.middle_name
-                              ? record.middle_name.charAt(0).toUpperCase() +
-                                ". "
-                              : ""
-                      }${record.last_name}`,
+                record.customer_name ||
+                `${record.first_name} ${
+                    record.middle_name
+                        ? record.middle_name.charAt(0).toUpperCase() + ". "
+                        : ""
+                }${record.last_name}`,
         },
         {
             title: "Phone",
@@ -166,7 +160,6 @@ const CustomerManagement = () => {
     ];
 
     const handleEdit = (record) => {
-        console.log("Edit customer:", record);
         setEditingCustomer(record);
         form.setFieldsValue({
             first_name: record.first_name,
@@ -175,8 +168,7 @@ const CustomerManagement = () => {
             suffix: record.suffix,
             gender: record.gender,
             date_of_birth: record.date_of_birth,
-            phone: record.phone,
-            address: record.address, // Pre-fill with formatted address
+            // Fetch full address data from backend if needed
         });
         setOpenEditModal(true);
     };
@@ -229,32 +221,6 @@ const CustomerManagement = () => {
             });
     };
 
-    const handleArchiveAll = () => {
-        Modal.confirm({
-            title: "Are you sure you want to archive all selected customers?",
-            onOk: () => {
-                message.success("Bulk archive executed (not implemented)");
-            },
-        });
-    };
-
-    const filteredCustomers = customers.filter((customer) => {
-        const lower = searchQuery.toLowerCase();
-        const fullName =
-            customer.customer_name ||
-            `${customer.first_name} ${
-                customer.middle_name
-                    ? customer.middle_name.charAt(0).toUpperCase() + ". "
-                    : ""
-            }${customer.last_name}`;
-        return (
-            fullName.toLowerCase().includes(lower) ||
-            (customer.email && customer.email.toLowerCase().includes(lower)) ||
-            (customer.phone && customer.phone.toLowerCase().includes(lower)) ||
-            (customer.address && customer.address.toLowerCase().includes(lower))
-        );
-    });
-
     const handleUpdate = () => {
         form.validateFields()
             .then((values) => {
@@ -277,10 +243,25 @@ const CustomerManagement = () => {
                         console.error(err);
                     });
             })
-            .catch((err) => {
-                console.log("Validation Failed:", err);
-            });
+            .catch((err) => console.log("Validation Failed:", err));
     };
+
+    const filteredCustomers = customers.filter((customer) => {
+        const lower = searchQuery.toLowerCase();
+        const fullName =
+            customer.customer_name ||
+            `${customer.first_name} ${
+                customer.middle_name
+                    ? customer.middle_name.charAt(0).toUpperCase() + ". "
+                    : ""
+            }${customer.last_name}`;
+        return (
+            fullName.toLowerCase().includes(lower) ||
+            (customer.email && customer.email.toLowerCase().includes(lower)) ||
+            (customer.phone && customer.phone.toLowerCase().includes(lower)) ||
+            (customer.address && customer.address.toLowerCase().includes(lower))
+        );
+    });
 
     return (
         <Layout>
@@ -318,28 +299,14 @@ const CustomerManagement = () => {
                             >
                                 Select All
                             </Checkbox>
-                            {selectAll && (
-                                <Button
-                                    type="link"
-                                    onClick={handleArchiveAll}
-                                    style={{ marginLeft: 8 }}
-                                    title="Archive All"
-                                >
-                                    <FolderOpenOutlined
-                                        style={{ fontSize: "18px" }}
-                                    />
-                                </Button>
-                            )}
                         </div>
-                        <div>
-                            <Button
-                                type="default"
-                                onClick={() => setOpenArchiveModal(true)}
-                            >
-                                <DeleteOutlined style={{ marginRight: 4 }} />
-                                Archived View
-                            </Button>
-                        </div>
+                        <Button
+                            type="default"
+                            onClick={() => setOpenArchiveModal(true)}
+                        >
+                            <DeleteOutlined style={{ marginRight: 4 }} />{" "}
+                            Archived View
+                        </Button>
                     </div>
                     <Table
                         columns={mainColumns}
@@ -432,12 +399,12 @@ const CustomerManagement = () => {
                     <Form.Item name="date_of_birth" label="Date of Birth">
                         <Input placeholder="YYYY-MM-DD" />
                     </Form.Item>
-                    <Form.Item name="phone" label="Phone">
-                        <Input placeholder="Enter phone number" />
-                    </Form.Item>
-                    <Form.Item name="address" label="Address">
-                        <Input placeholder="Enter address" disabled />{" "}
-                        {/* Display only */}
+                    {/* Note: Phone and Address are now in addresses table, editing here requires a separate address management UI */}
+                    <Form.Item label="Note">
+                        <span>
+                            Phone and Address editing requires address
+                            management (not implemented here).
+                        </span>
                     </Form.Item>
                 </Form>
             </Modal>

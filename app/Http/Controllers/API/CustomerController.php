@@ -10,16 +10,14 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        // Include addresses relationship and filter archived if requested
         $query = Profile::with(['user', 'addresses']);
         if ($request->query('archived')) {
             $query->onlyTrashed();
         }
         $customers = $query->get();
 
-        // Transform the response to include a formatted address
         $customers = $customers->map(function ($profile) {
-            $address = $profile->addresses->first(); // Get the first address (or adjust logic as needed)
+            $address = $profile->addresses->first(); // Use the first address for now
             return [
                 'id' => $profile->id,
                 'user_id' => $profile->user_id,
@@ -31,7 +29,7 @@ class CustomerController extends Controller
                 'suffix' => $profile->suffix,
                 'gender' => $profile->gender,
                 'date_of_birth' => $profile->date_of_birth,
-                'phone' => $profile->phone,
+                'phone' => $address ? $address->phone : null, // Fetch from address
                 'profile_image' => $profile->profile_image,
                 'address' => $address ? "{$address->street}, {$address->city}, {$address->state} {$address->postal_code}, {$address->country}" : null,
                 'created_at' => $profile->created_at,
@@ -42,7 +40,6 @@ class CustomerController extends Controller
 
         return response()->json($customers);
     }
-
     public function show($id)
     {
         $profile = Profile::with(['user', 'addresses'])->findOrFail($id);

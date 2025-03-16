@@ -12,8 +12,9 @@ import {
     MenuUnfoldOutlined,
     LogoutOutlined,
 } from "@ant-design/icons";
-import { Button, Menu } from "antd";
+import { Button, Menu, Modal } from "antd"; // Import Modal from antd
 import { useNavigate } from "react-router-dom";
+import { logout } from "../../AccessPage/Auth";
 
 const items = [
     {
@@ -75,6 +76,7 @@ const items = [
 
 const Sidebar = () => {
     const [collapsed, setCollapsed] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
     const navigate = useNavigate();
 
     const toggleCollapsed = () => {
@@ -100,15 +102,14 @@ const Sidebar = () => {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("token"); // Clear token on logout
-        navigate("/login");
+        setIsLoggingOut(true); // Show the modal
+        setTimeout(() => {
+            logout(); // Redirect after 1 second
+        }, 1000);
     };
 
     return (
-        <div
-            className="sidebar-container"
-            style={{ height: "100vh", overflow: "auto" }}
-        >
+        <div className="sidebar-container">
             <Button
                 type="primary"
                 onClick={toggleCollapsed}
@@ -135,6 +136,18 @@ const Sidebar = () => {
                     {!collapsed && "Log Out"}
                 </Button>
             </div>
+
+            {/* Modal for logout redirection */}
+            <Modal
+                visible={isLoggingOut}
+                footer={null} // No footer buttons
+                closable={false} // No close button
+                maskClosable={false} // Can't click outside to close
+                centered // Center the modal
+                bodyStyle={{ textAlign: "center", padding: "20px" }}
+            >
+                <p>Redirecting you to login page...</p>
+            </Modal>
         </div>
     );
 };

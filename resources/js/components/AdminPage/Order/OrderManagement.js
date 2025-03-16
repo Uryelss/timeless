@@ -328,7 +328,7 @@ const OrderManagement = () => {
                             <Text>{profile?.user?.email || "N/A"}</Text>
                             <br />
                             <Text strong>Phone: </Text>
-                            <Text>{profile?.phone || "N/A"}</Text>
+                            <Text>{shipping?.address?.phone || "N/A"}</Text>
                         </Col>
                     </Row>
                 </Col>
