@@ -22,6 +22,8 @@ const { Option } = Select;
 
 const Collection = () => {
     const [products, setProducts] = useState([]);
+    // For filters, we keep brand, gender, and movement as names,
+    // but strapMaterial as an array of numbers (IDs).
     const [filters, setFilters] = useState({
         brand: [],
         gender: [],
@@ -36,6 +38,7 @@ const Collection = () => {
     });
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("default");
+    const [filterKey, setFilterKey] = useState(0);
 
     const PRODUCTS_API = "http://localhost:8000/api/products/public";
     const SUBCATEGORIES_API = "http://localhost:8000/api/sub-categories/public";
@@ -46,7 +49,19 @@ const Collection = () => {
         axios
             .get(PRODUCTS_API)
             .then((res) => {
-                console.log("Fetched Products Data:", res.data); // Debug log
+                console.log(
+                    "Fetched Products Data (Full):",
+                    JSON.stringify(res.data, null, 2)
+                );
+                res.data.forEach((product) =>
+                    console.log(
+                        `Product: ${
+                            product.product_name
+                        }, Strap Material: ${JSON.stringify(
+                            product.strapMaterial
+                        )}, Strap Material ID: ${product.strap_material_id}`
+                    )
+                );
                 setProducts(res.data);
             })
             .catch((err) => {
@@ -55,11 +70,19 @@ const Collection = () => {
             });
     };
 
+    // When fetching filter options, for strap materials we want the full objects.
     const fetchFilterOptions = (type, setter) => {
         axios
             .get(`${SUBCATEGORIES_API}?type=${type}`)
             .then((res) => {
-                setter(res.data.map((item) => item.name));
+                console.log(`${type} Options:`, res.data);
+                if (type === "strap_materials") {
+                    // Save full objects (with id and name)
+                    setter(res.data);
+                } else {
+                    // For other types, we map to the name string.
+                    setter(res.data.map((item) => item.name));
+                }
             })
             .catch((err) => {
                 console.error(`Error fetching ${type} options`, err);
@@ -87,30 +110,48 @@ const Collection = () => {
             const updated = prev[category].includes(value)
                 ? prev[category].filter((item) => item !== value)
                 : [...prev[category], value];
+            console.log(`Updated ${category} filter:`, updated);
             return { ...prev, [category]: updated };
         });
+        setFilterKey((prev) => prev + 1);
     };
 
     const getFilteredProducts = () => {
         let filtered = products.filter((product) => {
-            const productBrand = product.brand?.name || product.brand;
-            const productGender = product.gender?.name || product.gender;
-            const productMovement = product.movement?.name || product.movement;
-            const productStrapMaterial =
-                product.strapMaterial?.name || product.strapMaterial;
+            // For brand, gender, and movement, we compare names (normalized to lower-case)
+            const productBrand = (product.brand?.name || product.brand || "")
+                .toLowerCase()
+                .trim();
+            const productGender = (product.gender?.name || product.gender || "")
+                .toLowerCase()
+                .trim();
+            const productMovement = (
+                product.movement?.name ||
+                product.movement ||
+                ""
+            )
+                .toLowerCase()
+                .trim();
 
+            // For strap material, we compare IDs
             const matchesBrand =
                 filters.brand.length === 0 ||
-                filters.brand.includes(productBrand);
+                filters.brand.some(
+                    (b) => b.toLowerCase().trim() === productBrand
+                );
             const matchesGender =
                 filters.gender.length === 0 ||
-                filters.gender.includes(productGender);
+                filters.gender.some(
+                    (g) => g.toLowerCase().trim() === productGender
+                );
             const matchesMovement =
                 filters.movement.length === 0 ||
-                filters.movement.includes(productMovement);
+                filters.movement.some(
+                    (m) => m.toLowerCase().trim() === productMovement
+                );
             const matchesStrapMaterial =
                 filters.strapMaterial.length === 0 ||
-                filters.strapMaterial.includes(productStrapMaterial);
+                filters.strapMaterial.includes(product.strap_material_id);
 
             return (
                 matchesBrand &&
@@ -131,16 +172,26 @@ const Collection = () => {
         if (sortBy === "priceAsc") {
             filtered.sort(
                 (a, b) =>
-                    parseFloat(a.price.replace("P", "").replace(/,/g, "")) -
-                    parseFloat(b.price.replace("P", "").replace(/,/g, ""))
+                    parseFloat(
+                        a.price.toString().replace("P", "").replace(/,/g, "")
+                    ) -
+                    parseFloat(
+                        b.price.toString().replace("P", "").replace(/,/g, "")
+                    )
             );
         } else if (sortBy === "priceDesc") {
             filtered.sort(
                 (a, b) =>
-                    parseFloat(b.price.replace("P", "").replace(/,/g, "")) -
-                    parseFloat(a.price.replace("P", "").replace(/,/g, ""))
+                    parseFloat(
+                        b.price.toString().replace("P", "").replace(/,/g, "")
+                    ) -
+                    parseFloat(
+                        a.price.toString().replace("P", "").replace(/,/g, "")
+                    )
             );
         }
+
+        console.log("Filtered Products:", filtered);
         return filtered;
     };
 
@@ -153,12 +204,13 @@ const Collection = () => {
         });
         setSearchTerm("");
         setSortBy("default");
+        setFilterKey((prev) => prev + 1);
     };
 
     const filteredProducts = getFilteredProducts();
 
     return (
-        <Layout style={{ minHeight: "100vh" }}>
+        <Layout style={{ minHeight: "100vh" }} key={filterKey}>
             <Navbar />
             <div style={{ margin: "24px" }}>
                 <BrandSlider />
@@ -248,18 +300,18 @@ const Collection = () => {
                             <div className="horizontal-checkboxes">
                                 {filterOptions.strapMaterial.map((material) => (
                                     <Checkbox
-                                        key={material}
+                                        key={material.id}
                                         onChange={() =>
                                             handleFilterChange(
                                                 "strapMaterial",
-                                                material
+                                                material.id
                                             )
                                         }
                                         checked={filters.strapMaterial.includes(
-                                            material
+                                            material.id
                                         )}
                                     >
-                                        {material}
+                                        {material.name}
                                     </Checkbox>
                                 ))}
                             </div>
@@ -359,7 +411,7 @@ const Collection = () => {
                                                             value={
                                                                 product.average_rating ||
                                                                 0
-                                                            } // Fallback to 0 if undefined
+                                                            }
                                                             allowHalf
                                                             style={{
                                                                 fontSize:
@@ -371,8 +423,7 @@ const Collection = () => {
                                                         <span>
                                                             {product.average_rating ||
                                                                 0}
-                                                        </span>{" "}
-                                                        {/* Fallback to 0 if undefined */}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             }

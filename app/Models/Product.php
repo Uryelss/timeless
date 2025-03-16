@@ -51,6 +51,7 @@ class Product extends Model
         return $this->belongsTo(SubCategory::class, 'strap_material_id');
     }
 
+
     public function gender()
     {
         return $this->belongsTo(SubCategory::class, 'gender_id');

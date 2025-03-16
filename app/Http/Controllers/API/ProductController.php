@@ -13,8 +13,8 @@ class ProductController extends Controller
     // Public endpoint to fetch products with brand relationship
     public function publicIndex()
     {
-        $products = Product::with(['brand', 'category', 'movement', 'strapMaterial', 'gender', 'reviews'])
-            ->get();
+        $products = Product::with(['brand', 'category', 'movement', 'strapMaterial', 'gender', 'reviews'])->get();
+        Log::info('Products with relationships:', $products->toArray());
         return response()->json($products);
     }
 

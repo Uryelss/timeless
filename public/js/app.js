@@ -184785,6 +184785,8 @@ var Collection = function Collection() {
     _useState2 = _slicedToArray(_useState, 2),
     products = _useState2[0],
     setProducts = _useState2[1];
+  // For filters, we keep brand, gender, and movement as names,
+  // but strapMaterial as an array of numbers (IDs).
   var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
       brand: [],
       gender: [],
@@ -184811,23 +184813,39 @@ var Collection = function Collection() {
     _useState10 = _slicedToArray(_useState9, 2),
     sortBy = _useState10[0],
     setSortBy = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0),
+    _useState12 = _slicedToArray(_useState11, 2),
+    filterKey = _useState12[0],
+    setFilterKey = _useState12[1];
   var PRODUCTS_API = "http://localhost:8000/api/products/public";
   var SUBCATEGORIES_API = "http://localhost:8000/api/sub-categories/public";
   var isLoggedIn = Boolean(localStorage.getItem("token"));
   var fetchProducts = function fetchProducts() {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].get(PRODUCTS_API).then(function (res) {
-      console.log("Fetched Products Data:", res.data); // Debug log
+      console.log("Fetched Products Data (Full):", JSON.stringify(res.data, null, 2));
+      res.data.forEach(function (product) {
+        return console.log("Product: ".concat(product.product_name, ", Strap Material: ").concat(JSON.stringify(product.strapMaterial), ", Strap Material ID: ").concat(product.strap_material_id));
+      });
       setProducts(res.data);
     })["catch"](function (err) {
       antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching products");
       console.error(err);
     });
   };
+
+  // When fetching filter options, for strap materials we want the full objects.
   var fetchFilterOptions = function fetchFilterOptions(type, setter) {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(SUBCATEGORIES_API, "?type=").concat(type)).then(function (res) {
-      setter(res.data.map(function (item) {
-        return item.name;
-      }));
+      console.log("".concat(type, " Options:"), res.data);
+      if (type === "strap_materials") {
+        // Save full objects (with id and name)
+        setter(res.data);
+      } else {
+        // For other types, we map to the name string.
+        setter(res.data.map(function (item) {
+          return item.name;
+        }));
+      }
     })["catch"](function (err) {
       console.error("Error fetching ".concat(type, " options"), err);
     });
@@ -184868,20 +184886,32 @@ var Collection = function Collection() {
       var updated = prev[category].includes(value) ? prev[category].filter(function (item) {
         return item !== value;
       }) : [].concat(_toConsumableArray(prev[category]), [value]);
+      console.log("Updated ".concat(category, " filter:"), updated);
       return _objectSpread(_objectSpread({}, prev), {}, _defineProperty({}, category, updated));
+    });
+    setFilterKey(function (prev) {
+      return prev + 1;
     });
   };
   var getFilteredProducts = function getFilteredProducts() {
     var filtered = products.filter(function (product) {
-      var _product$brand, _product$gender, _product$movement, _product$strapMateria;
-      var productBrand = ((_product$brand = product.brand) === null || _product$brand === void 0 ? void 0 : _product$brand.name) || product.brand;
-      var productGender = ((_product$gender = product.gender) === null || _product$gender === void 0 ? void 0 : _product$gender.name) || product.gender;
-      var productMovement = ((_product$movement = product.movement) === null || _product$movement === void 0 ? void 0 : _product$movement.name) || product.movement;
-      var productStrapMaterial = ((_product$strapMateria = product.strapMaterial) === null || _product$strapMateria === void 0 ? void 0 : _product$strapMateria.name) || product.strapMaterial;
-      var matchesBrand = filters.brand.length === 0 || filters.brand.includes(productBrand);
-      var matchesGender = filters.gender.length === 0 || filters.gender.includes(productGender);
-      var matchesMovement = filters.movement.length === 0 || filters.movement.includes(productMovement);
-      var matchesStrapMaterial = filters.strapMaterial.length === 0 || filters.strapMaterial.includes(productStrapMaterial);
+      var _product$brand, _product$gender, _product$movement;
+      // For brand, gender, and movement, we compare names (normalized to lower-case)
+      var productBrand = (((_product$brand = product.brand) === null || _product$brand === void 0 ? void 0 : _product$brand.name) || product.brand || "").toLowerCase().trim();
+      var productGender = (((_product$gender = product.gender) === null || _product$gender === void 0 ? void 0 : _product$gender.name) || product.gender || "").toLowerCase().trim();
+      var productMovement = (((_product$movement = product.movement) === null || _product$movement === void 0 ? void 0 : _product$movement.name) || product.movement || "").toLowerCase().trim();
+
+      // For strap material, we compare IDs
+      var matchesBrand = filters.brand.length === 0 || filters.brand.some(function (b) {
+        return b.toLowerCase().trim() === productBrand;
+      });
+      var matchesGender = filters.gender.length === 0 || filters.gender.some(function (g) {
+        return g.toLowerCase().trim() === productGender;
+      });
+      var matchesMovement = filters.movement.length === 0 || filters.movement.some(function (m) {
+        return m.toLowerCase().trim() === productMovement;
+      });
+      var matchesStrapMaterial = filters.strapMaterial.length === 0 || filters.strapMaterial.includes(product.strap_material_id);
       return matchesBrand && matchesGender && matchesMovement && matchesStrapMaterial;
     });
     if (searchTerm) {
@@ -184891,13 +184921,14 @@ var Collection = function Collection() {
     }
     if (sortBy === "priceAsc") {
       filtered.sort(function (a, b) {
-        return parseFloat(a.price.replace("P", "").replace(/,/g, "")) - parseFloat(b.price.replace("P", "").replace(/,/g, ""));
+        return parseFloat(a.price.toString().replace("P", "").replace(/,/g, "")) - parseFloat(b.price.toString().replace("P", "").replace(/,/g, ""));
       });
     } else if (sortBy === "priceDesc") {
       filtered.sort(function (a, b) {
-        return parseFloat(b.price.replace("P", "").replace(/,/g, "")) - parseFloat(a.price.replace("P", "").replace(/,/g, ""));
+        return parseFloat(b.price.toString().replace("P", "").replace(/,/g, "")) - parseFloat(a.price.toString().replace("P", "").replace(/,/g, ""));
       });
     }
+    console.log("Filtered Products:", filtered);
     return filtered;
   };
   var clearFilters = function clearFilters() {
@@ -184909,6 +184940,9 @@ var Collection = function Collection() {
     });
     setSearchTerm("");
     setSortBy("default");
+    setFilterKey(function (prev) {
+      return prev + 1;
+    });
   };
   var filteredProducts = getFilteredProducts();
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
@@ -185011,11 +185045,11 @@ var Collection = function Collection() {
               children: filterOptions.strapMaterial.map(function (material) {
                 return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
                   onChange: function onChange() {
-                    return handleFilterChange("strapMaterial", material);
+                    return handleFilterChange("strapMaterial", material.id);
                   },
-                  checked: filters.strapMaterial.includes(material),
-                  children: material
-                }, material);
+                  checked: filters.strapMaterial.includes(material.id),
+                  children: material.name
+                }, material.id);
               })
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
@@ -185108,8 +185142,7 @@ var Collection = function Collection() {
                         },
                         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                           disabled: true,
-                          value: product.average_rating || 0 // Fallback to 0 if undefined
-                          ,
+                          value: product.average_rating || 0,
                           allowHalf: true,
                           style: {
                             fontSize: "14px",
@@ -185117,7 +185150,7 @@ var Collection = function Collection() {
                           }
                         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("span", {
                           children: product.average_rating || 0
-                        }), " "]
+                        })]
                       })]
                     })
                   }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
@@ -185142,7 +185175,7 @@ var Collection = function Collection() {
         })
       })]
     })]
-  });
+  }, filterKey);
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Collection);
 
