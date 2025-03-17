@@ -13,6 +13,7 @@ import {
     Image,
     Typography,
     Avatar,
+    Descriptions,
 } from "antd";
 import {
     EditOutlined,
@@ -25,6 +26,7 @@ import axios from "axios";
 const { Header, Content, Sider } = Layout;
 const { Option } = Select;
 const { Title, Text } = Typography;
+const { Search } = Input;
 
 const OrderManagement = () => {
     const [orders, setOrders] = useState([]);
@@ -33,6 +35,7 @@ const OrderManagement = () => {
     const [openEditModal, setOpenEditModal] = useState(false);
     const [openViewModal, setOpenViewModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [searchText, setSearchText] = useState("");
 
     const API_URL = "http://localhost:8000/api/orders";
 
@@ -249,101 +252,133 @@ const OrderManagement = () => {
             selectedOrder.total_amount || subtotal + deliveryCharge;
 
         return (
-            <Row gutter={[16, 16]}>
+            <div style={{ padding: "16px" }}>
                 {/* Order Summary */}
-                <Col span={24}>
-                    <Title level={4}>Order Summary</Title>
-                    {order_details?.map((detail) => (
-                        <Row
-                            key={detail.id}
-                            style={{ marginBottom: 16, alignItems: "center" }}
-                        >
-                            <Col span={4}>
-                                <Image
-                                    src={
-                                        detail.product?.main_image
-                                            ? `http://localhost:8000/storage/${detail.product.main_image}`
-                                            : "https://via.placeholder.com/50"
-                                    }
-                                    width={50}
-                                    preview={false}
-                                />
-                            </Col>
-                            <Col span={8}>
-                                <Text>
-                                    {detail.product?.product_name || "Unknown"}
-                                </Text>
-                            </Col>
-                            <Col span={4}>
-                                <Text>Qty: {detail.quantity}</Text>
-                            </Col>
-                            <Col span={4}>
-                                <Text>
-                                    ₱{parseFloat(detail.price).toLocaleString()}
-                                </Text>
-                            </Col>
-                            <Col span={4}>
-                                <Text>
-                                    ₱
-                                    {(
-                                        detail.quantity * detail.price
-                                    ).toLocaleString()}
-                                </Text>
-                            </Col>
-                        </Row>
-                    ))}
-                    <div style={{ textAlign: "right", marginTop: 16 }}>
-                        <Text>Sub Total: ₱{subtotal.toLocaleString()}</Text>
-                        <br />
-                        <Text>
-                            Delivery Charge: ₱
-                            {parseFloat(deliveryCharge).toLocaleString()}
-                        </Text>
-                        <br />
+                <Title level={4} style={{ marginBottom: "16px" }}>
+                    Order Summary
+                </Title>
+                <Table
+                    dataSource={order_details}
+                    columns={[
+                        {
+                            title: "Product",
+                            render: (detail) => (
+                                <Space>
+                                    <Image
+                                        src={
+                                            detail.product?.main_image
+                                                ? `http://localhost:8000/storage/${detail.product.main_image}`
+                                                : "https://via.placeholder.com/50"
+                                        }
+                                        width={50}
+                                        preview={false}
+                                    />
+                                    <Text>
+                                        {detail.product?.product_name ||
+                                            "Unknown"}
+                                    </Text>
+                                </Space>
+                            ),
+                        },
+                        {
+                            title: "Quantity",
+                            dataIndex: "quantity",
+                            render: (qty) => qty || "N/A",
+                        },
+                        {
+                            title: "Price",
+                            dataIndex: "price",
+                            render: (price) =>
+                                `₱${parseFloat(price).toLocaleString()}`,
+                        },
+                        {
+                            title: "Total",
+                            render: (detail) =>
+                                `₱${(
+                                    detail.quantity * detail.price
+                                ).toLocaleString()}`,
+                        },
+                    ]}
+                    pagination={false}
+                    rowKey="id"
+                    style={{ marginBottom: "16px" }}
+                />
+                <Descriptions bordered size="small" column={1}>
+                    <Descriptions.Item label="Sub Total">
+                        ₱{subtotal.toLocaleString()}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Delivery Charge">
+                        ₱{parseFloat(deliveryCharge).toLocaleString()}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Total Amount">
                         <Text strong>
-                            Total Amount: ₱
-                            {parseFloat(totalAmount).toLocaleString()}
+                            ₱{parseFloat(totalAmount).toLocaleString()}
                         </Text>
-                    </div>
-                </Col>
+                    </Descriptions.Item>
+                </Descriptions>
 
                 {/* Customer Details */}
-                <Col span={24}>
-                    <Title level={4}>Customer Details</Title>
-                    <Row align="middle">
-                        <Col span={4}>
-                            <Avatar
-                                src={
-                                    profile?.profile_image ||
-                                    "https://via.placeholder.com/50"
-                                }
-                                size={50}
-                            />
-                        </Col>
-                        <Col span={20}>
-                            <Text strong>Username: </Text>
-                            <Text>{profile?.user?.username || "N/A"}</Text>
-                            <br />
-                            <Text strong>Email: </Text>
-                            <Text>{profile?.user?.email || "N/A"}</Text>
-                            <br />
-                            <Text strong>Phone: </Text>
-                            <Text>{shipping?.address?.phone || "N/A"}</Text>
-                        </Col>
-                    </Row>
-                </Col>
+                <Title level={4} style={{ margin: "24px 0 16px" }}>
+                    Customer Details
+                </Title>
+                <Row align="middle" gutter={[16, 16]}>
+                    <Col span={4}>
+                        <Avatar
+                            src={
+                                profile?.profile_image ||
+                                "https://via.placeholder.com/50"
+                            }
+                            size={50}
+                        />
+                    </Col>
+                    <Col span={20}>
+                        <Descriptions bordered size="small" column={1}>
+                            <Descriptions.Item label="Username">
+                                {profile?.user?.username || "N/A"}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Email">
+                                {profile?.user?.email || "N/A"}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="Phone">
+                                {shipping?.address?.phone || "N/A"}
+                            </Descriptions.Item>
+                        </Descriptions>
+                    </Col>
+                </Row>
 
-                {/* Payment Information */}
-                <Col span={24}>
-                    <Title level={4}>Payment Information</Title>
-                    <Text>
+                {/* Payment and Shipping Information */}
+                <Title level={4} style={{ margin: "24px 0 16px" }}>
+                    Payment and Shipping
+                </Title>
+                <Descriptions bordered size="small" column={1}>
+                    <Descriptions.Item label="Payment Method">
                         {shipping?.payment_method?.name ||
                             "Unknown Payment Method"}
-                    </Text>
-                </Col>
-            </Row>
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Shipping Method">
+                        {shipping?.shipping_method?.name || "N/A"}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Tracking Number">
+                        {shipping?.tracking_number || "Not Available"}
+                    </Descriptions.Item>
+                </Descriptions>
+            </div>
         );
     };
+
+    const filteredOrders = orders.filter((order) => {
+        const lowerSearch = searchText.toLowerCase();
+        return (
+            order.id.toString().includes(lowerSearch) ||
+            (order.profile &&
+                `${order.profile.first_name || ""} ${
+                    order.profile.last_name || ""
+                }`
+                    .toLowerCase()
+                    .includes(lowerSearch)) ||
+            order.order_status?.toLowerCase().includes(lowerSearch)
+        );
+    });
 
     return (
         <Layout>
@@ -355,16 +390,40 @@ const OrderManagement = () => {
                     ORDER MANAGEMENT
                 </Header>
                 <Content style={{ padding: 24, background: "#fff" }}>
-                    <Button
-                        type="default"
-                        onClick={() => setOpenArchiveModal(true)}
-                        style={{ marginBottom: 16 }}
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: 16,
+                        }}
                     >
-                        Archived Orders
-                    </Button>
+                        <div>
+                            <Search
+                                placeholder="Search orders by ID, customer, or status"
+                                allowClear
+                                onChange={(e) => setSearchText(e.target.value)}
+                                style={{ width: 300 }}
+                            />
+                        </div>
+                        <div
+                            style={{
+                                display: "flex",
+                                gap: 8,
+                                alignItems: "center",
+                            }}
+                        >
+                            <Button
+                                type="default"
+                                onClick={() => setOpenArchiveModal(true)}
+                            >
+                                Archived Orders
+                            </Button>
+                        </div>
+                    </div>
                     <Table
                         columns={mainColumns}
-                        dataSource={orders}
+                        dataSource={filteredOrders}
                         rowKey="id"
                         scroll={{ x: 1200 }}
                     />

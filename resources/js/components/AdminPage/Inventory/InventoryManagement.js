@@ -29,10 +29,11 @@ const InventoryManagement = () => {
     const [openEditModal, setOpenEditModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectAll, setSelectAll] = useState(false);
+    const [selectedItems, setSelectedItems] = useState([]);
     const [editingRecord, setEditingRecord] = useState(null);
     const [form] = Form.useForm();
 
-    // Base URL for images – adjust if needed
+    // Base URL for images
     const imageBaseURL = "http://localhost:8000/storage/";
 
     // Fetch active inventory records from API (with product data)
@@ -45,7 +46,9 @@ const InventoryManagement = () => {
             })
             .then((res) => {
                 console.log("Fetched inventory:", res.data);
-                setInventoryItems(res.data);
+                setInventoryItems(
+                    res.data.map((item) => ({ ...item, selected: false }))
+                );
             })
             .catch((err) => {
                 message.error("Error fetching inventory");
@@ -81,7 +84,31 @@ const InventoryManagement = () => {
         }
     }, [openArchiveModal]);
 
-    // Table columns for active inventory records
+    // Checkbox handling for individual items
+    const handleCheckboxChange = (itemId) => {
+        const updatedItems = inventoryItems.map((item) =>
+            item.id === itemId ? { ...item, selected: !item.selected } : item
+        );
+        setInventoryItems(updatedItems);
+        setSelectedItems(
+            updatedItems.filter((i) => i.selected).map((i) => i.id)
+        );
+        const allSelected = updatedItems.every((i) => i.selected);
+        setSelectAll(allSelected);
+    };
+
+    // Select All checkbox handling
+    const handleSelectAllChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAll(checked);
+        const updatedItems = inventoryItems.map((item) => ({
+            ...item,
+            selected: checked,
+        }));
+        setInventoryItems(updatedItems);
+        setSelectedItems(checked ? updatedItems.map((i) => i.id) : []);
+    };
+
     // Table columns for active inventory records
     const mainColumns = [
         {
@@ -89,7 +116,10 @@ const InventoryManagement = () => {
             key: "actions",
             render: (_, record) => (
                 <Space>
-                    <Checkbox />
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleCheckboxChange(record.id)}
+                    />
                     <EditOutlined
                         onClick={() => handleEdit(record)}
                         style={{ fontSize: "16px" }}
@@ -136,7 +166,7 @@ const InventoryManagement = () => {
         { title: "Last Updated", dataIndex: "updated_at", key: "updated_at" },
     ];
 
-    // Archive table columns – similar to main, but with a restore button.
+    // Archive table columns
     const archiveColumns = [
         {
             title: "Actions",
@@ -150,7 +180,7 @@ const InventoryManagement = () => {
         ...mainColumns.slice(1),
     ];
 
-    // Handle edit action: open modal and prefill form with record data.
+    // Handle edit action
     const handleEdit = (record) => {
         console.log("Edit inventory record:", record);
         setEditingRecord(record);
@@ -162,7 +192,7 @@ const InventoryManagement = () => {
         setOpenEditModal(true);
     };
 
-    // Handle archive (soft delete) action.
+    // Handle archive action
     const handleArchive = (record) => {
         Modal.confirm({
             title: "Are you sure you want to archive this inventory item?",
@@ -187,10 +217,12 @@ const InventoryManagement = () => {
                         console.error(err);
                     });
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
-    // Handle restore action.
+    // Handle restore action
     const handleRestore = (id) => {
         axios
             .post(
@@ -215,28 +247,47 @@ const InventoryManagement = () => {
             });
     };
 
-    // Bulk archive handler (if needed).
+    // Bulk archive handler
     const handleArchiveAll = () => {
+        if (selectedItems.length === 0) {
+            message.warning("Please select at least one item to archive");
+            return;
+        }
         Modal.confirm({
-            title: "Are you sure you want to archive all selected inventory items?",
+            title: `Are you sure you want to archive ${selectedItems.length} selected inventory item(s)?`,
             onOk: () => {
-                message.success("Bulk archive executed (not implemented)");
+                Promise.all(
+                    selectedItems.map((id) =>
+                        axios.delete(
+                            `http://localhost:8000/api/inventory/${id}`,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                    )
+                )
+                    .then(() => {
+                        message.success(
+                            "Selected inventory items archived successfully"
+                        );
+                        fetchInventory();
+                        setSelectedItems([]);
+                        setSelectAll(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to archive some inventory items")
+                    );
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
-    // Filter inventory records based on the search query.
-    const filteredInventory = inventoryItems.filter((item) => {
-        const lower = searchQuery.toLowerCase();
-        return (
-            (item.product &&
-                item.product.product_name.toLowerCase().includes(lower)) ||
-            item.size.toLowerCase().includes(lower) ||
-            item.stock_status.toLowerCase().includes(lower)
-        );
-    });
-
-    // Handle update of inventory record (called from the edit modal).
+    // Handle update of inventory record
     const handleUpdate = () => {
         form.validateFields()
             .then((values) => {
@@ -268,6 +319,17 @@ const InventoryManagement = () => {
             });
     };
 
+    // Filter inventory records based on the search query
+    const filteredInventory = inventoryItems.filter((item) => {
+        const lower = searchQuery.toLowerCase();
+        return (
+            (item.product &&
+                item.product.product_name.toLowerCase().includes(lower)) ||
+            item.size.toLowerCase().includes(lower) ||
+            item.stock_status.toLowerCase().includes(lower)
+        );
+    });
+
     return (
         <Layout>
             <Sider width={256} style={{ minHeight: "100vh" }}>
@@ -292,7 +354,6 @@ const InventoryManagement = () => {
                             marginBottom: 16,
                         }}
                     >
-                        {/* Left side: Search input and Select All checkbox with bulk archive button */}
                         <div style={{ display: "flex", alignItems: "center" }}>
                             <Search
                                 placeholder="Search inventory"
@@ -300,12 +361,13 @@ const InventoryManagement = () => {
                                 style={{ width: 300 }}
                             />
                             <Checkbox
-                                onChange={(e) => setSelectAll(e.target.checked)}
+                                checked={selectAll}
+                                onChange={handleSelectAllChange}
                                 style={{ marginLeft: 16 }}
                             >
                                 Select All
                             </Checkbox>
-                            {selectAll && (
+                            {(selectAll || selectedItems.length > 0) && (
                                 <Button
                                     type="link"
                                     onClick={handleArchiveAll}
@@ -314,10 +376,11 @@ const InventoryManagement = () => {
                                     <FolderOpenOutlined
                                         style={{ fontSize: "18px" }}
                                     />
+                                    {selectedItems.length > 0 &&
+                                        ` (${selectedItems.length})`}
                                 </Button>
                             )}
                         </div>
-                        {/* Right side: Archived View button with trash icon */}
                         <div>
                             <Button
                                 type="default"
@@ -342,14 +405,7 @@ const InventoryManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1200}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
             >
                 <Table
                     columns={archiveColumns}
@@ -370,6 +426,7 @@ const InventoryManagement = () => {
                 footer={[
                     <Button
                         key="cancel"
+                        style={{ width: "131px" }}
                         onClick={() => {
                             setOpenEditModal(false);
                             setEditingRecord(null);

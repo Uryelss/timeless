@@ -32,6 +32,7 @@ const UserManagement = () => {
     const [openAddEditModal, setOpenAddEditModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectAll, setSelectAll] = useState(false);
+    const [selectedUsers, setSelectedUsers] = useState([]);
     const [editingUser, setEditingUser] = useState(null);
     const [form] = Form.useForm();
 
@@ -48,7 +49,9 @@ const UserManagement = () => {
             })
             .then((res) => {
                 console.log("Fetched users:", res.data);
-                setUsers(res.data);
+                setUsers(
+                    res.data.map((user) => ({ ...user, selected: false }))
+                );
             })
             .catch((err) => {
                 message.error("Error fetching users");
@@ -84,7 +87,31 @@ const UserManagement = () => {
         }
     }, [openArchiveModal]);
 
-    // Table columns for active users
+    // Checkbox handling for individual users
+    const handleCheckboxChange = (userId) => {
+        const updatedUsers = users.map((user) =>
+            user.id === userId ? { ...user, selected: !user.selected } : user
+        );
+        setUsers(updatedUsers);
+        setSelectedUsers(
+            updatedUsers.filter((u) => u.selected).map((u) => u.id)
+        );
+        const allSelected = updatedUsers.every((u) => u.selected);
+        setSelectAll(allSelected);
+    };
+
+    // Select All checkbox handling
+    const handleSelectAllChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAll(checked);
+        const updatedUsers = users.map((user) => ({
+            ...user,
+            selected: checked,
+        }));
+        setUsers(updatedUsers);
+        setSelectedUsers(checked ? updatedUsers.map((u) => u.id) : []);
+    };
+
     // Table columns for active users
     const mainColumns = [
         {
@@ -92,7 +119,10 @@ const UserManagement = () => {
             key: "actions",
             render: (_, record) => (
                 <Space>
-                    <Checkbox />
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleCheckboxChange(record.id)}
+                    />
                     <EditOutlined
                         onClick={() => handleEdit(record)}
                         style={{ fontSize: "16px" }}
@@ -137,7 +167,7 @@ const UserManagement = () => {
         },
     ];
 
-    // Archive table columns – similar to main, but with only restore action.
+    // Archive table columns
     const archiveColumns = [
         {
             title: "Actions",
@@ -151,7 +181,7 @@ const UserManagement = () => {
         ...mainColumns.slice(1),
     ];
 
-    // Handle edit action: open modal and prefill form with record data.
+    // Handle edit action
     const handleEdit = (record) => {
         console.log("Edit user:", record);
         setEditingUser(record);
@@ -164,7 +194,7 @@ const UserManagement = () => {
         setOpenAddEditModal(true);
     };
 
-    // Handle archive (soft delete) action.
+    // Handle archive action
     const handleArchive = (record) => {
         Modal.confirm({
             title: "Are you sure you want to archive this user?",
@@ -186,10 +216,12 @@ const UserManagement = () => {
                         console.error(err);
                     });
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
-    // Handle restore action.
+    // Handle restore action
     const handleRestore = (id) => {
         axios
             .post(
@@ -214,24 +246,49 @@ const UserManagement = () => {
             });
     };
 
-    // Bulk archive handler (if needed)
+    // Bulk archive handler
     const handleArchiveAll = () => {
+        if (selectedUsers.length === 0) {
+            message.warning("Please select at least one user to archive");
+            return;
+        }
         Modal.confirm({
-            title: "Are you sure you want to archive all selected users?",
+            title: `Are you sure you want to archive ${selectedUsers.length} selected user(s)?`,
             onOk: () => {
-                message.success("Bulk archive executed (not implemented)");
+                Promise.all(
+                    selectedUsers.map((id) =>
+                        axios.delete(`${API_URL}/${id}`, {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem(
+                                    "token"
+                                )}`,
+                            },
+                        })
+                    )
+                )
+                    .then(() => {
+                        message.success("Selected users archived successfully");
+                        fetchUsers();
+                        setSelectedUsers([]);
+                        setSelectAll(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to archive some users")
+                    );
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
-    // Handle adding a new user (opens the add modal)
+    // Handle adding a new user
     const handleAdd = () => {
         form.resetFields();
         setEditingUser(null);
         setOpenAddEditModal(true);
     };
 
-    // Handle save (for both add and edit)
+    // Handle save (add or edit)
     const handleSave = () => {
         form.validateFields()
             .then((values) => {
@@ -281,7 +338,7 @@ const UserManagement = () => {
             });
     };
 
-    // Filter users based on search query.
+    // Filter users based on search query
     const filteredUsers = users.filter((user) => {
         const lower = searchQuery.toLowerCase();
         return (
@@ -316,7 +373,6 @@ const UserManagement = () => {
                             marginBottom: 16,
                         }}
                     >
-                        {/* Left side: Search input and Bulk Archive controls */}
                         <div style={{ display: "flex", alignItems: "center" }}>
                             <Search
                                 placeholder="Search users"
@@ -324,40 +380,51 @@ const UserManagement = () => {
                                 style={{ width: 300 }}
                             />
                             <Checkbox
-                                onChange={(e) => setSelectAll(e.target.checked)}
+                                checked={selectAll}
+                                onChange={handleSelectAllChange}
                                 style={{ marginLeft: 16 }}
                             >
                                 Select All
                             </Checkbox>
-                            {selectAll && (
+                            {(selectAll || selectedUsers.length > 0) && (
                                 <Button
                                     type="link"
                                     onClick={handleArchiveAll}
                                     style={{ marginLeft: 8 }}
-                                    title="Archive All"
                                 >
                                     <FolderOpenOutlined
                                         style={{ fontSize: "18px" }}
                                     />
+                                    {selectedUsers.length > 0 &&
+                                        ` (${selectedUsers.length})`}
                                 </Button>
                             )}
                         </div>
-                        {/* Right side: Add User and Archived View */}
-                        <div style={{ display: "flex", alignItems: "center" }}>
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                            }}
+                        >
+                            <Button
+                                type="default"
+                                icon={<DeleteOutlined />}
+                                onClick={() => setOpenArchiveModal(true)}
+                                style={{ marginRight: 8, width: "131px" }}
+                            >
+                                Archived View
+                            </Button>
                             <Button
                                 type="primary"
                                 onClick={handleAdd}
-                                style={{ marginRight: 16 }}
+                                style={{
+                                    width: "131px",
+                                    marginRight: 8,
+                                    marginTop: "5px",
+                                }}
                             >
                                 <PlusOutlined style={{ marginRight: 4 }} />
                                 Add User
-                            </Button>
-                            <Button
-                                type="default"
-                                onClick={() => setOpenArchiveModal(true)}
-                            >
-                                <DeleteOutlined style={{ marginRight: 4 }} />
-                                Archived View
                             </Button>
                         </div>
                     </div>
@@ -376,14 +443,7 @@ const UserManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1200}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
             >
                 <Table
                     columns={archiveColumns}
@@ -404,6 +464,7 @@ const UserManagement = () => {
                 footer={[
                     <Button
                         key="cancel"
+                        style={{ marginRight: 8, width: "100px" }}
                         onClick={() => {
                             setOpenAddEditModal(false);
                             setEditingUser(null);

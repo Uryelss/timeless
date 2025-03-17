@@ -36,6 +36,7 @@ const ProductManagement = () => {
     const [form] = Form.useForm();
     const [searchText, setSearchText] = useState("");
     const [selectAll, setSelectAll] = useState(false);
+    const [selectedProducts, setSelectedProducts] = useState([]);
     const [products, setProducts] = useState([]);
     const [archivedProducts, setArchivedProducts] = useState([]);
     const [currentProduct, setCurrentProduct] = useState(null);
@@ -54,7 +55,7 @@ const ProductManagement = () => {
     const [genders, setGenders] = useState([]);
     const [sizesOptions, setSizesOptions] = useState([]);
 
-    // Base URL for images (adjust as needed)
+    // Base URL for images
     const imageBaseURL = "http://localhost:8000/storage/";
 
     // Fetch products from API
@@ -65,7 +66,11 @@ const ProductManagement = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             })
-            .then((res) => setProducts(res.data))
+            .then((res) => {
+                setProducts(
+                    res.data.map((product) => ({ ...product, selected: false }))
+                );
+            })
             .catch((err) => message.error("Error fetching products"));
     };
 
@@ -109,6 +114,33 @@ const ProductManagement = () => {
 
     const getRule = (message) => [{ required: !currentProduct, message }];
 
+    // Checkbox handling for individual products
+    const handleCheckboxChange = (productId) => {
+        const updatedProducts = products.map((product) =>
+            product.id === productId
+                ? { ...product, selected: !product.selected }
+                : product
+        );
+        setProducts(updatedProducts);
+        setSelectedProducts(
+            updatedProducts.filter((p) => p.selected).map((p) => p.id)
+        );
+        const allSelected = updatedProducts.every((p) => p.selected);
+        setSelectAll(allSelected);
+    };
+
+    // Select All checkbox handling
+    const handleSelectAllChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAll(checked);
+        const updatedProducts = products.map((product) => ({
+            ...product,
+            selected: checked,
+        }));
+        setProducts(updatedProducts);
+        setSelectedProducts(checked ? updatedProducts.map((p) => p.id) : []);
+    };
+
     // Table columns for active products
     const mainColumns = [
         {
@@ -116,7 +148,10 @@ const ProductManagement = () => {
             key: "actions",
             render: (_, record) => (
                 <Space>
-                    <Checkbox />
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleCheckboxChange(record.id)}
+                    />
                     <EditOutlined
                         onClick={() => handleEdit(record)}
                         style={{ fontSize: "16px" }}
@@ -140,7 +175,7 @@ const ProductManagement = () => {
                             : "https://via.placeholder.com/100?text=Prod"
                     }
                     alt="product"
-                    style={{ width: 50 }}
+                    style={{ width: "60px", height: "70px" }}
                 />
             ),
         },
@@ -200,16 +235,13 @@ const ProductManagement = () => {
             key: "sizes",
             render: (sizes) => {
                 let parsedSizes = sizes;
-                // If sizes is a string, try to parse it
                 if (typeof sizes === "string") {
                     try {
                         parsedSizes = JSON.parse(sizes);
                     } catch (e) {
-                        // If parsing fails, fallback to original value
                         return sizes;
                     }
                 }
-                // If parsedSizes is an array, extract the 'size' property if available
                 if (Array.isArray(parsedSizes)) {
                     if (
                         parsedSizes.length > 0 &&
@@ -229,7 +261,6 @@ const ProductManagement = () => {
             key: "price",
             render: (price) => `$${price}`,
         },
-        // Removed the "Quantity" column
     ];
 
     const archiveColumns = [
@@ -245,7 +276,6 @@ const ProductManagement = () => {
         ...mainColumns.slice(1),
     ];
 
-    // When editing, prefill form values. For sizes, parse sizesDetails from the JSON string.
     const handleEdit = (record) => {
         console.log("Edit product:", record);
         setCurrentProduct(record);
@@ -290,6 +320,8 @@ const ProductManagement = () => {
                     })
                     .catch((err) => message.error("Failed to archive product"));
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
@@ -315,10 +347,41 @@ const ProductManagement = () => {
     };
 
     const handleArchiveAll = () => {
+        if (selectedProducts.length === 0) {
+            message.warning("Please select at least one product to archive");
+            return;
+        }
         Modal.confirm({
-            title: "Are you sure you want to archive all selected products?",
-            onOk: () =>
-                message.success("Bulk archive executed (not implemented)"),
+            title: `Are you sure you want to archive ${selectedProducts.length} selected product(s)?`,
+            onOk: () => {
+                Promise.all(
+                    selectedProducts.map((id) =>
+                        axios.delete(
+                            `http://localhost:8000/api/products/${id}`,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                    )
+                )
+                    .then(() => {
+                        message.success(
+                            "Selected products archived successfully"
+                        );
+                        fetchProducts();
+                        setSelectedProducts([]);
+                        setSelectAll(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to archive some products")
+                    );
+            },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
@@ -332,7 +395,6 @@ const ProductManagement = () => {
         setOpenAddModal(true);
     };
 
-    // Save product: calculate overall quantity from sizesDetails and send sizes as a JSON string.
     const handleSave = () => {
         form.validateFields()
             .then((values) => {
@@ -355,14 +417,12 @@ const ProductManagement = () => {
                 formData.append("price", values.price);
                 formData.append("description", values.description);
 
-                // sizesDetails is an array of objects: { size, quantity }
                 const sizesDetails = values.sizesDetails || [];
                 const overallQuantity = sizesDetails.reduce(
                     (sum, item) => sum + Number(item.quantity),
                     0
                 );
                 formData.append("quantity", overallQuantity);
-                // Store sizes as a JSON string
                 formData.append("sizes", JSON.stringify(sizesDetails));
 
                 if (mainImageFile) formData.append("main_image", mainImageFile);
@@ -493,11 +553,12 @@ const ProductManagement = () => {
                                 style={{ width: 200, marginRight: 8 }}
                             />
                             <Checkbox
-                                onChange={(e) => setSelectAll(e.target.checked)}
+                                checked={selectAll}
+                                onChange={handleSelectAllChange}
                             >
                                 Select All
                             </Checkbox>
-                            {selectAll && (
+                            {(selectAll || selectedProducts.length > 0) && (
                                 <Button
                                     type="link"
                                     onClick={handleArchiveAll}
@@ -506,15 +567,22 @@ const ProductManagement = () => {
                                     <FolderOpenOutlined
                                         style={{ fontSize: "18px" }}
                                     />
+                                    {selectedProducts.length > 0 &&
+                                        ` (${selectedProducts.length})`}
                                 </Button>
                             )}
                         </div>
-                        <div>
+                        <div
+                            style={{
+                                flexDirection: "column",
+                                display: "flex",
+                            }}
+                        >
                             <Button
                                 type="default"
                                 icon={<DeleteOutlined />}
                                 onClick={() => setOpenArchiveModal(true)}
-                                style={{ marginRight: 8 }}
+                                style={{ marginRight: 8, width: "131px" }}
                             >
                                 Archived View
                             </Button>
@@ -522,6 +590,11 @@ const ProductManagement = () => {
                                 type="primary"
                                 icon={<PlusOutlined />}
                                 onClick={handleAdd}
+                                style={{
+                                    width: "131px",
+                                    marginRight: 8,
+                                    marginTop: "5px",
+                                }}
                             >
                                 Add Product
                             </Button>
@@ -531,6 +604,7 @@ const ProductManagement = () => {
                         columns={mainColumns}
                         dataSource={filteredProducts}
                         scroll={{ x: 1200 }}
+                        rowKey="id"
                     />
                 </Content>
             </Layout>
@@ -543,7 +617,11 @@ const ProductManagement = () => {
                 onCancel={() => setOpenAddModal(false)}
                 width={1000}
                 footer={[
-                    <Button key="cancel" onClick={() => setOpenAddModal(false)}>
+                    <Button
+                        key="cancel"
+                        onClick={() => setOpenAddModal(false)}
+                        style={{ marginRight: 8, width: "90px" }}
+                    >
                         Cancel
                     </Button>,
                     <Button key="save" type="primary" onClick={handleSave}>
@@ -664,7 +742,6 @@ const ProductManagement = () => {
                             </Form.Item>
                         </Col>
                     </Row>
-                    {/* Use Form.List to capture size–quantity pairs */}
                     <Form.List name="sizesDetails">
                         {(fields, { add, remove }) => (
                             <>
@@ -832,14 +909,7 @@ const ProductManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1200}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
             >
                 <Table
                     columns={archiveColumns}
