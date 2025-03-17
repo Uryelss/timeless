@@ -114,6 +114,7 @@ const CheckoutPage = () => {
                           street: values.streetAddress,
                           city: values.city,
                           state: values.province,
+                          barangay: values.barangay, // Added to align with migration/model
                           postal_code: values.postalCode,
                           country: values.country,
                           phone: values.phone,
@@ -155,19 +156,14 @@ const CheckoutPage = () => {
                     state: {
                         orderId: order_id,
                         total,
-                        shippingMethod: shippingMethods.find(m => m.id === shippingMethod)?.name,
+                        shippingMethod: shippingMethods.find((m) => m.id === shippingMethod)?.name,
                         cartItems,
                     },
                 });
             }
         } catch (error) {
-            console.error(
-                "Order submission error:",
-                error.response?.data || error
-            );
-            message.error(
-                error.response?.data?.message || "Failed to place order."
-            );
+            console.error("Order submission error:", error.response?.data || error);
+            message.error(error.response?.data?.message || "Failed to place order.");
         } finally {
             setLoading(false);
         }
@@ -210,7 +206,7 @@ const CheckoutPage = () => {
                                 >
                                     {addresses.map((addr) => (
                                         <Option key={addr.id} value={addr.id}>
-                                            {`${addr.street}, ${addr.city}, ${addr.state} ${addr.postal_code}, ${addr.country} - ${addr.phone}`}
+                                            {`${addr.street}, ${addr.barangay}, ${addr.city}, ${addr.state} ${addr.postal_code}, ${addr.country} - ${addr.phone}`}
                                         </Option>
                                     ))}
                                 </Select>
@@ -228,15 +224,12 @@ const CheckoutPage = () => {
                                         rules={[
                                             {
                                                 required: true,
-                                                message:
-                                                    "Please select your country!",
+                                                message: "Please select your country!",
                                             },
                                         ]}
                                     >
                                         <Select>
-                                            <Option value="Philippines">
-                                                Philippines
-                                            </Option>
+                                            <Option value="Philippines">Philippines</Option>
                                         </Select>
                                     </Form.Item>
                                     <Form.Item
@@ -245,8 +238,7 @@ const CheckoutPage = () => {
                                         rules={[
                                             {
                                                 required: true,
-                                                message:
-                                                    "Please enter your street address!",
+                                                message: "Please enter your street address!",
                                             },
                                         ]}
                                     >
@@ -258,8 +250,7 @@ const CheckoutPage = () => {
                                         rules={[
                                             {
                                                 required: true,
-                                                message:
-                                                    "Please enter your barangay!",
+                                                message: "Please enter your barangay!",
                                             },
                                         ]}
                                     >
@@ -271,8 +262,7 @@ const CheckoutPage = () => {
                                         rules={[
                                             {
                                                 required: true,
-                                                message:
-                                                    "Please enter your province!",
+                                                message: "Please enter your province!",
                                             },
                                         ]}
                                     >
@@ -284,8 +274,7 @@ const CheckoutPage = () => {
                                         rules={[
                                             {
                                                 required: true,
-                                                message:
-                                                    "Please enter your city!",
+                                                message: "Please enter your city!",
                                             },
                                         ]}
                                     >
@@ -297,8 +286,7 @@ const CheckoutPage = () => {
                                         rules={[
                                             {
                                                 required: true,
-                                                message:
-                                                    "Please enter your postal code!",
+                                                message: "Please enter your postal code!",
                                             },
                                         ]}
                                     >
@@ -310,8 +298,7 @@ const CheckoutPage = () => {
                                         rules={[
                                             {
                                                 required: true,
-                                                message:
-                                                    "Please enter your phone number!",
+                                                message: "Please enter your phone number!",
                                             },
                                         ]}
                                     >
@@ -320,9 +307,7 @@ const CheckoutPage = () => {
                                     <Form.Item>
                                         <Checkbox
                                             checked={saveInfo}
-                                            onChange={(e) =>
-                                                setSaveInfo(e.target.checked)
-                                            }
+                                            onChange={(e) => setSaveInfo(e.target.checked)}
                                         >
                                             Save this information for next time
                                         </Checkbox>
@@ -355,8 +340,7 @@ const CheckoutPage = () => {
                             >
                                 {shippingMethods.map((method) => (
                                     <Radio key={method.id} value={method.id}>
-                                        {method.name} - ₱
-                                        {parseFloat(method.cost).toLocaleString()}
+                                        {method.name} - ₱{parseFloat(method.cost).toLocaleString()}
                                     </Radio>
                                 ))}
                             </Radio.Group>
@@ -396,23 +380,11 @@ const CheckoutPage = () => {
                                         preview={false}
                                     />
                                     <div>
+                                        <p style={{ margin: 0 }}>{item.productName}</p>
+                                        <p style={{ margin: 0, fontSize: "12px" }}>{item.size}</p>
+                                        <p style={{ margin: 0 }}>Quantity: {item.quantity}</p>
                                         <p style={{ margin: 0 }}>
-                                            {item.productName}
-                                        </p>
-                                        <p
-                                            style={{
-                                                margin: 0,
-                                                fontSize: "12px",
-                                            }}
-                                        >
-                                            {item.size}
-                                        </p>
-                                        <p style={{ margin: 0 }}>
-                                            Quantity: {item.quantity}
-                                        </p>
-                                        <p style={{ margin: 0 }}>
-                                            Total: ₱
-                                            {(item.price * item.quantity).toLocaleString()}
+                                            Total: ₱{(item.price * item.quantity).toLocaleString()}
                                         </p>
                                     </div>
                                 </div>

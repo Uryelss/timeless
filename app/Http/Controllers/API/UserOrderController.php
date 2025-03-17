@@ -53,6 +53,7 @@ class UserOrderController extends Controller
                     [
                         'city' => $addressData['city'],
                         'state' => $addressData['state'],
+                        'barangay' =>$addressData['barangay'],
                         'postal_code' => $addressData['postal_code'],
                         'country' => $addressData['country'],
                         'phone' => $addressData['phone'],

@@ -12,12 +12,7 @@ use App\Http\Controllers\API\ProductViewController;
 use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\UserOrderController;
-
-/*
-|--------------------------------------------------------------------------
-| Public Routes (No Authentication Required)
-|--------------------------------------------------------------------------
-*/
+use App\Http\Controllers\API\AddressController;
 
 Route::post('/register', [AccessController::class, 'register'])->name('register');
 Route::post('/login', [AccessController::class, 'login'])->name('login');
@@ -25,11 +20,6 @@ Route::get('/products/public', [ProductController::class, 'publicIndex'])->name(
 Route::get('/sub-categories/public', [SubCategoryController::class, 'publicIndex'])->name('subcategories.public');
 Route::get('/products/{id}', [ProductViewController::class, 'show'])->name('products.show');
 
-/*
-|--------------------------------------------------------------------------
-| Authenticated Routes (Requires API Token)
-|--------------------------------------------------------------------------
-*/
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AccessController::class, 'logout'])->name('logout');
     Route::get('/validate-token', [AccessController::class, 'validateToken'])->name('validate.token');
@@ -40,25 +30,18 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/shipping-methods', fn() => App\Models\ShippingMethod::all())->name('shipping.methods');
 });
 
-/*
-|--------------------------------------------------------------------------
-| User Routes (Requires 'user' Role)
-|--------------------------------------------------------------------------
-*/
 Route::middleware(['auth:api', 'check.role:user'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/orders/create', [UserOrderController::class, 'store'])->name('orders.store');
+    Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
+    Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
+    Route::delete('/addresses/{id}', [AddressController::class, 'destroy'])->name('addresses.destroy');
+    Route::put('/addresses/{id}/set-default', [AddressController::class, 'setDefault'])->name('addresses.set-default');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Admin Routes (Requires 'admin' Role)
-|--------------------------------------------------------------------------
-*/
 Route::middleware(['auth:api', 'admin'])->group(function () {
-    Route::get('/admin-dashboard', fn() => response()->json(['message' => 'Welcome to the Admin Dashboard']))
-        ->name('admin.dashboard');
+    Route::get('/admin-dashboard', fn() => response()->json(['message' => 'Welcome to the Admin Dashboard']))->name('admin.dashboard');
 
     Route::prefix('sub-categories')->name('subcategories.')->group(function () {
         Route::get('/', [SubCategoryController::class, 'index'])->name('index');

@@ -12,12 +12,18 @@ const MyAddress = () => {
     const [form] = Form.useForm();
     const token = localStorage.getItem("token");
 
-    // Fetch addresses from the API
+    // Fetch addresses with profile data from the API
     const fetchAddresses = async () => {
+        if (!token) {
+            message.error("No token found, please log in.");
+            return;
+        }
+
         try {
             const res = await axios.get("http://localhost:8000/api/addresses", {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            // Expecting res.data to include profile data (first_name, last_name) with each address
             setAddresses(res.data);
         } catch (error) {
             console.error("Error fetching addresses:", error);
@@ -26,11 +32,7 @@ const MyAddress = () => {
     };
 
     useEffect(() => {
-        if (token) {
-            fetchAddresses();
-        } else {
-            message.error("No token found, please log in.");
-        }
+        fetchAddresses();
     }, [token]);
 
     // Handle form submission to add a new address
@@ -38,7 +40,16 @@ const MyAddress = () => {
         try {
             const res = await axios.post(
                 "http://localhost:8000/api/addresses",
-                values,
+                {
+                    street: values.street,
+                    city: values.city,
+                    state: values.province, // Mapping province to state
+                    barangay: values.barangay,
+                    postal_code: values.postal_code,
+                    country: values.country,
+                    phone: values.phone,
+                    // Assume profile_id is set backend-side based on auth
+                },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             message.success("Address added successfully!");
@@ -81,10 +92,9 @@ const MyAddress = () => {
         }
     };
 
-    // Handle editing an address (for now, we'll just log it)
+    // Handle editing an address (placeholder for now)
     const handleEdit = (address) => {
         console.log("Edit address:", address);
-        // You can implement a modal or redirect to an edit form here
         message.info("Edit functionality to be implemented");
     };
 
@@ -130,10 +140,10 @@ const MyAddress = () => {
                                     >
                                         <div>
                                             <h3 style={{ margin: 0 }}>
-                                                {address.full_name} | {address.phone_number}
+                                                {address.profile?.first_name} {address.profile?.last_name} | {address.phone}
                                             </h3>
                                             <p style={{ margin: 0 }}>
-                                                {address.street}, {address.city}, {address.province}, {address.region}, {address.postal_code}
+                                                {address.street}, {address.barangay}, {address.city}, {address.state}, {address.postal_code}, {address.country}
                                             </p>
                                             <div style={{ marginTop: 5 }}>
                                                 {address.is_default && (
@@ -184,48 +194,8 @@ const MyAddress = () => {
                                 layout="vertical"
                                 onFinish={onFinish}
                                 style={{ maxWidth: 600 }}
+                                initialValues={{ country: "Philippines" }}
                             >
-                                <div style={{ display: "flex", gap: 15 }}>
-                                    <Form.Item
-                                        label="Full Name"
-                                        name="full_name"
-                                        rules={[{ required: true, message: "Please enter your full name" }]}
-                                        style={{ flex: 1 }}
-                                    >
-                                        <Input placeholder="Full Name" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Phone Number"
-                                        name="phone_number"
-                                        rules={[{ required: true, message: "Please enter your phone number" }]}
-                                        style={{ flex: 1 }}
-                                    >
-                                        <Input placeholder="Phone Number" />
-                                    </Form.Item>
-                                </div>
-
-                                <Form.Item
-                                    label="Region, Province, City, Barangay"
-                                    name="location"
-                                    rules={[{ required: true, message: "Please select your location" }]}
-                                >
-                                    <Select placeholder="Region, Province, City, Barangay">
-                                        {/* This should be populated dynamically from an API */}
-                                        <Option value="Mindanao-Aguasan Del Norte-Butuan City-Ong Yiu Pob">
-                                            Mindanao, Aguasan Del Norte, Butuan City, Ong Yiu Pob
-                                        </Option>
-                                        {/* Add more options as needed */}
-                                    </Select>
-                                </Form.Item>
-
-                                <Form.Item
-                                    label="Postal Code"
-                                    name="postal_code"
-                                    rules={[{ required: true, message: "Please enter your postal code" }]}
-                                >
-                                    <Input placeholder="Postal Code" />
-                                </Form.Item>
-
                                 <Form.Item
                                     label="Street Name, Building, House No."
                                     name="street"
@@ -233,10 +203,50 @@ const MyAddress = () => {
                                 >
                                     <Input placeholder="Street Name, Building, House No." />
                                 </Form.Item>
-
-                                <Button type="default" style={{ marginBottom: 20 }}>
-                                    + Add Location
-                                </Button>
+                                <Form.Item
+                                    label="Barangay"
+                                    name="barangay"
+                                    rules={[{ required: true, message: "Please enter your barangay" }]}
+                                >
+                                    <Input placeholder="Barangay" />
+                                </Form.Item>
+                                <Form.Item
+                                    label="City"
+                                    name="city"
+                                    rules={[{ required: true, message: "Please enter your city" }]}
+                                >
+                                    <Input placeholder="City" />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Province"
+                                    name="province"
+                                    rules={[{ required: true, message: "Please enter your province" }]}
+                                >
+                                    <Input placeholder="Province" />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Postal Code"
+                                    name="postal_code"
+                                    rules={[{ required: true, message: "Please enter your postal code" }]}
+                                >
+                                    <Input placeholder="Postal Code" />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Country"
+                                    name="country"
+                                    rules={[{ required: true, message: "Please enter your country" }]}
+                                >
+                                    <Select placeholder="Select Country">
+                                        <Option value="Philippines">Philippines</Option>
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item
+                                    label="Phone Number"
+                                    name="phone"
+                                    rules={[{ required: true, message: "Please enter your phone number" }]}
+                                >
+                                    <Input placeholder="Phone Number" />
+                                </Form.Item>
 
                                 <Form.Item label="Label As:">
                                     <Radio.Group name="label" defaultValue="Home">
@@ -268,9 +278,7 @@ const MyAddress = () => {
                         </>
                     )}
                 </div>
-            </Content
-
->
+            </Content>
         </Layout>
     );
 };

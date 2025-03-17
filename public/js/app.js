@@ -185614,6 +185614,8 @@ var CheckoutPage = function CheckoutPage() {
                 street: values.streetAddress,
                 city: values.city,
                 state: values.province,
+                barangay: values.barangay,
+                // Added to align with migration/model
                 postal_code: values.postalCode,
                 country: values.country,
                 phone: values.phone
@@ -185723,7 +185725,7 @@ var CheckoutPage = function CheckoutPage() {
               children: addresses.map(function (addr) {
                 return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
                   value: addr.id,
-                  children: "".concat(addr.street, ", ").concat(addr.city, ", ").concat(addr.state, " ").concat(addr.postal_code, ", ").concat(addr.country, " - ").concat(addr.phone)
+                  children: "".concat(addr.street, ", ").concat(addr.barangay, ", ").concat(addr.city, ", ").concat(addr.state, " ").concat(addr.postal_code, ", ").concat(addr.country, " - ").concat(addr.phone)
                 }, addr.id);
               })
             }), !selectedAddressId && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
@@ -186410,11 +186412,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/select/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/radio/index.js");
@@ -186452,46 +186454,50 @@ var MyAddress = function MyAddress() {
     form = _Form$useForm2[0];
   var token = localStorage.getItem("token");
 
-  // Fetch addresses from the API
+  // Fetch addresses with profile data from the API
   var fetchAddresses = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var res;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
-            _context.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_6__["default"].get("http://localhost:8000/api/addresses", {
+            if (token) {
+              _context.next = 3;
+              break;
+            }
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("No token found, please log in.");
+            return _context.abrupt("return");
+          case 3:
+            _context.prev = 3;
+            _context.next = 6;
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("http://localhost:8000/api/addresses", {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
-          case 3:
+          case 6:
             res = _context.sent;
+            // Expecting res.data to include profile data (first_name, last_name) with each address
             setAddresses(res.data);
-            _context.next = 11;
+            _context.next = 14;
             break;
-          case 7:
-            _context.prev = 7;
-            _context.t0 = _context["catch"](0);
+          case 10:
+            _context.prev = 10;
+            _context.t0 = _context["catch"](3);
             console.error("Error fetching addresses:", _context.t0);
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error fetching addresses");
-          case 11:
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Error fetching addresses");
+          case 14:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[0, 7]]);
+      }, _callee, null, [[3, 10]]);
     }));
     return function fetchAddresses() {
       return _ref.apply(this, arguments);
     };
   }();
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    if (token) {
-      fetchAddresses();
-    } else {
-      antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("No token found, please log in.");
-    }
+    fetchAddresses();
   }, [token]);
 
   // Handle form submission to add a new address
@@ -186503,14 +186509,24 @@ var MyAddress = function MyAddress() {
           case 0:
             _context2.prev = 0;
             _context2.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_6__["default"].post("http://localhost:8000/api/addresses", values, {
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("http://localhost:8000/api/addresses", {
+              street: values.street,
+              city: values.city,
+              state: values.province,
+              // Mapping province to state
+              barangay: values.barangay,
+              postal_code: values.postal_code,
+              country: values.country,
+              phone: values.phone
+              // Assume profile_id is set backend-side based on auth
+            }, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 3:
             res = _context2.sent;
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Address added successfully!");
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Address added successfully!");
             setShowForm(false);
             form.resetFields();
             fetchAddresses(); // Refresh the address list
@@ -186520,7 +186536,7 @@ var MyAddress = function MyAddress() {
             _context2.prev = 10;
             _context2.t0 = _context2["catch"](0);
             console.error("Error adding address:", _context2.t0);
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error adding address");
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Error adding address");
           case 14:
           case "end":
             return _context2.stop();
@@ -186540,13 +186556,13 @@ var MyAddress = function MyAddress() {
           case 0:
             _context3.prev = 0;
             _context3.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_6__["default"]["delete"]("http://localhost:8000/api/addresses/".concat(addressId), {
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"]["delete"]("http://localhost:8000/api/addresses/".concat(addressId), {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 3:
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Address deleted successfully!");
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Address deleted successfully!");
             fetchAddresses();
             _context3.next = 11;
             break;
@@ -186554,7 +186570,7 @@ var MyAddress = function MyAddress() {
             _context3.prev = 7;
             _context3.t0 = _context3["catch"](0);
             console.error("Error deleting address:", _context3.t0);
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error deleting address");
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Error deleting address");
           case 11:
           case "end":
             return _context3.stop();
@@ -186574,13 +186590,13 @@ var MyAddress = function MyAddress() {
           case 0:
             _context4.prev = 0;
             _context4.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_6__["default"].put("http://localhost:8000/api/addresses/".concat(addressId, "/set-default"), {}, {
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("http://localhost:8000/api/addresses/".concat(addressId, "/set-default"), {}, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 3:
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Address set as default!");
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Address set as default!");
             fetchAddresses();
             _context4.next = 11;
             break;
@@ -186588,7 +186604,7 @@ var MyAddress = function MyAddress() {
             _context4.prev = 7;
             _context4.t0 = _context4["catch"](0);
             console.error("Error setting default address:", _context4.t0);
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error setting default address");
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Error setting default address");
           case 11:
           case "end":
             return _context4.stop();
@@ -186600,11 +186616,10 @@ var MyAddress = function MyAddress() {
     };
   }();
 
-  // Handle editing an address (for now, we'll just log it)
+  // Handle editing an address (placeholder for now)
   var handleEdit = function handleEdit(address) {
     console.log("Edit address:", address);
-    // You can implement a modal or redirect to an edit form here
-    antd__WEBPACK_IMPORTED_MODULE_7__["default"].info("Edit functionality to be implemented");
+    antd__WEBPACK_IMPORTED_MODULE_6__["default"].info("Edit functionality to be implemented");
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     style: {
@@ -186645,6 +186660,7 @@ var MyAddress = function MyAddress() {
           }), addresses.length === 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
             children: "No addresses found."
           }) : addresses.map(function (address) {
+            var _address$profile, _address$profile2;
             return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
               style: {
                 borderBottom: "1px solid #ddd",
@@ -186659,12 +186675,12 @@ var MyAddress = function MyAddress() {
                   style: {
                     margin: 0
                   },
-                  children: [address.full_name, " | ", address.phone_number]
+                  children: [(_address$profile = address.profile) === null || _address$profile === void 0 ? void 0 : _address$profile.first_name, " ", (_address$profile2 = address.profile) === null || _address$profile2 === void 0 ? void 0 : _address$profile2.last_name, " | ", address.phone]
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
                   style: {
                     margin: 0
                   },
-                  children: [address.street, ", ", address.city, ", ", address.province, ", ", address.region, ", ", address.postal_code]
+                  children: [address.street, ", ", address.barangay, ", ", address.city, ", ", address.state, ", ", address.postal_code, ", ", address.country]
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                   style: {
                     marginTop: 5
@@ -186728,51 +186744,48 @@ var MyAddress = function MyAddress() {
             style: {
               maxWidth: 600
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-              style: {
-                display: "flex",
-                gap: 15
-              },
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
-                label: "Full Name",
-                name: "full_name",
-                rules: [{
-                  required: true,
-                  message: "Please enter your full name"
-                }],
-                style: {
-                  flex: 1
-                },
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-                  placeholder: "Full Name"
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
-                label: "Phone Number",
-                name: "phone_number",
-                rules: [{
-                  required: true,
-                  message: "Please enter your phone number"
-                }],
-                style: {
-                  flex: 1
-                },
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-                  placeholder: "Phone Number"
-                })
-              })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
-              label: "Region, Province, City, Barangay",
-              name: "location",
+            initialValues: {
+              country: "Philippines"
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+              label: "Street Name, Building, House No.",
+              name: "street",
               rules: [{
                 required: true,
-                message: "Please select your location"
+                message: "Please enter your street details"
               }],
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
-                placeholder: "Region, Province, City, Barangay",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-                  value: "Mindanao-Aguasan Del Norte-Butuan City-Ong Yiu Pob",
-                  children: "Mindanao, Aguasan Del Norte, Butuan City, Ong Yiu Pob"
-                })
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                placeholder: "Street Name, Building, House No."
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+              label: "Barangay",
+              name: "barangay",
+              rules: [{
+                required: true,
+                message: "Please enter your barangay"
+              }],
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                placeholder: "Barangay"
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+              label: "City",
+              name: "city",
+              rules: [{
+                required: true,
+                message: "Please enter your city"
+              }],
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                placeholder: "City"
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+              label: "Province",
+              name: "province",
+              rules: [{
+                required: true,
+                message: "Please enter your province"
+              }],
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                placeholder: "Province"
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
               label: "Postal Code",
@@ -186785,21 +186798,29 @@ var MyAddress = function MyAddress() {
                 placeholder: "Postal Code"
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
-              label: "Street Name, Building, House No.",
-              name: "street",
+              label: "Country",
+              name: "country",
               rules: [{
                 required: true,
-                message: "Please enter your street details"
+                message: "Please enter your country"
+              }],
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+                placeholder: "Select Country",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+                  value: "Philippines",
+                  children: "Philippines"
+                })
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+              label: "Phone Number",
+              name: "phone",
+              rules: [{
+                required: true,
+                message: "Please enter your phone number"
               }],
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-                placeholder: "Street Name, Building, House No."
+                placeholder: "Phone Number"
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
-              type: "default",
-              style: {
-                marginBottom: 20
-              },
-              children: "+ Add Location"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
               label: "Label As:",
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"].Group, {

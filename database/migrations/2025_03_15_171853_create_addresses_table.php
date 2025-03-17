@@ -14,8 +14,10 @@ class CreateAddressesTable extends Migration
             $table->string('street');
             $table->string('city');
             $table->string('state');
+            $table->string('barangay');
             $table->string('postal_code');
             $table->string('country');
+            $table->string('phone'); // Add this line
             $table->timestamps();
             $table->softDeletes();
         });
