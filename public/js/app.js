@@ -186412,15 +186412,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/select/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/radio/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/radio/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/LeftOutlined.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var _Navbar_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Navbar/Navbar */ "./resources/js/components/UserPage/Navbar/Navbar.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -186436,6 +186438,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
+ // Import the back arrow icon
+ // Import useNavigate for navigation
 
 
 var Content = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Content;
@@ -186452,15 +186456,16 @@ var MyAddress = function MyAddress() {
   var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState6 = _slicedToArray(_useState5, 2),
     editMode = _useState6[0],
-    setEditMode = _useState6[1]; // Track if we're editing
+    setEditMode = _useState6[1];
   var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState8 = _slicedToArray(_useState7, 2),
     currentAddressId = _useState8[0],
-    setCurrentAddressId = _useState8[1]; // Store the ID of the address being edited
+    setCurrentAddressId = _useState8[1];
   var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_5__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
   var token = localStorage.getItem("token");
+  var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_6__.useNavigate)(); // Hook for navigation
 
   // Fetch addresses with profile data from the API
   var fetchAddresses = /*#__PURE__*/function () {
@@ -186473,12 +186478,12 @@ var MyAddress = function MyAddress() {
               _context.next = 3;
               break;
             }
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("No token found, please log in.");
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("No token found, please log in.");
             return _context.abrupt("return");
           case 3:
             _context.prev = 3;
             _context.next = 6;
-            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("http://localhost:8000/api/addresses", {
+            return axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("http://localhost:8000/api/addresses", {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
@@ -186492,7 +186497,7 @@ var MyAddress = function MyAddress() {
             _context.prev = 10;
             _context.t0 = _context["catch"](3);
             console.error("Error fetching addresses:", _context.t0);
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Error fetching addresses");
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error fetching addresses");
           case 14:
           case "end":
             return _context.stop();
@@ -186518,7 +186523,6 @@ var MyAddress = function MyAddress() {
               street: values.street,
               city: values.city,
               state: values.province,
-              // Mapping province to state
               barangay: values.barangay,
               postal_code: values.postal_code,
               country: values.country,
@@ -186532,39 +186536,39 @@ var MyAddress = function MyAddress() {
               break;
             }
             _context2.next = 5;
-            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("http://localhost:8000/api/addresses/".concat(currentAddressId), addressData, {
+            return axios__WEBPACK_IMPORTED_MODULE_8__["default"].put("http://localhost:8000/api/addresses/".concat(currentAddressId), addressData, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 5:
             res = _context2.sent;
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Address updated successfully!");
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Address updated successfully!");
             _context2.next = 13;
             break;
           case 9:
             _context2.next = 11;
-            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("http://localhost:8000/api/addresses", addressData, {
+            return axios__WEBPACK_IMPORTED_MODULE_8__["default"].post("http://localhost:8000/api/addresses", addressData, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 11:
             _res = _context2.sent;
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Address added successfully!");
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Address added successfully!");
           case 13:
             setShowForm(false);
             setEditMode(false);
             setCurrentAddressId(null);
             form.resetFields();
-            fetchAddresses(); // Refresh the address list
+            fetchAddresses();
             _context2.next = 24;
             break;
           case 20:
             _context2.prev = 20;
             _context2.t0 = _context2["catch"](1);
             console.error("Error saving address:", _context2.t0);
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Error ".concat(editMode ? "updating" : "adding", " address"));
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error ".concat(editMode ? "updating" : "adding", " address"));
           case 24:
           case "end":
             return _context2.stop();
@@ -186584,13 +186588,13 @@ var MyAddress = function MyAddress() {
           case 0:
             _context3.prev = 0;
             _context3.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_7__["default"]["delete"]("http://localhost:8000/api/addresses/".concat(addressId), {
+            return axios__WEBPACK_IMPORTED_MODULE_8__["default"]["delete"]("http://localhost:8000/api/addresses/".concat(addressId), {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 3:
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Address deleted successfully!");
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Address deleted successfully!");
             fetchAddresses();
             _context3.next = 11;
             break;
@@ -186598,7 +186602,7 @@ var MyAddress = function MyAddress() {
             _context3.prev = 7;
             _context3.t0 = _context3["catch"](0);
             console.error("Error deleting address:", _context3.t0);
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Error deleting address");
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error deleting address");
           case 11:
           case "end":
             return _context3.stop();
@@ -186618,13 +186622,13 @@ var MyAddress = function MyAddress() {
           case 0:
             _context4.prev = 0;
             _context4.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("http://localhost:8000/api/addresses/".concat(addressId, "/set-default"), {}, {
+            return axios__WEBPACK_IMPORTED_MODULE_8__["default"].put("http://localhost:8000/api/addresses/".concat(addressId, "/set-default"), {}, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 3:
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Address set as default!");
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Address set as default!");
             fetchAddresses();
             _context4.next = 11;
             break;
@@ -186632,7 +186636,7 @@ var MyAddress = function MyAddress() {
             _context4.prev = 7;
             _context4.t0 = _context4["catch"](0);
             console.error("Error setting default address:", _context4.t0);
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Error setting default address");
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error setting default address");
           case 11:
           case "end":
             return _context4.stop();
@@ -186649,19 +186653,22 @@ var MyAddress = function MyAddress() {
     setEditMode(true);
     setCurrentAddressId(address.id);
     setShowForm(true);
-    // Pre-fill the form with the address data
     form.setFieldsValue({
       street: address.street,
       barangay: address.barangay,
       city: address.city,
       province: address.state,
-      // Mapping state to province
       postal_code: address.postal_code,
       country: address.country,
       phone: address.phone,
       is_pickup: address.is_pickup,
       is_return: address.is_return
     });
+  };
+
+  // Handle navigation back to profile
+  var handleBackToProfile = function handleBackToProfile() {
+    navigate("/user-profile"); // Navigate to /profile route
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     style: {
@@ -186683,12 +186690,31 @@ var MyAddress = function MyAddress() {
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             style: {
               display: "flex",
+              alignItems: "center",
               justifyContent: "space-between",
               marginBottom: 20
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
-              children: "My Addresses"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+              style: {
+                display: "flex",
+                alignItems: "center"
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                type: "link",
+                icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {}),
+                onClick: handleBackToProfile,
+                style: {
+                  padding: 0,
+                  marginRight: 10
+                },
+                children: "Back to Profile"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
+                style: {
+                  margin: 0
+                },
+                children: "My Addresses"
+              })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
               type: "primary",
               style: {
                 backgroundColor: "#ff4d4f",
@@ -186746,7 +186772,7 @@ var MyAddress = function MyAddress() {
                   })]
                 })]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
                   type: "link",
                   onClick: function onClick() {
                     return handleEdit(address);
@@ -186756,7 +186782,7 @@ var MyAddress = function MyAddress() {
                     marginRight: 10
                   },
                   children: "Edit"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
                   type: "link",
                   onClick: function onClick() {
                     return handleDelete(address.id);
@@ -186766,7 +186792,7 @@ var MyAddress = function MyAddress() {
                     color: "#ff4d4f"
                   },
                   children: "Delete"
-                }), !address.is_default && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+                }), !address.is_default && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
                   type: "default",
                   onClick: function onClick() {
                     return handleSetDefault(address.id);
@@ -186780,8 +186806,27 @@ var MyAddress = function MyAddress() {
             }, address.id);
           })]
         }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
-            children: editMode ? "Edit Address" : "New Address"
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            style: {
+              display: "flex",
+              alignItems: "center",
+              marginBottom: 20
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+              type: "link",
+              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {}),
+              onClick: handleBackToProfile,
+              style: {
+                padding: 0,
+                marginRight: 10
+              },
+              children: "Back to Profile"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
+              style: {
+                margin: 0
+              },
+              children: editMode ? "Edit Address" : "New Address"
+            })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
             form: form,
             layout: "vertical",
@@ -186799,7 +186844,7 @@ var MyAddress = function MyAddress() {
                 required: true,
                 message: "Please enter your street details"
               }],
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
                 placeholder: "Street Name, Building, House No."
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
@@ -186809,7 +186854,7 @@ var MyAddress = function MyAddress() {
                 required: true,
                 message: "Please enter your barangay"
               }],
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
                 placeholder: "Barangay"
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
@@ -186819,7 +186864,7 @@ var MyAddress = function MyAddress() {
                 required: true,
                 message: "Please enter your city"
               }],
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
                 placeholder: "City"
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
@@ -186829,7 +186874,7 @@ var MyAddress = function MyAddress() {
                 required: true,
                 message: "Please enter your province"
               }],
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
                 placeholder: "Province"
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
@@ -186839,7 +186884,7 @@ var MyAddress = function MyAddress() {
                 required: true,
                 message: "Please enter your postal code"
               }],
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
                 placeholder: "Postal Code"
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
@@ -186863,18 +186908,18 @@ var MyAddress = function MyAddress() {
                 required: true,
                 message: "Please enter your phone number"
               }],
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
                 placeholder: "Phone Number"
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
               label: "Label As:",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"].Group, {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"].Group, {
                 name: "label",
                 defaultValue: "Home",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
                   value: "Home",
                   children: "Home"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
                   value: "Work",
                   children: "Work"
                 })]
@@ -186882,13 +186927,13 @@ var MyAddress = function MyAddress() {
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
               name: "is_pickup",
               valuePropName: "checked",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
                 children: "Pickup Address"
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
               name: "is_return",
               valuePropName: "checked",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
                 children: "Return Address"
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
@@ -186898,7 +186943,7 @@ var MyAddress = function MyAddress() {
                   gap: 10,
                   justifyContent: "flex-end"
                 },
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
                   onClick: function onClick() {
                     setShowForm(false);
                     setEditMode(false);
@@ -186906,7 +186951,7 @@ var MyAddress = function MyAddress() {
                     form.resetFields();
                   },
                   children: "Cancel"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
                   type: "primary",
                   htmlType: "submit",
                   style: {

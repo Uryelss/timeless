@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Layout, Button, Form, Input, Select, Checkbox, Radio, message } from "antd";
+import { LeftOutlined } from "@ant-design/icons"; // Import the back arrow icon
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import Navbar from "../Navbar/Navbar";
 
 const { Content } = Layout;
@@ -9,10 +11,11 @@ const { Option } = Select;
 const MyAddress = () => {
     const [addresses, setAddresses] = useState([]);
     const [showForm, setShowForm] = useState(false);
-    const [editMode, setEditMode] = useState(false); // Track if we're editing
-    const [currentAddressId, setCurrentAddressId] = useState(null); // Store the ID of the address being edited
+    const [editMode, setEditMode] = useState(false);
+    const [currentAddressId, setCurrentAddressId] = useState(null);
     const [form] = Form.useForm();
     const token = localStorage.getItem("token");
+    const navigate = useNavigate(); // Hook for navigation
 
     // Fetch addresses with profile data from the API
     const fetchAddresses = async () => {
@@ -41,7 +44,7 @@ const MyAddress = () => {
         const addressData = {
             street: values.street,
             city: values.city,
-            state: values.province, // Mapping province to state
+            state: values.province,
             barangay: values.barangay,
             postal_code: values.postal_code,
             country: values.country,
@@ -52,7 +55,6 @@ const MyAddress = () => {
 
         try {
             if (editMode) {
-                // Update existing address
                 const res = await axios.put(
                     `http://localhost:8000/api/addresses/${currentAddressId}`,
                     addressData,
@@ -60,7 +62,6 @@ const MyAddress = () => {
                 );
                 message.success("Address updated successfully!");
             } else {
-                // Add new address
                 const res = await axios.post(
                     "http://localhost:8000/api/addresses",
                     addressData,
@@ -72,7 +73,7 @@ const MyAddress = () => {
             setEditMode(false);
             setCurrentAddressId(null);
             form.resetFields();
-            fetchAddresses(); // Refresh the address list
+            fetchAddresses();
         } catch (error) {
             console.error("Error saving address:", error);
             message.error(`Error ${editMode ? "updating" : "adding"} address`);
@@ -114,18 +115,22 @@ const MyAddress = () => {
         setEditMode(true);
         setCurrentAddressId(address.id);
         setShowForm(true);
-        // Pre-fill the form with the address data
         form.setFieldsValue({
             street: address.street,
             barangay: address.barangay,
             city: address.city,
-            province: address.state, // Mapping state to province
+            province: address.state,
             postal_code: address.postal_code,
             country: address.country,
             phone: address.phone,
             is_pickup: address.is_pickup,
             is_return: address.is_return,
         });
+    };
+
+    // Handle navigation back to profile
+    const handleBackToProfile = () => {
+        navigate("/user-profile"); // Navigate to /profile route
     };
 
     return (
@@ -142,8 +147,18 @@ const MyAddress = () => {
                 >
                     {!showForm ? (
                         <>
-                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
-                                <h1>My Addresses</h1>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+                                <div style={{ display: "flex", alignItems: "center" }}>
+                                    <Button
+                                        type="link"
+                                        icon={<LeftOutlined />}
+                                        onClick={handleBackToProfile}
+                                        style={{ padding: 0, marginRight: 10 }}
+                                    >
+                                        Back to Profile
+                                    </Button>
+                                    <h1 style={{ margin: 0 }}>My Addresses</h1>
+                                </div>
                                 <Button
                                     type="primary"
                                     style={{ backgroundColor: "#ff4d4f", borderColor: "#ff4d4f" }}
@@ -223,7 +238,17 @@ const MyAddress = () => {
                         </>
                     ) : (
                         <>
-                            <h1>{editMode ? "Edit Address" : "New Address"}</h1>
+                            <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
+                                <Button
+                                    type="link"
+                                    icon={<LeftOutlined />}
+                                    onClick={handleBackToProfile}
+                                    style={{ padding: 0, marginRight: 10 }}
+                                >
+                                    Back to Profile
+                                </Button>
+                                <h1 style={{ margin: 0 }}>{editMode ? "Edit Address" : "New Address"}</h1>
+                            </div>
                             <Form
                                 form={form}
                                 layout="vertical"
