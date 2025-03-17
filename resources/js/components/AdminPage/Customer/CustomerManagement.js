@@ -194,6 +194,8 @@ const CustomerManagement = () => {
                         console.error(err);
                     });
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 

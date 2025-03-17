@@ -30,34 +30,27 @@ const { Option } = Select;
 const { TextArea, Search } = Input;
 
 const ProductManagement = () => {
-    // Modal and form states
     const [openAddModal, setOpenAddModal] = useState(false);
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
     const [form] = Form.useForm();
     const [searchText, setSearchText] = useState("");
     const [selectAll, setSelectAll] = useState(false);
+    const [selectedProducts, setSelectedProducts] = useState([]);
     const [products, setProducts] = useState([]);
     const [archivedProducts, setArchivedProducts] = useState([]);
     const [currentProduct, setCurrentProduct] = useState(null);
-
-    // Image states for main and side images
     const [mainImageFile, setMainImageFile] = useState(null);
     const [mainImagePreview, setMainImagePreview] = useState("");
     const [sideImagesFiles, setSideImagesFiles] = useState([null, null, null]);
     const [sideImagesPreview, setSideImagesPreview] = useState(["", "", ""]);
-
-    // Dynamic options for select fields
     const [brands, setBrands] = useState([]);
     const [categories, setCategories] = useState([]);
     const [movements, setMovements] = useState([]);
     const [strapMaterials, setStrapMaterials] = useState([]);
     const [genders, setGenders] = useState([]);
     const [sizesOptions, setSizesOptions] = useState([]);
-
-    // Base URL for images (adjust as needed)
     const imageBaseURL = "http://localhost:8000/storage/";
 
-    // Fetch products from API
     const fetchProducts = () => {
         axios
             .get("http://localhost:8000/api/products", {
@@ -65,11 +58,14 @@ const ProductManagement = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             })
-            .then((res) => setProducts(res.data))
+            .then((res) => {
+                setProducts(
+                    res.data.map((product) => ({ ...product, selected: false }))
+                );
+            })
             .catch((err) => message.error("Error fetching products"));
     };
 
-    // Fetch archived products
     const fetchArchivedProducts = () => {
         axios
             .get("http://localhost:8000/api/products?archived=1", {
@@ -81,7 +77,6 @@ const ProductManagement = () => {
             .catch((err) => message.error("Error fetching archived products"));
     };
 
-    // Fetch sub-category options dynamically based on type
     const fetchSubCategoryOptions = (type, setter) => {
         axios
             .get(`http://localhost:8000/api/sub-categories?type=${type}`, {
@@ -109,14 +104,80 @@ const ProductManagement = () => {
 
     const getRule = (message) => [{ required: !currentProduct, message }];
 
-    // Table columns for active products
+    const handleCheckboxChange = (productId) => {
+        const updatedProducts = products.map((product) =>
+            product.id === productId
+                ? { ...product, selected: !product.selected }
+                : product
+        );
+        setProducts(updatedProducts);
+        setSelectedProducts(
+            updatedProducts.filter((p) => p.selected).map((p) => p.id)
+        );
+        const allSelected = updatedProducts.every((p) => p.selected);
+        setSelectAll(allSelected);
+    };
+
+    const handleSelectAllChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAll(checked);
+        const updatedProducts = products.map((product) => ({
+            ...product,
+            selected: checked,
+        }));
+        setProducts(updatedProducts);
+        setSelectedProducts(checked ? updatedProducts.map((p) => p.id) : []);
+    };
+
+    const handleArchiveAll = () => {
+        if (selectedProducts.length === 0) {
+            message.warning("Please select at least one product to archive");
+            return;
+        }
+        Modal.confirm({
+            title: `Are you sure you want to archive ${selectedProducts.length} selected product(s)?`,
+            onOk: () => {
+                Promise.all(
+                    selectedProducts.map((id) =>
+                        axios.delete(
+                            `http://localhost:8000/api/products/${id}`,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                    )
+                )
+                    .then(() => {
+                        message.success(
+                            "Selected products archived successfully"
+                        );
+                        fetchProducts();
+                        setSelectedProducts([]);
+                        setSelectAll(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to archive some products")
+                    );
+            },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
+        });
+    };
+
     const mainColumns = [
         {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
                 <Space>
-                    <Checkbox />
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleCheckboxChange(record.id)}
+                    />
                     <EditOutlined
                         onClick={() => handleEdit(record)}
                         style={{ fontSize: "16px" }}
@@ -140,7 +201,7 @@ const ProductManagement = () => {
                             : "https://via.placeholder.com/100?text=Prod"
                     }
                     alt="product"
-                    style={{ width: 50 }}
+                    style={{ width: "60px", height: "70px" }}
                 />
             ),
         },
@@ -153,46 +214,31 @@ const ProductManagement = () => {
             title: "Brand",
             dataIndex: "brand_id",
             key: "brand_id",
-            render: (id) => {
-                const option = brands.find((b) => b.id === id);
-                return option ? option.name : "";
-            },
+            render: (id) => brands.find((b) => b.id === id)?.name || "",
         },
         {
             title: "Category",
             dataIndex: "category_id",
             key: "category_id",
-            render: (id) => {
-                const option = categories.find((c) => c.id === id);
-                return option ? option.name : "";
-            },
+            render: (id) => categories.find((c) => c.id === id)?.name || "",
         },
         {
             title: "Movement",
             dataIndex: "movement_id",
             key: "movement_id",
-            render: (id) => {
-                const option = movements.find((m) => m.id === id);
-                return option ? option.name : "";
-            },
+            render: (id) => movements.find((m) => m.id === id)?.name || "",
         },
         {
             title: "Strap Material",
             dataIndex: "strap_material_id",
             key: "strap_material_id",
-            render: (id) => {
-                const option = strapMaterials.find((s) => s.id === id);
-                return option ? option.name : "";
-            },
+            render: (id) => strapMaterials.find((s) => s.id === id)?.name || "",
         },
         {
             title: "Gender",
             dataIndex: "gender_id",
             key: "gender_id",
-            render: (id) => {
-                const option = genders.find((g) => g.id === id);
-                return option ? option.name : "";
-            },
+            render: (id) => genders.find((g) => g.id === id)?.name || "",
         },
         {
             title: "Sizes",
@@ -200,16 +246,13 @@ const ProductManagement = () => {
             key: "sizes",
             render: (sizes) => {
                 let parsedSizes = sizes;
-                // If sizes is a string, try to parse it
                 if (typeof sizes === "string") {
                     try {
                         parsedSizes = JSON.parse(sizes);
                     } catch (e) {
-                        // If parsing fails, fallback to original value
                         return sizes;
                     }
                 }
-                // If parsedSizes is an array, extract the 'size' property if available
                 if (Array.isArray(parsedSizes)) {
                     if (
                         parsedSizes.length > 0 &&
@@ -229,7 +272,6 @@ const ProductManagement = () => {
             key: "price",
             render: (price) => `$${price}`,
         },
-        // Removed the "Quantity" column
     ];
 
     const archiveColumns = [
@@ -245,9 +287,7 @@ const ProductManagement = () => {
         ...mainColumns.slice(1),
     ];
 
-    // When editing, prefill form values. For sizes, parse sizesDetails from the JSON string.
     const handleEdit = (record) => {
-        console.log("Edit product:", record);
         setCurrentProduct(record);
         form.setFieldsValue({
             id: record.id,
@@ -290,6 +330,8 @@ const ProductManagement = () => {
                     })
                     .catch((err) => message.error("Failed to archive product"));
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
@@ -314,14 +356,6 @@ const ProductManagement = () => {
             .catch((err) => message.error("Failed to restore product"));
     };
 
-    const handleArchiveAll = () => {
-        Modal.confirm({
-            title: "Are you sure you want to archive all selected products?",
-            onOk: () =>
-                message.success("Bulk archive executed (not implemented)"),
-        });
-    };
-
     const handleAdd = () => {
         form.resetFields();
         setCurrentProduct(null);
@@ -332,96 +366,75 @@ const ProductManagement = () => {
         setOpenAddModal(true);
     };
 
-    // Save product: calculate overall quantity from sizesDetails and send sizes as a JSON string.
     const handleSave = () => {
-        form.validateFields()
-            .then((values) => {
-                const formData = new FormData();
-                formData.append("product_name", values.product_name);
-                formData.append("brand_id", parseInt(values.brand_id, 10));
-                formData.append(
-                    "category_id",
-                    parseInt(values.category_id, 10)
-                );
-                formData.append(
-                    "movement_id",
-                    parseInt(values.movement_id, 10)
-                );
-                formData.append(
-                    "strap_material_id",
-                    parseInt(values.strap_material_id, 10)
-                );
-                formData.append("gender_id", parseInt(values.gender_id, 10));
-                formData.append("price", values.price);
-                formData.append("description", values.description);
+        form.validateFields().then((values) => {
+            const formData = new FormData();
+            formData.append("product_name", values.product_name);
+            formData.append("brand_id", parseInt(values.brand_id, 10));
+            formData.append("category_id", parseInt(values.category_id, 10));
+            formData.append("movement_id", parseInt(values.movement_id, 10));
+            formData.append(
+                "strap_material_id",
+                parseInt(values.strap_material_id, 10)
+            );
+            formData.append("gender_id", parseInt(values.gender_id, 10));
+            formData.append("price", values.price);
+            formData.append("description", values.description);
+            const sizesDetails = values.sizesDetails || [];
+            const overallQuantity = sizesDetails.reduce(
+                (sum, item) => sum + Number(item.quantity),
+                0
+            );
+            formData.append("quantity", overallQuantity);
+            formData.append("sizes", JSON.stringify(sizesDetails));
+            if (mainImageFile) formData.append("main_image", mainImageFile);
+            sideImagesFiles.forEach((file, index) => {
+                if (file) formData.append(`side_image_${index + 1}`, file);
+            });
 
-                // sizesDetails is an array of objects: { size, quantity }
-                const sizesDetails = values.sizesDetails || [];
-                const overallQuantity = sizesDetails.reduce(
-                    (sum, item) => sum + Number(item.quantity),
-                    0
-                );
-                formData.append("quantity", overallQuantity);
-                // Store sizes as a JSON string
-                formData.append("sizes", JSON.stringify(sizesDetails));
-
-                if (mainImageFile) formData.append("main_image", mainImageFile);
-                sideImagesFiles.forEach((file, index) => {
-                    if (file) formData.append(`side_image_${index + 1}`, file);
-                });
-
-                if (values.id) {
-                    formData.append("_method", "PUT");
-                    axios
-                        .post(
-                            `http://localhost:8000/api/products/${values.id}`,
-                            formData,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${localStorage.getItem(
-                                        "token"
-                                    )}`,
-                                    "Content-Type": "multipart/form-data",
-                                },
-                            }
-                        )
-                        .then(() => {
-                            message.success("Product updated successfully");
-                            setOpenAddModal(false);
-                            fetchProducts();
-                        })
-                        .catch((err) => {
-                            console.error(err);
-                            message.error("Failed to update product");
-                        });
-                } else {
-                    if (!mainImageFile) {
-                        message.error("Main product image is required.");
-                        return;
-                    }
-                    axios
-                        .post("http://localhost:8000/api/products", formData, {
+            if (values.id) {
+                formData.append("_method", "PUT");
+                axios
+                    .post(
+                        `http://localhost:8000/api/products/${values.id}`,
+                        formData,
+                        {
                             headers: {
                                 Authorization: `Bearer ${localStorage.getItem(
                                     "token"
                                 )}`,
                                 "Content-Type": "multipart/form-data",
                             },
-                        })
-                        .then(() => {
-                            message.success("Product added successfully");
-                            setOpenAddModal(false);
-                            fetchProducts();
-                        })
-                        .catch((err) => {
-                            console.error(err);
-                            message.error("Failed to add product");
-                        });
+                        }
+                    )
+                    .then(() => {
+                        message.success("Product updated successfully");
+                        setOpenAddModal(false);
+                        fetchProducts();
+                    })
+                    .catch((err) => message.error("Failed to update product"));
+            } else {
+                if (!mainImageFile) {
+                    message.error("Main product image is required.");
+                    return;
                 }
-            })
-            .catch((err) => {
-                console.log("Validation Failed:", err);
-            });
+                axios
+                    .post("http://localhost:8000/api/products", formData, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem(
+                                "token"
+                            )}`,
+                            "Content-Type": "multipart/form-data",
+                        },
+                    })
+                    .then(() => {
+                        message.success("Product added successfully");
+                        setOpenAddModal(false);
+                        fetchProducts();
+                    })
+                    .catch((err) => message.error("Failed to add product"));
+            }
+        });
     };
 
     const handleImageUpload = (info, type, index = null) => {
@@ -493,11 +506,12 @@ const ProductManagement = () => {
                                 style={{ width: 200, marginRight: 8 }}
                             />
                             <Checkbox
-                                onChange={(e) => setSelectAll(e.target.checked)}
+                                checked={selectAll}
+                                onChange={handleSelectAllChange}
                             >
                                 Select All
                             </Checkbox>
-                            {selectAll && (
+                            {(selectAll || selectedProducts.length > 0) && (
                                 <Button
                                     type="link"
                                     onClick={handleArchiveAll}
@@ -506,15 +520,22 @@ const ProductManagement = () => {
                                     <FolderOpenOutlined
                                         style={{ fontSize: "18px" }}
                                     />
+                                    {selectedProducts.length > 0 &&
+                                        ` (${selectedProducts.length})`}
                                 </Button>
                             )}
                         </div>
-                        <div>
+                        <div
+                            style={{
+                                flexDirection: "column",
+                                display: "flex",
+                            }}
+                        >
                             <Button
                                 type="default"
                                 icon={<DeleteOutlined />}
                                 onClick={() => setOpenArchiveModal(true)}
-                                style={{ marginRight: 8 }}
+                                style={{ marginRight: 8, width: "131px" }}
                             >
                                 Archived View
                             </Button>
@@ -522,6 +543,11 @@ const ProductManagement = () => {
                                 type="primary"
                                 icon={<PlusOutlined />}
                                 onClick={handleAdd}
+                                style={{
+                                    width: "131px",
+                                    marginRight: 8,
+                                    marginTop: "5px",
+                                }}
                             >
                                 Add Product
                             </Button>
@@ -531,11 +557,11 @@ const ProductManagement = () => {
                         columns={mainColumns}
                         dataSource={filteredProducts}
                         scroll={{ x: 1200 }}
+                        rowKey="id"
                     />
                 </Content>
             </Layout>
 
-            {/* Add / Edit Product Modal */}
             <Modal
                 title="Add / Edit Product"
                 centered
@@ -543,7 +569,11 @@ const ProductManagement = () => {
                 onCancel={() => setOpenAddModal(false)}
                 width={1000}
                 footer={[
-                    <Button key="cancel" onClick={() => setOpenAddModal(false)}>
+                    <Button
+                        key="cancel"
+                        onClick={() => setOpenAddModal(false)}
+                        style={{ marginRight: 8, width: "90px" }}
+                    >
                         Cancel
                     </Button>,
                     <Button key="save" type="primary" onClick={handleSave}>
@@ -664,7 +694,6 @@ const ProductManagement = () => {
                             </Form.Item>
                         </Col>
                     </Row>
-                    {/* Use Form.List to capture size–quantity pairs */}
                     <Form.List name="sizesDetails">
                         {(fields, { add, remove }) => (
                             <>
@@ -826,20 +855,14 @@ const ProductManagement = () => {
                     </Row>
                 </Form>
             </Modal>
+
             <Modal
                 title="Archived Products"
                 centered
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1200}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
             >
                 <Table
                     columns={archiveColumns}

@@ -64079,7 +64079,7 @@ function usePanelRef(panelSelector) {
 "use strict";
 /* provided dependency */ var process = __webpack_require__(/*! process/browser.js */ "./node_modules/process/browser.js");
 /* provided dependency */ var Buffer = __webpack_require__(/*! buffer */ "./node_modules/buffer/index.js")["Buffer"];
-/*! Axios v1.8.2 Copyright (c) 2025 Matt Zabriskie and contributors */
+/*! Axios v1.8.3 Copyright (c) 2025 Matt Zabriskie and contributors */
 
 
 function bind(fn, thisArg) {
@@ -66424,7 +66424,7 @@ var resolveConfig = (config) => {
 
   newConfig.headers = headers = AxiosHeaders$1.from(headers);
 
-  newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url), config.params, config.paramsSerializer);
+  newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls), config.params, config.paramsSerializer);
 
   // HTTP basic authentication
   if (auth) {
@@ -67149,7 +67149,7 @@ function dispatchRequest(config) {
   });
 }
 
-const VERSION = "1.8.2";
+const VERSION = "1.8.3";
 
 const validators$1 = {};
 
@@ -70058,7 +70058,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VERSION: () => (/* binding */ VERSION)
 /* harmony export */ });
-const VERSION = "1.8.2";
+const VERSION = "1.8.3";
 
 /***/ }),
 
@@ -70894,7 +70894,7 @@ __webpack_require__.r(__webpack_exports__);
 
   newConfig.headers = headers = _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_1__["default"].from(headers);
 
-  newConfig.url = (0,_buildURL_js__WEBPACK_IMPORTED_MODULE_2__["default"])((0,_core_buildFullPath_js__WEBPACK_IMPORTED_MODULE_3__["default"])(newConfig.baseURL, newConfig.url), config.params, config.paramsSerializer);
+  newConfig.url = (0,_buildURL_js__WEBPACK_IMPORTED_MODULE_2__["default"])((0,_core_buildFullPath_js__WEBPACK_IMPORTED_MODULE_3__["default"])(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls), config.params, config.paramsSerializer);
 
   // HTTP basic authentication
   if (auth) {
@@ -180903,6 +180903,16 @@ var CustomerManagement = function CustomerManagement() {
           antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive customer");
           console.error(err);
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
       }
     });
   };
@@ -181133,22 +181143,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -181190,40 +181206,40 @@ var InventoryManagement = function InventoryManagement() {
     _useState12 = _slicedToArray(_useState11, 2),
     selectAll = _useState12[0],
     setSelectAll = _useState12[1];
-  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState14 = _slicedToArray(_useState13, 2),
-    editingRecord = _useState14[0],
-    setEditingRecord = _useState14[1];
+    selectedItems = _useState14[0],
+    setSelectedItems = _useState14[1];
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState16 = _slicedToArray(_useState15, 2),
+    editingRecord = _useState16[0],
+    setEditingRecord = _useState16[1];
   var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_5__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
-
-  // Base URL for images – adjust if needed
   var imageBaseURL = "http://localhost:8000/storage/";
-
-  // Fetch active inventory records from API (with product data)
   var fetchInventory = function fetchInventory() {
     axios__WEBPACK_IMPORTED_MODULE_6__["default"].get("http://localhost:8000/api/inventory", {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      console.log("Fetched inventory:", res.data);
-      setInventoryItems(res.data);
+      setInventoryItems(res.data.map(function (item) {
+        return _objectSpread(_objectSpread({}, item), {}, {
+          selected: false
+        });
+      }));
     })["catch"](function (err) {
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error fetching inventory");
       console.error(err);
     });
   };
-
-  // Fetch archived inventory records
   var fetchArchivedInventory = function fetchArchivedInventory() {
     axios__WEBPACK_IMPORTED_MODULE_6__["default"].get("http://localhost:8000/api/inventory?archived=1", {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      console.log("Fetched archived inventory:", res.data);
       setArchivedInventory(res.data);
     })["catch"](function (err) {
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error fetching archived inventory");
@@ -181238,22 +181254,89 @@ var InventoryManagement = function InventoryManagement() {
       fetchArchivedInventory();
     }
   }, [openArchiveModal]);
-
-  // Table columns for active inventory records
-  // Table columns for active inventory records
+  var handleCheckboxChange = function handleCheckboxChange(itemId) {
+    var updatedItems = inventoryItems.map(function (item) {
+      return item.id === itemId ? _objectSpread(_objectSpread({}, item), {}, {
+        selected: !item.selected
+      }) : item;
+    });
+    setInventoryItems(updatedItems);
+    setSelectedItems(updatedItems.filter(function (i) {
+      return i.selected;
+    }).map(function (i) {
+      return i.id;
+    }));
+    var allSelected = updatedItems.every(function (i) {
+      return i.selected;
+    });
+    setSelectAll(allSelected);
+  };
+  var handleSelectAllChange = function handleSelectAllChange(e) {
+    var checked = e.target.checked;
+    setSelectAll(checked);
+    var updatedItems = inventoryItems.map(function (item) {
+      return _objectSpread(_objectSpread({}, item), {}, {
+        selected: checked
+      });
+    });
+    setInventoryItems(updatedItems);
+    setSelectedItems(checked ? updatedItems.map(function (i) {
+      return i.id;
+    }) : []);
+  };
+  var handleArchiveAll = function handleArchiveAll() {
+    if (selectedItems.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select at least one item to archive");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_8__["default"].confirm({
+      title: "Are you sure you want to archive ".concat(selectedItems.length, " selected inventory item(s)?"),
+      onOk: function onOk() {
+        Promise.all(selectedItems.map(function (id) {
+          return axios__WEBPACK_IMPORTED_MODULE_6__["default"]["delete"]("http://localhost:8000/api/inventory/".concat(id), {
+            headers: {
+              Authorization: "Bearer ".concat(localStorage.getItem("token"))
+            }
+          });
+        })).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Selected inventory items archived successfully");
+          fetchInventory();
+          setSelectedItems([]);
+          setSelectAll(false);
+        })["catch"](function (err) {
+          return antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive some inventory items");
+        });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
   var mainColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+          checked: record.selected,
+          onChange: function onChange() {
+            return handleCheckboxChange(record.id);
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
           onClick: function onClick() {
             return handleEdit(record);
           },
           style: {
             fontSize: "16px"
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
           onClick: function onClick() {
             return handleArchive(record);
           },
@@ -181304,18 +181387,16 @@ var InventoryManagement = function InventoryManagement() {
     dataIndex: "updated_at",
     key: "updated_at"
   }];
-
-  // Archive table columns – similar to main, but with a restore button.
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         type: "link",
         onClick: function onClick() {
           return handleRestore(record.id);
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
           style: {
             fontSize: "18px"
           }
@@ -181323,10 +181404,7 @@ var InventoryManagement = function InventoryManagement() {
       });
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
-
-  // Handle edit action: open modal and prefill form with record data.
   var handleEdit = function handleEdit(record) {
-    console.log("Edit inventory record:", record);
     setEditingRecord(record);
     form.setFieldsValue({
       size: record.size,
@@ -181335,10 +181413,8 @@ var InventoryManagement = function InventoryManagement() {
     });
     setOpenEditModal(true);
   };
-
-  // Handle archive (soft delete) action.
   var handleArchive = function handleArchive(record) {
-    antd__WEBPACK_IMPORTED_MODULE_14__["default"].confirm({
+    antd__WEBPACK_IMPORTED_MODULE_8__["default"].confirm({
       title: "Are you sure you want to archive this inventory item?",
       onOk: function onOk() {
         axios__WEBPACK_IMPORTED_MODULE_6__["default"]["delete"]("http://localhost:8000/api/inventory/".concat(record.id), {
@@ -181352,11 +181428,19 @@ var InventoryManagement = function InventoryManagement() {
           antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive inventory item");
           console.error(err);
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
       }
     });
   };
-
-  // Handle restore action.
   var handleRestore = function handleRestore(id) {
     axios__WEBPACK_IMPORTED_MODULE_6__["default"].post("http://localhost:8000/api/inventory/".concat(id, "/restore"), {}, {
       headers: {
@@ -181371,24 +181455,6 @@ var InventoryManagement = function InventoryManagement() {
       console.error(err);
     });
   };
-
-  // Bulk archive handler (if needed).
-  var handleArchiveAll = function handleArchiveAll() {
-    antd__WEBPACK_IMPORTED_MODULE_14__["default"].confirm({
-      title: "Are you sure you want to archive all selected inventory items?",
-      onOk: function onOk() {
-        antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Bulk archive executed (not implemented)");
-      }
-    });
-  };
-
-  // Filter inventory records based on the search query.
-  var filteredInventory = inventoryItems.filter(function (item) {
-    var lower = searchQuery.toLowerCase();
-    return item.product && item.product.product_name.toLowerCase().includes(lower) || item.size.toLowerCase().includes(lower) || item.stock_status.toLowerCase().includes(lower);
-  });
-
-  // Handle update of inventory record (called from the edit modal).
   var handleUpdate = function handleUpdate() {
     form.validateFields().then(function (values) {
       axios__WEBPACK_IMPORTED_MODULE_6__["default"].put("http://localhost:8000/api/inventory/".concat(editingRecord.id), values, {
@@ -181408,6 +181474,10 @@ var InventoryManagement = function InventoryManagement() {
       console.log("Validation Failed:", err);
     });
   };
+  var filteredInventory = inventoryItems.filter(function (item) {
+    var lower = searchQuery.toLowerCase();
+    return item.product && item.product.product_name.toLowerCase().includes(lower) || item.size.toLowerCase().includes(lower) || item.stock_status.toLowerCase().includes(lower);
+  });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
       width: 256,
@@ -181448,33 +181518,32 @@ var InventoryManagement = function InventoryManagement() {
               style: {
                 width: 300
               }
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-              onChange: function onChange(e) {
-                return setSelectAll(e.target.checked);
-              },
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+              checked: selectAll,
+              onChange: handleSelectAllChange,
               style: {
                 marginLeft: 16
               },
               children: "Select All"
-            }), selectAll && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            }), (selectAll || selectedItems.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
               type: "link",
               onClick: handleArchiveAll,
               style: {
                 marginLeft: 8
               },
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
                 style: {
                   fontSize: "18px"
                 }
-              })
+              }), selectedItems.length > 0 && " (".concat(selectedItems.length, ")")]
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
               type: "default",
               onClick: function onClick() {
                 return setOpenArchiveModal(true);
               },
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
                 style: {
                   marginRight: 4
                 }
@@ -181487,7 +181556,7 @@ var InventoryManagement = function InventoryManagement() {
           rowKey: "id"
         })]
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
       title: "Archived Inventory",
       centered: true,
       open: openArchiveModal,
@@ -181495,19 +181564,14 @@ var InventoryManagement = function InventoryManagement() {
         return setOpenArchiveModal(false);
       },
       width: 1200,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-        onClick: function onClick() {
-          return setOpenArchiveModal(false);
-        },
-        children: "Close"
-      }, "close")],
+      footer: [],
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
         columns: archiveColumns,
         dataSource: archivedInventory,
         rowKey: "id",
         pagination: false
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
       title: "Edit Inventory Item",
       centered: true,
       open: openEditModal,
@@ -181515,13 +181579,16 @@ var InventoryManagement = function InventoryManagement() {
         setOpenEditModal(false);
         setEditingRecord(null);
       },
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        style: {
+          width: "131px"
+        },
         onClick: function onClick() {
           setOpenEditModal(false);
           setEditingRecord(null);
         },
         children: "Cancel"
-      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         type: "primary",
         onClick: handleUpdate,
         children: "Update Inventory"
@@ -181529,16 +181596,16 @@ var InventoryManagement = function InventoryManagement() {
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
         form: form,
         layout: "vertical",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
           name: "size",
           label: "Size",
           rules: [{
             required: true,
             message: "Size is required"
           }],
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
             disabled: true
-          }), " "]
+          })
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
           name: "quantity",
           label: "Stock Quantity",
@@ -181785,6 +181852,16 @@ var OrderManagement = function OrderManagement() {
           antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive order");
           console.error(err);
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
       }
     });
   };
@@ -181948,7 +182025,9 @@ var OrderManagement = function OrderManagement() {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Header, {
         style: {
           background: "#fff",
-          padding: "0 24px"
+          padding: "0 24px",
+          fontSize: "18px",
+          fontWeight: "bold"
         },
         children: "ORDER MANAGEMENT"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Content, {
@@ -181962,7 +182041,9 @@ var OrderManagement = function OrderManagement() {
             return setOpenArchiveModal(true);
           },
           style: {
-            marginBottom: 16
+            marginBottom: 16,
+            width: "131px",
+            "float": "right"
           },
           children: "Archived Orders"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
@@ -182076,17 +182157,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/row/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/col/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/upload/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/PlusOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UploadOutlined.js");
@@ -182094,11 +182175,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 var _excluded = ["key", "name", "fieldKey"];
-function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
-function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
 function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
@@ -182106,6 +182182,11 @@ function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread n
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -182125,7 +182206,6 @@ var Option = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Option;
 var TextArea = antd__WEBPACK_IMPORTED_MODULE_5__["default"].TextArea,
   Search = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Search;
 var ProductManagement = function ProductManagement() {
-  // Modal and form states
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState2 = _slicedToArray(_useState, 2),
     openAddModal = _useState2[0],
@@ -182147,78 +182227,76 @@ var ProductManagement = function ProductManagement() {
     setSelectAll = _useState8[1];
   var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState10 = _slicedToArray(_useState9, 2),
-    products = _useState10[0],
-    setProducts = _useState10[1];
+    selectedProducts = _useState10[0],
+    setSelectedProducts = _useState10[1];
   var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState12 = _slicedToArray(_useState11, 2),
-    archivedProducts = _useState12[0],
-    setArchivedProducts = _useState12[1];
-  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    products = _useState12[0],
+    setProducts = _useState12[1];
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState14 = _slicedToArray(_useState13, 2),
-    currentProduct = _useState14[0],
-    setCurrentProduct = _useState14[1];
-
-  // Image states for main and side images
+    archivedProducts = _useState14[0],
+    setArchivedProducts = _useState14[1];
   var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState16 = _slicedToArray(_useState15, 2),
-    mainImageFile = _useState16[0],
-    setMainImageFile = _useState16[1];
-  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    currentProduct = _useState16[0],
+    setCurrentProduct = _useState16[1];
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState18 = _slicedToArray(_useState17, 2),
-    mainImagePreview = _useState18[0],
-    setMainImagePreview = _useState18[1];
-  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([null, null, null]),
+    mainImageFile = _useState18[0],
+    setMainImageFile = _useState18[1];
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
     _useState20 = _slicedToArray(_useState19, 2),
-    sideImagesFiles = _useState20[0],
-    setSideImagesFiles = _useState20[1];
-  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(["", "", ""]),
+    mainImagePreview = _useState20[0],
+    setMainImagePreview = _useState20[1];
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([null, null, null]),
     _useState22 = _slicedToArray(_useState21, 2),
-    sideImagesPreview = _useState22[0],
-    setSideImagesPreview = _useState22[1];
-
-  // Dynamic options for select fields
-  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    sideImagesFiles = _useState22[0],
+    setSideImagesFiles = _useState22[1];
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(["", "", ""]),
     _useState24 = _slicedToArray(_useState23, 2),
-    brands = _useState24[0],
-    setBrands = _useState24[1];
+    sideImagesPreview = _useState24[0],
+    setSideImagesPreview = _useState24[1];
   var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState26 = _slicedToArray(_useState25, 2),
-    categories = _useState26[0],
-    setCategories = _useState26[1];
+    brands = _useState26[0],
+    setBrands = _useState26[1];
   var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState28 = _slicedToArray(_useState27, 2),
-    movements = _useState28[0],
-    setMovements = _useState28[1];
+    categories = _useState28[0],
+    setCategories = _useState28[1];
   var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState30 = _slicedToArray(_useState29, 2),
-    strapMaterials = _useState30[0],
-    setStrapMaterials = _useState30[1];
+    movements = _useState30[0],
+    setMovements = _useState30[1];
   var _useState31 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState32 = _slicedToArray(_useState31, 2),
-    genders = _useState32[0],
-    setGenders = _useState32[1];
+    strapMaterials = _useState32[0],
+    setStrapMaterials = _useState32[1];
   var _useState33 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState34 = _slicedToArray(_useState33, 2),
-    sizesOptions = _useState34[0],
-    setSizesOptions = _useState34[1];
-
-  // Base URL for images (adjust as needed)
+    genders = _useState34[0],
+    setGenders = _useState34[1];
+  var _useState35 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState36 = _slicedToArray(_useState35, 2),
+    sizesOptions = _useState36[0],
+    setSizesOptions = _useState36[1];
   var imageBaseURL = "http://localhost:8000/storage/";
-
-  // Fetch products from API
   var fetchProducts = function fetchProducts() {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("http://localhost:8000/api/products", {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      return setProducts(res.data);
+      setProducts(res.data.map(function (product) {
+        return _objectSpread(_objectSpread({}, product), {}, {
+          selected: false
+        });
+      }));
     })["catch"](function (err) {
       return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching products");
     });
   };
-
-  // Fetch archived products
   var fetchArchivedProducts = function fetchArchivedProducts() {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("http://localhost:8000/api/products?archived=1", {
       headers: {
@@ -182230,8 +182308,6 @@ var ProductManagement = function ProductManagement() {
       return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching archived products");
     });
   };
-
-  // Fetch sub-category options dynamically based on type
   var fetchSubCategoryOptions = function fetchSubCategoryOptions(type, setter) {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("http://localhost:8000/api/sub-categories?type=".concat(type), {
       headers: {
@@ -182261,21 +182337,89 @@ var ProductManagement = function ProductManagement() {
       message: message
     }];
   };
-
-  // Table columns for active products
+  var handleCheckboxChange = function handleCheckboxChange(productId) {
+    var updatedProducts = products.map(function (product) {
+      return product.id === productId ? _objectSpread(_objectSpread({}, product), {}, {
+        selected: !product.selected
+      }) : product;
+    });
+    setProducts(updatedProducts);
+    setSelectedProducts(updatedProducts.filter(function (p) {
+      return p.selected;
+    }).map(function (p) {
+      return p.id;
+    }));
+    var allSelected = updatedProducts.every(function (p) {
+      return p.selected;
+    });
+    setSelectAll(allSelected);
+  };
+  var handleSelectAllChange = function handleSelectAllChange(e) {
+    var checked = e.target.checked;
+    setSelectAll(checked);
+    var updatedProducts = products.map(function (product) {
+      return _objectSpread(_objectSpread({}, product), {}, {
+        selected: checked
+      });
+    });
+    setProducts(updatedProducts);
+    setSelectedProducts(checked ? updatedProducts.map(function (p) {
+      return p.id;
+    }) : []);
+  };
+  var handleArchiveAll = function handleArchiveAll() {
+    if (selectedProducts.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].warning("Please select at least one product to archive");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
+      title: "Are you sure you want to archive ".concat(selectedProducts.length, " selected product(s)?"),
+      onOk: function onOk() {
+        Promise.all(selectedProducts.map(function (id) {
+          return axios__WEBPACK_IMPORTED_MODULE_7__["default"]["delete"]("http://localhost:8000/api/products/".concat(id), {
+            headers: {
+              Authorization: "Bearer ".concat(localStorage.getItem("token"))
+            }
+          });
+        })).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Selected products archived successfully");
+          fetchProducts();
+          setSelectedProducts([]);
+          setSelectAll(false);
+        })["catch"](function (err) {
+          return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive some products");
+        });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
   var mainColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          checked: record.selected,
+          onChange: function onChange() {
+            return handleCheckboxChange(record.id);
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
           onClick: function onClick() {
             return handleEdit(record);
           },
           style: {
             fontSize: "16px"
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
           onClick: function onClick() {
             return handleArchive(record);
           },
@@ -182294,7 +182438,8 @@ var ProductManagement = function ProductManagement() {
         src: image ? "".concat(imageBaseURL).concat(image) : "https://via.placeholder.com/100?text=Prod",
         alt: "product",
         style: {
-          width: 50
+          width: "60px",
+          height: "70px"
         }
       });
     }
@@ -182307,50 +182452,50 @@ var ProductManagement = function ProductManagement() {
     dataIndex: "brand_id",
     key: "brand_id",
     render: function render(id) {
-      var option = brands.find(function (b) {
+      var _brands$find;
+      return ((_brands$find = brands.find(function (b) {
         return b.id === id;
-      });
-      return option ? option.name : "";
+      })) === null || _brands$find === void 0 ? void 0 : _brands$find.name) || "";
     }
   }, {
     title: "Category",
     dataIndex: "category_id",
     key: "category_id",
     render: function render(id) {
-      var option = categories.find(function (c) {
+      var _categories$find;
+      return ((_categories$find = categories.find(function (c) {
         return c.id === id;
-      });
-      return option ? option.name : "";
+      })) === null || _categories$find === void 0 ? void 0 : _categories$find.name) || "";
     }
   }, {
     title: "Movement",
     dataIndex: "movement_id",
     key: "movement_id",
     render: function render(id) {
-      var option = movements.find(function (m) {
+      var _movements$find;
+      return ((_movements$find = movements.find(function (m) {
         return m.id === id;
-      });
-      return option ? option.name : "";
+      })) === null || _movements$find === void 0 ? void 0 : _movements$find.name) || "";
     }
   }, {
     title: "Strap Material",
     dataIndex: "strap_material_id",
     key: "strap_material_id",
     render: function render(id) {
-      var option = strapMaterials.find(function (s) {
+      var _strapMaterials$find;
+      return ((_strapMaterials$find = strapMaterials.find(function (s) {
         return s.id === id;
-      });
-      return option ? option.name : "";
+      })) === null || _strapMaterials$find === void 0 ? void 0 : _strapMaterials$find.name) || "";
     }
   }, {
     title: "Gender",
     dataIndex: "gender_id",
     key: "gender_id",
     render: function render(id) {
-      var option = genders.find(function (g) {
+      var _genders$find;
+      return ((_genders$find = genders.find(function (g) {
         return g.id === id;
-      });
-      return option ? option.name : "";
+      })) === null || _genders$find === void 0 ? void 0 : _genders$find.name) || "";
     }
   }, {
     title: "Sizes",
@@ -182358,16 +182503,13 @@ var ProductManagement = function ProductManagement() {
     key: "sizes",
     render: function render(sizes) {
       var parsedSizes = sizes;
-      // If sizes is a string, try to parse it
       if (typeof sizes === "string") {
         try {
           parsedSizes = JSON.parse(sizes);
         } catch (e) {
-          // If parsing fails, fallback to original value
           return sizes;
         }
       }
-      // If parsedSizes is an array, extract the 'size' property if available
       if (Array.isArray(parsedSizes)) {
         if (parsedSizes.length > 0 && _typeof(parsedSizes[0]) === "object" && parsedSizes[0].size) {
           return parsedSizes.map(function (item) {
@@ -182385,19 +182527,17 @@ var ProductManagement = function ProductManagement() {
     render: function render(price) {
       return "$".concat(price);
     }
-  }
-  // Removed the "Quantity" column
-  ];
+  }];
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
         type: "link",
         onClick: function onClick() {
           return handleRestore(record.id);
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
           style: {
             fontSize: "18px"
           }
@@ -182405,10 +182545,7 @@ var ProductManagement = function ProductManagement() {
       });
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
-
-  // When editing, prefill form values. For sizes, parse sizesDetails from the JSON string.
   var handleEdit = function handleEdit(record) {
-    console.log("Edit product:", record);
     setCurrentProduct(record);
     form.setFieldsValue({
       id: record.id,
@@ -182428,7 +182565,7 @@ var ProductManagement = function ProductManagement() {
     setOpenAddModal(true);
   };
   var handleArchive = function handleArchive(record) {
-    antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
       title: "Are you sure you want to archive this product?",
       onOk: function onOk() {
         axios__WEBPACK_IMPORTED_MODULE_7__["default"]["delete"]("http://localhost:8000/api/products/".concat(record.id), {
@@ -182441,6 +182578,16 @@ var ProductManagement = function ProductManagement() {
         })["catch"](function (err) {
           return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive product");
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
       }
     });
   };
@@ -182457,14 +182604,6 @@ var ProductManagement = function ProductManagement() {
       return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore product");
     });
   };
-  var handleArchiveAll = function handleArchiveAll() {
-    antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
-      title: "Are you sure you want to archive all selected products?",
-      onOk: function onOk() {
-        return antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Bulk archive executed (not implemented)");
-      }
-    });
-  };
   var handleAdd = function handleAdd() {
     form.resetFields();
     setCurrentProduct(null);
@@ -182474,8 +182613,6 @@ var ProductManagement = function ProductManagement() {
     setSideImagesPreview(["", "", ""]);
     setOpenAddModal(true);
   };
-
-  // Save product: calculate overall quantity from sizesDetails and send sizes as a JSON string.
   var handleSave = function handleSave() {
     form.validateFields().then(function (values) {
       var formData = new FormData();
@@ -182487,14 +182624,11 @@ var ProductManagement = function ProductManagement() {
       formData.append("gender_id", parseInt(values.gender_id, 10));
       formData.append("price", values.price);
       formData.append("description", values.description);
-
-      // sizesDetails is an array of objects: { size, quantity }
       var sizesDetails = values.sizesDetails || [];
       var overallQuantity = sizesDetails.reduce(function (sum, item) {
         return sum + Number(item.quantity);
       }, 0);
       formData.append("quantity", overallQuantity);
-      // Store sizes as a JSON string
       formData.append("sizes", JSON.stringify(sizesDetails));
       if (mainImageFile) formData.append("main_image", mainImageFile);
       sideImagesFiles.forEach(function (file, index) {
@@ -182512,8 +182646,7 @@ var ProductManagement = function ProductManagement() {
           setOpenAddModal(false);
           fetchProducts();
         })["catch"](function (err) {
-          console.error(err);
-          antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update product");
+          return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update product");
         });
       } else {
         if (!mainImageFile) {
@@ -182530,12 +182663,9 @@ var ProductManagement = function ProductManagement() {
           setOpenAddModal(false);
           fetchProducts();
         })["catch"](function (err) {
-          console.error(err);
-          antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to add product");
+          return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to add product");
         });
       }
-    })["catch"](function (err) {
-      console.log("Validation Failed:", err);
     });
   };
   var handleImageUpload = function handleImageUpload(info, type) {
@@ -182564,13 +182694,13 @@ var ProductManagement = function ProductManagement() {
     }, 0);
   };
   var filteredProducts = products.filter(function (product) {
-    var _brands$find, _categories$find;
+    var _brands$find2, _categories$find2;
     var lower = searchText.toLowerCase();
-    return product.product_name.toLowerCase().includes(lower) || ((_brands$find = brands.find(function (b) {
+    return product.product_name.toLowerCase().includes(lower) || ((_brands$find2 = brands.find(function (b) {
       return b.id === product.brand_id;
-    })) === null || _brands$find === void 0 ? void 0 : _brands$find.name.toLowerCase().includes(lower)) || ((_categories$find = categories.find(function (c) {
+    })) === null || _brands$find2 === void 0 ? void 0 : _brands$find2.name.toLowerCase().includes(lower)) || ((_categories$find2 = categories.find(function (c) {
       return c.id === product.category_id;
-    })) === null || _categories$find === void 0 ? void 0 : _categories$find.name.toLowerCase().includes(lower));
+    })) === null || _categories$find2 === void 0 ? void 0 : _categories$find2.name.toLowerCase().includes(lower));
   });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
@@ -182614,38 +182744,47 @@ var ProductManagement = function ProductManagement() {
                 width: 200,
                 marginRight: 8
               }
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-              onChange: function onChange(e) {
-                return setSelectAll(e.target.checked);
-              },
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+              checked: selectAll,
+              onChange: handleSelectAllChange,
               children: "Select All"
-            }), selectAll && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            }), (selectAll || selectedProducts.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
               type: "link",
               onClick: handleArchiveAll,
               style: {
                 marginLeft: 8
               },
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {
                 style: {
                   fontSize: "18px"
                 }
-              })
+              }), selectedProducts.length > 0 && " (".concat(selectedProducts.length, ")")]
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            style: {
+              flexDirection: "column",
+              display: "flex"
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
               type: "default",
-              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
+              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {}),
               onClick: function onClick() {
                 return setOpenArchiveModal(true);
               },
               style: {
-                marginRight: 8
+                marginRight: 8,
+                width: "131px"
               },
               children: "Archived View"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
               type: "primary",
               icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {}),
               onClick: handleAdd,
+              style: {
+                width: "131px",
+                marginRight: 8,
+                marginTop: "5px"
+              },
               children: "Add Product"
             })]
           })]
@@ -182654,10 +182793,11 @@ var ProductManagement = function ProductManagement() {
           dataSource: filteredProducts,
           scroll: {
             x: 1200
-          }
+          },
+          rowKey: "id"
         })]
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
       title: "Add / Edit Product",
       centered: true,
       open: openAddModal,
@@ -182665,12 +182805,16 @@ var ProductManagement = function ProductManagement() {
         return setOpenAddModal(false);
       },
       width: 1000,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
         onClick: function onClick() {
           return setOpenAddModal(false);
         },
+        style: {
+          marginRight: 8,
+          width: "90px"
+        },
         children: "Cancel"
-      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
         type: "primary",
         onClick: handleSave,
         children: "Save Product"
@@ -182848,7 +182992,7 @@ var ProductManagement = function ProductManagement() {
                     }))
                   }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
                     span: 4,
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                       type: "link",
                       onClick: function onClick() {
                         return remove(name);
@@ -182858,7 +183002,7 @@ var ProductManagement = function ProductManagement() {
                   })]
                 }, key);
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                   type: "dashed",
                   onClick: function onClick() {
                     return add();
@@ -182889,7 +183033,7 @@ var ProductManagement = function ProductManagement() {
                 onChange: function onChange(info) {
                   return handleImageUpload(info, "main");
                 },
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                   icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_22__["default"], {}),
                   children: "Upload Main Image"
                 })
@@ -182920,7 +183064,7 @@ var ProductManagement = function ProductManagement() {
                   onChange: function onChange(info) {
                     return handleImageUpload(info, "side", index);
                   },
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                     icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_22__["default"], {}),
                     children: "Upload"
                   })
@@ -182941,7 +183085,7 @@ var ProductManagement = function ProductManagement() {
           })
         })]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
       title: "Archived Products",
       centered: true,
       open: openArchiveModal,
@@ -182949,12 +183093,7 @@ var ProductManagement = function ProductManagement() {
         return setOpenArchiveModal(false);
       },
       width: 1200,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-        onClick: function onClick() {
-          return setOpenArchiveModal(false);
-        },
-        children: "Close"
-      }, "close")],
+      footer: [],
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
         columns: archiveColumns,
         dataSource: archivedProducts,
@@ -182987,23 +183126,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/select/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/PlusOutlined.js");
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -183046,40 +183191,40 @@ var UserManagement = function UserManagement() {
     _useState12 = _slicedToArray(_useState11, 2),
     selectAll = _useState12[0],
     setSelectAll = _useState12[1];
-  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState14 = _slicedToArray(_useState13, 2),
-    editingUser = _useState14[0],
-    setEditingUser = _useState14[1];
+    selectedUsers = _useState14[0],
+    setSelectedUsers = _useState14[1];
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState16 = _slicedToArray(_useState15, 2),
+    editingUser = _useState16[0],
+    setEditingUser = _useState16[1];
   var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_6__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
-
-  // API endpoint for users
   var API_URL = "http://localhost:8000/api/users";
-
-  // Fetch active users with role relationship
   var fetchUsers = function fetchUsers() {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].get(API_URL, {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      console.log("Fetched users:", res.data);
-      setUsers(res.data);
+      setUsers(res.data.map(function (user) {
+        return _objectSpread(_objectSpread({}, user), {}, {
+          selected: false
+        });
+      }));
     })["catch"](function (err) {
       antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching users");
       console.error(err);
     });
   };
-
-  // Fetch archived users
   var fetchArchivedUsers = function fetchArchivedUsers() {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(API_URL, "?archived=1"), {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      console.log("Fetched archived users:", res.data);
       setArchivedUsers(res.data);
     })["catch"](function (err) {
       antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching archived users");
@@ -183094,22 +183239,89 @@ var UserManagement = function UserManagement() {
       fetchArchivedUsers();
     }
   }, [openArchiveModal]);
-
-  // Table columns for active users
-  // Table columns for active users
+  var handleCheckboxChange = function handleCheckboxChange(userId) {
+    var updatedUsers = users.map(function (user) {
+      return user.id === userId ? _objectSpread(_objectSpread({}, user), {}, {
+        selected: !user.selected
+      }) : user;
+    });
+    setUsers(updatedUsers);
+    setSelectedUsers(updatedUsers.filter(function (u) {
+      return u.selected;
+    }).map(function (u) {
+      return u.id;
+    }));
+    var allSelected = updatedUsers.every(function (u) {
+      return u.selected;
+    });
+    setSelectAll(allSelected);
+  };
+  var handleSelectAllChange = function handleSelectAllChange(e) {
+    var checked = e.target.checked;
+    setSelectAll(checked);
+    var updatedUsers = users.map(function (user) {
+      return _objectSpread(_objectSpread({}, user), {}, {
+        selected: checked
+      });
+    });
+    setUsers(updatedUsers);
+    setSelectedUsers(checked ? updatedUsers.map(function (u) {
+      return u.id;
+    }) : []);
+  };
+  var handleArchiveAll = function handleArchiveAll() {
+    if (selectedUsers.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].warning("Please select at least one user to archive");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
+      title: "Are you sure you want to archive ".concat(selectedUsers.length, " selected user(s)?"),
+      onOk: function onOk() {
+        Promise.all(selectedUsers.map(function (id) {
+          return axios__WEBPACK_IMPORTED_MODULE_7__["default"]["delete"]("".concat(API_URL, "/").concat(id), {
+            headers: {
+              Authorization: "Bearer ".concat(localStorage.getItem("token"))
+            }
+          });
+        })).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Selected users archived successfully");
+          fetchUsers();
+          setSelectedUsers([]);
+          setSelectAll(false);
+        })["catch"](function (err) {
+          return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive some users");
+        });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
   var mainColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          checked: record.selected,
+          onChange: function onChange() {
+            return handleCheckboxChange(record.id);
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
           onClick: function onClick() {
             return handleEdit(record);
           },
           style: {
             fontSize: "16px"
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
           onClick: function onClick() {
             return handleArchive(record);
           },
@@ -183146,18 +183358,16 @@ var UserManagement = function UserManagement() {
     dataIndex: "updated_at",
     key: "updated_at"
   }];
-
-  // Archive table columns – similar to main, but with only restore action.
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
         type: "link",
         onClick: function onClick() {
           return handleRestore(record.id);
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
           style: {
             fontSize: "18px"
           }
@@ -183165,8 +183375,6 @@ var UserManagement = function UserManagement() {
       });
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
-
-  // Handle edit action: open modal and prefill form with record data.
   var handleEdit = function handleEdit(record) {
     console.log("Edit user:", record);
     setEditingUser(record);
@@ -183178,10 +183386,8 @@ var UserManagement = function UserManagement() {
     });
     setOpenAddEditModal(true);
   };
-
-  // Handle archive (soft delete) action.
   var handleArchive = function handleArchive(record) {
-    antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
       title: "Are you sure you want to archive this user?",
       onOk: function onOk() {
         axios__WEBPACK_IMPORTED_MODULE_7__["default"]["delete"]("".concat(API_URL, "/").concat(record.id), {
@@ -183195,11 +183401,19 @@ var UserManagement = function UserManagement() {
           antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive user");
           console.error(err);
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
       }
     });
   };
-
-  // Handle restore action.
   var handleRestore = function handleRestore(id) {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/").concat(id, "/restore"), {}, {
       headers: {
@@ -183214,29 +183428,14 @@ var UserManagement = function UserManagement() {
       console.error(err);
     });
   };
-
-  // Bulk archive handler (if needed)
-  var handleArchiveAll = function handleArchiveAll() {
-    antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
-      title: "Are you sure you want to archive all selected users?",
-      onOk: function onOk() {
-        antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Bulk archive executed (not implemented)");
-      }
-    });
-  };
-
-  // Handle adding a new user (opens the add modal)
   var handleAdd = function handleAdd() {
     form.resetFields();
     setEditingUser(null);
     setOpenAddEditModal(true);
   };
-
-  // Handle save (for both add and edit)
   var handleSave = function handleSave() {
     form.validateFields().then(function (values) {
       if (editingUser) {
-        // Update existing user
         axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("".concat(API_URL, "/").concat(editingUser.id), values, {
           headers: {
             Authorization: "Bearer ".concat(localStorage.getItem("token"))
@@ -183251,7 +183450,6 @@ var UserManagement = function UserManagement() {
           console.error(err);
         });
       } else {
-        // Add new user
         axios__WEBPACK_IMPORTED_MODULE_7__["default"].post(API_URL, values, {
           headers: {
             Authorization: "Bearer ".concat(localStorage.getItem("token"))
@@ -183269,8 +183467,6 @@ var UserManagement = function UserManagement() {
       console.log("Validation Failed:", err);
     });
   };
-
-  // Filter users based on search query.
   var filteredUsers = users.filter(function (user) {
     var lower = searchQuery.toLowerCase();
     return user.username.toLowerCase().includes(lower) || user.email.toLowerCase().includes(lower) || user.role && user.role.name.toLowerCase().includes(lower) || user.status.toLowerCase().includes(lower);
@@ -183315,53 +183511,54 @@ var UserManagement = function UserManagement() {
               style: {
                 width: 300
               }
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-              onChange: function onChange(e) {
-                return setSelectAll(e.target.checked);
-              },
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+              checked: selectAll,
+              onChange: handleSelectAllChange,
               style: {
                 marginLeft: 16
               },
               children: "Select All"
-            }), selectAll && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            }), (selectAll || selectedUsers.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
               type: "link",
               onClick: handleArchiveAll,
               style: {
                 marginLeft: 8
               },
-              title: "Archive All",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {
                 style: {
                   fontSize: "18px"
                 }
-              })
+              }), selectedUsers.length > 0 && " (".concat(selectedUsers.length, ")")]
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             style: {
               display: "flex",
-              alignItems: "center"
+              flexDirection: "column"
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+              type: "default",
+              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {}),
+              onClick: function onClick() {
+                return setOpenArchiveModal(true);
+              },
+              style: {
+                marginRight: 8,
+                width: "131px"
+              },
+              children: "Archived View"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
               type: "primary",
               onClick: handleAdd,
               style: {
-                marginRight: 16
+                width: "131px",
+                marginRight: 8,
+                marginTop: "5px"
               },
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {
                 style: {
                   marginRight: 4
                 }
               }), "Add User"]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-              type: "default",
-              onClick: function onClick() {
-                return setOpenArchiveModal(true);
-              },
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
-                style: {
-                  marginRight: 4
-                }
-              }), "Archived View"]
             })]
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
@@ -183373,7 +183570,7 @@ var UserManagement = function UserManagement() {
           }
         })]
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
       title: "Archived Users",
       centered: true,
       open: openArchiveModal,
@@ -183381,19 +183578,14 @@ var UserManagement = function UserManagement() {
         return setOpenArchiveModal(false);
       },
       width: 1200,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-        onClick: function onClick() {
-          return setOpenArchiveModal(false);
-        },
-        children: "Close"
-      }, "close")],
+      footer: [],
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
         columns: archiveColumns,
         dataSource: archivedUsers,
         rowKey: "id",
         pagination: false
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
       title: editingUser ? "Edit User" : "Add User",
       centered: true,
       open: openAddEditModal,
@@ -183401,13 +183593,17 @@ var UserManagement = function UserManagement() {
         setOpenAddEditModal(false);
         setEditingUser(null);
       },
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+        style: {
+          marginRight: 8,
+          width: "100px"
+        },
         onClick: function onClick() {
           setOpenAddEditModal(false);
           setEditingUser(null);
         },
         children: "Cancel"
-      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
         type: "primary",
         onClick: handleSave,
         children: editingUser ? "Update User" : "Add User"

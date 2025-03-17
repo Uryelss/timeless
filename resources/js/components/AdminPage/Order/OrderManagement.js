@@ -172,6 +172,8 @@ const OrderManagement = () => {
                         console.error(err);
                     });
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
@@ -351,14 +353,25 @@ const OrderManagement = () => {
                 <Sidebar />
             </Sider>
             <Layout>
-                <Header style={{ background: "#fff", padding: "0 24px" }}>
+                <Header
+                    style={{
+                        background: "#fff",
+                        padding: "0 24px",
+                        fontSize: "18px",
+                        fontWeight: "bold",
+                    }}
+                >
                     ORDER MANAGEMENT
                 </Header>
                 <Content style={{ padding: 24, background: "#fff" }}>
                     <Button
                         type="default"
                         onClick={() => setOpenArchiveModal(true)}
-                        style={{ marginBottom: 16 }}
+                        style={{
+                            marginBottom: 16,
+                            width: "131px",
+                            float: "right",
+                        }}
                     >
                         Archived Orders
                     </Button>
