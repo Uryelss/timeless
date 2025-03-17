@@ -186449,6 +186449,14 @@ var MyAddress = function MyAddress() {
     _useState4 = _slicedToArray(_useState3, 2),
     showForm = _useState4[0],
     setShowForm = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState6 = _slicedToArray(_useState5, 2),
+    editMode = _useState6[0],
+    setEditMode = _useState6[1]; // Track if we're editing
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState8 = _slicedToArray(_useState7, 2),
+    currentAddressId = _useState8[0],
+    setCurrentAddressId = _useState8[1]; // Store the ID of the address being edited
   var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_5__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
@@ -186477,7 +186485,6 @@ var MyAddress = function MyAddress() {
             });
           case 6:
             res = _context.sent;
-            // Expecting res.data to include profile data (first_name, last_name) with each address
             setAddresses(res.data);
             _context.next = 14;
             break;
@@ -186500,16 +186507,14 @@ var MyAddress = function MyAddress() {
     fetchAddresses();
   }, [token]);
 
-  // Handle form submission to add a new address
+  // Handle form submission for adding or updating an address
   var onFinish = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(values) {
-      var res;
+      var addressData, res, _res;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.prev = 0;
-            _context2.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("http://localhost:8000/api/addresses", {
+            addressData = {
               street: values.street,
               city: values.city,
               state: values.province,
@@ -186517,31 +186522,54 @@ var MyAddress = function MyAddress() {
               barangay: values.barangay,
               postal_code: values.postal_code,
               country: values.country,
-              phone: values.phone
-              // Assume profile_id is set backend-side based on auth
-            }, {
+              phone: values.phone,
+              is_pickup: values.is_pickup || false,
+              is_return: values.is_return || false
+            };
+            _context2.prev = 1;
+            if (!editMode) {
+              _context2.next = 9;
+              break;
+            }
+            _context2.next = 5;
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("http://localhost:8000/api/addresses/".concat(currentAddressId), addressData, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
-          case 3:
+          case 5:
             res = _context2.sent;
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Address updated successfully!");
+            _context2.next = 13;
+            break;
+          case 9:
+            _context2.next = 11;
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("http://localhost:8000/api/addresses", addressData, {
+              headers: {
+                Authorization: "Bearer ".concat(token)
+              }
+            });
+          case 11:
+            _res = _context2.sent;
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Address added successfully!");
+          case 13:
             setShowForm(false);
+            setEditMode(false);
+            setCurrentAddressId(null);
             form.resetFields();
             fetchAddresses(); // Refresh the address list
-            _context2.next = 14;
+            _context2.next = 24;
             break;
-          case 10:
-            _context2.prev = 10;
-            _context2.t0 = _context2["catch"](0);
-            console.error("Error adding address:", _context2.t0);
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Error adding address");
-          case 14:
+          case 20:
+            _context2.prev = 20;
+            _context2.t0 = _context2["catch"](1);
+            console.error("Error saving address:", _context2.t0);
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Error ".concat(editMode ? "updating" : "adding", " address"));
+          case 24:
           case "end":
             return _context2.stop();
         }
-      }, _callee2, null, [[0, 10]]);
+      }, _callee2, null, [[1, 20]]);
     }));
     return function onFinish(_x) {
       return _ref2.apply(this, arguments);
@@ -186616,10 +186644,24 @@ var MyAddress = function MyAddress() {
     };
   }();
 
-  // Handle editing an address (placeholder for now)
+  // Handle editing an address
   var handleEdit = function handleEdit(address) {
-    console.log("Edit address:", address);
-    antd__WEBPACK_IMPORTED_MODULE_6__["default"].info("Edit functionality to be implemented");
+    setEditMode(true);
+    setCurrentAddressId(address.id);
+    setShowForm(true);
+    // Pre-fill the form with the address data
+    form.setFieldsValue({
+      street: address.street,
+      barangay: address.barangay,
+      city: address.city,
+      province: address.state,
+      // Mapping state to province
+      postal_code: address.postal_code,
+      country: address.country,
+      phone: address.phone,
+      is_pickup: address.is_pickup,
+      is_return: address.is_return
+    });
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     style: {
@@ -186653,7 +186695,10 @@ var MyAddress = function MyAddress() {
                 borderColor: "#ff4d4f"
               },
               onClick: function onClick() {
-                return setShowForm(true);
+                setShowForm(true);
+                setEditMode(false);
+                setCurrentAddressId(null);
+                form.resetFields();
               },
               children: "+ Add New Address"
             })]
@@ -186736,7 +186781,7 @@ var MyAddress = function MyAddress() {
           })]
         }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h1", {
-            children: "New Address"
+            children: editMode ? "Edit Address" : "New Address"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
             form: form,
             layout: "vertical",
@@ -186835,18 +186880,16 @@ var MyAddress = function MyAddress() {
                 })]
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-                style: {
-                  display: "flex",
-                  gap: 10
-                },
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
-                  name: "is_pickup",
-                  children: "Pickup Address"
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
-                  name: "is_return",
-                  children: "Return Address"
-                })]
+              name: "is_pickup",
+              valuePropName: "checked",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+                children: "Pickup Address"
+              })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+              name: "is_return",
+              valuePropName: "checked",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+                children: "Return Address"
               })
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
@@ -186857,7 +186900,10 @@ var MyAddress = function MyAddress() {
                 },
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
                   onClick: function onClick() {
-                    return setShowForm(false);
+                    setShowForm(false);
+                    setEditMode(false);
+                    setCurrentAddressId(null);
+                    form.resetFields();
                   },
                   children: "Cancel"
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
@@ -186867,7 +186913,7 @@ var MyAddress = function MyAddress() {
                     backgroundColor: "#ff4d4f",
                     borderColor: "#ff4d4f"
                   },
-                  children: "Submit"
+                  children: editMode ? "Update" : "Submit"
                 })]
               })
             })]

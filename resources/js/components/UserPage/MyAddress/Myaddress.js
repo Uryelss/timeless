@@ -9,6 +9,8 @@ const { Option } = Select;
 const MyAddress = () => {
     const [addresses, setAddresses] = useState([]);
     const [showForm, setShowForm] = useState(false);
+    const [editMode, setEditMode] = useState(false); // Track if we're editing
+    const [currentAddressId, setCurrentAddressId] = useState(null); // Store the ID of the address being edited
     const [form] = Form.useForm();
     const token = localStorage.getItem("token");
 
@@ -23,7 +25,6 @@ const MyAddress = () => {
             const res = await axios.get("http://localhost:8000/api/addresses", {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            // Expecting res.data to include profile data (first_name, last_name) with each address
             setAddresses(res.data);
         } catch (error) {
             console.error("Error fetching addresses:", error);
@@ -35,30 +36,46 @@ const MyAddress = () => {
         fetchAddresses();
     }, [token]);
 
-    // Handle form submission to add a new address
+    // Handle form submission for adding or updating an address
     const onFinish = async (values) => {
+        const addressData = {
+            street: values.street,
+            city: values.city,
+            state: values.province, // Mapping province to state
+            barangay: values.barangay,
+            postal_code: values.postal_code,
+            country: values.country,
+            phone: values.phone,
+            is_pickup: values.is_pickup || false,
+            is_return: values.is_return || false,
+        };
+
         try {
-            const res = await axios.post(
-                "http://localhost:8000/api/addresses",
-                {
-                    street: values.street,
-                    city: values.city,
-                    state: values.province, // Mapping province to state
-                    barangay: values.barangay,
-                    postal_code: values.postal_code,
-                    country: values.country,
-                    phone: values.phone,
-                    // Assume profile_id is set backend-side based on auth
-                },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            message.success("Address added successfully!");
+            if (editMode) {
+                // Update existing address
+                const res = await axios.put(
+                    `http://localhost:8000/api/addresses/${currentAddressId}`,
+                    addressData,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                message.success("Address updated successfully!");
+            } else {
+                // Add new address
+                const res = await axios.post(
+                    "http://localhost:8000/api/addresses",
+                    addressData,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                message.success("Address added successfully!");
+            }
             setShowForm(false);
+            setEditMode(false);
+            setCurrentAddressId(null);
             form.resetFields();
             fetchAddresses(); // Refresh the address list
         } catch (error) {
-            console.error("Error adding address:", error);
-            message.error("Error adding address");
+            console.error("Error saving address:", error);
+            message.error(`Error ${editMode ? "updating" : "adding"} address`);
         }
     };
 
@@ -92,10 +109,23 @@ const MyAddress = () => {
         }
     };
 
-    // Handle editing an address (placeholder for now)
+    // Handle editing an address
     const handleEdit = (address) => {
-        console.log("Edit address:", address);
-        message.info("Edit functionality to be implemented");
+        setEditMode(true);
+        setCurrentAddressId(address.id);
+        setShowForm(true);
+        // Pre-fill the form with the address data
+        form.setFieldsValue({
+            street: address.street,
+            barangay: address.barangay,
+            city: address.city,
+            province: address.state, // Mapping state to province
+            postal_code: address.postal_code,
+            country: address.country,
+            phone: address.phone,
+            is_pickup: address.is_pickup,
+            is_return: address.is_return,
+        });
     };
 
     return (
@@ -117,7 +147,12 @@ const MyAddress = () => {
                                 <Button
                                     type="primary"
                                     style={{ backgroundColor: "#ff4d4f", borderColor: "#ff4d4f" }}
-                                    onClick={() => setShowForm(true)}
+                                    onClick={() => {
+                                        setShowForm(true);
+                                        setEditMode(false);
+                                        setCurrentAddressId(null);
+                                        form.resetFields();
+                                    }}
                                 >
                                     + Add New Address
                                 </Button>
@@ -188,7 +223,7 @@ const MyAddress = () => {
                         </>
                     ) : (
                         <>
-                            <h1>New Address</h1>
+                            <h1>{editMode ? "Edit Address" : "New Address"}</h1>
                             <Form
                                 form={form}
                                 layout="vertical"
@@ -255,22 +290,31 @@ const MyAddress = () => {
                                     </Radio.Group>
                                 </Form.Item>
 
-                                <Form.Item>
-                                    <div style={{ display: "flex", gap: 10 }}>
-                                        <Checkbox name="is_pickup">Pickup Address</Checkbox>
-                                        <Checkbox name="is_return">Return Address</Checkbox>
-                                    </div>
+                                <Form.Item name="is_pickup" valuePropName="checked">
+                                    <Checkbox>Pickup Address</Checkbox>
+                                </Form.Item>
+                                <Form.Item name="is_return" valuePropName="checked">
+                                    <Checkbox>Return Address</Checkbox>
                                 </Form.Item>
 
                                 <Form.Item>
                                     <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-                                        <Button onClick={() => setShowForm(false)}>Cancel</Button>
+                                        <Button
+                                            onClick={() => {
+                                                setShowForm(false);
+                                                setEditMode(false);
+                                                setCurrentAddressId(null);
+                                                form.resetFields();
+                                            }}
+                                        >
+                                            Cancel
+                                        </Button>
                                         <Button
                                             type="primary"
                                             htmlType="submit"
                                             style={{ backgroundColor: "#ff4d4f", borderColor: "#ff4d4f" }}
                                         >
-                                            Submit
+                                            {editMode ? "Update" : "Submit"}
                                         </Button>
                                     </div>
                                 </Form.Item>

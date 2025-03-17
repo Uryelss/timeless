@@ -36,6 +36,7 @@ Route::middleware(['auth:api', 'check.role:user'])->group(function () {
     Route::post('/orders/create', [UserOrderController::class, 'store'])->name('orders.store');
     Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
     Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
+    Route::put('/addresses/{id}', [AddressController::class, 'update'])->name('addresses.update'); // Add this
     Route::delete('/addresses/{id}', [AddressController::class, 'destroy'])->name('addresses.destroy');
     Route::put('/addresses/{id}/set-default', [AddressController::class, 'setDefault'])->name('addresses.set-default');
 });
