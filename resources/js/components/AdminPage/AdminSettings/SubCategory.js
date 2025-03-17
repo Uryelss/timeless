@@ -37,6 +37,7 @@ const SubCategoryManagement = () => {
     // Data state for active and archived records
     const [data, setData] = useState([]);
     const [archivedData, setArchivedData] = useState([]);
+    const [selectedItems, setSelectedItems] = useState([]);
 
     // Fetch active sub-categories for the current active tab
     const fetchData = () => {
@@ -47,11 +48,12 @@ const SubCategoryManagement = () => {
                 },
             })
             .then((res) => {
-                // Ensure each record has a unique "key" for Ant Design table
+                // Ensure each record has a unique "key" for Ant Design table and initialize selected state
                 setData(
                     res.data.map((item) => ({
                         ...item,
                         key: item.id.toString(),
+                        selected: false,
                     }))
                 );
             })
@@ -95,14 +97,42 @@ const SubCategoryManagement = () => {
         }
     }, [activeTab, openArchiveModal]);
 
-    // Table columns for active items (ID column removed)
+    // Checkbox handling for individual items
+    const handleCheckboxChange = (itemId) => {
+        const updatedData = data.map((item) =>
+            item.id === itemId ? { ...item, selected: !item.selected } : item
+        );
+        setData(updatedData);
+        setSelectedItems(
+            updatedData.filter((i) => i.selected).map((i) => i.id)
+        );
+        const allSelected = updatedData.every((i) => i.selected);
+        setSelectAll(allSelected);
+    };
+
+    // Select All checkbox handling
+    const handleSelectAllChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAll(checked);
+        const updatedData = data.map((item) => ({
+            ...item,
+            selected: checked,
+        }));
+        setData(updatedData);
+        setSelectedItems(checked ? updatedData.map((i) => i.id) : []);
+    };
+
+    // Table columns for active items
     const columns = [
         {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
                 <Space>
-                    <Checkbox />
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleCheckboxChange(record.id)}
+                    />
                     <EditOutlined
                         onClick={() => handleEdit(record)}
                         style={{ fontSize: "16px" }}
@@ -119,7 +149,7 @@ const SubCategoryManagement = () => {
         { title: "Updated At", dataIndex: "updated_at", key: "updated_at" },
     ];
 
-    // Table columns for archived items (ID column removed)
+    // Table columns for archived items
     const archiveColumns = [
         {
             title: "Actions",
@@ -138,10 +168,10 @@ const SubCategoryManagement = () => {
     const handleTabChange = (key) => {
         setActiveTab(key);
         setSelectAll(false);
+        setSelectedItems([]);
     };
 
     const handleEdit = (record) => {
-        // Set form values for editing; include record id if editing
         form.setFieldsValue(record);
         setOpenAddModal(true);
     };
@@ -170,6 +200,8 @@ const SubCategoryManagement = () => {
                         message.error("Failed to archive");
                     });
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
@@ -205,7 +237,6 @@ const SubCategoryManagement = () => {
     const handleModalOk = () => {
         form.validateFields()
             .then((values) => {
-                // If an id exists, we are editing; otherwise, we add new
                 if (values.id) {
                     axios
                         .put(
@@ -261,12 +292,39 @@ const SubCategoryManagement = () => {
     };
 
     const handleBulkArchive = () => {
+        if (selectedItems.length === 0) {
+            message.warning("Please select at least one item to archive");
+            return;
+        }
         Modal.confirm({
-            title: "Are you sure you want to archive all selected items?",
+            title: `Are you sure you want to archive ${selectedItems.length} selected item(s)?`,
             onOk: () => {
-                // Implement bulk archive logic here (e.g., send array of selected IDs)
-                message.success("Bulk archive executed (not implemented)");
+                Promise.all(
+                    selectedItems.map((id) =>
+                        axios.delete(
+                            `http://localhost:8000/api/sub-categories/${id}`,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                    )
+                )
+                    .then(() => {
+                        message.success("Selected items archived successfully");
+                        fetchData();
+                        setSelectedItems([]);
+                        setSelectAll(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to archive some items")
+                    );
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
@@ -310,28 +368,33 @@ const SubCategoryManagement = () => {
                                 style={{ width: 300, marginRight: 16 }}
                             />
                             <Checkbox
-                                onChange={(e) => setSelectAll(e.target.checked)}
+                                checked={selectAll}
+                                onChange={handleSelectAllChange}
                             >
                                 Select All
                             </Checkbox>
-                            {selectAll && (
+                            {(selectAll || selectedItems.length > 0) && (
                                 <Button
                                     type="link"
                                     onClick={handleBulkArchive}
                                     style={{ marginLeft: 8 }}
-                                    title="Archive All"
+                                    title="Archive Selected"
                                 >
                                     <FolderOpenOutlined
                                         style={{ fontSize: "18px" }}
                                     />
+                                    {selectedItems.length > 0 &&
+                                        ` (${selectedItems.length})`}
                                 </Button>
                             )}
                         </div>
-                        <div>
+                        <div
+                            style={{ display: "flex", flexDirection: "column" }}
+                        >
                             <Button
                                 type="default"
                                 onClick={() => setOpenArchiveModal(true)}
-                                style={{ marginRight: 8 }}
+                                style={{ marginRight: 8, width: "131px" }}
                             >
                                 Archived View
                             </Button>
@@ -339,6 +402,11 @@ const SubCategoryManagement = () => {
                                 type="primary"
                                 onClick={handleAdd}
                                 icon={<PlusOutlined />}
+                                style={{
+                                    width: "131px",
+                                    marginRight: 8,
+                                    marginTop: "5px",
+                                }}
                             >
                                 Add
                             </Button>
@@ -363,7 +431,13 @@ const SubCategoryManagement = () => {
                 onCancel={() => setOpenAddModal(false)}
                 onOk={handleModalOk}
                 okText="Save"
+                okButtonProps={{
+                    style: { width: "80px" },
+                }}
                 cancelText="Cancel"
+                cancelButtonProps={{
+                    style: { width: "80px" },
+                }}
             >
                 <Form form={form} layout="vertical">
                     {/* Hidden field for editing */}
@@ -391,14 +465,7 @@ const SubCategoryManagement = () => {
                 centered
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
                 width={1200}
             >
                 <Table
