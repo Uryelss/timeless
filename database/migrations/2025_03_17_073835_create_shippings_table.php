@@ -4,11 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateShippingTable extends Migration
+class CreateShippingsTable extends Migration
 {
     public function up()
     {
-        Schema::create('shipping', function (Blueprint $table) {
+        Schema::create('shippings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->foreignId('payment_method_id')->constrained('payment_methods')->onDelete('cascade');
@@ -26,6 +26,6 @@ class CreateShippingTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('shipping');
+        Schema::dropIfExists('shippings'); // Updated to match the correct table name
     }
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { Layout, Menu } from "antd";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Navbar from "../Navbar/Navbar";
 
 const { Sider, Content } = Layout;
@@ -23,14 +24,14 @@ const UserProfile = () => {
     const [previewImage, setPreviewImage] = useState("");
     const token = localStorage.getItem("token");
 
-    // Fetch profile data
+    const navigate = useNavigate(); // Initialize useNavigate
+
+    // Fetch profile data (unchanged)
     const fetchProfile = async () => {
         try {
             const res = await axios.get("http://localhost:8000/api/profile", {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            console.log("API Response:", res.data);
-
             const formattedData = { ...res.data };
             if (formattedData.date_of_birth) {
                 formattedData.date_of_birth = dayjs(
@@ -64,18 +65,33 @@ const UserProfile = () => {
         }
     }, [token]);
 
+    // Handle menu item clicks
+    const handleMenuClick = (e) => {
+        switch (e.key) {
+            case "1":
+                navigate("/user-profile"); // Already on this page
+                break;
+            case "2":
+                navigate("/my-purchases"); // Navigate to My Purchases
+                break;
+            case "3":
+                navigate("/my-addresses"); // Navigate to My Addresses
+                break;
+            default:
+                break;
+        }
+    };
+
+    // Rest of the handlers (unchanged)
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormValues((prev) => ({ ...prev, [name]: value }));
-        console.log(`Changed ${name} to:`, value);
     };
 
     const handleFileChange = (e) => {
         if (e.target.files && e.target.files.length > 0) {
             const file = e.target.files[0];
-            console.log("Selected file:", file);
             setFormValues((prev) => ({ ...prev, profile_image: file }));
-            // Display the selected image immediately (optimistic preview)
             const imageUrl = URL.createObjectURL(file);
             setPreviewImage(imageUrl);
         }
@@ -86,7 +102,6 @@ const UserProfile = () => {
     };
 
     const handleCancel = () => {
-        // Revert to last saved profileData
         setFormValues({ ...profileData });
         setPreviewImage(
             profileData.profile_image
@@ -99,7 +114,6 @@ const UserProfile = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Create "optimistic" data
         const optimisticData = { ...formValues };
         if (optimisticData.date_of_birth) {
             optimisticData.date_of_birth = dayjs(
@@ -112,7 +126,6 @@ const UserProfile = () => {
                 optimisticData.gender.slice(1).toLowerCase();
         }
 
-        // Immediately update UI (optimistic)
         setProfileData(optimisticData);
         setEditMode(false);
         setPreviewImage(
@@ -134,9 +147,7 @@ const UserProfile = () => {
                     formData.append(key, formValues[key] || "");
                 }
             });
-            console.log("Form data sent:", Object.fromEntries(formData));
 
-            // Send POST request to update the profile
             const res = await axios.post(
                 "http://localhost:8000/api/profile",
                 formData,
@@ -144,7 +155,6 @@ const UserProfile = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-            console.log("Update Response:", res.data);
 
             if (res.data) {
                 const updatedData = { ...res.data };
@@ -158,7 +168,6 @@ const UserProfile = () => {
                         updatedData.gender.charAt(0).toUpperCase() +
                         updatedData.gender.slice(1).toLowerCase();
                 }
-                // Update local state with server data
                 setProfileData(updatedData);
                 setFormValues(updatedData);
                 setPreviewImage(
@@ -167,7 +176,6 @@ const UserProfile = () => {
                         : "http://localhost:8000/storage/profiles/tennis-racket.png"
                 );
 
-                // Dispatch custom event so the Navbar updates automatically
                 window.dispatchEvent(
                     new CustomEvent("profileUpdated", { detail: updatedData })
                 );
@@ -176,7 +184,6 @@ const UserProfile = () => {
         } catch (error) {
             console.error("Error updating profile:", error.response?.data);
             alert("Update failed. Reverting changes.");
-            // On error, revert to the previously saved data from the server
             fetchProfile();
         }
     };
@@ -225,14 +232,13 @@ const UserProfile = () => {
                                 borderRight: 0,
                                 paddingTop: "20px",
                             }}
+                            onClick={handleMenuClick} // Add onClick handler to Menu
                         />
                         <div
                             style={{
                                 textAlign: "center",
                                 padding: "10px 0",
-                                background: collapsed
-                                    ? "transparent"
-                                    : "#001529",
+                                background: collapsed ? "transparent" : "#001529",
                                 color: "#fff",
                                 cursor: "pointer",
                             }}
@@ -257,8 +263,8 @@ const UserProfile = () => {
                             borderRadius: 8,
                         }}
                     >
+                        {/* Rest of the content (unchanged) */}
                         <div style={{ textAlign: "center", marginBottom: 20 }}>
-                            {/* Force re-render when previewImage changes */}
                             <img
                                 key={previewImage}
                                 src={previewImage}
@@ -314,6 +320,7 @@ const UserProfile = () => {
                                 </div>
                             </div>
 
+                            {/* Rest of the form (unchanged) */}
                             <div
                                 style={{
                                     display: "flex",

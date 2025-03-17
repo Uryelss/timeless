@@ -30,6 +30,10 @@ import ProductOverview from "./UserPage/ProductOverview/Productview";
 import AboutUs from "./UserPage/AboutUsPage/Aboutus";
 import CartPage from "./UserPage/CartPage/Cart";
 import OrderCheckout from "./UserPage/Checkout/Checkout";
+import MyPurchase from "./UserPage/MyPurchase/MyPurchase"; // Import new component
+import MyAddress from "./UserPage/MyAddress/Myaddress"; // Import new component
+import OrderTracking from "./UserPage/OrderPage/OrderTracking";
+
 
 // Single route protection component
 import PrivateRoute from "./PrivateRoute";
@@ -79,14 +83,17 @@ function Routers() {
 
                 {/* User Protected Routes */}
                 <Route element={<PrivateRoute allowedRoles={["user"]} />}>
-                    <Route path="/user-home" element={<UserHome />} />
-                    <Route path="/user-collection" element={<Collection />} />
-                    <Route path="/user-profile" element={<UserProfile />} />
-                    <Route path="/product/:id" element={<ProductOverview />} />
-                    <Route path="/AboutUs" element={<AboutUs />} />
-                    <Route path="/user-cart" element={<CartPage />} />
-                    <Route path="/user-checkout" element={<OrderCheckout />} />
-                </Route>
+    <Route path="/user-home" element={<UserHome />} />
+    <Route path="/user-collection" element={<Collection />} />
+    <Route path="/user-profile" element={<UserProfile />} />
+    <Route path="/product/:id" element={<ProductOverview />} />
+    <Route path="/AboutUs" element={<AboutUs />} />
+    <Route path="/user-cart" element={<CartPage />} />
+    <Route path="/user-checkout" element={<OrderCheckout />} />
+    <Route path="/my-purchases" element={<MyPurchase />} />
+    <Route path="/my-addresses" element={<MyAddress />} />
+    <Route path="/order-tracking" element={<OrderTracking />} /> {/* Fixed Route */}
+</Route>
 
                 {/* Catch-all redirect */}
                 <Route path="*" element={<PrivateRoute allowedRoles={[]} />} />

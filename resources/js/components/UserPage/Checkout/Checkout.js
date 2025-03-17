@@ -51,19 +51,17 @@ const CheckoutPage = () => {
 
             setLoading(true);
             try {
-                const [paymentRes, shippingRes, profileRes] = await Promise.all(
-                    [
-                        axios.get(`${API_URL}/payment-methods`, {
-                            headers: { Authorization: `Bearer ${token}` },
-                        }),
-                        axios.get(`${API_URL}/shipping-methods`, {
-                            headers: { Authorization: `Bearer ${token}` },
-                        }),
-                        axios.get(`${API_URL}/profile`, {
-                            headers: { Authorization: `Bearer ${token}` },
-                        }),
-                    ]
-                );
+                const [paymentRes, shippingRes, profileRes] = await Promise.all([
+                    axios.get(`${API_URL}/payment-methods`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }),
+                    axios.get(`${API_URL}/shipping-methods`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }),
+                    axios.get(`${API_URL}/profile`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }),
+                ]);
                 setPaymentMethods(paymentRes.data);
                 setShippingMethods(shippingRes.data);
                 setAddresses(profileRes.data.addresses || []);
@@ -152,15 +150,15 @@ const CheckoutPage = () => {
                 window.dispatchEvent(new Event("cartUpdated"));
                 const { order_id } = response.data;
 
-                if (paymentMethod === 2 || paymentMethod === 3) {
-                    navigate("/payment", {
-                        state: { orderId: order_id, total },
-                    });
-                } else {
-                    navigate("/order-confirmation", {
-                        state: { orderId: order_id },
-                    });
-                }
+                // Redirect to OrderTracking page with order details
+                navigate("/order-tracking", {
+                    state: {
+                        orderId: order_id,
+                        total,
+                        shippingMethod: shippingMethods.find(m => m.id === shippingMethod)?.name,
+                        cartItems,
+                    },
+                });
             }
         } catch (error) {
             console.error(
@@ -332,15 +330,12 @@ const CheckoutPage = () => {
                                 </Form>
                             )}
                         </Card>
-                        {/* Payment and Shipping Cards unchanged */}
                         <Card
                             title="PAYMENT METHOD"
                             style={{ marginBottom: "20px" }}
                         >
                             <Radio.Group
-                                onChange={(e) =>
-                                    setPaymentMethod(e.target.value)
-                                }
+                                onChange={(e) => setPaymentMethod(e.target.value)}
                                 value={paymentMethod}
                             >
                                 {paymentMethods.map((method) => (
@@ -355,17 +350,13 @@ const CheckoutPage = () => {
                             style={{ marginBottom: "20px" }}
                         >
                             <Radio.Group
-                                onChange={(e) =>
-                                    setShippingMethod(e.target.value)
-                                }
+                                onChange={(e) => setShippingMethod(e.target.value)}
                                 value={shippingMethod}
                             >
                                 {shippingMethods.map((method) => (
                                     <Radio key={method.id} value={method.id}>
                                         {method.name} - ₱
-                                        {parseFloat(
-                                            method.cost
-                                        ).toLocaleString()}
+                                        {parseFloat(method.cost).toLocaleString()}
                                     </Radio>
                                 ))}
                             </Radio.Group>
@@ -385,7 +376,6 @@ const CheckoutPage = () => {
                         </Button>
                     </Col>
                     <Col xs={24} md={8}>
-                        {/* Order Summary unchanged */}
                         <Card title="ORDER SUMMARY">
                             {cartItems.map((item) => (
                                 <div
@@ -422,9 +412,7 @@ const CheckoutPage = () => {
                                         </p>
                                         <p style={{ margin: 0 }}>
                                             Total: ₱
-                                            {(
-                                                item.price * item.quantity
-                                            ).toLocaleString()}
+                                            {(item.price * item.quantity).toLocaleString()}
                                         </p>
                                     </div>
                                 </div>
@@ -437,9 +425,7 @@ const CheckoutPage = () => {
                                 }}
                             >
                                 <p>Subtotal: ₱{subtotal.toLocaleString()}</p>
-                                <p>
-                                    Shipping: ₱{shippingCost.toLocaleString()}
-                                </p>
+                                <p>Shipping: ₱{shippingCost.toLocaleString()}</p>
                                 <h3>Total: ₱{total.toLocaleString()}</h3>
                             </div>
                         </Card>
