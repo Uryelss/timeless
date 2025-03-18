@@ -49,7 +49,6 @@ const CheckoutPage = () => {
                 navigate("/login");
                 return;
             }
-
             setLoading(true);
             try {
                 const [paymentRes, shippingRes, profileRes] = await Promise.all(
@@ -85,7 +84,7 @@ const CheckoutPage = () => {
         }
     }, [cartItems, navigate, token]);
 
-    // Auto-select and pre-fill default address (if exists)
+    // Auto-select and pre-fill default address if exists
     useEffect(() => {
         if (addresses.length > 0) {
             const def = addresses.find((addr) => addr.is_default);
@@ -114,6 +113,23 @@ const CheckoutPage = () => {
 
     const total = subtotal + shippingCost;
 
+    // Helper function to handle complete order submission.
+    const handleCompleteOrder = async () => {
+        // If no existing address is selected, validate form fields.
+        if (!selectedAddressId) {
+            try {
+                const values = await form.validateFields();
+                onFinish(values);
+            } catch (error) {
+                // Form validation failed.
+                return;
+            }
+        } else {
+            // Use the selected default address; no form values needed.
+            onFinish({});
+        }
+    };
+
     const onFinish = async (values) => {
         if (!paymentMethod) {
             message.warning("Please select a payment method!");
@@ -130,10 +146,10 @@ const CheckoutPage = () => {
         }
 
         setLoading(true);
-        // Get current form values
+        // Get current form values (if any)
         const formValues = form.getFieldsValue();
 
-        // Check if form values exactly match the default address details
+        // Determine whether to use the default address (if form matches default)
         const useDefault =
             defaultAddress &&
             formValues.streetAddress === defaultAddress.street &&
@@ -187,7 +203,23 @@ const CheckoutPage = () => {
                 message.success("Order placed successfully!");
                 localStorage.removeItem("cart");
                 window.dispatchEvent(new Event("cartUpdated"));
-                const { order_id } = response.data;
+                const { order_id, address_id } = response.data;
+
+                // If a new address was used and the "Save this information" checkbox is checked,
+                // then update it as the default address.
+                if (!useDefault && !selectedAddressId && saveInfo) {
+                    await axios.put(
+                        `${API_URL}/addresses/${address_id}/set-default`,
+                        {},
+                        {
+                            headers: { Authorization: `Bearer ${token}` },
+                        }
+                    );
+                    message.info("Default address updated for future orders.");
+                } else if (!saveInfo) {
+                    // If user did not check "Save this information," call a function to handle non-default addresses.
+                    handleAddressNotDefault();
+                }
 
                 if (paymentMethod === 2 || paymentMethod === 3) {
                     navigate("/payment", {
@@ -210,6 +242,13 @@ const CheckoutPage = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Function to handle addresses that are not set as default.
+    // For now, it simply logs a message. You can extend it to perform additional tasks.
+    const handleAddressNotDefault = () => {
+        console.log("Order used a non-default address. Not updating default.");
+        // Optionally, you might call an API to update the user's profile so that no address is marked default.
     };
 
     return (
@@ -243,7 +282,6 @@ const CheckoutPage = () => {
                                     placeholder="Select an existing address"
                                     onChange={(value) => {
                                         setSelectedAddressId(value);
-                                        // When an address is selected, pre-fill the form with its details
                                         const selected = addresses.find(
                                             (addr) => addr.id === value
                                         );
@@ -271,7 +309,7 @@ const CheckoutPage = () => {
                                     ))}
                                 </Select>
                             )}
-                            {/* Always show the address form so that the user sees "Address", "Default Address", "Country/Region: Philippines", etc. */}
+                            {/* Always display the address form so the user sees all fields */}
                             <Form
                                 form={form}
                                 layout="vertical"
@@ -382,21 +420,6 @@ const CheckoutPage = () => {
                                         Save this information for next time
                                     </Checkbox>
                                 </Form.Item>
-                                <Form.Item>
-                                    <Button
-                                        type="primary"
-                                        style={{
-                                            backgroundColor: "#00A65A",
-                                            borderColor: "#00A65A",
-                                            width: "100%",
-                                            height: "40px",
-                                        }}
-                                        onClick={() => form.submit()}
-                                        loading={loading}
-                                    >
-                                        COMPLETE ORDER
-                                    </Button>
-                                </Form.Item>
                             </Form>
                         </Card>
                         <Card
@@ -436,6 +459,7 @@ const CheckoutPage = () => {
                                 ))}
                             </Radio.Group>
                         </Card>
+                        {/* Only one complete order button */}
                         <Button
                             type="primary"
                             style={{
@@ -444,7 +468,7 @@ const CheckoutPage = () => {
                                 width: "100%",
                                 height: "40px",
                             }}
-                            onClick={() => form.submit()}
+                            onClick={handleCompleteOrder}
                             loading={loading}
                         >
                             COMPLETE ORDER

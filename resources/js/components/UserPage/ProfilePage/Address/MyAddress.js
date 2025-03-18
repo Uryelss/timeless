@@ -31,13 +31,12 @@ const MyAddress = () => {
             message.error("No token found, please log in.");
             return;
         }
-
         try {
             const res = await axios.get("http://localhost:8000/api/addresses", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setAddresses(res.data);
-            return res.data; // Return the fetched data for use in other functions
+            return res.data;
         } catch (error) {
             console.error("Error fetching addresses:", error);
             message.error("Error fetching addresses");
@@ -117,8 +116,6 @@ const MyAddress = () => {
 
             // Fetch the updated address list and get the latest data
             const updatedAddresses = await fetchAddresses();
-
-            // Find the newly set default address from the updated list
             const defaultAddress = updatedAddresses.find(
                 (addr) => addr.id === addressId
             );
@@ -232,7 +229,6 @@ const MyAddress = () => {
                                     + Add New Address
                                 </Button>
                             </div>
-
                             {addresses.length === 0 ? (
                                 <p>No addresses found.</p>
                             ) : (
@@ -451,7 +447,6 @@ const MyAddress = () => {
                                 >
                                     <Input placeholder="Phone Number" />
                                 </Form.Item>
-
                                 <Form.Item label="Label As:">
                                     <Radio.Group
                                         name="label"
@@ -461,7 +456,6 @@ const MyAddress = () => {
                                         <Radio value="Work">Work</Radio>
                                     </Radio.Group>
                                 </Form.Item>
-
                                 <Form.Item
                                     name="is_pickup"
                                     valuePropName="checked"
@@ -474,7 +468,6 @@ const MyAddress = () => {
                                 >
                                     <Checkbox>Return Address</Checkbox>
                                 </Form.Item>
-
                                 <Form.Item>
                                     <div
                                         style={{

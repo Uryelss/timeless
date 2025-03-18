@@ -185323,21 +185323,28 @@ var CartPage = function CartPage() {
     return sum + item.total;
   }, 0);
   var handleProceedToCheckout = function handleProceedToCheckout() {
-    if (!cartItems.length) {
-      antd__WEBPACK_IMPORTED_MODULE_5__["default"].warning("Your cart is empty!");
+    if (selectedRowKeys.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_5__["default"].warning("Please select at least one item to checkout!");
       return;
     }
-    var invalidItems = cartItems.some(function (item) {
+    // Filter cart items based on selected row keys
+    var selectedItems = cartItems.filter(function (item) {
+      return selectedRowKeys.includes("".concat(item.id, "-").concat(item.size));
+    });
+    var subtotalSelected = selectedItems.reduce(function (sum, item) {
+      return sum + item.total;
+    }, 0);
+    var invalidItems = selectedItems.some(function (item) {
       return !item.id || !item.inventory_id;
     });
     if (invalidItems) {
-      antd__WEBPACK_IMPORTED_MODULE_5__["default"].error("Some cart items are invalid. Please refresh or re-add items.");
+      antd__WEBPACK_IMPORTED_MODULE_5__["default"].error("Some selected items are invalid. Please refresh or re-add items.");
       return;
     }
     navigate("/user-checkout", {
       state: {
-        cartItems: cartItems,
-        subtotal: subtotal
+        cartItems: selectedItems,
+        subtotal: subtotalSelected
       }
     });
   };
@@ -185416,8 +185423,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/radio/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/radio/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var _Navbar_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Navbar/Navbar */ "./resources/js/components/UserPage/Navbar/Navbar.js");
@@ -185567,7 +185574,7 @@ var CheckoutPage = function CheckoutPage() {
     }
   }, [cartItems, navigate, token]);
 
-  // Auto-select and pre-fill default address (if exists)
+  // Auto-select and pre-fill default address if exists
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (addresses.length > 0) {
       var def = addresses.find(function (addr) {
@@ -185595,37 +185602,77 @@ var CheckoutPage = function CheckoutPage() {
     setShippingCost(selectedMethod ? parseFloat(selectedMethod.cost) : 0);
   }, [shippingMethod, shippingMethods]);
   var total = subtotal + shippingCost;
-  var onFinish = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(values) {
-      var formValues, useDefault, orderData, response, order_id, _error$response, _error$response2;
+
+  // Helper function to handle complete order submission.
+  var handleCompleteOrder = /*#__PURE__*/function () {
+    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+      var values;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
+            if (selectedAddressId) {
+              _context2.next = 13;
+              break;
+            }
+            _context2.prev = 1;
+            _context2.next = 4;
+            return form.validateFields();
+          case 4:
+            values = _context2.sent;
+            onFinish(values);
+            _context2.next = 11;
+            break;
+          case 8:
+            _context2.prev = 8;
+            _context2.t0 = _context2["catch"](1);
+            return _context2.abrupt("return");
+          case 11:
+            _context2.next = 14;
+            break;
+          case 13:
+            // Use the selected default address; no form values needed.
+            onFinish({});
+          case 14:
+          case "end":
+            return _context2.stop();
+        }
+      }, _callee2, null, [[1, 8]]);
+    }));
+    return function handleCompleteOrder() {
+      return _ref3.apply(this, arguments);
+    };
+  }();
+  var onFinish = /*#__PURE__*/function () {
+    var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(values) {
+      var formValues, useDefault, orderData, response, _response$data, order_id, address_id, _error$response, _error$response2;
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
+          case 0:
             if (paymentMethod) {
-              _context2.next = 3;
+              _context3.next = 3;
               break;
             }
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].warning("Please select a payment method!");
-            return _context2.abrupt("return");
+            return _context3.abrupt("return");
           case 3:
             if (shippingMethod) {
-              _context2.next = 6;
+              _context3.next = 6;
               break;
             }
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].warning("Please select a shipping method!");
-            return _context2.abrupt("return");
+            return _context3.abrupt("return");
           case 6:
             if (token) {
-              _context2.next = 10;
+              _context3.next = 10;
               break;
             }
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Authentication token missing!");
             navigate("/login");
-            return _context2.abrupt("return");
+            return _context3.abrupt("return");
           case 10:
             setLoading(true);
-            // Get current form values
-            formValues = form.getFieldsValue(); // Check if form values exactly match the default address details
+            // Get current form values (if any)
+            formValues = form.getFieldsValue(); // Determine whether to use the default address (if form matches default)
             useDefault = defaultAddress && formValues.streetAddress === defaultAddress.street && formValues.barangay === defaultAddress.barangay && formValues.province === defaultAddress.state && formValues.city === defaultAddress.city && formValues.postalCode === defaultAddress.postal_code && formValues.country === defaultAddress.country && formValues.phone === defaultAddress.phone;
             orderData = _objectSpread(_objectSpread({}, useDefault ? {
               address_id: defaultAddress.id
@@ -185654,8 +185701,8 @@ var CheckoutPage = function CheckoutPage() {
               payment_method_id: paymentMethod,
               shipping_method_id: shippingMethod
             });
-            _context2.prev = 14;
-            _context2.next = 17;
+            _context3.prev = 14;
+            _context3.next = 17;
             return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/orders/create"), orderData, {
               headers: {
                 Authorization: "Bearer ".concat(token),
@@ -185663,48 +185710,79 @@ var CheckoutPage = function CheckoutPage() {
               }
             });
           case 17:
-            response = _context2.sent;
-            if (response.status === 201) {
-              antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Order placed successfully!");
-              localStorage.removeItem("cart");
-              window.dispatchEvent(new Event("cartUpdated"));
-              order_id = response.data.order_id;
-              if (paymentMethod === 2 || paymentMethod === 3) {
-                navigate("/payment", {
-                  state: {
-                    orderId: order_id,
-                    total: total
-                  }
-                });
-              } else {
-                navigate("/order-confirmation", {
-                  state: {
-                    orderId: order_id
-                  }
-                });
-              }
+            response = _context3.sent;
+            if (!(response.status === 201)) {
+              _context3.next = 31;
+              break;
             }
-            _context2.next = 25;
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Order placed successfully!");
+            localStorage.removeItem("cart");
+            window.dispatchEvent(new Event("cartUpdated"));
+            _response$data = response.data, order_id = _response$data.order_id, address_id = _response$data.address_id; // If a new address was used and the "Save this information" checkbox is checked,
+            // then update it as the default address.
+            if (!(!useDefault && !selectedAddressId && saveInfo)) {
+              _context3.next = 29;
+              break;
+            }
+            _context3.next = 26;
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("".concat(API_URL, "/addresses/").concat(address_id, "/set-default"), {}, {
+              headers: {
+                Authorization: "Bearer ".concat(token)
+              }
+            });
+          case 26:
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].info("Default address updated for future orders.");
+            _context3.next = 30;
             break;
-          case 21:
-            _context2.prev = 21;
-            _context2.t0 = _context2["catch"](14);
-            console.error("Order submission error:", ((_error$response = _context2.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context2.t0);
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error(((_error$response2 = _context2.t0.response) === null || _error$response2 === void 0 || (_error$response2 = _error$response2.data) === null || _error$response2 === void 0 ? void 0 : _error$response2.message) || "Failed to place order.");
-          case 25:
-            _context2.prev = 25;
+          case 29:
+            if (!saveInfo) {
+              // If user did not check "Save this information," call a function to handle non-default addresses.
+              handleAddressNotDefault();
+            }
+          case 30:
+            if (paymentMethod === 2 || paymentMethod === 3) {
+              navigate("/payment", {
+                state: {
+                  orderId: order_id,
+                  total: total
+                }
+              });
+            } else {
+              navigate("/order-confirmation", {
+                state: {
+                  orderId: order_id
+                }
+              });
+            }
+          case 31:
+            _context3.next = 37;
+            break;
+          case 33:
+            _context3.prev = 33;
+            _context3.t0 = _context3["catch"](14);
+            console.error("Order submission error:", ((_error$response = _context3.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context3.t0);
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error(((_error$response2 = _context3.t0.response) === null || _error$response2 === void 0 || (_error$response2 = _error$response2.data) === null || _error$response2 === void 0 ? void 0 : _error$response2.message) || "Failed to place order.");
+          case 37:
+            _context3.prev = 37;
             setLoading(false);
-            return _context2.finish(25);
-          case 28:
+            return _context3.finish(37);
+          case 40:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
-      }, _callee2, null, [[14, 21, 25, 28]]);
+      }, _callee3, null, [[14, 33, 37, 40]]);
     }));
     return function onFinish(_x) {
-      return _ref3.apply(this, arguments);
+      return _ref4.apply(this, arguments);
     };
   }();
+
+  // Function to handle addresses that are not set as default.
+  // For now, it simply logs a message. You can extend it to perform additional tasks.
+  var handleAddressNotDefault = function handleAddressNotDefault() {
+    console.log("Order used a non-default address. Not updating default.");
+    // Optionally, you might call an API to update the user's profile so that no address is marked default.
+  };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_Navbar_Navbar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
       style: {
@@ -185742,7 +185820,6 @@ var CheckoutPage = function CheckoutPage() {
               placeholder: "Select an existing address",
               onChange: function onChange(value) {
                 setSelectedAddressId(value);
-                // When an address is selected, pre-fill the form with its details
                 var selected = addresses.find(function (addr) {
                   return addr.id === value;
                 });
@@ -185843,21 +185920,6 @@ var CheckoutPage = function CheckoutPage() {
                   },
                   children: "Save this information for next time"
                 })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
-                  type: "primary",
-                  style: {
-                    backgroundColor: "#00A65A",
-                    borderColor: "#00A65A",
-                    width: "100%",
-                    height: "40px"
-                  },
-                  onClick: function onClick() {
-                    return form.submit();
-                  },
-                  loading: loading,
-                  children: "COMPLETE ORDER"
-                })
               })]
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
@@ -185865,13 +185927,13 @@ var CheckoutPage = function CheckoutPage() {
             style: {
               marginBottom: "20px"
             },
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"].Group, {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"].Group, {
               onChange: function onChange(e) {
                 return setPaymentMethod(e.target.value);
               },
               value: paymentMethod,
               children: paymentMethods.map(function (method) {
-                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                   value: method.id,
                   children: method.name
                 }, method.id);
@@ -185882,19 +185944,19 @@ var CheckoutPage = function CheckoutPage() {
             style: {
               marginBottom: "20px"
             },
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"].Group, {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"].Group, {
               onChange: function onChange(e) {
                 return setShippingMethod(e.target.value);
               },
               value: shippingMethod,
               children: shippingMethods.map(function (method) {
-                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+                return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                   value: method.id,
                   children: [method.name, " - \u20B1", parseFloat(method.cost).toLocaleString()]
                 }, method.id);
               })
             })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
             type: "primary",
             style: {
               backgroundColor: "#00A65A",
@@ -185902,9 +185964,7 @@ var CheckoutPage = function CheckoutPage() {
               width: "100%",
               height: "40px"
             },
-            onClick: function onClick() {
-              return form.submit();
-            },
+            onClick: handleCompleteOrder,
             loading: loading,
             children: "COMPLETE ORDER"
           })]
@@ -187615,7 +187675,6 @@ var MyAddress = function MyAddress() {
             return fetchAddresses();
           case 6:
             updatedAddresses = _context4.sent;
-            // Find the newly set default address from the updated list
             defaultAddress = updatedAddresses.find(function (addr) {
               return addr.id === addressId;
             });

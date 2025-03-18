@@ -181,20 +181,31 @@ const CartPage = () => {
     const subtotal = cartItems.reduce((sum, item) => sum + item.total, 0);
 
     const handleProceedToCheckout = () => {
-        if (!cartItems.length) {
-            message.warning("Your cart is empty!");
+        if (selectedRowKeys.length === 0) {
+            message.warning("Please select at least one item to checkout!");
             return;
         }
-        const invalidItems = cartItems.some(
+        // Filter cart items based on selected row keys
+        const selectedItems = cartItems.filter((item) =>
+            selectedRowKeys.includes(`${item.id}-${item.size}`)
+        );
+        const subtotalSelected = selectedItems.reduce(
+            (sum, item) => sum + item.total,
+            0
+        );
+
+        const invalidItems = selectedItems.some(
             (item) => !item.id || !item.inventory_id
         );
         if (invalidItems) {
             message.error(
-                "Some cart items are invalid. Please refresh or re-add items."
+                "Some selected items are invalid. Please refresh or re-add items."
             );
             return;
         }
-        navigate("/user-checkout", { state: { cartItems, subtotal } });
+        navigate("/user-checkout", {
+            state: { cartItems: selectedItems, subtotal: subtotalSelected },
+        });
     };
 
     return (
