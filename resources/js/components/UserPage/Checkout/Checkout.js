@@ -32,6 +32,7 @@ const CheckoutPage = () => {
     const [shippingMethods, setShippingMethods] = useState([]);
     const [addresses, setAddresses] = useState([]);
     const [selectedAddressId, setSelectedAddressId] = useState(null);
+    const [defaultAddress, setDefaultAddress] = useState(null);
     const [paymentMethod, setPaymentMethod] = useState(null);
     const [shippingMethod, setShippingMethod] = useState(null);
     const [saveInfo, setSaveInfo] = useState(false);
@@ -66,7 +67,8 @@ const CheckoutPage = () => {
                 );
                 setPaymentMethods(paymentRes.data);
                 setShippingMethods(shippingRes.data);
-                setAddresses(profileRes.data.addresses || []);
+                const addr = profileRes.data.addresses || [];
+                setAddresses(addr);
             } catch (error) {
                 message.error("Failed to load checkout data");
                 console.error("Fetch error:", error);
@@ -82,6 +84,26 @@ const CheckoutPage = () => {
             navigate("/user-cart");
         }
     }, [cartItems, navigate, token]);
+
+    // Auto-select and pre-fill default address (if exists)
+    useEffect(() => {
+        if (addresses.length > 0) {
+            const def = addresses.find((addr) => addr.is_default);
+            if (def) {
+                setSelectedAddressId(def.id);
+                setDefaultAddress(def);
+                form.setFieldsValue({
+                    streetAddress: def.street,
+                    barangay: def.barangay,
+                    province: def.state,
+                    city: def.city,
+                    postalCode: def.postal_code,
+                    country: def.country,
+                    phone: def.phone,
+                });
+            }
+        }
+    }, [addresses, form]);
 
     useEffect(() => {
         const selectedMethod = shippingMethods.find(
@@ -108,17 +130,32 @@ const CheckoutPage = () => {
         }
 
         setLoading(true);
+        // Get current form values
+        const formValues = form.getFieldsValue();
+
+        // Check if form values exactly match the default address details
+        const useDefault =
+            defaultAddress &&
+            formValues.streetAddress === defaultAddress.street &&
+            formValues.barangay === defaultAddress.barangay &&
+            formValues.province === defaultAddress.state &&
+            formValues.city === defaultAddress.city &&
+            formValues.postalCode === defaultAddress.postal_code &&
+            formValues.country === defaultAddress.country &&
+            formValues.phone === defaultAddress.phone;
+
         const orderData = {
-            ...(selectedAddressId
-                ? { address_id: selectedAddressId }
+            ...(useDefault
+                ? { address_id: defaultAddress.id }
                 : {
                       address: {
-                          street: values.streetAddress,
-                          city: values.city,
-                          state: values.province,
-                          postal_code: values.postalCode,
-                          country: values.country,
-                          phone: values.phone,
+                          street: formValues.streetAddress,
+                          barangay: formValues.barangay,
+                          city: formValues.city,
+                          state: formValues.province,
+                          postal_code: formValues.postalCode,
+                          country: formValues.country,
+                          phone: formValues.phone,
                       },
                   }),
             cart_items: cartItems.map((item) => ({
@@ -206,9 +243,26 @@ const CheckoutPage = () => {
                                     placeholder="Select an existing address"
                                     onChange={(value) => {
                                         setSelectedAddressId(value);
-                                        form.resetFields();
+                                        // When an address is selected, pre-fill the form with its details
+                                        const selected = addresses.find(
+                                            (addr) => addr.id === value
+                                        );
+                                        if (selected) {
+                                            setDefaultAddress(selected);
+                                            form.setFieldsValue({
+                                                streetAddress: selected.street,
+                                                barangay: selected.barangay,
+                                                province: selected.state,
+                                                city: selected.city,
+                                                postalCode:
+                                                    selected.postal_code,
+                                                country: selected.country,
+                                                phone: selected.phone,
+                                            });
+                                        }
                                     }}
                                     allowClear
+                                    value={selectedAddressId}
                                 >
                                     {addresses.map((addr) => (
                                         <Option key={addr.id} value={addr.id}>
@@ -217,122 +271,134 @@ const CheckoutPage = () => {
                                     ))}
                                 </Select>
                             )}
-                            {!selectedAddressId && (
-                                <Form
-                                    form={form}
-                                    layout="vertical"
-                                    onFinish={onFinish}
-                                    initialValues={{ country: "Philippines" }}
+                            {/* Always show the address form so that the user sees "Address", "Default Address", "Country/Region: Philippines", etc. */}
+                            <Form
+                                form={form}
+                                layout="vertical"
+                                onFinish={onFinish}
+                                initialValues={{ country: "Philippines" }}
+                            >
+                                <Form.Item
+                                    label="Country/Region"
+                                    name="country"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please select your country!",
+                                        },
+                                    ]}
                                 >
-                                    <Form.Item
-                                        label="Country/Region"
-                                        name="country"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message:
-                                                    "Please select your country!",
-                                            },
-                                        ]}
+                                    <Select>
+                                        <Option value="Philippines">
+                                            Philippines
+                                        </Option>
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item
+                                    label="Street Address"
+                                    name="streetAddress"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your street address!",
+                                        },
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Barangay"
+                                    name="barangay"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your barangay!",
+                                        },
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Province"
+                                    name="province"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your province!",
+                                        },
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    label="City"
+                                    name="city"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Please enter your city!",
+                                        },
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Postal Code"
+                                    name="postalCode"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your postal code!",
+                                        },
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Phone"
+                                    name="phone"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your phone number!",
+                                        },
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item>
+                                    <Checkbox
+                                        checked={saveInfo}
+                                        onChange={(e) =>
+                                            setSaveInfo(e.target.checked)
+                                        }
                                     >
-                                        <Select>
-                                            <Option value="Philippines">
-                                                Philippines
-                                            </Option>
-                                        </Select>
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Street Address"
-                                        name="streetAddress"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message:
-                                                    "Please enter your street address!",
-                                            },
-                                        ]}
+                                        Save this information for next time
+                                    </Checkbox>
+                                </Form.Item>
+                                <Form.Item>
+                                    <Button
+                                        type="primary"
+                                        style={{
+                                            backgroundColor: "#00A65A",
+                                            borderColor: "#00A65A",
+                                            width: "100%",
+                                            height: "40px",
+                                        }}
+                                        onClick={() => form.submit()}
+                                        loading={loading}
                                     >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Barangay"
-                                        name="barangay"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message:
-                                                    "Please enter your barangay!",
-                                            },
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Province"
-                                        name="province"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message:
-                                                    "Please enter your province!",
-                                            },
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="City"
-                                        name="city"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message:
-                                                    "Please enter your city!",
-                                            },
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Postal Code"
-                                        name="postalCode"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message:
-                                                    "Please enter your postal code!",
-                                            },
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Phone"
-                                        name="phone"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message:
-                                                    "Please enter your phone number!",
-                                            },
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item>
-                                        <Checkbox
-                                            checked={saveInfo}
-                                            onChange={(e) =>
-                                                setSaveInfo(e.target.checked)
-                                            }
-                                        >
-                                            Save this information for next time
-                                        </Checkbox>
-                                    </Form.Item>
-                                </Form>
-                            )}
+                                        COMPLETE ORDER
+                                    </Button>
+                                </Form.Item>
+                            </Form>
                         </Card>
-                        {/* Payment and Shipping Cards unchanged */}
                         <Card
                             title="PAYMENT METHOD"
                             style={{ marginBottom: "20px" }}
@@ -385,7 +451,6 @@ const CheckoutPage = () => {
                         </Button>
                     </Col>
                     <Col xs={24} md={8}>
-                        {/* Order Summary unchanged */}
                         <Card title="ORDER SUMMARY">
                             {cartItems.map((item) => (
                                 <div

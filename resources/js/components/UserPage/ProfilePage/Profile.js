@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
-import { Layout, Menu } from "antd";
+import { Layout } from "antd";
 import Navbar from "../Navbar/Navbar";
+import Sidebar from "./Sidebar/Sidebar"; // Importing the Sidebar component
 
-const { Sider, Content } = Layout;
+const { Content } = Layout;
 
 const UserProfile = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -185,64 +186,11 @@ const UserProfile = () => {
         return <p>Loading...</p>;
     }
 
-    const items = [
-        { key: "1", label: "PROFILE" },
-        { key: "2", label: "MY PURCHASE" },
-        { key: "3", label: "ADDRESSES" },
-    ];
-
     return (
         <Layout style={{ minHeight: "100vh" }}>
             <Navbar />
             <Layout>
-                <Sider
-                    collapsible
-                    collapsed={collapsed}
-                    onCollapse={(value) => setCollapsed(value)}
-                    trigger={null}
-                    style={{
-                        background: "#fff",
-                        height: "80vh",
-                        width: collapsed ? "80px" : "200px",
-                        transition: "width 0.2s",
-                    }}
-                >
-                    <div
-                        style={{
-                            height: "100%",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "space-between",
-                        }}
-                    >
-                        <Menu
-                            theme="light"
-                            defaultSelectedKeys={["1"]}
-                            mode="inline"
-                            items={items}
-                            style={{
-                                height: "100%",
-                                borderRight: 0,
-                                paddingTop: "20px",
-                            }}
-                        />
-                        <div
-                            style={{
-                                textAlign: "center",
-                                padding: "10px 0",
-                                background: collapsed
-                                    ? "transparent"
-                                    : "#001529",
-                                color: "#fff",
-                                cursor: "pointer",
-                            }}
-                            onClick={() => setCollapsed(!collapsed)}
-                        >
-                            {collapsed ? ">" : "<"}
-                        </div>
-                    </div>
-                </Sider>
-
+                <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
                 <Content
                     style={{
                         margin: "24px 16px 0",
@@ -258,7 +206,6 @@ const UserProfile = () => {
                         }}
                     >
                         <div style={{ textAlign: "center", marginBottom: 20 }}>
-                            {/* Force re-render when previewImage changes */}
                             <img
                                 key={previewImage}
                                 src={previewImage}

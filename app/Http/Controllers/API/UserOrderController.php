@@ -21,6 +21,7 @@ class UserOrderController extends Controller
             'address.street' => 'required_without:address_id|string',
             'address.city' => 'required_without:address_id|string',
             'address.state' => 'required_without:address_id|string',
+            'address.barangay' => 'required_without:address_id|string', // Add this
             'address.postal_code' => 'required_without:address_id|string',
             'address.country' => 'required_without:address_id|string',
             'address.phone' => 'required_without:address_id|string',

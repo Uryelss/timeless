@@ -20,18 +20,21 @@ class ProfileController extends Controller
                 'middle_name'   => '',
                 'last_name'     => '',
                 'suffix'        => '',
-                'gender'        => null,  // Set default as null
+                'gender'        => null,
                 'date_of_birth' => null,
                 'phone'         => '',
                 'profile_image' => null,
                 'address'       => ''
             ]
         );
+        // Load the addresses relation so that CheckoutPage can see them
+        $profile->load('addresses');
 
         $response = $profile->toArray();
         $response['username'] = $user->username;
         return response()->json($response);
     }
+
 
     // Update the authenticated user's profile
     public function update(Request $request)
