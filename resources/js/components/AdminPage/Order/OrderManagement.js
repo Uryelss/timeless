@@ -14,11 +14,13 @@ import {
     Typography,
     Avatar,
     Descriptions,
+    Checkbox,
 } from "antd";
 import {
     EditOutlined,
     FolderOpenOutlined,
     EyeOutlined,
+    UndoOutlined,
 } from "@ant-design/icons";
 import Sidebar from "../AdminSidebar/Sidebar";
 import axios from "axios";
@@ -36,6 +38,10 @@ const OrderManagement = () => {
     const [openViewModal, setOpenViewModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [searchText, setSearchText] = useState("");
+    const [selectAllActive, setSelectAllActive] = useState(false);
+    const [selectedActiveOrders, setSelectedActiveOrders] = useState([]);
+    const [selectAllArchived, setSelectAllArchived] = useState(false);
+    const [selectedArchivedOrders, setSelectedArchivedOrders] = useState([]);
 
     const API_URL = "http://localhost:8000/api/orders";
 
@@ -51,7 +57,8 @@ const OrderManagement = () => {
                 const transformedOrders = res.data.map((order) => ({
                     ...order,
                     order_date: order.order_date || order.created_at,
-                    shipping: order.shipping || {}, // Ensure shipping is an object
+                    shipping: order.shipping || {},
+                    selected: false, // Initialize selected state
                 }));
                 setOrders(
                     transformedOrders.filter((order) => !order.deleted_at)
@@ -70,12 +77,150 @@ const OrderManagement = () => {
         fetchOrders();
     }, []);
 
+    // Handlers for active orders
+    const handleActiveCheckboxChange = (orderId) => {
+        const updatedOrders = orders.map((order) =>
+            order.id === orderId
+                ? { ...order, selected: !order.selected }
+                : order
+        );
+        setOrders(updatedOrders);
+        setSelectedActiveOrders(
+            updatedOrders.filter((o) => o.selected).map((o) => o.id)
+        );
+        const allSelected = updatedOrders.every((o) => o.selected);
+        setSelectAllActive(allSelected);
+    };
+
+    const handleSelectAllActiveChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAllActive(checked);
+        const updatedOrders = orders.map((order) => ({
+            ...order,
+            selected: checked,
+        }));
+        setOrders(updatedOrders);
+        setSelectedActiveOrders(checked ? updatedOrders.map((o) => o.id) : []);
+    };
+
+    const handleArchiveAll = () => {
+        if (selectedActiveOrders.length === 0) {
+            message.warning("Please select at least one order to archive");
+            return;
+        }
+        Modal.confirm({
+            title: `Are you sure you want to archive ${selectedActiveOrders.length} selected order(s)?`,
+            onOk: () => {
+                Promise.all(
+                    selectedActiveOrders.map((id) =>
+                        axios.post(
+                            `${API_URL}/${id}/archive`,
+                            {},
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                    )
+                )
+                    .then(() => {
+                        message.success(
+                            "Selected orders archived successfully"
+                        );
+                        fetchOrders();
+                        setSelectedActiveOrders([]);
+                        setSelectAllActive(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to archive some orders")
+                    );
+            },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
+        });
+    };
+
+    // Handlers for archived orders
+    const handleArchivedCheckboxChange = (orderId) => {
+        const updatedArchived = archivedOrders.map((order) =>
+            order.id === orderId
+                ? { ...order, selected: !order.selected }
+                : order
+        );
+        setArchivedOrders(updatedArchived);
+        setSelectedArchivedOrders(
+            updatedArchived.filter((o) => o.selected).map((o) => o.id)
+        );
+        const allSelected = updatedArchived.every((o) => o.selected);
+        setSelectAllArchived(allSelected);
+    };
+
+    const handleSelectAllArchivedChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAllArchived(checked);
+        const updatedArchived = archivedOrders.map((order) => ({
+            ...order,
+            selected: checked,
+        }));
+        setArchivedOrders(updatedArchived);
+        setSelectedArchivedOrders(
+            checked ? updatedArchived.map((o) => o.id) : []
+        );
+    };
+
+    const handleRestoreAll = () => {
+        if (selectedArchivedOrders.length === 0) {
+            message.warning("Please select at least one order to restore");
+            return;
+        }
+        Modal.confirm({
+            title: `Are you sure you want to restore ${selectedArchivedOrders.length} selected order(s)?`,
+            onOk: () => {
+                Promise.all(
+                    selectedArchivedOrders.map((id) =>
+                        axios.post(
+                            `${API_URL}/${id}/restore`,
+                            {},
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                    )
+                )
+                    .then(() => {
+                        message.success(
+                            "Selected orders restored successfully"
+                        );
+                        fetchOrders();
+                        setSelectedArchivedOrders([]);
+                        setSelectAllArchived(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to restore some orders")
+                    );
+            },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
+        });
+    };
+
     const mainColumns = [
         {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
                 <Space>
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleActiveCheckboxChange(record.id)}
+                    />
                     <EditOutlined onClick={() => handleEdit(record)} />
                     <FolderOpenOutlined onClick={() => handleArchive(record)} />
                     <EyeOutlined onClick={() => handleView(record)} />
@@ -137,9 +282,18 @@ const OrderManagement = () => {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
-                <Button type="link" onClick={() => handleRestore(record.id)}>
-                    Restore
-                </Button>
+                <Space>
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleArchivedCheckboxChange(record.id)}
+                    />
+                    <Button
+                        type="link"
+                        onClick={() => handleRestore(record.id)}
+                    >
+                        <UndoOutlined style={{ fontSize: "18px" }} />
+                    </Button>
+                </Space>
             ),
         },
         ...mainColumns.slice(1),
@@ -175,6 +329,8 @@ const OrderManagement = () => {
                         console.error(err);
                     });
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
@@ -253,7 +409,6 @@ const OrderManagement = () => {
 
         return (
             <div style={{ padding: "16px" }}>
-                {/* Order Summary */}
                 <Title level={4} style={{ marginBottom: "16px" }}>
                     Order Summary
                 </Title>
@@ -317,7 +472,6 @@ const OrderManagement = () => {
                     </Descriptions.Item>
                 </Descriptions>
 
-                {/* Customer Details */}
                 <Title level={4} style={{ margin: "24px 0 16px" }}>
                     Customer Details
                 </Title>
@@ -346,7 +500,6 @@ const OrderManagement = () => {
                     </Col>
                 </Row>
 
-                {/* Payment and Shipping Information */}
                 <Title level={4} style={{ margin: "24px 0 16px" }}>
                     Payment and Shipping
                 </Title>
@@ -380,6 +533,20 @@ const OrderManagement = () => {
         );
     });
 
+    const filteredArchivedOrders = archivedOrders.filter((order) => {
+        const lowerSearch = searchText.toLowerCase();
+        return (
+            order.id.toString().includes(lowerSearch) ||
+            (order.profile &&
+                `${order.profile.first_name || ""} ${
+                    order.profile.last_name || ""
+                }`
+                    .toLowerCase()
+                    .includes(lowerSearch)) ||
+            order.order_status?.toLowerCase().includes(lowerSearch)
+        );
+    });
+
     return (
         <Layout>
             <Sider width={256} style={{ minHeight: "100vh" }}>
@@ -398,13 +565,34 @@ const OrderManagement = () => {
                             marginBottom: 16,
                         }}
                     >
-                        <div>
+                        <div style={{ display: "flex", alignItems: "center" }}>
                             <Search
                                 placeholder="Search orders by ID, customer, or status"
                                 allowClear
                                 onChange={(e) => setSearchText(e.target.value)}
-                                style={{ width: 300 }}
+                                style={{ width: 300, marginRight: 16 }}
                             />
+                            <Checkbox
+                                checked={selectAllActive}
+                                onChange={handleSelectAllActiveChange}
+                            >
+                                Select All
+                            </Checkbox>
+                            {(selectAllActive ||
+                                selectedActiveOrders.length > 0) && (
+                                <Button
+                                    type="link"
+                                    onClick={handleArchiveAll}
+                                    style={{ marginLeft: 8 }}
+                                >
+                                    <FolderOpenOutlined
+                                        style={{ fontSize: "18px" }}
+                                    />
+
+                                    {selectedActiveOrders.length > 0 &&
+                                        ` (${selectedActiveOrders.length})`}
+                                </Button>
+                            )}
                         </div>
                         <div
                             style={{
@@ -434,19 +622,41 @@ const OrderManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1200}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
             >
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: 16,
+                    }}
+                >
+                    <Checkbox
+                        checked={selectAllArchived}
+                        onChange={handleSelectAllArchivedChange}
+                        style={{ marginRight: 16 }}
+                    >
+                        Select All
+                    </Checkbox>
+                    {(selectAllArchived ||
+                        selectedArchivedOrders.length > 0) && (
+                        <Button
+                            type="link"
+                            onClick={handleRestoreAll}
+                            style={{ marginRight: 8 }}
+                        >
+                            <UndoOutlined style={{ fontSize: "18px" }} />
+                            Restore
+                            {selectedArchivedOrders.length > 0 &&
+                                ` (${selectedArchivedOrders.length})`}
+                        </Button>
+                    )}
+                </div>
                 <Table
                     columns={archiveColumns}
-                    dataSource={archivedOrders}
+                    dataSource={filteredArchivedOrders}
                     rowKey="id"
+                    scroll={{ x: 1200 }}
                 />
             </Modal>
             <Modal
@@ -454,6 +664,23 @@ const OrderManagement = () => {
                 open={openEditModal}
                 onCancel={() => setOpenEditModal(false)}
                 onOk={handleUpdate}
+                footer={[
+                    <Button
+                        key="cancel"
+                        onClick={() => setOpenEditModal(false)}
+                        style={{ width: "131px" }}
+                    >
+                        Cancel
+                    </Button>,
+                    <Button
+                        key="save"
+                        type="primary"
+                        onClick={handleUpdate}
+                        style={{ width: "131px" }}
+                    >
+                        Update Order
+                    </Button>,
+                ]}
             >
                 {selectedOrder && (
                     <div>
