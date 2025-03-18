@@ -17,6 +17,21 @@ import Navbar from "../../Navbar/Navbar";
 const { Content } = Layout;
 const { Option } = Select;
 
+// Helper function to format address string and filter out "000"
+const formatAddress = (address) => {
+    const parts = [];
+    if (address.street && address.street !== "000") parts.push(address.street);
+    if (address.barangay && address.barangay !== "000")
+        parts.push(address.barangay);
+    if (address.city && address.city !== "000") parts.push(address.city);
+    if (address.state && address.state !== "000") parts.push(address.state);
+    if (address.postal_code && address.postal_code !== "000")
+        parts.push(address.postal_code);
+    if (address.country && address.country !== "000")
+        parts.push(address.country);
+    return parts.join(", ");
+};
+
 const MyAddress = () => {
     const [addresses, setAddresses] = useState([]);
     const [showForm, setShowForm] = useState(false);
@@ -104,6 +119,7 @@ const MyAddress = () => {
         }
     };
 
+    // If you still want to navigate to checkout, adjust as needed. Otherwise, you can remove the navigation.
     const handleSetDefault = async (addressId) => {
         try {
             // Set the address as default
@@ -114,7 +130,7 @@ const MyAddress = () => {
             );
             message.success("Address set as default!");
 
-            // Fetch the updated address list and get the latest data
+            // Fetch updated addresses
             const updatedAddresses = await fetchAddresses();
             const defaultAddress = updatedAddresses.find(
                 (addr) => addr.id === addressId
@@ -129,22 +145,22 @@ const MyAddress = () => {
                     0
                 );
 
-                // Navigate to checkout with the default address and cart data
-                navigate("/checkout", {
-                    state: {
-                        defaultAddress: {
-                            country: defaultAddress.country,
-                            streetAddress: defaultAddress.street,
-                            barangay: defaultAddress.barangay,
-                            province: defaultAddress.state,
-                            city: defaultAddress.city,
-                            postalCode: defaultAddress.postal_code,
-                            phone: defaultAddress.phone,
-                        },
-                        cartItems,
-                        subtotal,
-                    },
-                });
+                // If you don't want to navigate away, you can simply remove this navigate call.
+                // navigate("/checkout", {
+                //     state: {
+                //         defaultAddress: {
+                //             country: defaultAddress.country,
+                //             streetAddress: defaultAddress.street,
+                //             barangay: defaultAddress.barangay,
+                //             province: defaultAddress.state,
+                //             city: defaultAddress.city,
+                //             postalCode: defaultAddress.postal_code,
+                //             phone: defaultAddress.phone,
+                //         },
+                //         cartItems,
+                //         subtotal,
+                //     },
+                // });
             } else {
                 message.error("Failed to retrieve the default address.");
             }
@@ -248,38 +264,43 @@ const MyAddress = () => {
                                             <h3 style={{ margin: 0 }}>
                                                 {address.profile?.first_name}{" "}
                                                 {address.profile?.last_name} |{" "}
-                                                {address.phone}
+                                                {address.phone !== "000" &&
+                                                    address.phone}
                                             </h3>
                                             <p style={{ margin: 0 }}>
-                                                {address.street},{" "}
-                                                {address.barangay},{" "}
-                                                {address.city}, {address.state},{" "}
-                                                {address.postal_code},{" "}
-                                                {address.country}
+                                                {formatAddress(address)}
                                             </p>
                                             <div style={{ marginTop: 5 }}>
-                                                {address.is_default && (
-                                                    <span
-                                                        style={{
-                                                            color: "#ff4d4f",
-                                                            marginRight: 10,
-                                                        }}
-                                                    >
-                                                        Default
-                                                    </span>
-                                                )}
-                                                {address.is_pickup && (
-                                                    <span
-                                                        style={{
-                                                            marginRight: 10,
-                                                        }}
-                                                    >
-                                                        Pickup Address
-                                                    </span>
-                                                )}
-                                                {address.is_return && (
-                                                    <span>Return Address</span>
-                                                )}
+                                                {address.is_default &&
+                                                    address.is_default !==
+                                                        "000" && (
+                                                        <span
+                                                            style={{
+                                                                color: "#ff4d4f",
+                                                                marginRight: 10,
+                                                            }}
+                                                        >
+                                                            Default
+                                                        </span>
+                                                    )}
+                                                {address.is_pickup &&
+                                                    address.is_pickup !==
+                                                        "000" && (
+                                                        <span
+                                                            style={{
+                                                                marginRight: 10,
+                                                            }}
+                                                        >
+                                                            Pickup Address
+                                                        </span>
+                                                    )}
+                                                {address.is_return &&
+                                                    address.is_return !==
+                                                        "000" && (
+                                                        <span>
+                                                            Return Address
+                                                        </span>
+                                                    )}
                                             </div>
                                         </div>
                                         <div>

@@ -187493,6 +187493,18 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 var Content = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Content;
 var Option = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Option;
+
+// Helper function to format address string and filter out "000"
+var formatAddress = function formatAddress(address) {
+  var parts = [];
+  if (address.street && address.street !== "000") parts.push(address.street);
+  if (address.barangay && address.barangay !== "000") parts.push(address.barangay);
+  if (address.city && address.city !== "000") parts.push(address.city);
+  if (address.state && address.state !== "000") parts.push(address.state);
+  if (address.postal_code && address.postal_code !== "000") parts.push(address.postal_code);
+  if (address.country && address.country !== "000") parts.push(address.country);
+  return parts.join(", ");
+};
 var MyAddress = function MyAddress() {
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
@@ -187654,6 +187666,8 @@ var MyAddress = function MyAddress() {
       return _ref3.apply(this, arguments);
     };
   }();
+
+  // If you still want to navigate to checkout, adjust as needed. Otherwise, you can remove the navigation.
   var handleSetDefault = /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(addressId) {
       var updatedAddresses, defaultAddress, cartItems, subtotal;
@@ -187670,7 +187684,7 @@ var MyAddress = function MyAddress() {
           case 3:
             antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Address set as default!");
 
-            // Fetch the updated address list and get the latest data
+            // Fetch updated addresses
             _context4.next = 6;
             return fetchAddresses();
           case 6:
@@ -187683,22 +187697,22 @@ var MyAddress = function MyAddress() {
               cartItems = JSON.parse(localStorage.getItem("cart")) || [];
               subtotal = cartItems.reduce(function (sum, item) {
                 return sum + item.price * item.quantity;
-              }, 0); // Navigate to checkout with the default address and cart data
-              navigate("/checkout", {
-                state: {
-                  defaultAddress: {
-                    country: defaultAddress.country,
-                    streetAddress: defaultAddress.street,
-                    barangay: defaultAddress.barangay,
-                    province: defaultAddress.state,
-                    city: defaultAddress.city,
-                    postalCode: defaultAddress.postal_code,
-                    phone: defaultAddress.phone
-                  },
-                  cartItems: cartItems,
-                  subtotal: subtotal
-                }
-              });
+              }, 0); // If you don't want to navigate away, you can simply remove this navigate call.
+              // navigate("/checkout", {
+              //     state: {
+              //         defaultAddress: {
+              //             country: defaultAddress.country,
+              //             streetAddress: defaultAddress.street,
+              //             barangay: defaultAddress.barangay,
+              //             province: defaultAddress.state,
+              //             city: defaultAddress.city,
+              //             postalCode: defaultAddress.postal_code,
+              //             phone: defaultAddress.phone,
+              //         },
+              //         cartItems,
+              //         subtotal,
+              //     },
+              // });
             } else {
               antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to retrieve the default address.");
             }
@@ -187814,28 +187828,28 @@ var MyAddress = function MyAddress() {
                   style: {
                     margin: 0
                   },
-                  children: [(_address$profile = address.profile) === null || _address$profile === void 0 ? void 0 : _address$profile.first_name, " ", (_address$profile2 = address.profile) === null || _address$profile2 === void 0 ? void 0 : _address$profile2.last_name, " |", " ", address.phone]
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+                  children: [(_address$profile = address.profile) === null || _address$profile === void 0 ? void 0 : _address$profile.first_name, " ", (_address$profile2 = address.profile) === null || _address$profile2 === void 0 ? void 0 : _address$profile2.last_name, " |", " ", address.phone !== "000" && address.phone]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
                   style: {
                     margin: 0
                   },
-                  children: [address.street, ",", " ", address.barangay, ",", " ", address.city, ", ", address.state, ",", " ", address.postal_code, ",", " ", address.country]
+                  children: formatAddress(address)
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                   style: {
                     marginTop: 5
                   },
-                  children: [address.is_default && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+                  children: [address.is_default && address.is_default !== "000" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                     style: {
                       color: "#ff4d4f",
                       marginRight: 10
                     },
                     children: "Default"
-                  }), address.is_pickup && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+                  }), address.is_pickup && address.is_pickup !== "000" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                     style: {
                       marginRight: 10
                     },
                     children: "Pickup Address"
-                  }), address.is_return && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+                  }), address.is_return && address.is_return !== "000" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                     children: "Return Address"
                   })]
                 })]
