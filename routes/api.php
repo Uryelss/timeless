@@ -13,14 +13,16 @@ use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\UserOrderController;
 use App\Http\Controllers\API\AddressController;
-
-
+use App\Http\Controllers\API\ForgotPasswordController; // Correct namespace
 /*
 |--------------------------------------------------------------------------
 | Public Routes (No Authentication Required)
 |--------------------------------------------------------------------------
 */
 
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
+Route::post('/verify-reset-code', [ForgotPasswordController::class, 'verifyResetCode']); // New endpoint
+Route::post('/reset-password', [ForgotPasswordController::class, 'reset']);
 Route::post('/register', [AccessController::class, 'register'])->name('register');
 Route::post('/login', [AccessController::class, 'login'])->name('login');
 Route::get('/products/public', [ProductController::class, 'publicIndex'])->name('products.public');
