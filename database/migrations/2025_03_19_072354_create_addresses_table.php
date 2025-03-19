@@ -9,8 +9,10 @@ class CreateAddressesTable extends Migration
     public function up()
     {
         Schema::create('addresses', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('profile_id');
+            $table->engine = 'InnoDB'; // Ensure InnoDB engine is used
+
+            $table->id(); // Primary Key
+            $table->unsignedBigInteger('profile_id'); // Make sure it's the same type as 'id' in 'profiles'
             $table->string('street');
             $table->string('city');
             $table->string('state');
@@ -22,6 +24,7 @@ class CreateAddressesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
+            // Foreign Key Constraint
             $table->foreign('profile_id')->references('id')->on('profiles')->onDelete('cascade');
         });
     }

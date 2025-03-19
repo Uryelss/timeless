@@ -28,15 +28,16 @@ class OrderController extends Controller
         $orders = $query->get();
         return response()->json($orders);
     }
+
     // Show a specific order
     public function show($id)
     {
         $order = Order::with([
-            'profile.user', // User details (username, email)
-            'shipping.shippingMethod', // Shipping method
-            'shipping.paymentMethod', // Payment method (COD, etc.)
-            'shipping.address', // Address for phone (if stored there)
-            'orderDetails.product', // Product details
+            'profile.user',
+            'shipping.shippingMethod',
+            'shipping.paymentMethod',
+            'shipping.address',
+            'orderDetails.product',
         ])
             ->withTrashed()
             ->findOrFail($id);
@@ -50,7 +51,7 @@ class OrderController extends Controller
         $order = Order::withTrashed()->findOrFail($id);
 
         $request->validate([
-            'order_status' => 'sometimes|in:pending,completed,cancelled,processing',
+            'order_status' => 'sometimes|in:pending,processing,shipped,completed,cancelled',
             'shipping.tracking_number' => 'sometimes|string',
             'shipping.shipping_status_id' => 'sometimes|exists:shipping_statuses,id',
         ]);
@@ -79,5 +80,23 @@ class OrderController extends Controller
         $order->restore();
 
         return response()->json(['message' => 'Order restored successfully']);
+    }
+
+    // Fetch orders for the authenticated user
+    public function userOrders(Request $request)
+    {
+        $user = $request->user();
+        $orders = Order::with([
+            'profile.user',
+            'shipping.shippingMethod',
+            'shipping.paymentMethod',
+            'shipping.address',
+            'orderDetails.product',
+        ])
+            ->where('user_id', $user->id) // Filter by authenticated user's ID
+            ->whereNull('deleted_at')     // Exclude archived orders
+            ->get();
+
+        return response()->json($orders);
     }
 }
