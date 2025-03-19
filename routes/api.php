@@ -114,4 +114,11 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::post('/{id}/archive', [OrderController::class, 'archive'])->name('archive');
         Route::post('/{id}/restore', [OrderController::class, 'restore'])->name('restore');
     });
+    Route::prefix('admin/reviews')->name('admin.reviews.')->group(function () {
+        Route::get('/', [ReviewController::class, 'adminIndex'])->name('index');
+        Route::put('/{id}', [ReviewController::class, 'update'])->name('update');
+        Route::delete('/{id}', [ReviewController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/archive', [ReviewController::class, 'archive'])->name('archive');
+        Route::post('/{id}/restore', [ReviewController::class, 'restore'])->name('restore');
+    });
 });

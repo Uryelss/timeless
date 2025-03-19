@@ -168,7 +168,7 @@ const CustomerManagement = () => {
             suffix: record.suffix,
             gender: record.gender,
             date_of_birth: record.date_of_birth,
-            // Fetch full address data from backend if needed
+            phone: record.phone, // Populate phone field
         });
         setOpenEditModal(true);
     };
@@ -399,10 +399,12 @@ const CustomerManagement = () => {
                     <Form.Item name="date_of_birth" label="Date of Birth">
                         <Input placeholder="YYYY-MM-DD" />
                     </Form.Item>
-                    {/* Note: Phone and Address are now in addresses table, editing here requires a separate address management UI */}
+                    <Form.Item name="phone" label="Phone">
+                        <Input placeholder="Enter phone number" />
+                    </Form.Item>
                     <Form.Item label="Note">
                         <span>
-                            Phone and Address editing requires address
+                            Full address editing requires separate address
                             management (not implemented here).
                         </span>
                     </Form.Item>

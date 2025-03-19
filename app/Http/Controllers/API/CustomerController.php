@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Profile;
+use App\Models\Address;
 
 class CustomerController extends Controller
 {
@@ -21,8 +22,8 @@ class CustomerController extends Controller
             return [
                 'id' => $profile->id,
                 'user_id' => $profile->user_id,
-                'username' => $profile->user->username,
-                'email' => $profile->user->email,
+                'username' => $profile->user ? $profile->user->username : null, // Check if user exists
+                'email' => $profile->user ? $profile->user->email : null,       // Check if user exists
                 'first_name' => $profile->first_name,
                 'middle_name' => $profile->middle_name,
                 'last_name' => $profile->last_name,
@@ -40,6 +41,7 @@ class CustomerController extends Controller
 
         return response()->json($customers);
     }
+
     public function show($id)
     {
         $profile = Profile::with(['user', 'addresses'])->findOrFail($id);
@@ -47,15 +49,15 @@ class CustomerController extends Controller
         $mergedData = [
             'id' => $profile->id,
             'user_id' => $profile->user_id,
-            'username' => $profile->user->username,
-            'email' => $profile->user->email,
+            'username' => $profile->user ? $profile->user->username : null, // Check if user exists
+            'email' => $profile->user ? $profile->user->email : null,       // Check if user exists
             'first_name' => $profile->first_name,
             'middle_name' => $profile->middle_name,
             'last_name' => $profile->last_name,
             'suffix' => $profile->suffix,
             'gender' => $profile->gender,
             'date_of_birth' => $profile->date_of_birth,
-            'phone' => $profile->phone,
+            'phone' => $address ? $address->phone : null,
             'profile_image' => $profile->profile_image,
             'address' => $address ? "{$address->street}, {$address->city}, {$address->state} {$address->postal_code}, {$address->country}" : null,
             'created_at' => $profile->created_at,
@@ -69,24 +71,50 @@ class CustomerController extends Controller
     {
         $profile = Profile::findOrFail($id);
 
-        $validatedData = $request->validate([
+        // Validate profile data
+        $profileData = $request->validate([
             'first_name' => 'sometimes|required|string',
             'middle_name' => 'nullable|string',
             'last_name' => 'sometimes|required|string',
             'suffix' => 'nullable|string',
             'gender' => 'sometimes|nullable|string',
             'date_of_birth' => 'sometimes|nullable|date',
-            'phone' => 'sometimes|nullable|string',
             'profile_image' => 'nullable|file|image',
-            'address' => 'sometimes|nullable|string', // Not used here; address updates happen via checkout
         ]);
 
+        // Handle profile image upload
         if ($request->hasFile('profile_image')) {
             $path = $request->file('profile_image')->store('profiles', 'public');
-            $validatedData['profile_image'] = asset('storage/' . $path);
+            $profileData['profile_image'] = asset('storage/' . $path);
         }
 
-        $profile->update($validatedData);
+        // Update profile
+        $profile->update($profileData);
+
+        // Handle phone update in the addresses table
+        if ($request->has('phone')) {
+            $addressData = $request->validate([
+                'phone' => 'sometimes|nullable|string|max:15', // Adjust max length as needed
+            ]);
+
+            $address = $profile->addresses()->where('is_default', 1)->first();
+            if ($address) {
+                $address->update(['phone' => $addressData['phone']]);
+            } else {
+                // Create a new address if none exists (minimal data for demo purposes)
+                $profile->addresses()->create([
+                    'phone' => $addressData['phone'],
+                    'is_default' => 1,
+                    'street' => $request->input('street', 'N/A'), // Add defaults or require these fields
+                    'city' => $request->input('city', 'N/A'),
+                    'state' => $request->input('state', 'N/A'),
+                    'barangay' => $request->input('barangay', 'N/A'),
+                    'postal_code' => $request->input('postal_code', '0000'),
+                    'country' => $request->input('country', 'Philippines'),
+                ]);
+            }
+        }
+
         return response()->json($profile->fresh(['user', 'addresses']));
     }
 

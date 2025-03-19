@@ -58,7 +58,7 @@ const items = [
         key: "reviews",
         icon: <StarOutlined />, // Added Reviews Section with Star Icon
         label: "Reviews",
-        path: "/reviews",
+        path: "/Reviews",
     },
     {
         key: "admin-settings",

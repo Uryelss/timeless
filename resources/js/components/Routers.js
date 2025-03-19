@@ -34,6 +34,7 @@ import OrderCheckout from "./UserPage/Checkout/Checkout";
 // Single route protection component
 import PrivateRoute from "./PrivateRoute";
 import MyAddress from "./UserPage/ProfilePage/Address/MyAddress";
+import ReviewsManagement from "./AdminPage/AdminReview/Reviews";
 
 function Routers() {
     return (
@@ -70,6 +71,8 @@ function Routers() {
                     <Route path="/orders" element={<OrderManagement />} />
                     <Route path="/customers" element={<CustomerManagement />} />
                     <Route path="/users" element={<UserManagement />} />
+                    <Route path="/Reviews" element={<ReviewsManagement />} />
+
                     <Route
                         path="/inventory"
                         element={<InventoryManagement />}

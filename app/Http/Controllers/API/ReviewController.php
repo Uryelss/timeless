@@ -6,40 +6,93 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Review;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage; // Add this import
 
 class ReviewController extends Controller
 {
-    // Get all reviews for a product
-    public function index($product_id)
+    // Get all reviews for admin
+    public function adminIndex()
     {
-        $reviews = Review::where('product_id', $product_id)
-            ->with('user.profile') // Get profile info (username, image)
+        $reviews = Review::with(['user' => function ($query) {
+            $query->withTrashed(); // Include soft-deleted users
+        }, 'user.profile', 'product'])
             ->latest()
-            ->get();
+            ->get()
+            ->map(function ($review) {
+                $username = 'Deleted User';
+                if ($review->user) {
+                    $username = $review->user->profile
+                        ? ($review->user->profile->username ?? $review->user->username)
+                        : ($review->user->username ?? $review->user->email ?? 'Unknown User');
+                }
 
-        return response()->json($reviews);
+                // Use main_image instead of image, and prepend storage URL if needed
+                $productImage = $review->product
+                    ? Storage::url($review->product->main_image)
+                    : 'https://via.placeholder.com/50';
+
+                return [
+                    'id' => $review->id,
+                    'product_image' => $productImage,
+                    'product_name' => $review->product ? $review->product->product_name : 'Unknown Product',
+                    'username' => $username,
+                    'rating' => $review->rating,
+                    'review' => $review->comment,
+                    'date_added' => $review->created_at->toDateString(),
+                    'date_updated' => $review->updated_at->toDateString(),
+                    'is_archived' => $review->is_archived ?? false,
+                ];
+            });
+
+        return response()->json([
+            'reviews' => $reviews->where('is_archived', false),
+            'archived_reviews' => $reviews->where('is_archived', true),
+        ]);
     }
 
-    // Store a new review
-    public function store(Request $request)
+    // Update a review
+    public function update(Request $request, $id)
     {
+        $review = Review::findOrFail($id);
         $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'comment' => 'required|string',
-            'rating' => 'integer|min:1|max:5'
+            'comment' => 'sometimes|string',
+            'rating' => 'sometimes|integer|min:1|max:5',
         ]);
 
-        $user = Auth::user();
-        $review = Review::create([
-            'user_id' => $user->id,
-            'product_id' => $request->product_id,
-            'comment' => $request->comment,
-            'rating' => $request->rating ?? 5,
-        ]);
+        $review->update($request->only(['comment', 'rating']));
+        $review->load(['user' => function ($query) {
+            $query->withTrashed();
+        }, 'user.profile', 'product']);
 
-        // Load the user relationship with profile
-        $review->load('user.profile');
+        return response()->json(['message' => 'Review updated successfully', 'review' => $review]);
+    }
 
-        return response()->json(['message' => 'Review added successfully', 'review' => $review]);
+    // Archive a review
+    public function archive($id)
+    {
+        $review = Review::findOrFail($id);
+        $review->is_archived = true;
+        $review->save();
+
+        return response()->json(['message' => 'Review archived successfully']);
+    }
+
+    // Restore an archived review
+    public function restore($id)
+    {
+        $review = Review::findOrFail($id);
+        $review->is_archived = false;
+        $review->save();
+
+        return response()->json(['message' => 'Review restored successfully']);
+    }
+
+    // Delete a review permanently
+    public function destroy($id)
+    {
+        $review = Review::findOrFail($id);
+        $review->delete();
+
+        return response()->json(['message' => 'Review deleted successfully']);
     }
 }
