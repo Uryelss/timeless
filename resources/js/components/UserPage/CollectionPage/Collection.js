@@ -40,10 +40,11 @@ const Collection = () => {
     const [filterKey, setFilterKey] = useState(0);
     const [showAddToCartModal, setShowAddToCartModal] = useState(false);
     const [modalProduct, setModalProduct] = useState(null);
+    const [modalCurrentMainImage, setModalCurrentMainImage] = useState("");
+    const [modalSelectedSize, setModalSelectedSize] = useState(null);
 
     const PRODUCTS_API = "http://localhost:8000/api/products/public";
     const SUBCATEGORIES_API = "http://localhost:8000/api/sub-categories/public";
-
     const isLoggedIn = Boolean(localStorage.getItem("token"));
     const navigate = useNavigate();
 
@@ -52,7 +53,7 @@ const Collection = () => {
             .get(PRODUCTS_API)
             .then((res) => {
                 console.log(
-                    "Fetched Products Data (Full):",
+                    "Fetched Products Data:",
                     JSON.stringify(res.data, null, 2)
                 );
                 setProducts(res.data);
@@ -67,7 +68,6 @@ const Collection = () => {
         axios
             .get(`${SUBCATEGORIES_API}?type=${type}`)
             .then((res) => {
-                console.log(`${type} Options:`, res.data);
                 if (type === "strap_materials") {
                     setter(res.data);
                 } else {
@@ -100,7 +100,6 @@ const Collection = () => {
             const updated = prev[category].includes(value)
                 ? prev[category].filter((item) => item !== value)
                 : [...prev[category], value];
-            console.log(`Updated ${category} filter:`, updated);
             return { ...prev, [category]: updated };
         });
         setFilterKey((prev) => prev + 1);
@@ -140,7 +139,6 @@ const Collection = () => {
             )
                 .toLowerCase()
                 .trim();
-
             const matchesBrand =
                 filters.brand.length === 0 ||
                 filters.brand.some(
@@ -159,7 +157,6 @@ const Collection = () => {
             const matchesStrapMaterial =
                 filters.strapMaterial.length === 0 ||
                 filters.strapMaterial.includes(product.strap_material_id);
-
             return (
                 matchesBrand &&
                 matchesGender &&
@@ -167,7 +164,6 @@ const Collection = () => {
                 matchesStrapMaterial
             );
         });
-
         if (searchTerm) {
             filtered = filtered.filter((product) =>
                 product.product_name
@@ -175,7 +171,6 @@ const Collection = () => {
                     .includes(searchTerm.toLowerCase())
             );
         }
-
         if (sortBy === "priceAsc") {
             filtered.sort(
                 (a, b) =>
@@ -197,7 +192,6 @@ const Collection = () => {
                     )
             );
         }
-        console.log("Filtered Products:", filtered);
         return filtered;
     };
 
@@ -216,7 +210,7 @@ const Collection = () => {
     const filteredProducts = getFilteredProducts();
     const displayFilters = getDisplayFilters();
 
-    // Function to add a product directly to cart with a selected size
+    // Function to add item to cart with selected size
     const handleDirectAddToCart = (product, size) => {
         if (!isLoggedIn) {
             message.info("Please log in to add to cart");
@@ -233,7 +227,6 @@ const Collection = () => {
             quantity: 1,
             total: product.price,
         };
-
         const storedCart = localStorage.getItem("cart");
         let cart = storedCart ? JSON.parse(storedCart) : [];
         const existingItemIndex = cart.findIndex(
@@ -252,22 +245,19 @@ const Collection = () => {
         message.success(
             `Successfully added ${product.product_name} (${size}) to your cart!`
         );
-        setShowAddToCartModal(false);
-        setModalProduct(null);
     };
 
-    // Render modal content for direct Add to Cart
-    const renderModalContent = () => {
-        if (!modalProduct) return null;
+    // Render size options as buttons in the modal
+    const renderSizeOptions = (product) => {
         let sizesArr = [];
-        if (typeof modalProduct.sizes === "string") {
+        if (typeof product.sizes === "string") {
             try {
-                sizesArr = JSON.parse(modalProduct.sizes);
+                sizesArr = JSON.parse(product.sizes);
             } catch (e) {
                 sizesArr = [];
             }
         } else {
-            sizesArr = modalProduct.sizes || [];
+            sizesArr = product.sizes || [];
         }
         let sizesDisplay = [];
         if (Array.isArray(sizesArr) && sizesArr.length > 0) {
@@ -277,25 +267,146 @@ const Collection = () => {
                 sizesDisplay = sizesArr;
             }
         }
+        return sizesDisplay.map((size, index) => (
+            <Button
+                key={index}
+                size="large"
+                onClick={() => setModalSelectedSize(size)}
+                type={modalSelectedSize === size ? "primary" : "default"}
+                style={{ margin: "4px" }}
+            >
+                {size}
+            </Button>
+        ));
+    };
+
+    // Handler for modal Add-to-Cart button
+    const handleModalAddToCart = () => {
+        if (!modalSelectedSize) {
+            message.warning("Please select a size.");
+            return;
+        }
+        handleDirectAddToCart(modalProduct, modalSelectedSize);
+        setShowAddToCartModal(false);
+        setModalProduct(null);
+    };
+
+    // Render the modal overview content
+    const renderModalOverview = () => {
+        if (!modalProduct) return null;
         return (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                {sizesDisplay.length === 0 ? (
-                    <div>No size available</div>
-                ) : (
-                    sizesDisplay.map((size, index) => (
-                        <Button
-                            key={index}
-                            size="large"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleDirectAddToCart(modalProduct, size);
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px",
+                }}
+            >
+                <div style={{ display: "flex", gap: "16px" }}>
+                    <div>
+                        <img
+                            src={`http://localhost:8000/storage/${modalCurrentMainImage}`}
+                            alt={modalProduct.product_name}
+                            style={{
+                                width: "300px",
+                                height: "300px",
+                                objectFit: "cover",
+                                borderRadius: "8px",
                             }}
-                            style={{ margin: "4px" }}
-                        >
-                            {size}
-                        </Button>
-                    ))
-                )}
+                        />
+                    </div>
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "8px",
+                        }}
+                    >
+                        {modalProduct.side_image_1 && (
+                            <img
+                                src={`http://localhost:8000/storage/${modalProduct.side_image_1}`}
+                                alt="Side 1"
+                                style={{
+                                    width: "60px",
+                                    height: "60px",
+                                    objectFit: "cover",
+                                    cursor: "pointer",
+                                }}
+                                onClick={() =>
+                                    setModalCurrentMainImage(
+                                        modalProduct.side_image_1
+                                    )
+                                }
+                            />
+                        )}
+                        {modalProduct.side_image_2 && (
+                            <img
+                                src={`http://localhost:8000/storage/${modalProduct.side_image_2}`}
+                                alt="Side 2"
+                                style={{
+                                    width: "60px",
+                                    height: "60px",
+                                    objectFit: "cover",
+                                    cursor: "pointer",
+                                }}
+                                onClick={() =>
+                                    setModalCurrentMainImage(
+                                        modalProduct.side_image_2
+                                    )
+                                }
+                            />
+                        )}
+                        {modalProduct.side_image_3 && (
+                            <img
+                                src={`http://localhost:8000/storage/${modalProduct.side_image_3}`}
+                                alt="Side 3"
+                                style={{
+                                    width: "60px",
+                                    height: "60px",
+                                    objectFit: "cover",
+                                    cursor: "pointer",
+                                }}
+                                onClick={() =>
+                                    setModalCurrentMainImage(
+                                        modalProduct.side_image_3
+                                    )
+                                }
+                            />
+                        )}
+                    </div>
+                </div>
+                <div>
+                    <h3>{modalProduct.product_name}</h3>
+                    <p>Price: {modalProduct.price}</p>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                        <Rate
+                            disabled
+                            value={modalProduct.average_rating || 0}
+                            allowHalf
+                            style={{ fontSize: "14px", marginRight: "8px" }}
+                        />
+                        <span>{modalProduct.average_rating || 0}</span>
+                    </div>
+                </div>
+                <div>
+                    <h4>Select Size</h4>
+                    <div
+                        style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "8px",
+                        }}
+                    >
+                        {renderSizeOptions(modalProduct)}
+                    </div>
+                </div>
+                <Button
+                    type="primary"
+                    onClick={handleModalAddToCart}
+                    style={{ width: "100%" }}
+                >
+                    Add to Cart
+                </Button>
             </div>
         );
     };
@@ -525,7 +636,7 @@ const Collection = () => {
                                                 </div>
                                             }
                                         />
-                                        {/* Add-to-Cart icon button */}
+                                        {/* Cart Icon Button */}
                                         <Button
                                             type="link"
                                             icon={
@@ -535,8 +646,13 @@ const Collection = () => {
                                             }
                                             disabled={!isLoggedIn}
                                             onClick={(e) => {
+                                                e.preventDefault();
                                                 e.stopPropagation();
                                                 setModalProduct(product);
+                                                setModalCurrentMainImage(
+                                                    product.main_image
+                                                );
+                                                setModalSelectedSize(null);
                                                 setShowAddToCartModal(true);
                                             }}
                                             style={{
@@ -556,8 +672,8 @@ const Collection = () => {
             <Modal
                 title={
                     modalProduct
-                        ? `Select Size for ${modalProduct.product_name}`
-                        : "Select Size"
+                        ? modalProduct.product_name
+                        : "Product Overview"
                 }
                 visible={showAddToCartModal}
                 onCancel={() => {
@@ -565,8 +681,9 @@ const Collection = () => {
                     setModalProduct(null);
                 }}
                 footer={null}
+                width={700}
             >
-                {renderModalContent()}
+                {modalProduct && renderModalOverview()}
             </Modal>
         </Layout>
     );

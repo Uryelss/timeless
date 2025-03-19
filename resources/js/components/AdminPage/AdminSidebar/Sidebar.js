@@ -11,6 +11,7 @@ import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
     LogoutOutlined,
+    StarOutlined, // Import Star Icon
 } from "@ant-design/icons";
 import { Button, Menu, Modal } from "antd"; // Import Modal from antd
 import { useNavigate } from "react-router-dom";
@@ -52,6 +53,12 @@ const items = [
         icon: <DatabaseOutlined />,
         label: "Inventory",
         path: "/inventory",
+    },
+    {
+        key: "reviews",
+        icon: <StarOutlined />, // Added Reviews Section with Star Icon
+        label: "Reviews",
+        path: "/reviews",
     },
     {
         key: "admin-settings",
