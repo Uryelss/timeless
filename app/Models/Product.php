@@ -30,6 +30,8 @@ class Product extends Model
         'sizes' => 'array',
     ];
 
+    protected $appends = ['average_rating', 'image'];
+
     // Relationships
     public function brand()
     {
@@ -51,7 +53,6 @@ class Product extends Model
         return $this->belongsTo(SubCategory::class, 'strap_material_id');
     }
 
-
     public function gender()
     {
         return $this->belongsTo(SubCategory::class, 'gender_id');
@@ -62,16 +63,20 @@ class Product extends Model
         return $this->hasMany(Inventory::class);
     }
 
-    // A product can have many reviews
     public function reviews()
     {
         return $this->hasMany(Review::class);
     }
-    protected $appends = ['average_rating'];
 
+    // Accessors
     public function getAverageRatingAttribute()
     {
         $average = $this->reviews()->avg('rating');
         return $average ? round($average, 1) : 0; // Round to 1 decimal place, default to 0 if no reviews
+    }
+
+    public function getImageAttribute()
+    {
+        return $this->main_image ?? $this->side_image_1 ?? $this->side_image_2 ?? $this->side_image_3 ?? null;
     }
 }

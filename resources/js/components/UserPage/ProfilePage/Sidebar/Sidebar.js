@@ -1,9 +1,12 @@
 import React from "react";
 import { Layout, Menu } from "antd";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const { Sider } = Layout;
 
 const Sidebar = ({ collapsed, setCollapsed }) => {
+    const navigate = useNavigate(); // Initialize useNavigate
+
     return (
         <Sider
             collapsible
@@ -37,13 +40,12 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
                 >
                     <Menu.Item key="1">PROFILE</Menu.Item>
                     <Menu.Divider />
-                    <Menu.Item key="2">MY PURCHASE</Menu.Item>
+                    <Menu.Item key="2" onClick={() => navigate("/user-purchase")}>
+                        MY PURCHASE
+                    </Menu.Item>
                     <Menu.Item
                         key="3"
-                        onClick={() =>
-                            (window.location.href =
-                                "http://localhost:8000/user-address")
-                        }
+                        onClick={() => navigate("/user-address")}
                     >
                         ADDRESSES
                     </Menu.Item>

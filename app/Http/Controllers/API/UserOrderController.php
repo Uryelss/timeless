@@ -114,4 +114,27 @@ class UserOrderController extends Controller
             ], 201);
         }, 5);
     }
+     
+
+    public function myPurchases(Request $request)
+{
+    $user = Auth::user();
+    $profile = $user->profile;
+
+    $orders = Order::where('profile_id', $profile->id)
+        ->with([
+            'orderDetails.product',
+            'orderDetails.inventory',
+            'shipping.shippingMethod',
+            'shipping.paymentMethod',
+            'shipping.address'
+        ])
+        ->withTrashed()
+        ->orderBy('order_date', 'desc')
+        ->paginate(10);
+
+    return response()->json($orders);
+}
+    
+
 }

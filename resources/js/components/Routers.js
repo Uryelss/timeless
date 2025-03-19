@@ -34,6 +34,8 @@ import OrderCheckout from "./UserPage/Checkout/Checkout";
 // Single route protection component
 import PrivateRoute from "./PrivateRoute";
 import MyAddress from "./UserPage/ProfilePage/Address/MyAddress";
+import MyPurchase from "./UserPage/ProfilePage/Purchase/MyPurchase";
+
 
 function Routers() {
     return (
@@ -88,6 +90,9 @@ function Routers() {
                     <Route path="/user-cart" element={<CartPage />} />
                     <Route path="/user-checkout" element={<OrderCheckout />} />
                     <Route path="/user-Address" element={<MyAddress />} />
+                    <Route path="/user-purchase" element={<MyPurchase />} />
+
+
                 </Route>
 
                 {/* Catch-all redirect */}
