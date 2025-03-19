@@ -12473,6 +12473,25 @@ h3, .h3 {
   border-bottom: none !important;
 }
 
+.collapse-toggle {
+  text-align: center;
+  padding: 10px 0;
+  background: #001529;
+  color: #fff;
+  cursor: pointer;
+}
+
+.ant-menu {
+  flex: 1;
+  background: transparent;
+  border-right: 0;
+}
+
+.ant-menu-item.ant-menu-item-selected {
+  background: #1890ff !important;
+  color: #fff !important;
+}
+
 .brand-slider {
   background: #f8f8f8;
   padding: 20px 0;

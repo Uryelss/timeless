@@ -39,21 +39,17 @@ class AddressController extends Controller
         }
 
         $validated = $request->validate([
-            'street' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'barangay' => 'required|string|max:255',
+            'street'      => 'required|string|max:255',
+            'city'        => 'required|string|max:255',
+            'state'       => 'required|string|max:255',
+            'barangay'    => 'required|string|max:255',
             'postal_code' => 'required|string|max:10',
-            'country' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'is_pickup' => 'sometimes|boolean', // Optional, defaults to false
-            'is_return' => 'sometimes|boolean', // Optional, defaults to false
+            'country'     => 'required|string|max:255',
+            'phone'       => 'required|string|max:20',
         ]);
 
         $address = Address::create(array_merge($validated, [
             'profile_id' => $user->profile->id,
-            'is_pickup' => $request->input('is_pickup', false),
-            'is_return' => $request->input('is_return', false),
         ]));
 
         return response()->json($address, 201);
@@ -73,22 +69,17 @@ class AddressController extends Controller
         $address = Address::where('profile_id', $user->profile->id)->findOrFail($id);
 
         $validated = $request->validate([
-            'street' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'barangay' => 'required|string|max:255',
+            'street'      => 'required|string|max:255',
+            'city'        => 'required|string|max:255',
+            'state'       => 'required|string|max:255',
+            'barangay'    => 'required|string|max:255',
             'postal_code' => 'required|string|max:10',
-            'country' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'is_pickup' => 'sometimes|boolean',
-            'is_return' => 'sometimes|boolean',
+            'country'     => 'required|string|max:255',
+            'phone'       => 'required|string|max:20',
         ]);
 
         try {
-            $address->update(array_merge($validated, [
-                'is_pickup' => $request->input('is_pickup', $address->is_pickup),
-                'is_return' => $request->input('is_return', $address->is_return),
-            ]));
+            $address->update($validated);
             return response()->json($address);
         } catch (\Exception $e) {
             Log::error('Address Update Error', ['id' => $id, 'error' => $e->getMessage()]);

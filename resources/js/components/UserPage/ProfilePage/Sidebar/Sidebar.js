@@ -1,9 +1,35 @@
 import React from "react";
 import { Layout, Menu } from "antd";
+import { useLocation, useNavigate } from "react-router-dom";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 
 const { Sider } = Layout;
 
 const Sidebar = ({ collapsed, setCollapsed }) => {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const menuItems = [
+        { key: "profile", label: "PROFILE", path: "/user-Profile" },
+        { key: "mypurchase", label: "MY PURCHASE", path: "/user-purchase" }, // Adjust if needed
+        { key: "addresses", label: "ADDRESSES", path: "/user-address" },
+    ];
+
+    // Determine selected key based on current pathname
+    let selectedKey = "profile"; // default selection
+    menuItems.forEach((item) => {
+        if (location.pathname.toLowerCase().includes(item.path.toLowerCase())) {
+            selectedKey = item.key;
+        }
+    });
+
+    const handleMenuClick = ({ key }) => {
+        const item = menuItems.find((itm) => itm.key === key);
+        if (item && item.path) {
+            navigate(item.path);
+        }
+    };
+
     return (
         <Sider
             collapsible
@@ -27,38 +53,24 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
             >
                 <Menu
                     theme="light"
-                    defaultSelectedKeys={["1"]}
                     mode="inline"
+                    selectedKeys={[selectedKey]}
+                    onClick={handleMenuClick}
                     style={{
                         height: "100%",
                         borderRight: 0,
                         paddingTop: "20px",
                     }}
                 >
-                    <Menu.Item key="1">PROFILE</Menu.Item>
-                    <Menu.Divider />
-                    <Menu.Item key="2">MY PURCHASE</Menu.Item>
-                    <Menu.Item
-                        key="3"
-                        onClick={() =>
-                            (window.location.href =
-                                "http://localhost:8000/user-address")
-                        }
-                    >
-                        ADDRESSES
-                    </Menu.Item>
+                    {menuItems.map((item) => (
+                        <Menu.Item key={item.key}>{item.label}</Menu.Item>
+                    ))}
                 </Menu>
                 <div
-                    style={{
-                        textAlign: "center",
-                        padding: "10px 0",
-                        background: collapsed ? "transparent" : "#001529",
-                        color: "#fff",
-                        cursor: "pointer",
-                    }}
+                    className="collapse-toggle"
                     onClick={() => setCollapsed(!collapsed)}
                 >
-                    {collapsed ? ">" : "<"}
+                    {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                 </div>
             </div>
         </Sider>

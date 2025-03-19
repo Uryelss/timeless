@@ -14,13 +14,11 @@ class Address extends Model
         'street',
         'city',
         'state',
-        'barangay', // Add this
+        'barangay',
         'postal_code',
         'country',
         'phone',
-        'is_default',
-        'is_pickup',
-        'is_return'
+        'is_default'
     ];
 
     public function profile()

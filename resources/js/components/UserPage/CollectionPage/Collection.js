@@ -9,11 +9,12 @@ import {
     Space,
     message,
     Rate,
+    Modal,
 } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import Navbar from "../Navbar/Navbar";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import BrandSlider from "../UserHome/BrandSlider";
 
 const { Content, Sider } = Layout;
@@ -22,8 +23,6 @@ const { Option } = Select;
 
 const Collection = () => {
     const [products, setProducts] = useState([]);
-    // For filters, we keep brand, gender, and movement as names,
-    // but strapMaterial as an array of numbers (IDs).
     const [filters, setFilters] = useState({
         brand: [],
         gender: [],
@@ -39,11 +38,14 @@ const Collection = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("default");
     const [filterKey, setFilterKey] = useState(0);
+    const [showAddToCartModal, setShowAddToCartModal] = useState(false);
+    const [modalProduct, setModalProduct] = useState(null);
 
     const PRODUCTS_API = "http://localhost:8000/api/products/public";
     const SUBCATEGORIES_API = "http://localhost:8000/api/sub-categories/public";
 
     const isLoggedIn = Boolean(localStorage.getItem("token"));
+    const navigate = useNavigate();
 
     const fetchProducts = () => {
         axios
@@ -53,15 +55,6 @@ const Collection = () => {
                     "Fetched Products Data (Full):",
                     JSON.stringify(res.data, null, 2)
                 );
-                res.data.forEach((product) =>
-                    console.log(
-                        `Product: ${
-                            product.product_name
-                        }, Strap Material: ${JSON.stringify(
-                            product.strapMaterial
-                        )}, Strap Material ID: ${product.strap_material_id}`
-                    )
-                );
                 setProducts(res.data);
             })
             .catch((err) => {
@@ -70,17 +63,14 @@ const Collection = () => {
             });
     };
 
-    // When fetching filter options, for strap materials we want the full objects.
     const fetchFilterOptions = (type, setter) => {
         axios
             .get(`${SUBCATEGORIES_API}?type=${type}`)
             .then((res) => {
                 console.log(`${type} Options:`, res.data);
                 if (type === "strap_materials") {
-                    // Save full objects (with id and name)
                     setter(res.data);
                 } else {
-                    // For other types, we map to the name string.
                     setter(res.data.map((item) => item.name));
                 }
             })
@@ -116,7 +106,6 @@ const Collection = () => {
         setFilterKey((prev) => prev + 1);
     };
 
-    // Helper function to display filter names
     const getDisplayFilters = () => {
         const displays = [];
         Object.keys(filters).forEach((key) => {
@@ -138,7 +127,6 @@ const Collection = () => {
 
     const getFilteredProducts = () => {
         let filtered = products.filter((product) => {
-            // For brand, gender, and movement, we compare names (normalized to lower-case)
             const productBrand = (product.brand?.name || product.brand || "")
                 .toLowerCase()
                 .trim();
@@ -153,7 +141,6 @@ const Collection = () => {
                 .toLowerCase()
                 .trim();
 
-            // For strap material, we compare IDs
             const matchesBrand =
                 filters.brand.length === 0 ||
                 filters.brand.some(
@@ -210,7 +197,6 @@ const Collection = () => {
                     )
             );
         }
-
         console.log("Filtered Products:", filtered);
         return filtered;
     };
@@ -229,6 +215,95 @@ const Collection = () => {
 
     const filteredProducts = getFilteredProducts();
     const displayFilters = getDisplayFilters();
+
+    // Function to add a product directly to cart with a selected size
+    const handleDirectAddToCart = (product, size) => {
+        if (!isLoggedIn) {
+            message.info("Please log in to add to cart");
+            return;
+        }
+        const cartItem = {
+            id: product.id,
+            productName: product.product_name,
+            image: product.main_image
+                ? `http://localhost:8000/storage/${product.main_image}`
+                : "/placeholder.jpg",
+            size: size,
+            price: product.price,
+            quantity: 1,
+            total: product.price,
+        };
+
+        const storedCart = localStorage.getItem("cart");
+        let cart = storedCart ? JSON.parse(storedCart) : [];
+        const existingItemIndex = cart.findIndex(
+            (item) => item.id === product.id && item.size === size
+        );
+        if (existingItemIndex > -1) {
+            cart[existingItemIndex].quantity += 1;
+            cart[existingItemIndex].total =
+                cart[existingItemIndex].price *
+                cart[existingItemIndex].quantity;
+        } else {
+            cart.push(cartItem);
+        }
+        localStorage.setItem("cart", JSON.stringify(cart));
+        window.dispatchEvent(new Event("cartUpdated"));
+        message.success(
+            `Successfully added ${product.product_name} (${size}) to your cart!`
+        );
+        setShowAddToCartModal(false);
+        setModalProduct(null);
+    };
+
+    // Render modal content for direct Add to Cart
+    const renderModalContent = () => {
+        if (!modalProduct) return null;
+        let sizesArr = [];
+        if (typeof modalProduct.sizes === "string") {
+            try {
+                sizesArr = JSON.parse(modalProduct.sizes);
+            } catch (e) {
+                sizesArr = [];
+            }
+        } else {
+            sizesArr = modalProduct.sizes || [];
+        }
+        let sizesDisplay = [];
+        if (Array.isArray(sizesArr) && sizesArr.length > 0) {
+            if (typeof sizesArr[0] === "object" && sizesArr[0].size) {
+                sizesDisplay = sizesArr.map((item) => item.size);
+            } else {
+                sizesDisplay = sizesArr;
+            }
+        }
+        return (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                {sizesDisplay.length === 0 ? (
+                    <div>No size available</div>
+                ) : (
+                    sizesDisplay.map((size, index) => (
+                        <Button
+                            key={index}
+                            size="large"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDirectAddToCart(modalProduct, size);
+                            }}
+                            style={{ margin: "4px" }}
+                        >
+                            {size}
+                        </Button>
+                    ))
+                )}
+            </div>
+        );
+    };
+
+    const number_format = (number) =>
+        Number(number)
+            .toFixed(0)
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
     return (
         <Layout style={{ minHeight: "100vh" }} key={filterKey}>
@@ -392,6 +467,7 @@ const Collection = () => {
                                 <Link
                                     key={product.id}
                                     to={`/product/${product.id}`}
+                                    style={{ textDecoration: "none" }}
                                 >
                                     <Card
                                         hoverable
@@ -449,24 +525,27 @@ const Collection = () => {
                                                 </div>
                                             }
                                         />
+                                        {/* Add-to-Cart icon button */}
                                         <Button
                                             type="link"
-                                            icon={<ShoppingCartOutlined />}
+                                            icon={
+                                                <ShoppingCartOutlined
+                                                    style={{ fontSize: "28px" }}
+                                                />
+                                            }
                                             disabled={!isLoggedIn}
-                                            onClick={() => {
-                                                if (!isLoggedIn) {
-                                                    message.info(
-                                                        "Please log in to add to cart"
-                                                    );
-                                                }
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setModalProduct(product);
+                                                setShowAddToCartModal(true);
                                             }}
                                             style={{
                                                 padding: 0,
                                                 marginTop: "8px",
+                                                display: "block",
+                                                textAlign: "center",
                                             }}
-                                        >
-                                            Add to Cart
-                                        </Button>
+                                        />
                                     </Card>
                                 </Link>
                             ))}
@@ -474,6 +553,21 @@ const Collection = () => {
                     </Content>
                 </Layout>
             </Layout>
+            <Modal
+                title={
+                    modalProduct
+                        ? `Select Size for ${modalProduct.product_name}`
+                        : "Select Size"
+                }
+                visible={showAddToCartModal}
+                onCancel={() => {
+                    setShowAddToCartModal(false);
+                    setModalProduct(null);
+                }}
+                footer={null}
+            >
+                {renderModalContent()}
+            </Modal>
         </Layout>
     );
 };
