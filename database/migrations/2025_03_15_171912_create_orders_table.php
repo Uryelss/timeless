@@ -12,7 +12,7 @@ class CreateOrdersTable extends Migration
             $table->id();
             $table->foreignId('profile_id')->constrained('profiles')->onDelete('cascade');
             $table->decimal('total_amount', 10, 2);
-            $table->enum('order_status', ['pending', 'completed', 'cancelled', 'processing'])->default('pending');
+            $table->enum('order_status', ['pending', 'processing', 'shipped', 'cancelled','completed'])->default('pending');
             $table->timestamp('order_date')->useCurrent();
             $table->timestamps();
             $table->softDeletes();

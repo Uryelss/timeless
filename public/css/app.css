@@ -12473,6 +12473,51 @@ h3, .h3 {
   border-bottom: none !important;
 }
 
+.horizontal-timeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  margin: 20px 0;
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+}
+
+.timeline-icon {
+  font-size: 24px; /* Bigger icons */
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.timeline-content {
+  text-align: center;
+}
+
+.timeline-content .ant-typography {
+  font-size: 16px; /* Bigger text */
+}
+
+.timeline-connector {
+  position: absolute;
+  top: 25px; /* Center vertically with the icon */
+  left: 50%;
+  width: 100%;
+  height: 4px; /* Thicker line */
+  background: #d9d9d9;
+  z-index: -1;
+}
+
 .brand-slider {
   background: #f8f8f8;
   padding: 20px 0;

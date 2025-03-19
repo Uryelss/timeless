@@ -4793,24 +4793,6 @@ var CheckOutlined = { "icon": { "tag": "svg", "attrs": { "viewBox": "64 64 896 8
 
 /***/ }),
 
-/***/ "./node_modules/@ant-design/icons-svg/es/asn/ClockCircleOutlined.js":
-/*!**************************************************************************!*\
-  !*** ./node_modules/@ant-design/icons-svg/es/asn/ClockCircleOutlined.js ***!
-  \**************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-// This icon file is generated automatically.
-var ClockCircleOutlined = { "icon": { "tag": "svg", "attrs": { "viewBox": "64 64 896 896", "focusable": "false" }, "children": [{ "tag": "path", "attrs": { "d": "M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z" } }, { "tag": "path", "attrs": { "d": "M686.7 638.6L544.1 535.5V288c0-4.4-3.6-8-8-8H488c-4.4 0-8 3.6-8 8v275.4c0 2.6 1.2 5 3.3 6.5l165.4 120.6c3.6 2.6 8.6 1.8 11.2-1.7l28.6-39c2.6-3.7 1.8-8.7-1.8-11.2z" } }] }, "name": "clock-circle", "theme": "outlined" };
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ClockCircleOutlined);
-
-
-/***/ }),
-
 /***/ "./node_modules/@ant-design/icons-svg/es/asn/CloseCircleFilled.js":
 /*!************************************************************************!*\
   !*** ./node_modules/@ant-design/icons-svg/es/asn/CloseCircleFilled.js ***!
@@ -4915,6 +4897,24 @@ __webpack_require__.r(__webpack_exports__);
 // This icon file is generated automatically.
 var DeleteOutlined = { "icon": { "tag": "svg", "attrs": { "viewBox": "64 64 896 896", "focusable": "false" }, "children": [{ "tag": "path", "attrs": { "d": "M360 184h-8c4.4 0 8-3.6 8-8v8h304v-8c0 4.4 3.6 8 8 8h-8v72h72v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80h72v-72zm504 72H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zM731.3 840H292.7l-24.2-512h487l-24.2 512z" } }] }, "name": "delete", "theme": "outlined" };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DeleteOutlined);
+
+
+/***/ }),
+
+/***/ "./node_modules/@ant-design/icons-svg/es/asn/DollarOutlined.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@ant-design/icons-svg/es/asn/DollarOutlined.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// This icon file is generated automatically.
+var DollarOutlined = { "icon": { "tag": "svg", "attrs": { "viewBox": "64 64 896 896", "focusable": "false" }, "children": [{ "tag": "path", "attrs": { "d": "M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372zm47.7-395.2l-25.4-5.9V348.6c38 5.2 61.5 29 65.5 58.2.5 4 3.9 6.9 7.9 6.9h44.9c4.7 0 8.4-4.1 8-8.8-6.1-62.3-57.4-102.3-125.9-109.2V263c0-4.4-3.6-8-8-8h-28.1c-4.4 0-8 3.6-8 8v33c-70.8 6.9-126.2 46-126.2 119 0 67.6 49.8 100.2 102.1 112.7l24.7 6.3v142.7c-44.2-5.9-69-29.5-74.1-61.3-.6-3.8-4-6.6-7.9-6.6H363c-4.7 0-8.4 4-8 8.7 4.5 55 46.2 105.6 135.2 112.1V761c0 4.4 3.6 8 8 8h28.4c4.4 0 8-3.6 8-8.1l-.2-31.7c78.3-6.9 134.3-48.8 134.3-124-.1-69.4-44.2-100.4-109-116.4zm-68.6-16.2c-5.6-1.6-10.3-3.1-15-5-33.8-12.2-49.5-31.9-49.5-57.3 0-36.3 27.5-57 64.5-61.7v124zM534.3 677V543.3c3.1.9 5.9 1.6 8.8 2.2 47.3 14.4 63.2 34.4 63.2 65.1 0 39.1-29.4 62.6-72 66.4z" } }] }, "name": "dollar", "theme": "outlined" };
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DollarOutlined);
 
 
 /***/ }),
@@ -5113,6 +5113,24 @@ __webpack_require__.r(__webpack_exports__);
 // This icon file is generated automatically.
 var FileOutlined = { "icon": { "tag": "svg", "attrs": { "viewBox": "64 64 896 896", "focusable": "false" }, "children": [{ "tag": "path", "attrs": { "d": "M854.6 288.6L639.4 73.4c-6-6-14.1-9.4-22.6-9.4H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V311.3c0-8.5-3.4-16.7-9.4-22.7zM790.2 326H602V137.8L790.2 326zm1.8 562H232V136h302v216a42 42 0 0042 42h216v494z" } }] }, "name": "file", "theme": "outlined" };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FileOutlined);
+
+
+/***/ }),
+
+/***/ "./node_modules/@ant-design/icons-svg/es/asn/FileTextOutlined.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/@ant-design/icons-svg/es/asn/FileTextOutlined.js ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// This icon file is generated automatically.
+var FileTextOutlined = { "icon": { "tag": "svg", "attrs": { "viewBox": "64 64 896 896", "focusable": "false" }, "children": [{ "tag": "path", "attrs": { "d": "M854.6 288.6L639.4 73.4c-6-6-14.1-9.4-22.6-9.4H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V311.3c0-8.5-3.4-16.7-9.4-22.7zM790.2 326H602V137.8L790.2 326zm1.8 562H232V136h302v216a42 42 0 0042 42h216v494zM504 618H320c-4.4 0-8 3.6-8 8v48c0 4.4 3.6 8 8 8h184c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8zM312 490v48c0 4.4 3.6 8 8 8h384c4.4 0 8-3.6 8-8v-48c0-4.4-3.6-8-8-8H320c-4.4 0-8 3.6-8 8z" } }] }, "name": "file-text", "theme": "outlined" };
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FileTextOutlined);
 
 
 /***/ }),
@@ -5639,6 +5657,24 @@ var StarFilled = { "icon": { "tag": "svg", "attrs": { "viewBox": "64 64 896 896"
 
 /***/ }),
 
+/***/ "./node_modules/@ant-design/icons-svg/es/asn/StarOutlined.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@ant-design/icons-svg/es/asn/StarOutlined.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// This icon file is generated automatically.
+var StarOutlined = { "icon": { "tag": "svg", "attrs": { "viewBox": "64 64 896 896", "focusable": "false" }, "children": [{ "tag": "path", "attrs": { "d": "M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3a32.05 32.05 0 00.6 45.3l183.7 179.1-43.4 252.9a31.95 31.95 0 0046.4 33.7L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3zM664.8 561.6l36.1 210.3L512 672.7 323.1 772l36.1-210.3-152.8-149L417.6 382 512 190.7 606.4 382l211.2 30.7-152.8 148.9z" } }] }, "name": "star", "theme": "outlined" };
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (StarOutlined);
+
+
+/***/ }),
+
 /***/ "./node_modules/@ant-design/icons-svg/es/asn/SwapOutlined.js":
 /*!*******************************************************************!*\
   !*** ./node_modules/@ant-design/icons-svg/es/asn/SwapOutlined.js ***!
@@ -5671,6 +5707,24 @@ __webpack_require__.r(__webpack_exports__);
 // This icon file is generated automatically.
 var TeamOutlined = { "icon": { "tag": "svg", "attrs": { "viewBox": "64 64 896 896", "focusable": "false" }, "children": [{ "tag": "path", "attrs": { "d": "M824.2 699.9a301.55 301.55 0 00-86.4-60.4C783.1 602.8 812 546.8 812 484c0-110.8-92.4-201.7-203.2-200-109.1 1.7-197 90.6-197 200 0 62.8 29 118.8 74.2 155.5a300.95 300.95 0 00-86.4 60.4C345 754.6 314 826.8 312 903.8a8 8 0 008 8.2h56c4.3 0 7.9-3.4 8-7.7 1.9-58 25.4-112.3 66.7-153.5A226.62 226.62 0 01612 684c60.9 0 118.2 23.7 161.3 66.8C814.5 792 838 846.3 840 904.3c.1 4.3 3.7 7.7 8 7.7h56a8 8 0 008-8.2c-2-77-33-149.2-87.8-203.9zM612 612c-34.2 0-66.4-13.3-90.5-37.5a126.86 126.86 0 01-37.5-91.8c.3-32.8 13.4-64.5 36.3-88 24-24.6 56.1-38.3 90.4-38.7 33.9-.3 66.8 12.9 91 36.6 24.8 24.3 38.4 56.8 38.4 91.4 0 34.2-13.3 66.3-37.5 90.5A127.3 127.3 0 01612 612zM361.5 510.4c-.9-8.7-1.4-17.5-1.4-26.4 0-15.9 1.5-31.4 4.3-46.5.7-3.6-1.2-7.3-4.5-8.8-13.6-6.1-26.1-14.5-36.9-25.1a127.54 127.54 0 01-38.7-95.4c.9-32.1 13.8-62.6 36.3-85.6 24.7-25.3 57.9-39.1 93.2-38.7 31.9.3 62.7 12.6 86 34.4 7.9 7.4 14.7 15.6 20.4 24.4 2 3.1 5.9 4.4 9.3 3.2 17.6-6.1 36.2-10.4 55.3-12.4 5.6-.6 8.8-6.6 6.3-11.6-32.5-64.3-98.9-108.7-175.7-109.9-110.9-1.7-203.3 89.2-203.3 199.9 0 62.8 28.9 118.8 74.2 155.5-31.8 14.7-61.1 35-86.5 60.4-54.8 54.7-85.8 126.9-87.8 204a8 8 0 008 8.2h56.1c4.3 0 7.9-3.4 8-7.7 1.9-58 25.4-112.3 66.7-153.5 29.4-29.4 65.4-49.8 104.7-59.7 3.9-1 6.5-4.7 6-8.7z" } }] }, "name": "team", "theme": "outlined" };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TeamOutlined);
+
+
+/***/ }),
+
+/***/ "./node_modules/@ant-design/icons-svg/es/asn/TruckOutlined.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/@ant-design/icons-svg/es/asn/TruckOutlined.js ***!
+  \********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// This icon file is generated automatically.
+var TruckOutlined = { "icon": { "tag": "svg", "attrs": { "fill-rule": "evenodd", "viewBox": "64 64 896 896", "focusable": "false" }, "children": [{ "tag": "path", "attrs": { "d": "M608 192a32 32 0 0132 32v160h174.81a32 32 0 0126.68 14.33l113.19 170.84a32 32 0 015.32 17.68V672a32 32 0 01-32 32h-96c0 70.7-57.3 128-128 128s-128-57.3-128-128H384c0 70.7-57.3 128-128 128s-128-57.3-128-128H96a32 32 0 01-32-32V224a32 32 0 0132-32zM256 640a64 64 0 000 128h1.06A64 64 0 00256 640m448 0a64 64 0 000 128h1.06A64 64 0 00704 640M576 256H128v384h17.12c22.13-38.26 63.5-64 110.88-64 47.38 0 88.75 25.74 110.88 64H576zm221.63 192H640v145.12A127.43 127.43 0 01704 576c47.38 0 88.75 25.74 110.88 64H896v-43.52zM500 448a12 12 0 0112 12v40a12 12 0 01-12 12H332a12 12 0 01-12-12v-40a12 12 0 0112-12zM308 320a12 12 0 0112 12v40a12 12 0 01-12 12H204a12 12 0 01-12-12v-40a12 12 0 0112-12z" } }] }, "name": "truck", "theme": "outlined" };
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TruckOutlined);
 
 
 /***/ }),
@@ -6278,44 +6332,6 @@ if (true) {
 
 /***/ }),
 
-/***/ "./node_modules/@ant-design/icons/es/icons/ClockCircleOutlined.js":
-/*!************************************************************************!*\
-  !*** ./node_modules/@ant-design/icons/es/icons/ClockCircleOutlined.js ***!
-  \************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _ant_design_icons_svg_es_asn_ClockCircleOutlined__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @ant-design/icons-svg/es/asn/ClockCircleOutlined */ "./node_modules/@ant-design/icons-svg/es/asn/ClockCircleOutlined.js");
-/* harmony import */ var _components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/AntdIcon */ "./node_modules/@ant-design/icons/es/components/AntdIcon.js");
-
-// GENERATE BY ./scripts/generate.ts
-// DON NOT EDIT IT MANUALLY
-
-
-
-
-var ClockCircleOutlined = function ClockCircleOutlined(props, ref) {
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__["default"], (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, props, {
-    ref: ref,
-    icon: _ant_design_icons_svg_es_asn_ClockCircleOutlined__WEBPACK_IMPORTED_MODULE_3__["default"]
-  }));
-};
-
-/**![clock-circle](data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIGZpbGw9IiNjYWNhY2EiIHZpZXdCb3g9IjY0IDY0IDg5NiA4OTYiIGZvY3VzYWJsZT0iZmFsc2UiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTUxMiA2NEMyNjQuNiA2NCA2NCAyNjQuNiA2NCA1MTJzMjAwLjYgNDQ4IDQ0OCA0NDggNDQ4LTIwMC42IDQ0OC00NDhTNzU5LjQgNjQgNTEyIDY0em0wIDgyMGMtMjA1LjQgMC0zNzItMTY2LjYtMzcyLTM3MnMxNjYuNi0zNzIgMzcyLTM3MiAzNzIgMTY2LjYgMzcyIDM3Mi0xNjYuNiAzNzItMzcyIDM3MnoiIC8+PHBhdGggZD0iTTY4Ni43IDYzOC42TDU0NC4xIDUzNS41VjI4OGMwLTQuNC0zLjYtOC04LThINDg4Yy00LjQgMC04IDMuNi04IDh2Mjc1LjRjMCAyLjYgMS4yIDUgMy4zIDYuNWwxNjUuNCAxMjAuNmMzLjYgMi42IDguNiAxLjggMTEuMi0xLjdsMjguNi0zOWMyLjYtMy43IDEuOC04LjctMS44LTExLjJ6IiAvPjwvc3ZnPg==) */
-var RefIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(ClockCircleOutlined);
-if (true) {
-  RefIcon.displayName = 'ClockCircleOutlined';
-}
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RefIcon);
-
-/***/ }),
-
 /***/ "./node_modules/@ant-design/icons/es/icons/CloseCircleFilled.js":
 /*!**********************************************************************!*\
   !*** ./node_modules/@ant-design/icons/es/icons/CloseCircleFilled.js ***!
@@ -6539,6 +6555,44 @@ var DeleteOutlined = function DeleteOutlined(props, ref) {
 var RefIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(DeleteOutlined);
 if (true) {
   RefIcon.displayName = 'DeleteOutlined';
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RefIcon);
+
+/***/ }),
+
+/***/ "./node_modules/@ant-design/icons/es/icons/DollarOutlined.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@ant-design/icons/es/icons/DollarOutlined.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _ant_design_icons_svg_es_asn_DollarOutlined__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @ant-design/icons-svg/es/asn/DollarOutlined */ "./node_modules/@ant-design/icons-svg/es/asn/DollarOutlined.js");
+/* harmony import */ var _components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/AntdIcon */ "./node_modules/@ant-design/icons/es/components/AntdIcon.js");
+
+// GENERATE BY ./scripts/generate.ts
+// DON NOT EDIT IT MANUALLY
+
+
+
+
+var DollarOutlined = function DollarOutlined(props, ref) {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__["default"], (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, props, {
+    ref: ref,
+    icon: _ant_design_icons_svg_es_asn_DollarOutlined__WEBPACK_IMPORTED_MODULE_3__["default"]
+  }));
+};
+
+/**![dollar](data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIGZpbGw9IiNjYWNhY2EiIHZpZXdCb3g9IjY0IDY0IDg5NiA4OTYiIGZvY3VzYWJsZT0iZmFsc2UiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTUxMiA2NEMyNjQuNiA2NCA2NCAyNjQuNiA2NCA1MTJzMjAwLjYgNDQ4IDQ0OCA0NDggNDQ4LTIwMC42IDQ0OC00NDhTNzU5LjQgNjQgNTEyIDY0em0wIDgyMGMtMjA1LjQgMC0zNzItMTY2LjYtMzcyLTM3MnMxNjYuNi0zNzIgMzcyLTM3MiAzNzIgMTY2LjYgMzcyIDM3Mi0xNjYuNiAzNzItMzcyIDM3MnptNDcuNy0zOTUuMmwtMjUuNC01LjlWMzQ4LjZjMzggNS4yIDYxLjUgMjkgNjUuNSA1OC4yLjUgNCAzLjkgNi45IDcuOSA2LjloNDQuOWM0LjcgMCA4LjQtNC4xIDgtOC44LTYuMS02Mi4zLTU3LjQtMTAyLjMtMTI1LjktMTA5LjJWMjYzYzAtNC40LTMuNi04LTgtOGgtMjguMWMtNC40IDAtOCAzLjYtOCA4djMzYy03MC44IDYuOS0xMjYuMiA0Ni0xMjYuMiAxMTkgMCA2Ny42IDQ5LjggMTAwLjIgMTAyLjEgMTEyLjdsMjQuNyA2LjN2MTQyLjdjLTQ0LjItNS45LTY5LTI5LjUtNzQuMS02MS4zLS42LTMuOC00LTYuNi03LjktNi42SDM2M2MtNC43IDAtOC40IDQtOCA4LjcgNC41IDU1IDQ2LjIgMTA1LjYgMTM1LjIgMTEyLjFWNzYxYzAgNC40IDMuNiA4IDggOGgyOC40YzQuNCAwIDgtMy42IDgtOC4xbC0uMi0zMS43Yzc4LjMtNi45IDEzNC4zLTQ4LjggMTM0LjMtMTI0LS4xLTY5LjQtNDQuMi0xMDAuNC0xMDktMTE2LjR6bS02OC42LTE2LjJjLTUuNi0xLjYtMTAuMy0zLjEtMTUtNS0zMy44LTEyLjItNDkuNS0zMS45LTQ5LjUtNTcuMyAwLTM2LjMgMjcuNS01NyA2NC41LTYxLjd2MTI0ek01MzQuMyA2NzdWNTQzLjNjMy4xLjkgNS45IDEuNiA4LjggMi4yIDQ3LjMgMTQuNCA2My4yIDM0LjQgNjMuMiA2NS4xIDAgMzkuMS0yOS40IDYyLjYtNzIgNjYuNHoiIC8+PC9zdmc+) */
+var RefIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(DollarOutlined);
+if (true) {
+  RefIcon.displayName = 'DollarOutlined';
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RefIcon);
 
@@ -6957,6 +7011,44 @@ var FileOutlined = function FileOutlined(props, ref) {
 var RefIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(FileOutlined);
 if (true) {
   RefIcon.displayName = 'FileOutlined';
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RefIcon);
+
+/***/ }),
+
+/***/ "./node_modules/@ant-design/icons/es/icons/FileTextOutlined.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@ant-design/icons/es/icons/FileTextOutlined.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _ant_design_icons_svg_es_asn_FileTextOutlined__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @ant-design/icons-svg/es/asn/FileTextOutlined */ "./node_modules/@ant-design/icons-svg/es/asn/FileTextOutlined.js");
+/* harmony import */ var _components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/AntdIcon */ "./node_modules/@ant-design/icons/es/components/AntdIcon.js");
+
+// GENERATE BY ./scripts/generate.ts
+// DON NOT EDIT IT MANUALLY
+
+
+
+
+var FileTextOutlined = function FileTextOutlined(props, ref) {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__["default"], (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, props, {
+    ref: ref,
+    icon: _ant_design_icons_svg_es_asn_FileTextOutlined__WEBPACK_IMPORTED_MODULE_3__["default"]
+  }));
+};
+
+/**![file-text](data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIGZpbGw9IiNjYWNhY2EiIHZpZXdCb3g9IjY0IDY0IDg5NiA4OTYiIGZvY3VzYWJsZT0iZmFsc2UiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTg1NC42IDI4OC42TDYzOS40IDczLjRjLTYtNi0xNC4xLTkuNC0yMi42LTkuNEgxOTJjLTE3LjcgMC0zMiAxNC4zLTMyIDMydjgzMmMwIDE3LjcgMTQuMyAzMiAzMiAzMmg2NDBjMTcuNyAwIDMyLTE0LjMgMzItMzJWMzExLjNjMC04LjUtMy40LTE2LjctOS40LTIyLjd6TTc5MC4yIDMyNkg2MDJWMTM3LjhMNzkwLjIgMzI2em0xLjggNTYySDIzMlYxMzZoMzAydjIxNmE0MiA0MiAwIDAwNDIgNDJoMjE2djQ5NHpNNTA0IDYxOEgzMjBjLTQuNCAwLTggMy42LTggOHY0OGMwIDQuNCAzLjYgOCA4IDhoMTg0YzQuNCAwIDgtMy42IDgtOHYtNDhjMC00LjQtMy42LTgtOC04ek0zMTIgNDkwdjQ4YzAgNC40IDMuNiA4IDggOGgzODRjNC40IDAgOC0zLjYgOC04di00OGMwLTQuNC0zLjYtOC04LThIMzIwYy00LjQgMC04IDMuNi04IDh6IiAvPjwvc3ZnPg==) */
+var RefIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(FileTextOutlined);
+if (true) {
+  RefIcon.displayName = 'FileTextOutlined';
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RefIcon);
 
@@ -8064,6 +8156,44 @@ if (true) {
 
 /***/ }),
 
+/***/ "./node_modules/@ant-design/icons/es/icons/StarOutlined.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@ant-design/icons/es/icons/StarOutlined.js ***!
+  \*****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _ant_design_icons_svg_es_asn_StarOutlined__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @ant-design/icons-svg/es/asn/StarOutlined */ "./node_modules/@ant-design/icons-svg/es/asn/StarOutlined.js");
+/* harmony import */ var _components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/AntdIcon */ "./node_modules/@ant-design/icons/es/components/AntdIcon.js");
+
+// GENERATE BY ./scripts/generate.ts
+// DON NOT EDIT IT MANUALLY
+
+
+
+
+var StarOutlined = function StarOutlined(props, ref) {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__["default"], (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, props, {
+    ref: ref,
+    icon: _ant_design_icons_svg_es_asn_StarOutlined__WEBPACK_IMPORTED_MODULE_3__["default"]
+  }));
+};
+
+/**![star](data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIGZpbGw9IiNjYWNhY2EiIHZpZXdCb3g9IjY0IDY0IDg5NiA4OTYiIGZvY3VzYWJsZT0iZmFsc2UiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTkwOC4xIDM1My4xbC0yNTMuOS0zNi45TDU0MC43IDg2LjFjLTMuMS02LjMtOC4yLTExLjQtMTQuNS0xNC41LTE1LjgtNy44LTM1LTEuMy00Mi45IDE0LjVMMzY5LjggMzE2LjJsLTI1My45IDM2LjljLTcgMS0xMy40IDQuMy0xOC4zIDkuM2EzMi4wNSAzMi4wNSAwIDAwLjYgNDUuM2wxODMuNyAxNzkuMS00My40IDI1Mi45YTMxLjk1IDMxLjk1IDAgMDA0Ni40IDMzLjdMNTEyIDc1NGwyMjcuMSAxMTkuNGM2LjIgMy4zIDEzLjQgNC40IDIwLjMgMy4yIDE3LjQtMyAyOS4xLTE5LjUgMjYuMS0zNi45bC00My40LTI1Mi45IDE4My43LTE3OS4xYzUtNC45IDguMy0xMS4zIDkuMy0xOC4zIDIuNy0xNy41LTkuNS0zMy43LTI3LTM2LjN6TTY2NC44IDU2MS42bDM2LjEgMjEwLjNMNTEyIDY3Mi43IDMyMy4xIDc3MmwzNi4xLTIxMC4zLTE1Mi44LTE0OUw0MTcuNiAzODIgNTEyIDE5MC43IDYwNi40IDM4MmwyMTEuMiAzMC43LTE1Mi44IDE0OC45eiIgLz48L3N2Zz4=) */
+var RefIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(StarOutlined);
+if (true) {
+  RefIcon.displayName = 'StarOutlined';
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RefIcon);
+
+/***/ }),
+
 /***/ "./node_modules/@ant-design/icons/es/icons/SwapOutlined.js":
 /*!*****************************************************************!*\
   !*** ./node_modules/@ant-design/icons/es/icons/SwapOutlined.js ***!
@@ -8135,6 +8265,44 @@ var TeamOutlined = function TeamOutlined(props, ref) {
 var RefIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(TeamOutlined);
 if (true) {
   RefIcon.displayName = 'TeamOutlined';
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RefIcon);
+
+/***/ }),
+
+/***/ "./node_modules/@ant-design/icons/es/icons/TruckOutlined.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@ant-design/icons/es/icons/TruckOutlined.js ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _ant_design_icons_svg_es_asn_TruckOutlined__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @ant-design/icons-svg/es/asn/TruckOutlined */ "./node_modules/@ant-design/icons-svg/es/asn/TruckOutlined.js");
+/* harmony import */ var _components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/AntdIcon */ "./node_modules/@ant-design/icons/es/components/AntdIcon.js");
+
+// GENERATE BY ./scripts/generate.ts
+// DON NOT EDIT IT MANUALLY
+
+
+
+
+var TruckOutlined = function TruckOutlined(props, ref) {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__["default"], (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, props, {
+    ref: ref,
+    icon: _ant_design_icons_svg_es_asn_TruckOutlined__WEBPACK_IMPORTED_MODULE_3__["default"]
+  }));
+};
+
+/**![truck](data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIGZpbGw9IiNjYWNhY2EiIGZpbGwtcnVsZT0iZXZlbm9kZCIgdmlld0JveD0iNjQgNjQgODk2IDg5NiIgZm9jdXNhYmxlPSJmYWxzZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNjA4IDE5MmEzMiAzMiAwIDAxMzIgMzJ2MTYwaDE3NC44MWEzMiAzMiAwIDAxMjYuNjggMTQuMzNsMTEzLjE5IDE3MC44NGEzMiAzMiAwIDAxNS4zMiAxNy42OFY2NzJhMzIgMzIgMCAwMS0zMiAzMmgtOTZjMCA3MC43LTU3LjMgMTI4LTEyOCAxMjhzLTEyOC01Ny4zLTEyOC0xMjhIMzg0YzAgNzAuNy01Ny4zIDEyOC0xMjggMTI4cy0xMjgtNTcuMy0xMjgtMTI4SDk2YTMyIDMyIDAgMDEtMzItMzJWMjI0YTMyIDMyIDAgMDEzMi0zMnpNMjU2IDY0MGE2NCA2NCAwIDAwMCAxMjhoMS4wNkE2NCA2NCAwIDAwMjU2IDY0MG00NDggMGE2NCA2NCAwIDAwMCAxMjhoMS4wNkE2NCA2NCAwIDAwNzA0IDY0ME01NzYgMjU2SDEyOHYzODRoMTcuMTJjMjIuMTMtMzguMjYgNjMuNS02NCAxMTAuODgtNjQgNDcuMzggMCA4OC43NSAyNS43NCAxMTAuODggNjRINTc2em0yMjEuNjMgMTkySDY0MHYxNDUuMTJBMTI3LjQzIDEyNy40MyAwIDAxNzA0IDU3NmM0Ny4zOCAwIDg4Ljc1IDI1Ljc0IDExMC44OCA2NEg4OTZ2LTQzLjUyek01MDAgNDQ4YTEyIDEyIDAgMDExMiAxMnY0MGExMiAxMiAwIDAxLTEyIDEySDMzMmExMiAxMiAwIDAxLTEyLTEydi00MGExMiAxMiAwIDAxMTItMTJ6TTMwOCAzMjBhMTIgMTIgMCAwMTEyIDEydjQwYTEyIDEyIDAgMDEtMTIgMTJIMjA0YTEyIDEyIDAgMDEtMTItMTJ2LTQwYTEyIDEyIDAgMDExMi0xMnoiIC8+PC9zdmc+) */
+var RefIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(TruckOutlined);
+if (true) {
+  RefIcon.displayName = 'TruckOutlined';
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RefIcon);
 
@@ -59821,523 +59989,6 @@ const locale = {
   rangePlaceholder: ['Start time', 'End time']
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (locale);
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/timeline/Timeline.js":
-/*!***************************************************!*\
-  !*** ./node_modules/antd/es/timeline/Timeline.js ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _util_warning__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_util/warning */ "./node_modules/antd/es/_util/warning.js");
-/* harmony import */ var _config_provider__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../config-provider */ "./node_modules/antd/es/config-provider/context.js");
-/* harmony import */ var _config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../config-provider/hooks/useCSSVarCls */ "./node_modules/antd/es/config-provider/hooks/useCSSVarCls.js");
-/* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./style */ "./node_modules/antd/es/timeline/style/index.js");
-/* harmony import */ var _TimelineItem__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./TimelineItem */ "./node_modules/antd/es/timeline/TimelineItem.js");
-/* harmony import */ var _TimelineItemList__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./TimelineItemList */ "./node_modules/antd/es/timeline/TimelineItemList.js");
-/* harmony import */ var _useItems__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./useItems */ "./node_modules/antd/es/timeline/useItems.js");
-"use client";
-
-var __rest = undefined && undefined.__rest || function (s, e) {
-  var t = {};
-  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
-  }
-  return t;
-};
-
-
-
-
-
-// CSSINJS
-
-
-
-
-const Timeline = props => {
-  const {
-    getPrefixCls,
-    direction,
-    timeline
-  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider__WEBPACK_IMPORTED_MODULE_2__.ConfigContext);
-  const {
-      prefixCls: customizePrefixCls,
-      children,
-      items,
-      className,
-      style
-    } = props,
-    restProps = __rest(props, ["prefixCls", "children", "items", "className", "style"]);
-  const prefixCls = getPrefixCls('timeline', customizePrefixCls);
-  // =================== Warning =====================
-  if (true) {
-    const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_3__.devUseWarning)('Timeline');
-    warning.deprecated(!children, 'Timeline.Item', 'items');
-  }
-  // Style
-  const rootCls = (0,_config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_4__["default"])(prefixCls);
-  const [wrapCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_5__["default"])(prefixCls, rootCls);
-  const mergedItems = (0,_useItems__WEBPACK_IMPORTED_MODULE_6__["default"])(items, children);
-  return wrapCSSVar(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_TimelineItemList__WEBPACK_IMPORTED_MODULE_7__["default"], Object.assign({}, restProps, {
-    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(timeline === null || timeline === void 0 ? void 0 : timeline.className, className, cssVarCls, rootCls),
-    style: Object.assign(Object.assign({}, timeline === null || timeline === void 0 ? void 0 : timeline.style), style),
-    prefixCls: prefixCls,
-    direction: direction,
-    items: mergedItems,
-    hashId: hashId
-  })));
-};
-Timeline.Item = _TimelineItem__WEBPACK_IMPORTED_MODULE_8__["default"];
-if (true) {
-  Timeline.displayName = 'Timeline';
-}
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Timeline);
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/timeline/TimelineItem.js":
-/*!*******************************************************!*\
-  !*** ./node_modules/antd/es/timeline/TimelineItem.js ***!
-  \*******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _config_provider__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../config-provider */ "./node_modules/antd/es/config-provider/context.js");
-"use client";
-
-var __rest = undefined && undefined.__rest || function (s, e) {
-  var t = {};
-  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
-  }
-  return t;
-};
-
-
-
-const TimelineItem = _a => {
-  var {
-      prefixCls: customizePrefixCls,
-      className,
-      color = 'blue',
-      dot,
-      pending = false,
-      position /** Dead, but do not pass in <li {...omit()} */,
-      label,
-      children
-    } = _a,
-    restProps = __rest(_a, ["prefixCls", "className", "color", "dot", "pending", "position", "label", "children"]);
-  const {
-    getPrefixCls
-  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider__WEBPACK_IMPORTED_MODULE_2__.ConfigContext);
-  const prefixCls = getPrefixCls('timeline', customizePrefixCls);
-  const itemClassName = classnames__WEBPACK_IMPORTED_MODULE_1___default()(`${prefixCls}-item`, {
-    [`${prefixCls}-item-pending`]: pending
-  }, className);
-  const customColor = /blue|red|green|gray/.test(color || '') ? undefined : color;
-  const dotClassName = classnames__WEBPACK_IMPORTED_MODULE_1___default()(`${prefixCls}-item-head`, {
-    [`${prefixCls}-item-head-custom`]: !!dot,
-    [`${prefixCls}-item-head-${color}`]: !customColor
-  });
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("li", Object.assign({}, restProps, {
-    className: itemClassName
-  }), label && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-    className: `${prefixCls}-item-label`
-  }, label), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-    className: `${prefixCls}-item-tail`
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-    className: dotClassName,
-    style: {
-      borderColor: customColor,
-      color: customColor
-    }
-  }, dot), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-    className: `${prefixCls}-item-content`
-  }, children));
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TimelineItem);
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/timeline/TimelineItemList.js":
-/*!***********************************************************!*\
-  !*** ./node_modules/antd/es/timeline/TimelineItemList.js ***!
-  \***********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/toConsumableArray */ "./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _ant_design_icons_es_icons_LoadingOutlined__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @ant-design/icons/es/icons/LoadingOutlined */ "./node_modules/@ant-design/icons/es/icons/LoadingOutlined.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _TimelineItem__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./TimelineItem */ "./node_modules/antd/es/timeline/TimelineItem.js");
-"use client";
-
-
-var __rest = undefined && undefined.__rest || function (s, e) {
-  var t = {};
-  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
-  }
-  return t;
-};
-
-
-
-
-const TimelineItemList = _a => {
-  var {
-      prefixCls,
-      className,
-      pending = false,
-      children,
-      items,
-      rootClassName,
-      reverse = false,
-      direction,
-      hashId,
-      pendingDot,
-      mode = ''
-    } = _a,
-    restProps = __rest(_a, ["prefixCls", "className", "pending", "children", "items", "rootClassName", "reverse", "direction", "hashId", "pendingDot", "mode"]);
-  const getPositionCls = (position, idx) => {
-    if (mode === 'alternate') {
-      if (position === 'right') return `${prefixCls}-item-right`;
-      if (position === 'left') return `${prefixCls}-item-left`;
-      return idx % 2 === 0 ? `${prefixCls}-item-left` : `${prefixCls}-item-right`;
-    }
-    if (mode === 'left') return `${prefixCls}-item-left`;
-    if (mode === 'right') return `${prefixCls}-item-right`;
-    if (position === 'right') return `${prefixCls}-item-right`;
-    return '';
-  };
-  const mergedItems = (0,_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(items || []);
-  const pendingNode = typeof pending === 'boolean' ? null : pending;
-  if (pending) {
-    mergedItems.push({
-      pending: !!pending,
-      dot: pendingDot || /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_ant_design_icons_es_icons_LoadingOutlined__WEBPACK_IMPORTED_MODULE_3__["default"], null),
-      children: pendingNode
-    });
-  }
-  if (reverse) {
-    mergedItems.reverse();
-  }
-  const itemsCount = mergedItems.length;
-  const lastCls = `${prefixCls}-item-last`;
-  const itemsList = mergedItems.filter(item => !!item).map((item, idx) => {
-    var _a;
-    const pendingClass = idx === itemsCount - 2 ? lastCls : '';
-    const readyClass = idx === itemsCount - 1 ? lastCls : '';
-    const {
-        className: itemClassName
-      } = item,
-      itemProps = __rest(item, ["className"]);
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_TimelineItem__WEBPACK_IMPORTED_MODULE_4__["default"], Object.assign({}, itemProps, {
-      className: classnames__WEBPACK_IMPORTED_MODULE_2___default()([itemClassName, !reverse && !!pending ? pendingClass : readyClass, getPositionCls((_a = item === null || item === void 0 ? void 0 : item.position) !== null && _a !== void 0 ? _a : '', idx)]),
-      key: (item === null || item === void 0 ? void 0 : item.key) || idx
-    }));
-  });
-  const hasLabelItem = mergedItems.some(item => !!(item === null || item === void 0 ? void 0 : item.label));
-  const classString = classnames__WEBPACK_IMPORTED_MODULE_2___default()(prefixCls, {
-    [`${prefixCls}-pending`]: !!pending,
-    [`${prefixCls}-reverse`]: !!reverse,
-    [`${prefixCls}-${mode}`]: !!mode && !hasLabelItem,
-    [`${prefixCls}-label`]: hasLabelItem,
-    [`${prefixCls}-rtl`]: direction === 'rtl'
-  }, className, rootClassName, hashId);
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement("ul", Object.assign({}, restProps, {
-    className: classString
-  }), itemsList);
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TimelineItemList);
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/timeline/index.js":
-/*!************************************************!*\
-  !*** ./node_modules/antd/es/timeline/index.js ***!
-  \************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _Timeline__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Timeline */ "./node_modules/antd/es/timeline/Timeline.js");
-"use client";
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_Timeline__WEBPACK_IMPORTED_MODULE_0__["default"]);
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/timeline/style/index.js":
-/*!******************************************************!*\
-  !*** ./node_modules/antd/es/timeline/style/index.js ***!
-  \******************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   prepareComponentToken: () => (/* binding */ prepareComponentToken)
-/* harmony export */ });
-/* harmony import */ var _ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @ant-design/cssinjs */ "./node_modules/@ant-design/cssinjs/es/index.js");
-/* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../style */ "./node_modules/antd/es/style/index.js");
-/* harmony import */ var _theme_internal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../theme/internal */ "./node_modules/antd/es/theme/util/genStyleUtils.js");
-/* harmony import */ var _theme_internal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../theme/internal */ "./node_modules/@ant-design/cssinjs-utils/es/index.js");
-
-
-
-const genTimelineStyle = token => {
-  const {
-    componentCls,
-    calc
-  } = token;
-  return {
-    [componentCls]: Object.assign(Object.assign({}, (0,_style__WEBPACK_IMPORTED_MODULE_1__.resetComponent)(token)), {
-      margin: 0,
-      padding: 0,
-      listStyle: 'none',
-      [`${componentCls}-item`]: {
-        position: 'relative',
-        margin: 0,
-        paddingBottom: token.itemPaddingBottom,
-        fontSize: token.fontSize,
-        listStyle: 'none',
-        '&-tail': {
-          position: 'absolute',
-          insetBlockStart: token.itemHeadSize,
-          insetInlineStart: calc(calc(token.itemHeadSize).sub(token.tailWidth)).div(2).equal(),
-          height: `calc(100% - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.itemHeadSize)})`,
-          borderInlineStart: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.tailWidth)} ${token.lineType} ${token.tailColor}`
-        },
-        '&-pending': {
-          [`${componentCls}-item-head`]: {
-            fontSize: token.fontSizeSM,
-            backgroundColor: 'transparent'
-          },
-          [`${componentCls}-item-tail`]: {
-            display: 'none'
-          }
-        },
-        '&-head': {
-          position: 'absolute',
-          width: token.itemHeadSize,
-          height: token.itemHeadSize,
-          backgroundColor: token.dotBg,
-          border: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.dotBorderWidth)} ${token.lineType} transparent`,
-          borderRadius: '50%',
-          '&-blue': {
-            color: token.colorPrimary,
-            borderColor: token.colorPrimary
-          },
-          '&-red': {
-            color: token.colorError,
-            borderColor: token.colorError
-          },
-          '&-green': {
-            color: token.colorSuccess,
-            borderColor: token.colorSuccess
-          },
-          '&-gray': {
-            color: token.colorTextDisabled,
-            borderColor: token.colorTextDisabled
-          }
-        },
-        '&-head-custom': {
-          position: 'absolute',
-          insetBlockStart: calc(token.itemHeadSize).div(2).equal(),
-          insetInlineStart: calc(token.itemHeadSize).div(2).equal(),
-          width: 'auto',
-          height: 'auto',
-          marginBlockStart: 0,
-          paddingBlock: token.customHeadPaddingVertical,
-          lineHeight: 1,
-          textAlign: 'center',
-          border: 0,
-          borderRadius: 0,
-          transform: 'translate(-50%, -50%)'
-        },
-        '&-content': {
-          position: 'relative',
-          insetBlockStart: calc(calc(token.fontSize).mul(token.lineHeight).sub(token.fontSize)).mul(-1).add(token.lineWidth).equal(),
-          marginInlineStart: calc(token.margin).add(token.itemHeadSize).equal(),
-          marginInlineEnd: 0,
-          marginBlockStart: 0,
-          marginBlockEnd: 0,
-          wordBreak: 'break-word'
-        },
-        '&-last': {
-          [`> ${componentCls}-item-tail`]: {
-            display: 'none'
-          },
-          [`> ${componentCls}-item-content`]: {
-            minHeight: calc(token.controlHeightLG).mul(1.2).equal()
-          }
-        }
-      },
-      [`&${componentCls}-alternate,
-        &${componentCls}-right,
-        &${componentCls}-label`]: {
-        [`${componentCls}-item`]: {
-          '&-tail, &-head, &-head-custom': {
-            insetInlineStart: '50%'
-          },
-          '&-head': {
-            marginInlineStart: calc(token.marginXXS).mul(-1).equal(),
-            '&-custom': {
-              marginInlineStart: calc(token.tailWidth).div(2).equal()
-            }
-          },
-          '&-left': {
-            [`${componentCls}-item-content`]: {
-              insetInlineStart: `calc(50% - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.marginXXS)})`,
-              width: `calc(50% - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.marginSM)})`,
-              textAlign: 'start'
-            }
-          },
-          '&-right': {
-            [`${componentCls}-item-content`]: {
-              width: `calc(50% - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.marginSM)})`,
-              margin: 0,
-              textAlign: 'end'
-            }
-          }
-        }
-      },
-      [`&${componentCls}-right`]: {
-        [`${componentCls}-item-right`]: {
-          [`${componentCls}-item-tail,
-            ${componentCls}-item-head,
-            ${componentCls}-item-head-custom`]: {
-            insetInlineStart: `calc(100% - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(calc(calc(token.itemHeadSize).add(token.tailWidth)).div(2).equal())})`
-          },
-          [`${componentCls}-item-content`]: {
-            width: `calc(100% - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(calc(token.itemHeadSize).add(token.marginXS).equal())})`
-          }
-        }
-      },
-      [`&${componentCls}-pending
-        ${componentCls}-item-last
-        ${componentCls}-item-tail`]: {
-        display: 'block',
-        height: `calc(100% - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.margin)})`,
-        borderInlineStart: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.tailWidth)} dotted ${token.tailColor}`
-      },
-      [`&${componentCls}-reverse
-        ${componentCls}-item-last
-        ${componentCls}-item-tail`]: {
-        display: 'none'
-      },
-      [`&${componentCls}-reverse ${componentCls}-item-pending`]: {
-        [`${componentCls}-item-tail`]: {
-          insetBlockStart: token.margin,
-          display: 'block',
-          height: `calc(100% - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.margin)})`,
-          borderInlineStart: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.tailWidth)} dotted ${token.tailColor}`
-        },
-        [`${componentCls}-item-content`]: {
-          minHeight: calc(token.controlHeightLG).mul(1.2).equal()
-        }
-      },
-      [`&${componentCls}-label`]: {
-        [`${componentCls}-item-label`]: {
-          position: 'absolute',
-          insetBlockStart: calc(calc(token.fontSize).mul(token.lineHeight).sub(token.fontSize)).mul(-1).add(token.tailWidth).equal(),
-          width: `calc(50% - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.marginSM)})`,
-          textAlign: 'end'
-        },
-        [`${componentCls}-item-right`]: {
-          [`${componentCls}-item-label`]: {
-            insetInlineStart: `calc(50% + ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.marginSM)})`,
-            width: `calc(50% - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.marginSM)})`,
-            textAlign: 'start'
-          }
-        }
-      },
-      // ====================== RTL =======================
-      '&-rtl': {
-        direction: 'rtl',
-        [`${componentCls}-item-head-custom`]: {
-          transform: `translate(50%, -50%)`
-        }
-      }
-    })
-  };
-};
-// ============================== Export ==============================
-const prepareComponentToken = token => ({
-  tailColor: token.colorSplit,
-  tailWidth: token.lineWidthBold,
-  dotBorderWidth: token.wireframe ? token.lineWidthBold : token.lineWidth * 3,
-  dotBg: token.colorBgContainer,
-  itemPaddingBottom: token.padding * 1.25
-});
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_theme_internal__WEBPACK_IMPORTED_MODULE_2__.genStyleHooks)('Timeline', token => {
-  const timeLineToken = (0,_theme_internal__WEBPACK_IMPORTED_MODULE_3__.mergeToken)(token, {
-    itemHeadSize: 10,
-    customHeadPaddingVertical: token.paddingXXS,
-    paddingInlineEnd: 2
-  });
-  return [genTimelineStyle(timeLineToken)];
-}, prepareComponentToken));
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/timeline/useItems.js":
-/*!***************************************************!*\
-  !*** ./node_modules/antd/es/timeline/useItems.js ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var rc_util_es_Children_toArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rc-util/es/Children/toArray */ "./node_modules/rc-util/es/Children/toArray.js");
-
-function useItems(items, children) {
-  if (items && Array.isArray(items)) {
-    return items;
-  }
-  return (0,rc_util_es_Children_toArray__WEBPACK_IMPORTED_MODULE_0__["default"])(children).map(ele => {
-    var _a, _b;
-    return Object.assign({
-      children: (_b = (_a = ele === null || ele === void 0 ? void 0 : ele.props) === null || _a === void 0 ? void 0 : _a.children) !== null && _b !== void 0 ? _b : ''
-    }, ele.props);
-  });
-}
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (useItems);
 
 /***/ }),
 
@@ -183604,14 +183255,17 @@ var OrderManagement = function OrderManagement() {
             value: "pending",
             children: "Pending"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-            value: "completed",
-            children: "Completed"
+            value: "shipped",
+            children: "Shipped"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
             value: "cancelled",
             children: "Cancelled"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
             value: "processing",
             children: "Processing"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+            value: "completed",
+            children: "Completed"
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
           value: ((_selectedOrder$shippi = selectedOrder.shipping) === null || _selectedOrder$shippi === void 0 ? void 0 : _selectedOrder$shippi.tracking_number) || "",
@@ -189199,14 +188853,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/typography/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/pagination/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/timeline/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/CheckCircleFilled.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ClockCircleOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/LeftOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/pagination/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FileTextOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DollarOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/TruckOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DownloadOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/StarOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/LeftOutlined.js");
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var _Navbar_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Navbar/Navbar */ "./resources/js/components/UserPage/Navbar/Navbar.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
@@ -189235,7 +188891,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 var Content = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Content;
 var Text = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Text;
 var MyPurchases = function MyPurchases() {
-  var _selectedOrder$shippi, _selectedOrder$shippi2, _selectedOrder$shippi3;
+  var _selectedOrder$order_, _selectedOrder$shippi, _selectedOrder$shippi2;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
     orders = _useState2[0],
@@ -189289,32 +188945,40 @@ var MyPurchases = function MyPurchases() {
             });
           case 8:
             res = _context.sent;
+            console.log("Fetched Orders:", res.data.data); // Debug: Log API response
             transformedOrders = res.data.data.map(function (order) {
               return _objectSpread(_objectSpread({}, order), {}, {
                 order_date: order.order_date || order.created_at,
                 shipping: order.shipping || {},
-                order_details: order.order_details || []
+                order_details: order.order_details || [],
+                created_at: order.created_at || null,
+                payment_confirmed_at: order.payment_confirmed_at || null,
+                shipped_at: order.shipped_at || null,
+                delivered_at: order.delivered_at || null,
+                completed_at: order.completed_at || null
               });
             });
-            setOrders(transformedOrders);
+            setOrders(transformedOrders.filter(function (order) {
+              return !order.deleted_at;
+            }));
             setTotalOrders(res.data.total);
             setCurrentPage(res.data.current_page);
-            _context.next = 19;
+            _context.next = 20;
             break;
-          case 15:
-            _context.prev = 15;
+          case 16:
+            _context.prev = 16;
             _context.t0 = _context["catch"](5);
             console.error("Error fetching orders:", ((_error$response = _context.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context.t0);
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Error fetching orders: " + (((_error$response2 = _context.t0.response) === null || _error$response2 === void 0 || (_error$response2 = _error$response2.data) === null || _error$response2 === void 0 ? void 0 : _error$response2.error) || "Unknown error"));
-          case 19:
-            _context.prev = 19;
+          case 20:
+            _context.prev = 20;
             setLoading(false);
-            return _context.finish(19);
-          case 22:
+            return _context.finish(20);
+          case 23:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[5, 15, 19, 22]]);
+      }, _callee, null, [[5, 16, 20, 23]]);
     }));
     return function fetchOrders() {
       return _ref.apply(this, arguments);
@@ -189330,9 +188994,11 @@ var MyPurchases = function MyPurchases() {
     navigate("/user-profile");
   };
   var handleViewDetails = function handleViewDetails(order) {
+    console.log("Opening modal with order:", order); // Debug: Log selected order
     setSelectedOrder(order);
   };
   var handleCloseModal = function handleCloseModal() {
+    console.log("Closing modal, resetting selectedOrder"); // Debug: Confirm close
     setSelectedOrder(null);
   };
   var handleConfirmReceipt = /*#__PURE__*/function () {
@@ -189371,64 +189037,60 @@ var MyPurchases = function MyPurchases() {
   }();
   var getTimelineItems = function getTimelineItems(order) {
     var _order$order_status;
-    var status = order === null || order === void 0 || (_order$order_status = order.order_status) === null || _order$order_status === void 0 ? void 0 : _order$order_status.toLowerCase();
+    var status = (order === null || order === void 0 || (_order$order_status = order.order_status) === null || _order$order_status === void 0 ? void 0 : _order$order_status.toLowerCase()) || "pending";
     var timestamps = {
-      order_placed: (order === null || order === void 0 ? void 0 : order.created_at) || "N/A",
-      payment_confirmed: (order === null || order === void 0 ? void 0 : order.payment_confirmed_at) || "N/A",
-      shipped: (order === null || order === void 0 ? void 0 : order.shipped_at) || "N/A",
-      delivered: (order === null || order === void 0 ? void 0 : order.delivered_at) || "N/A",
-      completed: (order === null || order === void 0 ? void 0 : order.completed_at) || "N/A"
+      placed: (order === null || order === void 0 ? void 0 : order.created_at) || null,
+      paymentConfirmed: (order === null || order === void 0 ? void 0 : order.payment_confirmed_at) || null,
+      shipped: (order === null || order === void 0 ? void 0 : order.shipped_at) || null,
+      delivered: (order === null || order === void 0 ? void 0 : order.delivered_at) || null,
+      completed: (order === null || order === void 0 ? void 0 : order.completed_at) || null
     };
-    var steps = [{
+    var formatTimestamp = function formatTimestamp(timestamp) {
+      if (!timestamp || isNaN(new Date(timestamp).getTime())) {
+        return "Awaiting";
+      }
+      var date = new Date(timestamp);
+      return "".concat((date.getMonth() + 1).toString().padStart(2, '0'), "/").concat(date.getDate().toString().padStart(2, '0'), "/").concat(date.getFullYear(), " ").concat(date.getHours(), ":").concat(date.getMinutes().toString().padStart(2, '0'));
+    };
+
+    // Define status progression to match the image
+    var statusOrder = ["pending", "processing", "shipped", "delivered", "completed"];
+    var currentStatusIndex = statusOrder.indexOf(status);
+    return [{
       label: "Order Placed",
-      timestamp: timestamps.order_placed,
-      completed: true,
+      timestamp: formatTimestamp(timestamps.placed),
+      completed: currentStatusIndex >= 0,
       icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {})
     }, {
       label: "Payment Info Confirmed",
-      timestamp: timestamps.payment_confirmed,
-      completed: ["to ship", "shipped", "delivered", "completed"].includes(status),
-      icon: ["to ship", "shipped", "delivered", "completed"].includes(status) ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {})
+      timestamp: formatTimestamp(timestamps.paymentConfirmed),
+      completed: currentStatusIndex >= 1,
+      icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {})
     }, {
       label: "Order Shipped Out",
-      timestamp: timestamps.shipped,
-      completed: ["shipped", "delivered", "completed"].includes(status),
-      icon: ["shipped", "delivered", "completed"].includes(status) ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {})
+      timestamp: formatTimestamp(timestamps.shipped),
+      completed: currentStatusIndex >= 2,
+      icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {})
     }, {
       label: "To Receive",
-      timestamp: timestamps.delivered,
-      completed: ["delivered", "completed"].includes(status),
-      icon: ["delivered", "completed"].includes(status) ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {})
+      timestamp: formatTimestamp(timestamps.delivered),
+      completed: currentStatusIndex >= 3,
+      icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {})
     }, {
       label: "To Rate",
-      timestamp: timestamps.completed,
-      completed: status === "completed",
-      icon: status === "completed" ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {})
+      timestamp: formatTimestamp(timestamps.completed),
+      completed: currentStatusIndex >= 4,
+      icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {})
     }];
-    return steps.map(function (step, index) {
-      return {
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
-            strong: true,
-            children: step.label
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
-            type: "secondary",
-            children: new Date(step.timestamp).toLocaleString() || "N/A"
-          })]
-        }),
-        color: step.completed ? "green" : "gray",
-        dot: step.icon
-      };
-    });
   };
   var getOrderStatusMessage = function getOrderStatusMessage(status) {
     switch (status === null || status === void 0 ? void 0 : status.toLowerCase()) {
       case "pending":
-        return "To Pay";
-      case "to ship":
-        return "To Ship";
+        return "Pending";
+      case "processing":
+        return "Processing";
       case "shipped":
-        return "To Receive";
+        return "Shipped";
       case "delivered":
         return "Delivered";
       case "completed":
@@ -189467,9 +189129,9 @@ var MyPurchases = function MyPurchases() {
               display: "flex",
               alignItems: "center"
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
               type: "link",
-              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {}),
+              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {}),
               onClick: handleBackToProfile,
               style: {
                 padding: 0,
@@ -189489,7 +189151,7 @@ var MyPurchases = function MyPurchases() {
           children: "No purchases found."
         }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
           children: [orders.map(function (order) {
-            var _order$shipping, _order$shipping2;
+            var _order$shipping;
             return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
               style: {
                 borderBottom: "1px solid #ddd",
@@ -189512,17 +189174,23 @@ var MyPurchases = function MyPurchases() {
                   style: {
                     margin: "5px 0"
                   },
-                  children: ["Total: $", order.total_amount ? parseFloat(order.total_amount).toLocaleString() : "0", " ", "| Status:", " ", getOrderStatusMessage(order.order_status)]
+                  children: ["Total: \u20B1", order.total_amount ? parseFloat(order.total_amount).toLocaleString() : "0", " ", "| Status:", " ", getOrderStatusMessage(order.order_status)]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+                  style: {
+                    margin: "5px 0"
+                  },
+                  children: ["Order Date:", " ", order.created_at ? new Date(order.created_at).toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  }) : "N/A"]
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
                   style: {
                     margin: "5px 0"
                   },
                   children: ["Shipping Method:", " ", ((_order$shipping = order.shipping) === null || _order$shipping === void 0 || (_order$shipping = _order$shipping.shipping_method) === null || _order$shipping === void 0 ? void 0 : _order$shipping.name) || "N/A"]
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-                  style: {
-                    margin: "5px 0"
-                  },
-                  children: ["Shipping Status:", " ", ((_order$shipping2 = order.shipping) === null || _order$shipping2 === void 0 || (_order$shipping2 = _order$shipping2.shipping_status) === null || _order$shipping2 === void 0 ? void 0 : _order$shipping2.name) || "N/A"]
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                   style: {
                     marginTop: 5
@@ -189549,13 +189217,13 @@ var MyPurchases = function MyPurchases() {
                         style: {
                           margin: 0
                         },
-                        children: ["Qty: ", detail.quantity, " | Price: $", parseFloat(detail.price).toLocaleString()]
+                        children: ["Qty: ", detail.quantity, " | Price: \u20B1", parseFloat(detail.price).toLocaleString()]
                       })]
                     }, detail.id);
                   })
                 })]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
                   type: "link",
                   onClick: function onClick() {
                     return handleViewDetails(order);
@@ -189568,7 +189236,7 @@ var MyPurchases = function MyPurchases() {
                 })
               })]
             }, order.id);
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
             current: currentPage,
             total: totalOrders,
             pageSize: pageSize,
@@ -189580,79 +189248,112 @@ var MyPurchases = function MyPurchases() {
           })]
         })]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-      title: "Order #".concat(selectedOrder === null || selectedOrder === void 0 ? void 0 : selectedOrder.id, " Details"),
-      visible: !!selectedOrder,
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
+      title: selectedOrder ? "Order #".concat(selectedOrder.id, " Details") : "Order Details",
+      open: !!selectedOrder,
       onCancel: handleCloseModal,
-      footer: [(selectedOrder === null || selectedOrder === void 0 ? void 0 : selectedOrder.order_status.toLowerCase()) === "delivered" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+      footer: [(selectedOrder === null || selectedOrder === void 0 || (_selectedOrder$order_ = selectedOrder.order_status) === null || _selectedOrder$order_ === void 0 ? void 0 : _selectedOrder$order_.toLowerCase()) === "delivered" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         type: "primary",
         onClick: function onClick() {
           return handleConfirmReceipt(selectedOrder.id);
         },
         children: "Confirm Receipt"
-      }, "confirm"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+      }, "confirm"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         onClick: handleCloseModal,
         children: "Close"
       }, "close")],
-      children: selectedOrder && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
-          children: "Order Tracking"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
-          items: getTimelineItems(selectedOrder),
-          style: {
-            margin: "16px 0"
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
-          children: "Shipping Information"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-          children: ["Tracking Number:", " ", ((_selectedOrder$shippi = selectedOrder.shipping) === null || _selectedOrder$shippi === void 0 ? void 0 : _selectedOrder$shippi.tracking_number) || "Not Available"]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-          children: ["Shipping Method:", " ", ((_selectedOrder$shippi2 = selectedOrder.shipping) === null || _selectedOrder$shippi2 === void 0 || (_selectedOrder$shippi2 = _selectedOrder$shippi2.shipping_method) === null || _selectedOrder$shippi2 === void 0 ? void 0 : _selectedOrder$shippi2.name) || "N/A"]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-          children: ["Shipping Status:", " ", ((_selectedOrder$shippi3 = selectedOrder.shipping) === null || _selectedOrder$shippi3 === void 0 || (_selectedOrder$shippi3 = _selectedOrder$shippi3.shipping_status) === null || _selectedOrder$shippi3 === void 0 ? void 0 : _selectedOrder$shippi3.name) || "N/A"]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
-          children: "Order Details"
-        }), selectedOrder.order_details.map(function (detail) {
-          var _detail$product3, _detail$product4, _detail$product5, _detail$product6;
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-            style: {
-              display: "flex",
-              alignItems: "center",
-              marginBottom: 20
-            },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
-              src: (_detail$product3 = detail.product) !== null && _detail$product3 !== void 0 && _detail$product3.main_image ? "".concat(baseUrl, "/storage/").concat(detail.product.main_image) : "https://via.placeholder.com/50",
-              alt: ((_detail$product4 = detail.product) === null || _detail$product4 === void 0 ? void 0 : _detail$product4.product_name) || "Product",
+      width: 1000 // Increased width to accommodate horizontal timeline
+      ,
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        style: {
+          padding: "16px"
+        },
+        children: selectedOrder ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+            children: "Order Tracking"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+            className: "horizontal-timeline",
+            children: getTimelineItems(selectedOrder).map(function (step, index) {
+              return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                className: "timeline-step",
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+                  className: "timeline-icon",
+                  style: {
+                    background: step.completed ? "#52c41a" : "#d9d9d9",
+                    color: step.completed ? "#fff" : "#000"
+                  },
+                  children: step.icon
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                  className: "timeline-content",
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
+                    strong: true,
+                    children: step.label
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
+                    type: "secondary",
+                    children: step.timestamp
+                  })]
+                }), index < getTimelineItems(selectedOrder).length - 1 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+                  className: "timeline-connector",
+                  style: {
+                    background: step.completed ? "#52c41a" : "#d9d9d9"
+                  }
+                })]
+              }, index);
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+            children: "Shipping Information"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+            children: ["Tracking Number: ", ((_selectedOrder$shippi = selectedOrder.shipping) === null || _selectedOrder$shippi === void 0 ? void 0 : _selectedOrder$shippi.tracking_number) || "Not Available"]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+            children: ["Shipping Method: ", ((_selectedOrder$shippi2 = selectedOrder.shipping) === null || _selectedOrder$shippi2 === void 0 || (_selectedOrder$shippi2 = _selectedOrder$shippi2.shipping_method) === null || _selectedOrder$shippi2 === void 0 ? void 0 : _selectedOrder$shippi2.name) || "N/A"]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h3", {
+            children: "Order Details"
+          }), selectedOrder.order_details && selectedOrder.order_details.length > 0 ? selectedOrder.order_details.map(function (detail) {
+            var _detail$product3, _detail$product4, _detail$product5, _detail$product6;
+            return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
               style: {
-                width: 50,
-                height: 50,
-                objectFit: "cover",
-                marginRight: 10,
-                borderRadius: 4
+                display: "flex",
+                alignItems: "center",
+                marginBottom: 20
               },
-              fallback: "https://via.placeholder.com/50"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
+                src: (_detail$product3 = detail.product) !== null && _detail$product3 !== void 0 && _detail$product3.main_image ? "".concat(baseUrl, "/storage/").concat(detail.product.main_image) : "https://via.placeholder.com/50",
+                alt: ((_detail$product4 = detail.product) === null || _detail$product4 === void 0 ? void 0 : _detail$product4.product_name) || "Product",
                 style: {
-                  margin: 0,
-                  fontWeight: "bold"
+                  width: 50,
+                  height: 50,
+                  objectFit: "cover",
+                  marginRight: 10,
+                  borderRadius: 4
                 },
-                children: ((_detail$product5 = detail.product) === null || _detail$product5 === void 0 ? void 0 : _detail$product5.product_name) || "Unknown Product"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
-                style: {
-                  margin: "2px 0",
-                  color: "#888"
-                },
-                children: ((_detail$product6 = detail.product) === null || _detail$product6 === void 0 ? void 0 : _detail$product6.description) || "No description available"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-                style: {
-                  margin: 0
-                },
-                children: ["Qty: ", detail.quantity, " | Price: $", parseFloat(detail.price).toLocaleString()]
+                fallback: "https://via.placeholder.com/50"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+                  style: {
+                    margin: 0,
+                    fontWeight: "bold"
+                  },
+                  children: ((_detail$product5 = detail.product) === null || _detail$product5 === void 0 ? void 0 : _detail$product5.product_name) || "Unknown Product"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+                  style: {
+                    margin: "2px 0",
+                    color: "#888"
+                  },
+                  children: ((_detail$product6 = detail.product) === null || _detail$product6 === void 0 ? void 0 : _detail$product6.description) || "No description available"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+                  style: {
+                    margin: 0
+                  },
+                  children: ["Qty: ", detail.quantity, " | Price: \u20B1", parseFloat(detail.price).toLocaleString()]
+                })]
               })]
-            })]
-          }, detail.id);
-        })]
+            }, detail.id);
+          }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+            children: "No order details available."
+          })]
+        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+          children: "No order selected."
+        })
       })
     })]
   });

@@ -469,9 +469,10 @@ const OrderManagement = () => {
                             style={{ width: "100%", marginBottom: 16 }}
                         >
                             <Option value="pending">Pending</Option>
-                            <Option value="completed">Completed</Option>
+                            <Option value="shipped">Shipped</Option>
                             <Option value="cancelled">Cancelled</Option>
                             <Option value="processing">Processing</Option>
+                            <Option value="completed">Completed</Option>
                         </Select>
                         <Input
                             value={

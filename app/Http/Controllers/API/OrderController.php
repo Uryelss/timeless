@@ -50,7 +50,7 @@ class OrderController extends Controller
         $order = Order::withTrashed()->findOrFail($id);
 
         $request->validate([
-            'order_status' => 'sometimes|in:pending,completed,cancelled,processing',
+            'order_status' => 'sometimes|in:pending,processing,shipped,cancelled,completed',
             'shipping.tracking_number' => 'sometimes|string',
             'shipping.shipping_status_id' => 'sometimes|exists:shipping_statuses,id',
         ]);
