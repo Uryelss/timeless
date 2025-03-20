@@ -29,14 +29,13 @@ import UserProfile from "./UserPage/ProfilePage/Profile";
 import ProductOverview from "./UserPage/ProductOverview/Productview";
 import AboutUs from "./UserPage/AboutUsPage/Aboutus";
 import CartPage from "./UserPage/CartPage/Cart";
-import OrderCheckout from "./UserPage/Checkout/Checkout";
-
-// Single route protection component
-import PrivateRoute from "./PrivateRoute";
+import OrderCheckout from "./UserPage/Checkout/Checkout"; // Assuming this is your CheckoutPage
+import OrderTracking from "./UserPage/Order/OrderTracking";
 import MyAddress from "./UserPage/ProfilePage/Address/MyAddress";
 import MyPurchase from "./UserPage/ProfilePage/Purchase/MyPurchase";
 
-
+// Single route protection component
+import PrivateRoute from "./PrivateRoute";
 
 function Routers() {
     return (
@@ -92,10 +91,30 @@ function Routers() {
                     <Route path="/user-checkout" element={<OrderCheckout />} />
                     <Route path="/user-Address" element={<MyAddress />} />
                     <Route path="/user-purchase" element={<MyPurchase />} />
+                    <Route
+                        path="/order-tracking/:orderId"
+                        element={<OrderTracking />}
+                    />
                 </Route>
 
                 {/* Catch-all redirect */}
-                <Route path="*" element={<PrivateRoute allowedRoles={[]} />} />
+                <Route
+                    path="*"
+                    element={
+                        isAuthenticated() ? (
+                            <Navigate
+                                to={
+                                    getUserRole() === "admin"
+                                        ? "/dashboard"
+                                        : "/user-home"
+                                }
+                                replace
+                            />
+                        ) : (
+                            <Navigate to="/login" replace />
+                        )
+                    }
+                />
             </Routes>
         </Router>
     );

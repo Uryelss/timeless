@@ -125,18 +125,25 @@ class UserOrderController extends Controller
         }
 
         try {
-            $orders = Order::where('profile_id', $user->profile->id)
+            $query = Order::where('profile_id', $user->profile->id)
                 ->with([
-                    'orderDetails.product',       // Product details
+                    'orderDetails.product',       // Product details (name, description, etc.)
                     'orderDetails.inventory',     // Inventory details
                     'shipping.shippingMethod',    // Shipping method
                     'shipping.paymentMethod',     // Payment method
                     'shipping.address'            // Address
                 ])
                 ->withTrashed()                   // Include soft-deleted orders
-                ->orderBy('order_date', 'desc')   // Latest orders first
-                ->paginate(10);                   // Paginate with 10 per page
+                ->orderBy('order_date', 'desc');  // Latest orders first
 
+            // Filter by order_id if provided
+            if ($request->has('order_id')) {
+                $order = $query->where('id', $request->input('order_id'))->firstOrFail();
+                return response()->json($order);
+            }
+
+            // Otherwise, return paginated results
+            $orders = $query->paginate(10);
             return response()->json($orders);
         } catch (\Exception $e) {
             return response()->json([

@@ -1,0 +1,350 @@
+.order-tracking {
+  .ant-layout {
+    min-height: 100vh;
+    background: #f0f2f5;
+  }
+
+  .ant-layout-content {
+    margin: 24px 16px 0;
+
+    .content-wrapper {
+      padding: 24px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+      .header-section {
+        margin-bottom: 24px;
+
+        h2 {
+          margin: 0;
+          font-size: 24px;
+          color: #1a1a1a;
+          font-weight: 600;
+        }
+      }
+
+      .main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+    }
+  }
+
+  // Timeline Section
+  .timeline-section {
+    h4 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 16px;
+    }
+
+    .horizontal-timeline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      margin-bottom: 24px;
+      padding: 0 10px;
+
+      // Continuous connector line
+      &::before {
+        content: "";
+        position: absolute;
+        top: 20px;
+        left: 10px;
+        right: 10px;
+        height: 2px;
+        background: #d9d9d9;
+        z-index: 1;
+      }
+
+      .timeline-step {
+        text-align: center;
+        flex: 1;
+        position: relative;
+        z-index: 2;
+
+        .icon-circle {
+          background: #d9d9d9;
+          color: #000;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 8px;
+          transition: background 0.3s ease;
+          border: 2px solid #fff;
+        }
+
+        &.completed {
+          .icon-circle {
+            background: #52c41a;
+            color: #fff;
+          }
+        }
+
+        .step-label {
+          font-weight: 500;
+          color: #333;
+        }
+
+        .step-timestamp {
+          color: #888;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+
+  // Action Buttons
+  .action-buttons {
+    display: flex;
+    gap: 8px; // Reduced gap for smaller buttons
+    margin-bottom: 24px;
+    flex-wrap: wrap; // Allow buttons to wrap on smaller screens
+
+    .ant-btn {
+      font-size: 12px; // Smaller font size
+      padding: 0 12px; // Reduced padding
+      height: 28px; // Smaller height
+      line-height: 28px; // Adjust line height to match
+      border-radius: 4px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+      }
+
+      // Adjust icon size
+      .anticon {
+        font-size: 12px;
+        margin-right: 4px;
+      }
+    }
+
+    .ant-btn-primary {
+      background-color: #1890ff;
+      border-color: #1890ff;
+
+      &:hover {
+        background-color: #40a9ff;
+        border-color: #40a9ff;
+      }
+    }
+
+    .ant-btn-danger {
+      background-color: #ff4d4f;
+      border-color: #ff4d4f;
+      color: #fff;
+
+      &:hover {
+        background-color: #ff7875;
+        border-color: #ff7875;
+      }
+    }
+  }
+
+  // Order Details
+  .details-section {
+    h4 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 16px;
+    }
+
+    .order-details {
+      .order-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+        padding: 8px;
+        border-bottom: 1px solid #f0f0f0;
+
+        .item-image {
+          width: 50px;
+          height: 50px;
+          object-fit: cover;
+          margin-right: 16px;
+          border-radius: 4px;
+        }
+
+        .item-info {
+          flex: 1;
+
+          .item-name {
+            font-weight: 500;
+            color: #333;
+          }
+
+          .item-description {
+            color: #888;
+            margin: 4px 0;
+          }
+
+          .item-quantity-price {
+            color: #333;
+          }
+        }
+      }
+
+      .total-amount {
+        font-weight: 500;
+        color: #333;
+        margin-top: 16px;
+        display: block;
+      }
+    }
+  }
+
+  // Shipping Information
+  .shipping-section {
+    h4 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 16px;
+    }
+
+    .shipping-info {
+      padding: 16px;
+      background: #fafafa;
+      border-radius: 4px;
+
+      .ant-typography {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+      }
+    }
+  }
+
+  // Cancel Order Modal
+  .cancel-modal {
+    .ant-modal-header {
+      background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+
+      .ant-modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+      }
+    }
+
+    .ant-modal-body {
+      padding: 24px;
+
+      .ant-typography-strong {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .ant-typography-secondary {
+        color: #888;
+        margin-bottom: 16px;
+      }
+
+      .ant-radio-group {
+        .ant-space-vertical {
+          .ant-radio-wrapper {
+            margin-bottom: 8px;
+
+            .ant-radio {
+              .ant-radio-inner {
+                border-color: #d9d9d9;
+              }
+
+              &.ant-radio-checked .ant-radio-inner {
+                border-color: #1890ff;
+                background: #1890ff;
+              }
+            }
+
+            span {
+              color: #333;
+            }
+          }
+        }
+      }
+    }
+
+    .ant-modal-footer {
+      border-top: 1px solid #e8e8e8;
+      padding: 16px 24px;
+
+      .ant-btn {
+        font-size: 12px; // Smaller font size for modal buttons
+        padding: 0 12px; // Reduced padding
+        height: 28px; // Smaller height
+        line-height: 28px; // Adjust line height to match
+        border-radius: 4px;
+        font-weight: 500;
+      }
+
+      .ant-btn-primary {
+        background-color: #1890ff;
+        border-color: #1890ff;
+
+        &:hover {
+          background-color: #40a9ff;
+          border-color: #40a9ff;
+        }
+      }
+    }
+  }
+
+  // Utility Classes
+  .loading-text {
+    font-size: 16px;
+    color: #666;
+    text-align: center;
+  }
+
+  .no-tracking {
+    text-align: center;
+    color: #666;
+    font-size: 16px;
+    padding: 20px;
+  }
+
+  // Responsive Design
+  @media (max-width: 768px) {
+    .content-wrapper {
+      padding: 16px;
+    }
+
+    .horizontal-timeline {
+      flex-direction: column;
+      align-items: center;
+
+      &::before {
+        display: none;
+      }
+
+      .timeline-step {
+        margin-bottom: 16px;
+      }
+    }
+
+    .action-buttons {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .order-details {
+      .order-item {
+        flex-direction: column;
+        align-items: flex-start;
+
+        .item-image {
+          margin-bottom: 8px;
+        }
+      }
+    }
+  }
+}
