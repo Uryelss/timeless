@@ -182456,13 +182456,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/StarOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/StarOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
@@ -182472,6 +182473,11 @@ function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread n
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
@@ -182520,6 +182526,22 @@ var ReviewsManagement = function ReviewsManagement() {
     _useState14 = _slicedToArray(_useState13, 2),
     selectedRating = _useState14[0],
     setSelectedRating = _useState14[1];
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState16 = _slicedToArray(_useState15, 2),
+    selectAllActive = _useState16[0],
+    setSelectAllActive = _useState16[1];
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState18 = _slicedToArray(_useState17, 2),
+    selectedActiveReviews = _useState18[0],
+    setSelectedActiveReviews = _useState18[1];
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState20 = _slicedToArray(_useState19, 2),
+    selectAllArchived = _useState20[0],
+    setSelectAllArchived = _useState20[1];
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState22 = _slicedToArray(_useState21, 2),
+    selectedArchivedReviews = _useState22[0],
+    setSelectedArchivedReviews = _useState22[1];
   var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_6__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
@@ -182541,8 +182563,16 @@ var ReviewsManagement = function ReviewsManagement() {
             });
           case 3:
             response = _context.sent;
-            setReviews(response.data.reviews);
-            setArchivedReviews(response.data.archived_reviews);
+            setReviews(response.data.reviews.map(function (review) {
+              return _objectSpread(_objectSpread({}, review), {}, {
+                selected: false
+              });
+            }));
+            setArchivedReviews(response.data.archived_reviews.map(function (review) {
+              return _objectSpread(_objectSpread({}, review), {}, {
+                selected: false
+              });
+            }));
             _context.next = 12;
             break;
           case 8:
@@ -182560,6 +182590,74 @@ var ReviewsManagement = function ReviewsManagement() {
       return _ref.apply(this, arguments);
     };
   }();
+
+  // Checkbox handling for active reviews
+  var handleActiveCheckboxChange = function handleActiveCheckboxChange(reviewId) {
+    var updatedReviews = reviews.map(function (review) {
+      return review.id === reviewId ? _objectSpread(_objectSpread({}, review), {}, {
+        selected: !review.selected
+      }) : review;
+    });
+    setReviews(updatedReviews);
+    setSelectedActiveReviews(updatedReviews.filter(function (r) {
+      return r.selected;
+    }).map(function (r) {
+      return r.id;
+    }));
+    var allSelected = updatedReviews.every(function (r) {
+      return r.selected;
+    });
+    setSelectAllActive(allSelected);
+  };
+
+  // Select All checkbox handling for active reviews
+  var handleSelectAllActiveChange = function handleSelectAllActiveChange(e) {
+    var checked = e.target.checked;
+    setSelectAllActive(checked);
+    var updatedReviews = reviews.map(function (review) {
+      return _objectSpread(_objectSpread({}, review), {}, {
+        selected: checked
+      });
+    });
+    setReviews(updatedReviews);
+    setSelectedActiveReviews(checked ? updatedReviews.map(function (r) {
+      return r.id;
+    }) : []);
+  };
+
+  // Checkbox handling for archived reviews
+  var handleArchivedCheckboxChange = function handleArchivedCheckboxChange(reviewId) {
+    var updatedArchived = archivedReviews.map(function (review) {
+      return review.id === reviewId ? _objectSpread(_objectSpread({}, review), {}, {
+        selected: !review.selected
+      }) : review;
+    });
+    setArchivedReviews(updatedArchived);
+    setSelectedArchivedReviews(updatedArchived.filter(function (r) {
+      return r.selected;
+    }).map(function (r) {
+      return r.id;
+    }));
+    var allSelected = updatedArchived.every(function (r) {
+      return r.selected;
+    });
+    setSelectAllArchived(allSelected);
+  };
+
+  // Select All checkbox handling for archived reviews
+  var handleSelectAllArchivedChange = function handleSelectAllArchivedChange(e) {
+    var checked = e.target.checked;
+    setSelectAllArchived(checked);
+    var updatedArchived = archivedReviews.map(function (review) {
+      return _objectSpread(_objectSpread({}, review), {}, {
+        selected: checked
+      });
+    });
+    setArchivedReviews(updatedArchived);
+    setSelectedArchivedReviews(checked ? updatedArchived.map(function (r) {
+      return r.id;
+    }) : []);
+  };
   var handleEdit = function handleEdit(record) {
     setEditingReview(record);
     form.setFieldsValue({
@@ -182645,44 +182743,175 @@ var ReviewsManagement = function ReviewsManagement() {
           return _onOk.apply(this, arguments);
         }
         return onOk;
-      }()
+      }(),
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
+
+  // Bulk archive handler for active reviews
+  var handleArchiveAll = function handleArchiveAll() {
+    if (selectedActiveReviews.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].warning("Please select at least one review to archive");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
+      title: "Are you sure you want to archive ".concat(selectedActiveReviews.length, " selected review(s)?"),
+      onOk: function () {
+        var _onOk2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+          return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+            while (1) switch (_context4.prev = _context4.next) {
+              case 0:
+                _context4.prev = 0;
+                _context4.next = 3;
+                return Promise.all(selectedActiveReviews.map(function (id) {
+                  return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("/api/admin/reviews/".concat(id, "/archive"), {}, {
+                    headers: {
+                      Authorization: "Bearer ".concat(localStorage.getItem("token"))
+                    }
+                  });
+                }));
+              case 3:
+                antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Selected reviews archived successfully");
+                fetchReviews();
+                setSelectedActiveReviews([]);
+                setSelectAllActive(false);
+                _context4.next = 13;
+                break;
+              case 9:
+                _context4.prev = 9;
+                _context4.t0 = _context4["catch"](0);
+                antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive some reviews");
+                console.error(_context4.t0);
+              case 13:
+              case "end":
+                return _context4.stop();
+            }
+          }, _callee4, null, [[0, 9]]);
+        }));
+        function onOk() {
+          return _onOk2.apply(this, arguments);
+        }
+        return onOk;
+      }(),
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
     });
   };
   var handleRestore = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(record) {
+    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(record) {
       var response;
-      return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-        while (1) switch (_context4.prev = _context4.next) {
+      return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+        while (1) switch (_context5.prev = _context5.next) {
           case 0:
-            _context4.prev = 0;
-            _context4.next = 3;
+            _context5.prev = 0;
+            _context5.next = 3;
             return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("/api/admin/reviews/".concat(record.id, "/restore"), {}, {
               headers: {
                 Authorization: "Bearer ".concat(localStorage.getItem("token"))
               }
             });
           case 3:
-            response = _context4.sent;
+            response = _context5.sent;
             antd__WEBPACK_IMPORTED_MODULE_8__["default"].success(response.data.message);
             fetchReviews();
-            _context4.next = 12;
+            _context5.next = 12;
             break;
           case 8:
-            _context4.prev = 8;
-            _context4.t0 = _context4["catch"](0);
+            _context5.prev = 8;
+            _context5.t0 = _context5["catch"](0);
             antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore review");
-            console.error(_context4.t0);
+            console.error(_context5.t0);
           case 12:
           case "end":
-            return _context4.stop();
+            return _context5.stop();
         }
-      }, _callee4, null, [[0, 8]]);
+      }, _callee5, null, [[0, 8]]);
     }));
     return function handleRestore(_x) {
       return _ref3.apply(this, arguments);
     };
   }();
+
+  // Bulk restore handler for archived reviews
+  var handleRestoreAll = function handleRestoreAll() {
+    if (selectedArchivedReviews.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].warning("Please select at least one review to restore");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
+      title: "Are you sure you want to restore ".concat(selectedArchivedReviews.length, " selected review(s)?"),
+      onOk: function () {
+        var _onOk3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
+          return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+            while (1) switch (_context6.prev = _context6.next) {
+              case 0:
+                _context6.prev = 0;
+                _context6.next = 3;
+                return Promise.all(selectedArchivedReviews.map(function (id) {
+                  return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("/api/admin/reviews/".concat(id, "/restore"), {}, {
+                    headers: {
+                      Authorization: "Bearer ".concat(localStorage.getItem("token"))
+                    }
+                  });
+                }));
+              case 3:
+                antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Selected reviews restored successfully");
+                fetchReviews();
+                setSelectedArchivedReviews([]);
+                setSelectAllArchived(false);
+                _context6.next = 13;
+                break;
+              case 9:
+                _context6.prev = 9;
+                _context6.t0 = _context6["catch"](0);
+                antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore some reviews");
+                console.error(_context6.t0);
+              case 13:
+              case "end":
+                return _context6.stop();
+            }
+          }, _callee6, null, [[0, 9]]);
+        }));
+        function onOk() {
+          return _onOk3.apply(this, arguments);
+        }
+        return onOk;
+      }(),
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
   var filteredReviews = reviews.filter(function (review) {
+    var matchesSearch = review.username.toLowerCase().includes(searchQuery.toLowerCase());
+    var matchesRating = selectedRating ? review.rating === selectedRating : true;
+    return matchesSearch && matchesRating;
+  });
+  var filteredArchivedReviews = archivedReviews.filter(function (review) {
     var matchesSearch = review.username.toLowerCase().includes(searchQuery.toLowerCase());
     var matchesRating = selectedRating ? review.rating === selectedRating : true;
     return matchesSearch && matchesRating;
@@ -182692,7 +182921,12 @@ var ReviewsManagement = function ReviewsManagement() {
     key: "actions",
     render: function render(_, record) {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          checked: record.selected,
+          onChange: function onChange() {
+            return handleActiveCheckboxChange(record.id);
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
           onClick: function onClick() {
             return handleEdit(record);
           },
@@ -182700,7 +182934,7 @@ var ReviewsManagement = function ReviewsManagement() {
             fontSize: "16px",
             cursor: "pointer"
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
           onClick: function onClick() {
             return handleArchive(record);
           },
@@ -182721,8 +182955,9 @@ var ReviewsManagement = function ReviewsManagement() {
         src: image || "https://via.placeholder.com/50",
         alt: "Product",
         style: {
-          width: 50,
-          borderRadius: 5
+          width: "60px",
+          borderRadius: 5,
+          heigth: "70px"
         }
       });
     }
@@ -182740,7 +182975,7 @@ var ReviewsManagement = function ReviewsManagement() {
     key: "rating",
     render: function render(rating) {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
           style: {
             color: "#FFD700"
           }
@@ -182764,16 +182999,23 @@ var ReviewsManagement = function ReviewsManagement() {
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
-        type: "link",
-        onClick: function onClick() {
-          return handleRestore(record);
-        },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
-          style: {
-            fontSize: "18px"
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          checked: record.selected,
+          onChange: function onChange() {
+            return handleArchivedCheckboxChange(record.id);
           }
-        })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          type: "link",
+          onClick: function onClick() {
+            return handleRestore(record);
+          },
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {
+            style: {
+              fontSize: "18px"
+            }
+          })
+        })]
       });
     }
   }].concat(_toConsumableArray(columns.slice(1)));
@@ -182804,7 +183046,12 @@ var ReviewsManagement = function ReviewsManagement() {
             justifyContent: "space-between",
             marginBottom: 16
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            style: {
+              display: "flex",
+              alignItems: "center",
+              gap: 16
+            },
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Search, {
               placeholder: "Search by username",
               onSearch: function onSearch(value) {
@@ -182838,19 +183085,34 @@ var ReviewsManagement = function ReviewsManagement() {
                 value: 5,
                 children: "\u2B50\u2B50\u2B50\u2B50\u2B50 5 Stars"
               })]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+              checked: selectAllActive,
+              onChange: handleSelectAllActiveChange,
+              children: "Select All"
+            }), (selectAllActive || selectedActiveReviews.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+              type: "link",
+              onClick: handleArchiveAll,
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {
+                style: {
+                  fontSize: "18px"
+                }
+              }), "Archive", selectedActiveReviews.length > 0 && " (".concat(selectedActiveReviews.length, ")")]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
             type: "default",
             onClick: function onClick() {
               return setOpenArchiveModal(true);
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {
+            style: {
+              width: "180px"
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {
               style: {
                 marginRight: 4
               }
             }), " ", "View Archived Reviews"]
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
           columns: columns,
           dataSource: filteredReviews,
           rowKey: "id",
@@ -182867,6 +183129,22 @@ var ReviewsManagement = function ReviewsManagement() {
       onCancel: function onCancel() {
         return setOpenEditModal(false);
       },
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+        onClick: function onClick() {
+          return setOpenEditModal(false);
+        },
+        style: {
+          width: "131px"
+        },
+        children: "Cancel"
+      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+        type: "primary",
+        onClick: handleUpdate,
+        style: {
+          width: "131px"
+        },
+        children: "Update Review"
+      }, "save")],
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
         form: form,
         layout: "vertical",
@@ -182907,7 +183185,7 @@ var ReviewsManagement = function ReviewsManagement() {
           })
         })]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
       title: "Archived Reviews",
       centered: true,
       open: openArchiveModal,
@@ -182915,21 +183193,41 @@ var ReviewsManagement = function ReviewsManagement() {
         return setOpenArchiveModal(false);
       },
       width: 1000,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
-        onClick: function onClick() {
-          return setOpenArchiveModal(false);
+      footer: [],
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          marginBottom: 16
         },
-        children: "Close"
-      }, "close")],
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          checked: selectAllArchived,
+          onChange: handleSelectAllArchivedChange,
+          style: {
+            marginRight: 16
+          },
+          children: "Select All"
+        }), (selectAllArchived || selectedArchivedReviews.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          type: "link",
+          onClick: handleRestoreAll,
+          style: {
+            marginRight: 8
+          },
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {
+            style: {
+              fontSize: "18px"
+            }
+          }), "Restore", selectedArchivedReviews.length > 0 && " (".concat(selectedArchivedReviews.length, ")")]
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
         columns: archiveColumns,
-        dataSource: archivedReviews,
+        dataSource: filteredArchivedReviews,
         rowKey: "id",
         pagination: false,
         scroll: {
           x: 1000
         }
-      })
+      })]
     })]
   });
 };
@@ -183700,21 +183998,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -183754,12 +184059,24 @@ var CustomerManagement = function CustomerManagement() {
     setSearchQuery = _useState10[1];
   var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState12 = _slicedToArray(_useState11, 2),
-    selectAll = _useState12[0],
-    setSelectAll = _useState12[1];
-  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    selectAllActive = _useState12[0],
+    setSelectAllActive = _useState12[1];
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState14 = _slicedToArray(_useState13, 2),
-    editingCustomer = _useState14[0],
-    setEditingCustomer = _useState14[1];
+    selectAllArchived = _useState14[0],
+    setSelectAllArchived = _useState14[1];
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState16 = _slicedToArray(_useState15, 2),
+    selectedActiveCustomers = _useState16[0],
+    setSelectedActiveCustomers = _useState16[1];
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState18 = _slicedToArray(_useState17, 2),
+    selectedArchivedCustomers = _useState18[0],
+    setSelectedArchivedCustomers = _useState18[1];
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState20 = _slicedToArray(_useState19, 2),
+    editingCustomer = _useState20[0],
+    setEditingCustomer = _useState20[1];
   var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_5__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
@@ -183770,8 +184087,11 @@ var CustomerManagement = function CustomerManagement() {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      console.log("Fetched customers:", res.data);
-      setCustomers(res.data);
+      setCustomers(res.data.map(function (customer) {
+        return _objectSpread(_objectSpread({}, customer), {}, {
+          selected: false
+        });
+      }));
     })["catch"](function (err) {
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error fetching customers");
       console.error(err);
@@ -183783,8 +184103,11 @@ var CustomerManagement = function CustomerManagement() {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      console.log("Fetched archived customers:", res.data);
-      setArchivedCustomers(res.data);
+      setArchivedCustomers(res.data.map(function (customer) {
+        return _objectSpread(_objectSpread({}, customer), {}, {
+          selected: false
+        });
+      }));
     })["catch"](function (err) {
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error fetching archived customers");
       console.error(err);
@@ -183796,19 +184119,155 @@ var CustomerManagement = function CustomerManagement() {
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (openArchiveModal) fetchArchivedCustomers();
   }, [openArchiveModal]);
+  var handleActiveCheckboxChange = function handleActiveCheckboxChange(customerId) {
+    var updatedCustomers = customers.map(function (customer) {
+      return customer.id === customerId ? _objectSpread(_objectSpread({}, customer), {}, {
+        selected: !customer.selected
+      }) : customer;
+    });
+    setCustomers(updatedCustomers);
+    setSelectedActiveCustomers(updatedCustomers.filter(function (c) {
+      return c.selected;
+    }).map(function (c) {
+      return c.id;
+    }));
+    var allSelected = updatedCustomers.every(function (c) {
+      return c.selected;
+    });
+    setSelectAllActive(allSelected);
+  };
+  var handleSelectAllActiveChange = function handleSelectAllActiveChange(e) {
+    var checked = e.target.checked;
+    setSelectAllActive(checked);
+    var updatedCustomers = customers.map(function (customer) {
+      return _objectSpread(_objectSpread({}, customer), {}, {
+        selected: checked
+      });
+    });
+    setCustomers(updatedCustomers);
+    setSelectedActiveCustomers(checked ? updatedCustomers.map(function (c) {
+      return c.id;
+    }) : []);
+  };
+  var handleArchiveAll = function handleArchiveAll() {
+    if (selectedActiveCustomers.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select at least one customer to archive");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_8__["default"].confirm({
+      title: "Are you sure you want to archive ".concat(selectedActiveCustomers.length, " selected customer(s)?"),
+      onOk: function onOk() {
+        Promise.all(selectedActiveCustomers.map(function (id) {
+          return axios__WEBPACK_IMPORTED_MODULE_6__["default"]["delete"]("".concat(API_URL, "/").concat(id), {
+            headers: {
+              Authorization: "Bearer ".concat(localStorage.getItem("token"))
+            }
+          });
+        })).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Selected customers archived successfully");
+          fetchCustomers();
+          setSelectedActiveCustomers([]);
+          setSelectAllActive(false);
+        })["catch"](function (err) {
+          return antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive some customers");
+        });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
+  var handleArchivedCheckboxChange = function handleArchivedCheckboxChange(customerId) {
+    var updatedArchived = archivedCustomers.map(function (customer) {
+      return customer.id === customerId ? _objectSpread(_objectSpread({}, customer), {}, {
+        selected: !customer.selected
+      }) : customer;
+    });
+    setArchivedCustomers(updatedArchived);
+    setSelectedArchivedCustomers(updatedArchived.filter(function (c) {
+      return c.selected;
+    }).map(function (c) {
+      return c.id;
+    }));
+    var allSelected = updatedArchived.every(function (c) {
+      return c.selected;
+    });
+    setSelectAllArchived(allSelected);
+  };
+  var handleSelectAllArchivedChange = function handleSelectAllArchivedChange(e) {
+    var checked = e.target.checked;
+    setSelectAllArchived(checked);
+    var updatedArchived = archivedCustomers.map(function (customer) {
+      return _objectSpread(_objectSpread({}, customer), {}, {
+        selected: checked
+      });
+    });
+    setArchivedCustomers(updatedArchived);
+    setSelectedArchivedCustomers(checked ? updatedArchived.map(function (c) {
+      return c.id;
+    }) : []);
+  };
+  var handleRestoreAll = function handleRestoreAll() {
+    if (selectedArchivedCustomers.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select at least one customer to restore");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_8__["default"].confirm({
+      title: "Are you sure you want to restore ".concat(selectedArchivedCustomers.length, " selected customer(s)?"),
+      onOk: function onOk() {
+        Promise.all(selectedArchivedCustomers.map(function (id) {
+          return axios__WEBPACK_IMPORTED_MODULE_6__["default"].post("".concat(API_URL, "/").concat(id, "/restore"), {}, {
+            headers: {
+              Authorization: "Bearer ".concat(localStorage.getItem("token"))
+            }
+          });
+        })).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Selected customers restored successfully");
+          fetchArchivedCustomers();
+          fetchCustomers();
+          setSelectedArchivedCustomers([]);
+          setSelectAllArchived(false);
+        })["catch"](function (err) {
+          return antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to restore some customers");
+        });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
   var mainColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+          checked: record.selected,
+          onChange: function onChange() {
+            return handleActiveCheckboxChange(record.id);
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
           onClick: function onClick() {
             return handleEdit(record);
           },
           style: {
             fontSize: "16px"
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
           onClick: function onClick() {
             return handleArchive(record);
           },
@@ -183827,7 +184286,8 @@ var CustomerManagement = function CustomerManagement() {
         src: image || "https://via.placeholder.com/100?text=Customer",
         alt: "customer",
         style: {
-          width: 50
+          width: "60px",
+          height: "70px"
         }
       });
     }
@@ -183874,16 +184334,23 @@ var CustomerManagement = function CustomerManagement() {
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-        type: "link",
-        onClick: function onClick() {
-          return handleRestore(record.id);
-        },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
-          style: {
-            fontSize: "18px"
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+          checked: record.selected,
+          onChange: function onChange() {
+            return handleArchivedCheckboxChange(record.id);
           }
-        })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+          type: "link",
+          onClick: function onClick() {
+            return handleRestore(record.id);
+          },
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
+            style: {
+              fontSize: "18px"
+            }
+          })
+        })]
       });
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
@@ -183895,13 +184362,12 @@ var CustomerManagement = function CustomerManagement() {
       last_name: record.last_name,
       suffix: record.suffix,
       gender: record.gender,
-      date_of_birth: record.date_of_birth,
-      phone: record.phone // Populate phone field
+      date_of_birth: record.date_of_birth
     });
     setOpenEditModal(true);
   };
   var handleArchive = function handleArchive(record) {
-    antd__WEBPACK_IMPORTED_MODULE_14__["default"].confirm({
+    antd__WEBPACK_IMPORTED_MODULE_8__["default"].confirm({
       title: "Are you sure you want to archive this customer?",
       onOk: function onOk() {
         axios__WEBPACK_IMPORTED_MODULE_6__["default"]["delete"]("".concat(API_URL, "/").concat(record.id), {
@@ -183915,6 +184381,16 @@ var CustomerManagement = function CustomerManagement() {
           antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive customer");
           console.error(err);
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
       }
     });
   };
@@ -183952,6 +184428,11 @@ var CustomerManagement = function CustomerManagement() {
     });
   };
   var filteredCustomers = customers.filter(function (customer) {
+    var lower = searchQuery.toLowerCase();
+    var fullName = customer.customer_name || "".concat(customer.first_name, " ").concat(customer.middle_name ? customer.middle_name.charAt(0).toUpperCase() + ". " : "").concat(customer.last_name);
+    return fullName.toLowerCase().includes(lower) || customer.email && customer.email.toLowerCase().includes(lower) || customer.phone && customer.phone.toLowerCase().includes(lower) || customer.address && customer.address.toLowerCase().includes(lower);
+  });
+  var filteredArchivedCustomers = archivedCustomers.filter(function (customer) {
     var lower = searchQuery.toLowerCase();
     var fullName = customer.customer_name || "".concat(customer.first_name, " ").concat(customer.middle_name ? customer.middle_name.charAt(0).toUpperCase() + ". " : "").concat(customer.last_name);
     return fullName.toLowerCase().includes(lower) || customer.email && customer.email.toLowerCase().includes(lower) || customer.phone && customer.phone.toLowerCase().includes(lower) || customer.address && customer.address.toLowerCase().includes(lower);
@@ -183997,27 +184478,38 @@ var CustomerManagement = function CustomerManagement() {
                 width: 300,
                 marginRight: 16
               }
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-              onChange: function onChange(e) {
-                return setSelectAll(e.target.checked);
-              },
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+              checked: selectAllActive,
+              onChange: handleSelectAllActiveChange,
               style: {
                 marginLeft: 16
               },
               children: "Select All"
+            }), (selectAllActive || selectedActiveCustomers.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+              type: "link",
+              onClick: handleArchiveAll,
+              style: {
+                marginLeft: 8
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
+                style: {
+                  fontSize: "18px"
+                }
+              }), selectedActiveCustomers.length > 0 && " (".concat(selectedActiveCustomers.length, ")")]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
             type: "default",
+            icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
             onClick: function onClick() {
               return setOpenArchiveModal(true);
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
-              style: {
-                marginRight: 4
-              }
-            }), " ", "Archived View"]
+            style: {
+              marginRight: 8,
+              width: "131px"
+            },
+            children: "Archived View"
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
           columns: mainColumns,
           dataSource: filteredCustomers,
           rowKey: "id",
@@ -184026,7 +184518,7 @@ var CustomerManagement = function CustomerManagement() {
           }
         })]
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
       title: "Archived Customers",
       centered: true,
       open: openArchiveModal,
@@ -184034,22 +184526,42 @@ var CustomerManagement = function CustomerManagement() {
         return setOpenArchiveModal(false);
       },
       width: 1200,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-        onClick: function onClick() {
-          return setOpenArchiveModal(false);
+      footer: [],
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          marginBottom: 16
         },
-        children: "Close"
-      }, "close")],
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+          checked: selectAllArchived,
+          onChange: handleSelectAllArchivedChange,
+          style: {
+            marginRight: 16
+          },
+          children: "Select All"
+        }), (selectAllArchived || selectedArchivedCustomers.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+          type: "link",
+          onClick: handleRestoreAll,
+          style: {
+            marginRight: 8
+          },
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
+            style: {
+              fontSize: "18px"
+            }
+          }), "Restore", selectedArchivedCustomers.length > 0 && " (".concat(selectedArchivedCustomers.length, ")")]
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
         columns: archiveColumns,
-        dataSource: archivedCustomers,
+        dataSource: filteredArchivedCustomers,
         rowKey: "id",
         pagination: false,
         scroll: {
           x: 1200
         }
-      })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
       title: "Edit Customer",
       centered: true,
       open: openEditModal,
@@ -184057,15 +184569,21 @@ var CustomerManagement = function CustomerManagement() {
         setOpenEditModal(false);
         setEditingCustomer(null);
       },
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         onClick: function onClick() {
           setOpenEditModal(false);
           setEditingCustomer(null);
         },
+        style: {
+          width: "131px"
+        },
         children: "Cancel"
-      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         type: "primary",
         onClick: handleUpdate,
+        style: {
+          width: "131px"
+        },
         children: "Update Customer"
       }, "save")],
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
@@ -184116,15 +184634,9 @@ var CustomerManagement = function CustomerManagement() {
             placeholder: "YYYY-MM-DD"
           })
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
-          name: "phone",
-          label: "Phone",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
-            placeholder: "Enter phone number"
-          })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
           label: "Note",
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
-            children: "Full address editing requires separate address management (not implemented here)."
+            children: "Phone and Address editing requires address management (not implemented here)."
           })
         })]
       })
@@ -184701,18 +185213,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/typography/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/descriptions/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/row/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/col/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EyeOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/descriptions/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/row/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/col/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EyeOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
@@ -184735,7 +185249,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
- // Adjust path as needed
+
 
 
 var Header = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Header,
@@ -184775,18 +185289,35 @@ var OrderManagement = function OrderManagement() {
     _useState14 = _slicedToArray(_useState13, 2),
     searchText = _useState14[0],
     setSearchText = _useState14[1];
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState16 = _slicedToArray(_useState15, 2),
+    selectAllActive = _useState16[0],
+    setSelectAllActive = _useState16[1];
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState18 = _slicedToArray(_useState17, 2),
+    selectedActiveOrders = _useState18[0],
+    setSelectedActiveOrders = _useState18[1];
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState20 = _slicedToArray(_useState19, 2),
+    selectAllArchived = _useState20[0],
+    setSelectAllArchived = _useState20[1];
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState22 = _slicedToArray(_useState21, 2),
+    selectedArchivedOrders = _useState22[0],
+    setSelectedArchivedOrders = _useState22[1];
   var API_URL = "http://localhost:8000/api/orders";
   var fetchOrders = function fetchOrders() {
-    axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(API_URL, "?all=true"), {
+    axios__WEBPACK_IMPORTED_MODULE_7__["default"].get(API_URL, {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      console.log("API Response:", res.data);
+      console.log("API Response:", res.data); // Debug
       var transformedOrders = res.data.map(function (order) {
         return _objectSpread(_objectSpread({}, order), {}, {
           order_date: order.order_date || order.created_at,
-          shipping: order.shipping || {}
+          shipping: order.shipping || {},
+          selected: false // Initialize selected state
         });
       });
       setOrders(transformedOrders.filter(function (order) {
@@ -184796,31 +185327,167 @@ var OrderManagement = function OrderManagement() {
         return order.deleted_at;
       }));
     })["catch"](function (err) {
-      var _err$response, _err$response2;
-      var errorMsg = ((_err$response = err.response) === null || _err$response === void 0 || (_err$response = _err$response.data) === null || _err$response === void 0 ? void 0 : _err$response.message) || err.message || "Unknown error";
-      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching orders: ".concat(errorMsg));
-      console.error("Error details:", ((_err$response2 = err.response) === null || _err$response2 === void 0 ? void 0 : _err$response2.data) || err);
+      var _err$response;
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching orders");
+      console.error(((_err$response = err.response) === null || _err$response === void 0 ? void 0 : _err$response.data) || err);
     });
   };
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchOrders();
   }, []);
 
-  // Main table columns
+  // Handlers for active orders
+  var handleActiveCheckboxChange = function handleActiveCheckboxChange(orderId) {
+    var updatedOrders = orders.map(function (order) {
+      return order.id === orderId ? _objectSpread(_objectSpread({}, order), {}, {
+        selected: !order.selected
+      }) : order;
+    });
+    setOrders(updatedOrders);
+    setSelectedActiveOrders(updatedOrders.filter(function (o) {
+      return o.selected;
+    }).map(function (o) {
+      return o.id;
+    }));
+    var allSelected = updatedOrders.every(function (o) {
+      return o.selected;
+    });
+    setSelectAllActive(allSelected);
+  };
+  var handleSelectAllActiveChange = function handleSelectAllActiveChange(e) {
+    var checked = e.target.checked;
+    setSelectAllActive(checked);
+    var updatedOrders = orders.map(function (order) {
+      return _objectSpread(_objectSpread({}, order), {}, {
+        selected: checked
+      });
+    });
+    setOrders(updatedOrders);
+    setSelectedActiveOrders(checked ? updatedOrders.map(function (o) {
+      return o.id;
+    }) : []);
+  };
+  var handleArchiveAll = function handleArchiveAll() {
+    if (selectedActiveOrders.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].warning("Please select at least one order to archive");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
+      title: "Are you sure you want to archive ".concat(selectedActiveOrders.length, " selected order(s)?"),
+      onOk: function onOk() {
+        Promise.all(selectedActiveOrders.map(function (id) {
+          return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/").concat(id, "/archive"), {}, {
+            headers: {
+              Authorization: "Bearer ".concat(localStorage.getItem("token"))
+            }
+          });
+        })).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Selected orders archived successfully");
+          fetchOrders();
+          setSelectedActiveOrders([]);
+          setSelectAllActive(false);
+        })["catch"](function (err) {
+          return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive some orders");
+        });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
+
+  // Handlers for archived orders
+  var handleArchivedCheckboxChange = function handleArchivedCheckboxChange(orderId) {
+    var updatedArchived = archivedOrders.map(function (order) {
+      return order.id === orderId ? _objectSpread(_objectSpread({}, order), {}, {
+        selected: !order.selected
+      }) : order;
+    });
+    setArchivedOrders(updatedArchived);
+    setSelectedArchivedOrders(updatedArchived.filter(function (o) {
+      return o.selected;
+    }).map(function (o) {
+      return o.id;
+    }));
+    var allSelected = updatedArchived.every(function (o) {
+      return o.selected;
+    });
+    setSelectAllArchived(allSelected);
+  };
+  var handleSelectAllArchivedChange = function handleSelectAllArchivedChange(e) {
+    var checked = e.target.checked;
+    setSelectAllArchived(checked);
+    var updatedArchived = archivedOrders.map(function (order) {
+      return _objectSpread(_objectSpread({}, order), {}, {
+        selected: checked
+      });
+    });
+    setArchivedOrders(updatedArchived);
+    setSelectedArchivedOrders(checked ? updatedArchived.map(function (o) {
+      return o.id;
+    }) : []);
+  };
+  var handleRestoreAll = function handleRestoreAll() {
+    if (selectedArchivedOrders.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].warning("Please select at least one order to restore");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
+      title: "Are you sure you want to restore ".concat(selectedArchivedOrders.length, " selected order(s)?"),
+      onOk: function onOk() {
+        Promise.all(selectedArchivedOrders.map(function (id) {
+          return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/").concat(id, "/restore"), {}, {
+            headers: {
+              Authorization: "Bearer ".concat(localStorage.getItem("token"))
+            }
+          });
+        })).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Selected orders restored successfully");
+          fetchOrders();
+          setSelectedArchivedOrders([]);
+          setSelectAllArchived(false);
+        })["catch"](function (err) {
+          return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore some orders");
+        });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
   var mainColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          checked: record.selected,
+          onChange: function onChange() {
+            return handleActiveCheckboxChange(record.id);
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
           onClick: function onClick() {
             return handleEdit(record);
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
           onClick: function onClick() {
             return handleArchive(record);
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
           onClick: function onClick() {
             return handleView(record);
           }
@@ -184880,12 +185547,23 @@ var OrderManagement = function OrderManagement() {
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-        type: "link",
-        onClick: function onClick() {
-          return handleRestore(record.id);
-        },
-        children: "Restore"
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          checked: record.selected,
+          onChange: function onChange() {
+            return handleArchivedCheckboxChange(record.id);
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          type: "link",
+          onClick: function onClick() {
+            return handleRestore(record.id);
+          },
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {
+            style: {
+              fontSize: "18px"
+            }
+          })
+        })]
       });
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
@@ -184894,7 +185572,7 @@ var OrderManagement = function OrderManagement() {
     setOpenEditModal(true);
   };
   var handleArchive = function handleArchive(record) {
-    antd__WEBPACK_IMPORTED_MODULE_14__["default"].confirm({
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
       title: "Are you sure you want to archive this order?",
       onOk: function onOk() {
         axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/").concat(record.id, "/archive"), {}, {
@@ -184908,6 +185586,16 @@ var OrderManagement = function OrderManagement() {
           antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive order");
           console.error(err);
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
       }
     });
   };
@@ -184969,14 +185657,14 @@ var OrderManagement = function OrderManagement() {
           marginBottom: "16px"
         },
         children: "Order Summary"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
         dataSource: order_details,
         columns: [{
           title: "Product",
           render: function render(detail) {
             var _detail$product2, _detail$product3;
-            return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
+            return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
                 src: (_detail$product2 = detail.product) !== null && _detail$product2 !== void 0 && _detail$product2.main_image ? "http://localhost:8000/storage/".concat(detail.product.main_image) : "https://via.placeholder.com/50",
                 width: 50,
                 preview: false
@@ -185008,17 +185696,17 @@ var OrderManagement = function OrderManagement() {
         style: {
           marginBottom: "16px"
         }
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
         bordered: true,
         size: "small",
         column: 1,
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_17__["default"].Item, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_19__["default"].Item, {
           label: "Sub Total",
           children: ["\u20B1", subtotal.toLocaleString()]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_17__["default"].Item, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_19__["default"].Item, {
           label: "Delivery Charge",
           children: ["\u20B1", parseFloat(deliveryCharge).toLocaleString()]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"].Item, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"].Item, {
           label: "Total Amount",
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
             strong: true,
@@ -185031,28 +185719,28 @@ var OrderManagement = function OrderManagement() {
           margin: "24px 0 16px"
         },
         children: "Customer Details"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
         align: "middle",
         gutter: [16, 16],
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_21__["default"], {
           span: 4,
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"], {
             src: (profile === null || profile === void 0 ? void 0 : profile.profile_image) || "https://via.placeholder.com/50",
             size: 50
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_21__["default"], {
           span: 20,
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
             bordered: true,
             size: "small",
             column: 1,
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"].Item, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"].Item, {
               label: "Username",
               children: (profile === null || profile === void 0 || (_profile$user = profile.user) === null || _profile$user === void 0 ? void 0 : _profile$user.username) || "N/A"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"].Item, {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"].Item, {
               label: "Email",
               children: (profile === null || profile === void 0 || (_profile$user2 = profile.user) === null || _profile$user2 === void 0 ? void 0 : _profile$user2.email) || "N/A"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"].Item, {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"].Item, {
               label: "Phone",
               children: (shipping === null || shipping === void 0 || (_shipping$address = shipping.address) === null || _shipping$address === void 0 ? void 0 : _shipping$address.phone) || "N/A"
             })]
@@ -185064,17 +185752,17 @@ var OrderManagement = function OrderManagement() {
           margin: "24px 0 16px"
         },
         children: "Payment and Shipping"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
         bordered: true,
         size: "small",
         column: 1,
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"].Item, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"].Item, {
           label: "Payment Method",
           children: (shipping === null || shipping === void 0 || (_shipping$payment_met = shipping.payment_method) === null || _shipping$payment_met === void 0 ? void 0 : _shipping$payment_met.name) || "Unknown Payment Method"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"].Item, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"].Item, {
           label: "Shipping Method",
           children: (shipping === null || shipping === void 0 || (_shipping$shipping_me = shipping.shipping_method) === null || _shipping$shipping_me === void 0 ? void 0 : _shipping$shipping_me.name) || "N/A"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"].Item, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"].Item, {
           label: "Tracking Number",
           children: (shipping === null || shipping === void 0 ? void 0 : shipping.tracking_number) || "Not Available"
         })]
@@ -185085,6 +185773,11 @@ var OrderManagement = function OrderManagement() {
     var _order$order_status;
     var lowerSearch = searchText.toLowerCase();
     return order.id.toString().includes(lowerSearch) || order.profile && "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").toLowerCase().includes(lowerSearch) || ((_order$order_status = order.order_status) === null || _order$order_status === void 0 ? void 0 : _order$order_status.toLowerCase().includes(lowerSearch));
+  });
+  var filteredArchivedOrders = archivedOrders.filter(function (order) {
+    var _order$order_status2;
+    var lowerSearch = searchText.toLowerCase();
+    return order.id.toString().includes(lowerSearch) || order.profile && "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").toLowerCase().includes(lowerSearch) || ((_order$order_status2 = order.order_status) === null || _order$order_status2 === void 0 ? void 0 : _order$order_status2.toLowerCase().includes(lowerSearch));
   });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
@@ -185112,24 +185805,44 @@ var OrderManagement = function OrderManagement() {
             alignItems: "center",
             marginBottom: 16
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Search, {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            style: {
+              display: "flex",
+              alignItems: "center"
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Search, {
               placeholder: "Search orders by ID, customer, or status",
               allowClear: true,
               onChange: function onChange(e) {
                 return setSearchText(e.target.value);
               },
               style: {
-                width: 300
+                width: 300,
+                marginRight: 16
               }
-            })
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+              checked: selectAllActive,
+              onChange: handleSelectAllActiveChange,
+              children: "Select All"
+            }), (selectAllActive || selectedActiveOrders.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+              type: "link",
+              onClick: handleArchiveAll,
+              style: {
+                marginLeft: 8
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                style: {
+                  fontSize: "18px"
+                }
+              }), selectedActiveOrders.length > 0 && " (".concat(selectedActiveOrders.length, ")")]
+            })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
             style: {
               display: "flex",
               gap: 8,
               alignItems: "center"
             },
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
               type: "default",
               onClick: function onClick() {
                 return setOpenArchiveModal(true);
@@ -185137,7 +185850,7 @@ var OrderManagement = function OrderManagement() {
               children: "Archived Orders"
             })
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
           columns: mainColumns,
           dataSource: filteredOrders,
           rowKey: "id",
@@ -185146,31 +185859,70 @@ var OrderManagement = function OrderManagement() {
           }
         })]
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
       title: "Archived Orders",
       open: openArchiveModal,
       onCancel: function onCancel() {
         return setOpenArchiveModal(false);
       },
       width: 1200,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-        onClick: function onClick() {
-          return setOpenArchiveModal(false);
+      footer: [],
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          marginBottom: 16
         },
-        children: "Close"
-      }, "close")],
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          checked: selectAllArchived,
+          onChange: handleSelectAllArchivedChange,
+          style: {
+            marginRight: 16
+          },
+          children: "Select All"
+        }), (selectAllArchived || selectedArchivedOrders.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          type: "link",
+          onClick: handleRestoreAll,
+          style: {
+            marginRight: 8
+          },
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {
+            style: {
+              fontSize: "18px"
+            }
+          }), "Restore", selectedArchivedOrders.length > 0 && " (".concat(selectedArchivedOrders.length, ")")]
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
         columns: archiveColumns,
-        dataSource: archivedOrders,
-        rowKey: "id"
-      })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+        dataSource: filteredArchivedOrders,
+        rowKey: "id",
+        scroll: {
+          x: 1200
+        }
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
       title: "Edit Order",
       open: openEditModal,
       onCancel: function onCancel() {
         return setOpenEditModal(false);
       },
       onOk: handleUpdate,
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+        onClick: function onClick() {
+          return setOpenEditModal(false);
+        },
+        style: {
+          width: "131px"
+        },
+        children: "Cancel"
+      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+        type: "primary",
+        onClick: handleUpdate,
+        style: {
+          width: "131px"
+        },
+        children: "Update Order"
+      }, "save")],
       children: selectedOrder && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
           children: ["Order ID: ", selectedOrder.id]
@@ -185187,19 +185939,16 @@ var OrderManagement = function OrderManagement() {
           },
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
             value: "pending",
-            children: "To Pay"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-            value: "processing",
-            children: "To Ship"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-            value: "shipped",
-            children: "To Receive"
+            children: "Pending"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
             value: "completed",
             children: "Completed"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
             value: "cancelled",
             children: "Cancelled"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+            value: "processing",
+            children: "Processing"
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
           value: ((_selectedOrder$shippi = selectedOrder.shipping) === null || _selectedOrder$shippi === void 0 ? void 0 : _selectedOrder$shippi.tracking_number) || "",
@@ -185213,15 +185962,20 @@ var OrderManagement = function OrderManagement() {
           placeholder: "Tracking Number"
         })]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
       title: "Order #".concat((selectedOrder === null || selectedOrder === void 0 ? void 0 : selectedOrder.id) || "", " Details"),
       open: openViewModal,
       onCancel: function onCancel() {
         return setOpenViewModal(false);
       },
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
         onClick: function onClick() {
           return setOpenViewModal(false);
+        },
+        style: {
+          width: "131px",
+          backgroundColor: "#f5222d",
+          color: "#fff"
         },
         children: "Close"
       }, "close")],
@@ -185251,17 +186005,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/row/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/col/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/upload/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/PlusOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UploadOutlined.js");
@@ -185300,7 +186054,6 @@ var Option = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Option;
 var TextArea = antd__WEBPACK_IMPORTED_MODULE_5__["default"].TextArea,
   Search = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Search;
 var ProductManagement = function ProductManagement() {
-  // Modal and form states
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState2 = _slicedToArray(_useState, 2),
     openAddModal = _useState2[0],
@@ -185318,73 +186071,73 @@ var ProductManagement = function ProductManagement() {
     setSearchText = _useState6[1];
   var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState8 = _slicedToArray(_useState7, 2),
-    selectAll = _useState8[0],
-    setSelectAll = _useState8[1];
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    selectAllActive = _useState8[0],
+    setSelectAllActive = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState10 = _slicedToArray(_useState9, 2),
-    selectedProducts = _useState10[0],
-    setSelectedProducts = _useState10[1];
+    selectAllArchived = _useState10[0],
+    setSelectAllArchived = _useState10[1];
   var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState12 = _slicedToArray(_useState11, 2),
-    products = _useState12[0],
-    setProducts = _useState12[1];
+    selectedActiveProducts = _useState12[0],
+    setSelectedActiveProducts = _useState12[1];
   var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState14 = _slicedToArray(_useState13, 2),
-    archivedProducts = _useState14[0],
-    setArchivedProducts = _useState14[1];
-  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    selectedArchivedProducts = _useState14[0],
+    setSelectedArchivedProducts = _useState14[1];
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState16 = _slicedToArray(_useState15, 2),
-    currentProduct = _useState16[0],
-    setCurrentProduct = _useState16[1];
-
-  // Image states for main and side images
-  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    products = _useState16[0],
+    setProducts = _useState16[1];
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState18 = _slicedToArray(_useState17, 2),
-    mainImageFile = _useState18[0],
-    setMainImageFile = _useState18[1];
-  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    archivedProducts = _useState18[0],
+    setArchivedProducts = _useState18[1];
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState20 = _slicedToArray(_useState19, 2),
-    mainImagePreview = _useState20[0],
-    setMainImagePreview = _useState20[1];
-  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([null, null, null]),
+    currentProduct = _useState20[0],
+    setCurrentProduct = _useState20[1];
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState22 = _slicedToArray(_useState21, 2),
-    sideImagesFiles = _useState22[0],
-    setSideImagesFiles = _useState22[1];
-  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(["", "", ""]),
+    mainImageFile = _useState22[0],
+    setMainImageFile = _useState22[1];
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
     _useState24 = _slicedToArray(_useState23, 2),
-    sideImagesPreview = _useState24[0],
-    setSideImagesPreview = _useState24[1];
-
-  // Dynamic options for select fields
-  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    mainImagePreview = _useState24[0],
+    setMainImagePreview = _useState24[1];
+  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([null, null, null]),
     _useState26 = _slicedToArray(_useState25, 2),
-    brands = _useState26[0],
-    setBrands = _useState26[1];
-  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    sideImagesFiles = _useState26[0],
+    setSideImagesFiles = _useState26[1];
+  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(["", "", ""]),
     _useState28 = _slicedToArray(_useState27, 2),
-    categories = _useState28[0],
-    setCategories = _useState28[1];
+    sideImagesPreview = _useState28[0],
+    setSideImagesPreview = _useState28[1];
   var _useState29 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState30 = _slicedToArray(_useState29, 2),
-    movements = _useState30[0],
-    setMovements = _useState30[1];
+    brands = _useState30[0],
+    setBrands = _useState30[1];
   var _useState31 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState32 = _slicedToArray(_useState31, 2),
-    strapMaterials = _useState32[0],
-    setStrapMaterials = _useState32[1];
+    categories = _useState32[0],
+    setCategories = _useState32[1];
   var _useState33 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState34 = _slicedToArray(_useState33, 2),
-    genders = _useState34[0],
-    setGenders = _useState34[1];
+    movements = _useState34[0],
+    setMovements = _useState34[1];
   var _useState35 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState36 = _slicedToArray(_useState35, 2),
-    sizesOptions = _useState36[0],
-    setSizesOptions = _useState36[1];
-
-  // Base URL for images
+    strapMaterials = _useState36[0],
+    setStrapMaterials = _useState36[1];
+  var _useState37 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState38 = _slicedToArray(_useState37, 2),
+    genders = _useState38[0],
+    setGenders = _useState38[1];
+  var _useState39 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState40 = _slicedToArray(_useState39, 2),
+    sizesOptions = _useState40[0],
+    setSizesOptions = _useState40[1];
   var imageBaseURL = "http://localhost:8000/storage/";
-
-  // Fetch products from API
   var fetchProducts = function fetchProducts() {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("http://localhost:8000/api/products", {
       headers: {
@@ -185400,21 +186153,21 @@ var ProductManagement = function ProductManagement() {
       return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching products");
     });
   };
-
-  // Fetch archived products
   var fetchArchivedProducts = function fetchArchivedProducts() {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("http://localhost:8000/api/products?archived=1", {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      return setArchivedProducts(res.data);
+      setArchivedProducts(res.data.map(function (product) {
+        return _objectSpread(_objectSpread({}, product), {}, {
+          selected: false
+        });
+      }));
     })["catch"](function (err) {
       return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Error fetching archived products");
     });
   };
-
-  // Fetch sub-category options dynamically based on type
   var fetchSubCategoryOptions = function fetchSubCategoryOptions(type, setter) {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("http://localhost:8000/api/sub-categories?type=".concat(type), {
       headers: {
@@ -185445,15 +186198,15 @@ var ProductManagement = function ProductManagement() {
     }];
   };
 
-  // Checkbox handling for individual products
-  var handleCheckboxChange = function handleCheckboxChange(productId) {
+  // Handlers for active products
+  var handleActiveCheckboxChange = function handleActiveCheckboxChange(productId) {
     var updatedProducts = products.map(function (product) {
       return product.id === productId ? _objectSpread(_objectSpread({}, product), {}, {
         selected: !product.selected
       }) : product;
     });
     setProducts(updatedProducts);
-    setSelectedProducts(updatedProducts.filter(function (p) {
+    setSelectedActiveProducts(updatedProducts.filter(function (p) {
       return p.selected;
     }).map(function (p) {
       return p.id;
@@ -185461,43 +186214,142 @@ var ProductManagement = function ProductManagement() {
     var allSelected = updatedProducts.every(function (p) {
       return p.selected;
     });
-    setSelectAll(allSelected);
+    setSelectAllActive(allSelected);
   };
-
-  // Select All checkbox handling
-  var handleSelectAllChange = function handleSelectAllChange(e) {
+  var handleSelectAllActiveChange = function handleSelectAllActiveChange(e) {
     var checked = e.target.checked;
-    setSelectAll(checked);
+    setSelectAllActive(checked);
     var updatedProducts = products.map(function (product) {
       return _objectSpread(_objectSpread({}, product), {}, {
         selected: checked
       });
     });
     setProducts(updatedProducts);
-    setSelectedProducts(checked ? updatedProducts.map(function (p) {
+    setSelectedActiveProducts(checked ? updatedProducts.map(function (p) {
       return p.id;
     }) : []);
   };
+  var handleArchiveAll = function handleArchiveAll() {
+    if (selectedActiveProducts.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].warning("Please select at least one product to archive");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
+      title: "Are you sure you want to archive ".concat(selectedActiveProducts.length, " selected product(s)?"),
+      onOk: function onOk() {
+        Promise.all(selectedActiveProducts.map(function (id) {
+          return axios__WEBPACK_IMPORTED_MODULE_7__["default"]["delete"]("http://localhost:8000/api/products/".concat(id), {
+            headers: {
+              Authorization: "Bearer ".concat(localStorage.getItem("token"))
+            }
+          });
+        })).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Selected products archived successfully");
+          fetchProducts();
+          setSelectedActiveProducts([]);
+          setSelectAllActive(false);
+        })["catch"](function (err) {
+          return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive some products");
+        });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
 
-  // Table columns for active products
+  // Handlers for archived products
+  var handleArchivedCheckboxChange = function handleArchivedCheckboxChange(productId) {
+    var updatedArchived = archivedProducts.map(function (product) {
+      return product.id === productId ? _objectSpread(_objectSpread({}, product), {}, {
+        selected: !product.selected
+      }) : product;
+    });
+    setArchivedProducts(updatedArchived);
+    setSelectedArchivedProducts(updatedArchived.filter(function (p) {
+      return p.selected;
+    }).map(function (p) {
+      return p.id;
+    }));
+    var allSelected = updatedArchived.every(function (p) {
+      return p.selected;
+    });
+    setSelectAllArchived(allSelected);
+  };
+  var handleSelectAllArchivedChange = function handleSelectAllArchivedChange(e) {
+    var checked = e.target.checked;
+    setSelectAllArchived(checked);
+    var updatedArchived = archivedProducts.map(function (product) {
+      return _objectSpread(_objectSpread({}, product), {}, {
+        selected: checked
+      });
+    });
+    setArchivedProducts(updatedArchived);
+    setSelectedArchivedProducts(checked ? updatedArchived.map(function (p) {
+      return p.id;
+    }) : []);
+  };
+  var handleRestoreAll = function handleRestoreAll() {
+    if (selectedArchivedProducts.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].warning("Please select at least one product to restore");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
+      title: "Are you sure you want to restore ".concat(selectedArchivedProducts.length, " selected product(s)?"),
+      onOk: function onOk() {
+        Promise.all(selectedArchivedProducts.map(function (id) {
+          return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("http://localhost:8000/api/products/".concat(id, "/restore"), {}, {
+            headers: {
+              Authorization: "Bearer ".concat(localStorage.getItem("token"))
+            }
+          });
+        })).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Selected products restored successfully");
+          fetchArchivedProducts();
+          fetchProducts();
+          setSelectedArchivedProducts([]);
+          setSelectAllArchived(false);
+        })["catch"](function (err) {
+          return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore some products");
+        });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
   var mainColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
           checked: record.selected,
           onChange: function onChange() {
-            return handleCheckboxChange(record.id);
+            return handleActiveCheckboxChange(record.id);
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
           onClick: function onClick() {
             return handleEdit(record);
           },
           style: {
             fontSize: "16px"
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
           onClick: function onClick() {
             return handleArchive(record);
           },
@@ -185610,21 +186462,27 @@ var ProductManagement = function ProductManagement() {
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-        type: "link",
-        onClick: function onClick() {
-          return handleRestore(record.id);
-        },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
-          style: {
-            fontSize: "18px"
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          checked: record.selected,
+          onChange: function onChange() {
+            return handleArchivedCheckboxChange(record.id);
           }
-        })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+          type: "link",
+          onClick: function onClick() {
+            return handleRestore(record.id);
+          },
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
+            style: {
+              fontSize: "18px"
+            }
+          })
+        })]
       });
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
   var handleEdit = function handleEdit(record) {
-    console.log("Edit product:", record);
     setCurrentProduct(record);
     form.setFieldsValue({
       id: record.id,
@@ -185644,7 +186502,7 @@ var ProductManagement = function ProductManagement() {
     setOpenAddModal(true);
   };
   var handleArchive = function handleArchive(record) {
-    antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
       title: "Are you sure you want to archive this product?",
       onOk: function onOk() {
         axios__WEBPACK_IMPORTED_MODULE_7__["default"]["delete"]("http://localhost:8000/api/products/".concat(record.id), {
@@ -185681,41 +186539,6 @@ var ProductManagement = function ProductManagement() {
       fetchProducts();
     })["catch"](function (err) {
       return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore product");
-    });
-  };
-  var handleArchiveAll = function handleArchiveAll() {
-    if (selectedProducts.length === 0) {
-      antd__WEBPACK_IMPORTED_MODULE_8__["default"].warning("Please select at least one product to archive");
-      return;
-    }
-    antd__WEBPACK_IMPORTED_MODULE_15__["default"].confirm({
-      title: "Are you sure you want to archive ".concat(selectedProducts.length, " selected product(s)?"),
-      onOk: function onOk() {
-        Promise.all(selectedProducts.map(function (id) {
-          return axios__WEBPACK_IMPORTED_MODULE_7__["default"]["delete"]("http://localhost:8000/api/products/".concat(id), {
-            headers: {
-              Authorization: "Bearer ".concat(localStorage.getItem("token"))
-            }
-          });
-        })).then(function () {
-          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Selected products archived successfully");
-          fetchProducts();
-          setSelectedProducts([]);
-          setSelectAll(false);
-        })["catch"](function (err) {
-          return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive some products");
-        });
-      },
-      okButtonProps: {
-        style: {
-          width: "80px"
-        }
-      },
-      cancelButtonProps: {
-        style: {
-          width: "80px"
-        }
-      }
     });
   };
   var handleAdd = function handleAdd() {
@@ -185820,6 +186643,15 @@ var ProductManagement = function ProductManagement() {
       return c.id === product.category_id;
     })) === null || _categories$find === void 0 ? void 0 : _categories$find.name.toLowerCase().includes(lower));
   });
+  var filteredArchivedProducts = archivedProducts.filter(function (product) {
+    var _brands$find2, _categories$find2;
+    var lower = searchText.toLowerCase();
+    return product.product_name.toLowerCase().includes(lower) || ((_brands$find2 = brands.find(function (b) {
+      return b.id === product.brand_id;
+    })) === null || _brands$find2 === void 0 ? void 0 : _brands$find2.name.toLowerCase().includes(lower)) || ((_categories$find2 = categories.find(function (c) {
+      return c.id === product.category_id;
+    })) === null || _categories$find2 === void 0 ? void 0 : _categories$find2.name.toLowerCase().includes(lower));
+  });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
       width: 256,
@@ -185862,11 +186694,11 @@ var ProductManagement = function ProductManagement() {
                 width: 200,
                 marginRight: 8
               }
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-              checked: selectAll,
-              onChange: handleSelectAllChange,
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+              checked: selectAllActive,
+              onChange: handleSelectAllActiveChange,
               children: "Select All"
-            }), (selectAll || selectedProducts.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            }), (selectAllActive || selectedActiveProducts.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
               type: "link",
               onClick: handleArchiveAll,
               style: {
@@ -185876,16 +186708,16 @@ var ProductManagement = function ProductManagement() {
                 style: {
                   fontSize: "18px"
                 }
-              }), selectedProducts.length > 0 && " (".concat(selectedProducts.length, ")")]
+              }), selectedActiveProducts.length > 0 && " (".concat(selectedActiveProducts.length, ")")]
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             style: {
               flexDirection: "column",
               display: "flex"
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
               type: "default",
-              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
+              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {}),
               onClick: function onClick() {
                 return setOpenArchiveModal(true);
               },
@@ -185894,7 +186726,7 @@ var ProductManagement = function ProductManagement() {
                 width: "131px"
               },
               children: "Archived View"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
               type: "primary",
               icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {}),
               onClick: handleAdd,
@@ -185915,7 +186747,7 @@ var ProductManagement = function ProductManagement() {
           rowKey: "id"
         })]
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
       title: "Add / Edit Product",
       centered: true,
       open: openAddModal,
@@ -185923,7 +186755,7 @@ var ProductManagement = function ProductManagement() {
         return setOpenAddModal(false);
       },
       width: 1000,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
         onClick: function onClick() {
           return setOpenAddModal(false);
         },
@@ -185932,7 +186764,7 @@ var ProductManagement = function ProductManagement() {
           width: "90px"
         },
         children: "Cancel"
-      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
         type: "primary",
         onClick: handleSave,
         children: "Save Product"
@@ -186110,7 +186942,7 @@ var ProductManagement = function ProductManagement() {
                     }))
                   }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
                     span: 4,
-                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                       type: "link",
                       onClick: function onClick() {
                         return remove(name);
@@ -186120,7 +186952,7 @@ var ProductManagement = function ProductManagement() {
                   })]
                 }, key);
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                   type: "dashed",
                   onClick: function onClick() {
                     return add();
@@ -186151,7 +186983,7 @@ var ProductManagement = function ProductManagement() {
                 onChange: function onChange(info) {
                   return handleImageUpload(info, "main");
                 },
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                   icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_22__["default"], {}),
                   children: "Upload Main Image"
                 })
@@ -186182,7 +187014,7 @@ var ProductManagement = function ProductManagement() {
                   onChange: function onChange(info) {
                     return handleImageUpload(info, "side", index);
                   },
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                     icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_22__["default"], {}),
                     children: "Upload"
                   })
@@ -186203,7 +187035,7 @@ var ProductManagement = function ProductManagement() {
           })
         })]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
       title: "Archived Products",
       centered: true,
       open: openArchiveModal,
@@ -186212,14 +187044,39 @@ var ProductManagement = function ProductManagement() {
       },
       width: 1200,
       footer: [],
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          marginBottom: 16
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          checked: selectAllArchived,
+          onChange: handleSelectAllArchivedChange,
+          style: {
+            marginRight: 16
+          },
+          children: "Select All"
+        }), (selectAllArchived || selectedArchivedProducts.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+          type: "link",
+          onClick: handleRestoreAll,
+          style: {
+            marginRight: 8
+          },
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
+            style: {
+              fontSize: "18px"
+            }
+          }), "Restore", selectedArchivedProducts.length > 0 && " (".concat(selectedArchivedProducts.length, ")")]
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
         columns: archiveColumns,
-        dataSource: archivedProducts,
+        dataSource: filteredArchivedProducts,
         scroll: {
           x: 1500
         },
         pagination: false
-      })
+      })]
     })]
   });
 };

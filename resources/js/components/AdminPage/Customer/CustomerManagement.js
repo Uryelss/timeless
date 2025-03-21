@@ -28,7 +28,12 @@ const CustomerManagement = () => {
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectAll, setSelectAll] = useState(false);
+    const [selectAllActive, setSelectAllActive] = useState(false);
+    const [selectAllArchived, setSelectAllArchived] = useState(false);
+    const [selectedActiveCustomers, setSelectedActiveCustomers] = useState([]);
+    const [selectedArchivedCustomers, setSelectedArchivedCustomers] = useState(
+        []
+    );
     const [editingCustomer, setEditingCustomer] = useState(null);
     const [form] = Form.useForm();
 
@@ -42,8 +47,12 @@ const CustomerManagement = () => {
                 },
             })
             .then((res) => {
-                console.log("Fetched customers:", res.data);
-                setCustomers(res.data);
+                setCustomers(
+                    res.data.map((customer) => ({
+                        ...customer,
+                        selected: false,
+                    }))
+                );
             })
             .catch((err) => {
                 message.error("Error fetching customers");
@@ -59,8 +68,12 @@ const CustomerManagement = () => {
                 },
             })
             .then((res) => {
-                console.log("Fetched archived customers:", res.data);
-                setArchivedCustomers(res.data);
+                setArchivedCustomers(
+                    res.data.map((customer) => ({
+                        ...customer,
+                        selected: false,
+                    }))
+                );
             })
             .catch((err) => {
                 message.error("Error fetching archived customers");
@@ -76,13 +89,147 @@ const CustomerManagement = () => {
         if (openArchiveModal) fetchArchivedCustomers();
     }, [openArchiveModal]);
 
+    const handleActiveCheckboxChange = (customerId) => {
+        const updatedCustomers = customers.map((customer) =>
+            customer.id === customerId
+                ? { ...customer, selected: !customer.selected }
+                : customer
+        );
+        setCustomers(updatedCustomers);
+        setSelectedActiveCustomers(
+            updatedCustomers.filter((c) => c.selected).map((c) => c.id)
+        );
+        const allSelected = updatedCustomers.every((c) => c.selected);
+        setSelectAllActive(allSelected);
+    };
+
+    const handleSelectAllActiveChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAllActive(checked);
+        const updatedCustomers = customers.map((customer) => ({
+            ...customer,
+            selected: checked,
+        }));
+        setCustomers(updatedCustomers);
+        setSelectedActiveCustomers(
+            checked ? updatedCustomers.map((c) => c.id) : []
+        );
+    };
+
+    const handleArchiveAll = () => {
+        if (selectedActiveCustomers.length === 0) {
+            message.warning("Please select at least one customer to archive");
+            return;
+        }
+        Modal.confirm({
+            title: `Are you sure you want to archive ${selectedActiveCustomers.length} selected customer(s)?`,
+            onOk: () => {
+                Promise.all(
+                    selectedActiveCustomers.map((id) =>
+                        axios.delete(`${API_URL}/${id}`, {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem(
+                                    "token"
+                                )}`,
+                            },
+                        })
+                    )
+                )
+                    .then(() => {
+                        message.success(
+                            "Selected customers archived successfully"
+                        );
+                        fetchCustomers();
+                        setSelectedActiveCustomers([]);
+                        setSelectAllActive(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to archive some customers")
+                    );
+            },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
+        });
+    };
+
+    const handleArchivedCheckboxChange = (customerId) => {
+        const updatedArchived = archivedCustomers.map((customer) =>
+            customer.id === customerId
+                ? { ...customer, selected: !customer.selected }
+                : customer
+        );
+        setArchivedCustomers(updatedArchived);
+        setSelectedArchivedCustomers(
+            updatedArchived.filter((c) => c.selected).map((c) => c.id)
+        );
+        const allSelected = updatedArchived.every((c) => c.selected);
+        setSelectAllArchived(allSelected);
+    };
+
+    const handleSelectAllArchivedChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAllArchived(checked);
+        const updatedArchived = archivedCustomers.map((customer) => ({
+            ...customer,
+            selected: checked,
+        }));
+        setArchivedCustomers(updatedArchived);
+        setSelectedArchivedCustomers(
+            checked ? updatedArchived.map((c) => c.id) : []
+        );
+    };
+
+    const handleRestoreAll = () => {
+        if (selectedArchivedCustomers.length === 0) {
+            message.warning("Please select at least one customer to restore");
+            return;
+        }
+        Modal.confirm({
+            title: `Are you sure you want to restore ${selectedArchivedCustomers.length} selected customer(s)?`,
+            onOk: () => {
+                Promise.all(
+                    selectedArchivedCustomers.map((id) =>
+                        axios.post(
+                            `${API_URL}/${id}/restore`,
+                            {},
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                    )
+                )
+                    .then(() => {
+                        message.success(
+                            "Selected customers restored successfully"
+                        );
+                        fetchArchivedCustomers();
+                        fetchCustomers();
+                        setSelectedArchivedCustomers([]);
+                        setSelectAllArchived(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to restore some customers")
+                    );
+            },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
+        });
+    };
+
     const mainColumns = [
         {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
                 <Space>
-                    <Checkbox />
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleActiveCheckboxChange(record.id)}
+                    />
                     <EditOutlined
                         onClick={() => handleEdit(record)}
                         style={{ fontSize: "16px" }}
@@ -104,7 +251,7 @@ const CustomerManagement = () => {
                         image || "https://via.placeholder.com/100?text=Customer"
                     }
                     alt="customer"
-                    style={{ width: 50 }}
+                    style={{ width: "60px", height: "70px" }}
                 />
             ),
         },
@@ -151,9 +298,18 @@ const CustomerManagement = () => {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
-                <Button type="link" onClick={() => handleRestore(record.id)}>
-                    <UndoOutlined style={{ fontSize: "18px" }} />
-                </Button>
+                <Space>
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleArchivedCheckboxChange(record.id)}
+                    />
+                    <Button
+                        type="link"
+                        onClick={() => handleRestore(record.id)}
+                    >
+                        <UndoOutlined style={{ fontSize: "18px" }} />
+                    </Button>
+                </Space>
             ),
         },
         ...mainColumns.slice(1),
@@ -168,7 +324,6 @@ const CustomerManagement = () => {
             suffix: record.suffix,
             gender: record.gender,
             date_of_birth: record.date_of_birth,
-            phone: record.phone, // Populate phone field
         });
         setOpenEditModal(true);
     };
@@ -194,6 +349,8 @@ const CustomerManagement = () => {
                         console.error(err);
                     });
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
@@ -263,6 +420,23 @@ const CustomerManagement = () => {
         );
     });
 
+    const filteredArchivedCustomers = archivedCustomers.filter((customer) => {
+        const lower = searchQuery.toLowerCase();
+        const fullName =
+            customer.customer_name ||
+            `${customer.first_name} ${
+                customer.middle_name
+                    ? customer.middle_name.charAt(0).toUpperCase() + ". "
+                    : ""
+            }${customer.last_name}`;
+        return (
+            fullName.toLowerCase().includes(lower) ||
+            (customer.email && customer.email.toLowerCase().includes(lower)) ||
+            (customer.phone && customer.phone.toLowerCase().includes(lower)) ||
+            (customer.address && customer.address.toLowerCase().includes(lower))
+        );
+    });
+
     return (
         <Layout>
             <Sider width={256} style={{ minHeight: "100vh" }}>
@@ -294,17 +468,33 @@ const CustomerManagement = () => {
                                 style={{ width: 300, marginRight: 16 }}
                             />
                             <Checkbox
-                                onChange={(e) => setSelectAll(e.target.checked)}
+                                checked={selectAllActive}
+                                onChange={handleSelectAllActiveChange}
                                 style={{ marginLeft: 16 }}
                             >
                                 Select All
                             </Checkbox>
+                            {(selectAllActive ||
+                                selectedActiveCustomers.length > 0) && (
+                                <Button
+                                    type="link"
+                                    onClick={handleArchiveAll}
+                                    style={{ marginLeft: 8 }}
+                                >
+                                    <FolderOpenOutlined
+                                        style={{ fontSize: "18px" }}
+                                    />
+                                    {selectedActiveCustomers.length > 0 &&
+                                        ` (${selectedActiveCustomers.length})`}
+                                </Button>
+                            )}
                         </div>
                         <Button
                             type="default"
+                            icon={<DeleteOutlined />}
                             onClick={() => setOpenArchiveModal(true)}
+                            style={{ marginRight: 8, width: "131px" }}
                         >
-                            <DeleteOutlined style={{ marginRight: 4 }} />{" "}
                             Archived View
                         </Button>
                     </div>
@@ -322,18 +512,39 @@ const CustomerManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1200}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
             >
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: 16,
+                    }}
+                >
+                    <Checkbox
+                        checked={selectAllArchived}
+                        onChange={handleSelectAllArchivedChange}
+                        style={{ marginRight: 16 }}
+                    >
+                        Select All
+                    </Checkbox>
+                    {(selectAllArchived ||
+                        selectedArchivedCustomers.length > 0) && (
+                        <Button
+                            type="link"
+                            onClick={handleRestoreAll}
+                            style={{ marginRight: 8 }}
+                        >
+                            <UndoOutlined style={{ fontSize: "18px" }} />
+                            Restore
+                            {selectedArchivedCustomers.length > 0 &&
+                                ` (${selectedArchivedCustomers.length})`}
+                        </Button>
+                    )}
+                </div>
                 <Table
                     columns={archiveColumns}
-                    dataSource={archivedCustomers}
+                    dataSource={filteredArchivedCustomers}
                     rowKey="id"
                     pagination={false}
                     scroll={{ x: 1200 }}
@@ -354,10 +565,16 @@ const CustomerManagement = () => {
                             setOpenEditModal(false);
                             setEditingCustomer(null);
                         }}
+                        style={{ width: "131px" }}
                     >
                         Cancel
                     </Button>,
-                    <Button key="save" type="primary" onClick={handleUpdate}>
+                    <Button
+                        key="save"
+                        type="primary"
+                        onClick={handleUpdate}
+                        style={{ width: "131px" }}
+                    >
                         Update Customer
                     </Button>,
                 ]}
@@ -399,12 +616,9 @@ const CustomerManagement = () => {
                     <Form.Item name="date_of_birth" label="Date of Birth">
                         <Input placeholder="YYYY-MM-DD" />
                     </Form.Item>
-                    <Form.Item name="phone" label="Phone">
-                        <Input placeholder="Enter phone number" />
-                    </Form.Item>
                     <Form.Item label="Note">
                         <span>
-                            Full address editing requires separate address
+                            Phone and Address editing requires address
                             management (not implemented here).
                         </span>
                     </Form.Item>

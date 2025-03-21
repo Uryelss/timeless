@@ -131,11 +131,10 @@ class ReviewController extends Controller
             });
 
         return response()->json([
-            'reviews' => $reviews->where('is_archived', false),
-            'archived_reviews' => $reviews->where('is_archived', true),
+            'reviews' => array_values($reviews->where('is_archived', false)->all()), // Reset keys
+            'archived_reviews' => array_values($reviews->where('is_archived', true)->all()), // Already an array, but consistent
         ]);
     }
-
     public function update(Request $request, $id)
     {
         $review = Review::findOrFail($id);
