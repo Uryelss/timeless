@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -87,5 +88,26 @@ class UserController extends Controller
         $user = User::withTrashed()->findOrFail($id);
         $user->restore();
         return response()->json(['message' => 'User restored successfully']);
+    }
+    // Fetch the authenticated user's details
+    public function getCurrentUser(Request $request)
+    {
+        Log::info("Attempting to fetch current user", ['token' => $request->bearerToken()]);
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                Log::warning("No authenticated user found");
+                return response()->json(['message' => 'User not authenticated'], 401);
+            }
+            Log::info("User found", ['username' => $user->username]);
+            return response()->json(['username' => $user->username]);
+        } catch (\Exception $e) {
+            Log::error("Error in getCurrentUser", [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            return response()->json(['message' => 'Server error', 'error' => $e->getMessage()], 500);
+        }
     }
 }

@@ -42,6 +42,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/inventory-public', [InventoryController::class, 'index'])->name('inventory.public');
     Route::get('/payment-methods', fn() => App\Models\PaymentMethod::all())->name('payment.methods');
     Route::get('/shipping-methods', fn() => App\Models\ShippingMethod::all())->name('shipping.methods');
+    Route::get('/my-purchases', [UserOrderController::class, 'myPurchases'])->name('user.orders.my_purchases');
+    Route::get('/users/me', [UserController::class, 'getCurrentUser'])->name('users.me');
 });
 
 /*
@@ -53,11 +55,13 @@ Route::middleware(['auth:api', 'check.role:user'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/orders/create', [UserOrderController::class, 'store'])->name('orders.store');
+    Route::get('/orders', [OrderController::class, 'userOrders'])->name('orders.user'); // User-specific orders
+
     Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
     Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
     Route::put('/addresses/{id}', [AddressController::class, 'update'])->name('addresses.update'); // Add this
     Route::delete('/addresses/{id}', [AddressController::class, 'destroy'])->name('addresses.destroy');
-    Route::put('/addresses/{id}/set-default', [AddressController::class, 'setDefault'])->name('addresses.set-default');
+    Route::put('/addresses/{id}/set-default', [AddressController::class, 'setDefault'])->name('addresses.set-default');;
 });
 
 /*

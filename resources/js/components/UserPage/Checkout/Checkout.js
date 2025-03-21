@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom"; // Unchanged import
 import {
     Form,
     Input,
@@ -13,9 +13,7 @@ import {
     Card,
     Image,
     Spin,
-    Modal,
 } from "antd";
-import { LockOutlined, PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 import Navbar from "../Navbar/Navbar";
 
@@ -23,14 +21,13 @@ const { Option } = Select;
 
 const CheckoutPage = () => {
     const location = useLocation();
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Unchanged usage
     const { cartItems, subtotal } = location.state || {
         cartItems: [],
         subtotal: 0,
     };
 
     const [form] = Form.useForm();
-    const [cardForm] = Form.useForm();
     const [paymentMethods, setPaymentMethods] = useState([]);
     const [shippingMethods, setShippingMethods] = useState([]);
     const [addresses, setAddresses] = useState([]);
@@ -41,7 +38,6 @@ const CheckoutPage = () => {
     const [saveInfo, setSaveInfo] = useState(false);
     const [shippingCost, setShippingCost] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [cardModalVisible, setCardModalVisible] = useState(false);
 
     const API_URL = "http://localhost:8000/api";
     const token = localStorage.getItem("token");
@@ -88,7 +84,6 @@ const CheckoutPage = () => {
         }
     }, [cartItems, navigate, token]);
 
-    // Auto-select and pre-fill default address if exists
     useEffect(() => {
         if (addresses.length > 0) {
             const def = addresses.find((addr) => addr.is_default);
@@ -117,22 +112,12 @@ const CheckoutPage = () => {
 
     const total = subtotal + shippingCost;
 
-    // Handle credit card form submission from the modal
-    const handleCardSubmit = (values) => {
-        console.log("Credit card details submitted:", values);
-        message.success("Credit/Debit Card added successfully!");
-        setCardModalVisible(false);
-        // Optionally, store or process the card details here
-    };
-
-    // Helper function to handle complete order submission.
     const handleCompleteOrder = async () => {
         if (!selectedAddressId) {
             try {
                 const values = await form.validateFields();
                 onFinish(values);
             } catch (error) {
-                // Form validation failed.
                 return;
             }
         } else {
@@ -217,24 +202,15 @@ const CheckoutPage = () => {
                     await axios.put(
                         `${API_URL}/addresses/${address_id}/set-default`,
                         {},
-                        {
-                            headers: { Authorization: `Bearer ${token}` },
-                        }
+                        { headers: { Authorization: `Bearer ${token}` } }
                     );
                     message.info("Default address updated for future orders.");
                 } else if (!saveInfo) {
                     handleAddressNotDefault();
                 }
 
-                if (paymentMethod === 2 || paymentMethod === 3) {
-                    navigate("/payment", {
-                        state: { orderId: order_id, total },
-                    });
-                } else {
-                    navigate("/order-confirmation", {
-                        state: { orderId: order_id },
-                    });
-                }
+                // Navigate to the specified path "/order-tracking/:orderId"
+                navigate(`/order-tracking/${order_id}`);
             }
         } catch (error) {
             console.error(
@@ -252,14 +228,6 @@ const CheckoutPage = () => {
     const handleAddressNotDefault = () => {
         console.log("Order used a non-default address. Not updating default.");
     };
-
-    // Determine if the selected payment method is credit/debit card based on its name.
-    const selectedPaymentMethod = paymentMethods.find(
-        (m) => m.id === paymentMethod
-    );
-    const isCreditCard =
-        selectedPaymentMethod &&
-        selectedPaymentMethod.name.toLowerCase().includes("credit");
 
     return (
         <div>
@@ -288,10 +256,7 @@ const CheckoutPage = () => {
                         >
                             {addresses.length > 0 && (
                                 <Select
-                                    style={{
-                                        width: "100%",
-                                        marginBottom: 16,
-                                    }}
+                                    style={{ width: "100%", marginBottom: 16 }}
                                     placeholder="Select an existing address"
                                     onChange={(value) => {
                                         setSelectedAddressId(value);
@@ -450,16 +415,6 @@ const CheckoutPage = () => {
                                     </Radio>
                                 ))}
                             </Radio.Group>
-                            {isCreditCard && (
-                                <Button
-                                    type="dashed"
-                                    icon={<PlusOutlined />}
-                                    onClick={() => setCardModalVisible(true)}
-                                    style={{ marginTop: 16 }}
-                                >
-                                    Add New Credit/Debit Card
-                                </Button>
-                            )}
                         </Card>
                         <Card
                             title="SHIPPING METHOD"
@@ -556,105 +511,6 @@ const CheckoutPage = () => {
                     </Col>
                 </Row>
             </div>
-
-            {/* Credit/Debit Card Modal */}
-            <Modal
-                title="Add New Credit/Debit Card"
-                visible={cardModalVisible}
-                onCancel={() => setCardModalVisible(false)}
-                footer={null}
-            >
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginBottom: 16,
-                    }}
-                >
-                    <LockOutlined
-                        style={{
-                            fontSize: "24px",
-                            color: "#52c41a",
-                            marginRight: 8,
-                        }}
-                    />
-                    <span>
-                        Your card details are protected. We are partnered with
-                        TimelessPay to ensure that your credit card details are
-                        kept safe and secure. We will never access your card
-                        info nor share your card number and CVV with anyone.
-                    </span>
-                </div>
-                <Form
-                    form={cardForm}
-                    layout="vertical"
-                    onFinish={handleCardSubmit}
-                >
-                    <Form.Item
-                        label="Card Number"
-                        name="cardNumber"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please enter your card number",
-                            },
-                        ]}
-                    >
-                        <Input placeholder="Card Number" />
-                    </Form.Item>
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Form.Item
-                                label="Expiry Date (MM/YY)"
-                                name="expiryDate"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please enter expiry date",
-                                    },
-                                ]}
-                            >
-                                <Input placeholder="MM/YY" />
-                            </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                            <Form.Item
-                                label="CVV"
-                                name="cvv"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please enter CVV",
-                                    },
-                                ]}
-                            >
-                                <Input placeholder="CVV" />
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Form.Item
-                        label="Name on Card"
-                        name="cardName"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please enter name on card",
-                            },
-                        ]}
-                    >
-                        <Input placeholder="Name on card" />
-                    </Form.Item>
-                    <Form.Item>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            style={{ width: "100%" }}
-                        >
-                            Submit
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Modal>
         </div>
     );
 };

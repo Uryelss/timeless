@@ -1,14 +1,21 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { Layout, Menu, Dropdown, Badge, Avatar, Button } from "antd";
 import {
-    HomeOutlined,
+    Layout,
+    Menu,
+    Dropdown,
+    Badge,
+    Avatar,
+    Button,
+    notification,
+} from "antd";
+import {
     ShoppingCartOutlined,
     BellOutlined,
     MenuOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const { Header: AntHeader } = Layout;
 
@@ -17,9 +24,10 @@ const Header = () => {
     const [profile, setProfile] = useState(null);
     const [avatarKey, setAvatarKey] = useState(0);
     const [cartCount, setCartCount] = useState(0);
+    const [orders, setOrders] = useState([]);
+    const [notificationCount, setNotificationCount] = useState(0);
 
     const navigate = useNavigate();
-    const location = useLocation();
     const token = localStorage.getItem("token");
 
     // Fetch profile when token is available
@@ -51,7 +59,7 @@ const Header = () => {
         };
     }, []);
 
-    // Listen for cart updates and update badge count without reload
+    // Listen for cart updates and update badge count
     useEffect(() => {
         const updateCartCount = () => {
             const storedCart = localStorage.getItem("cart");
@@ -67,19 +75,99 @@ const Header = () => {
             }
         };
 
-        // Update on mount
         updateCartCount();
-        // Listen for the custom event
         window.addEventListener("cartUpdated", updateCartCount);
         return () => {
             window.removeEventListener("cartUpdated", updateCartCount);
         };
     }, []);
 
-    // Build the avatar source (cache busting with timestamp)
+    // Fetch orders when token is available
+    useEffect(() => {
+        if (token) {
+            fetchOrders();
+        }
+    }, [token]);
+
+    // Function to fetch orders from API
+    const fetchOrders = async () => {
+        try {
+            const response = await axios.get(
+                "http://localhost:8000/api/my-purchases",
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            console.log("Fetched orders from my-purchases:", response.data);
+            const orderData = response.data.data || response.data;
+            const allOrders = Array.isArray(orderData) ? orderData : [];
+            setOrders(allOrders);
+
+            // Filter out completed orders for notification count
+            const activeOrders = allOrders.filter(
+                (order) => order.order_status.toLowerCase() !== "completed"
+            );
+            setNotificationCount(activeOrders.length);
+        } catch (err) {
+            console.error(
+                "Error fetching orders:",
+                err.response?.data || err.message
+            );
+            setOrders([]);
+            setNotificationCount(0);
+        }
+    };
+
+    // Listen for order-related events
+    useEffect(() => {
+        const handleOrderPlaced = (e) => {
+            console.log("Order placed event triggered:", e.detail);
+            const order = e.detail;
+            const productName =
+                order?.order_details?.[0]?.product?.product_name ||
+                "Unknown Product";
+            notification.success({
+                message: "Order Placed",
+                description: `You've ordered ${productName}`,
+                placement: "topRight",
+                duration: 3,
+            });
+            fetchOrders();
+        };
+
+        const handleOrderStatusUpdate = (e) => {
+            console.log("Order status update event triggered:", e.detail);
+            const order = e.detail;
+            const productName =
+                order?.order_details?.[0]?.product?.product_name ||
+                "Unknown Product";
+
+            if (order.order_status.toLowerCase() === "shipped") {
+                notification.info({
+                    message: "Order Shipped",
+                    description: `Admin has shipped your product: ${productName}`,
+                    placement: "topRight",
+                    duration: 3,
+                });
+            }
+            fetchOrders();
+        };
+
+        window.addEventListener("orderPlaced", handleOrderPlaced);
+        window.addEventListener("orderStatusUpdated", handleOrderStatusUpdate);
+
+        return () => {
+            window.removeEventListener("orderPlaced", handleOrderPlaced);
+            window.removeEventListener(
+                "orderStatusUpdated",
+                handleOrderStatusUpdate
+            );
+        };
+    }, []);
+
     const avatarSrc =
         profile && profile.profile_image
-            ? profile.profile_image + "?" + new Date().getTime()
+            ? `${profile.profile_image}?${new Date().getTime()}`
             : "/images/default-avatar.png";
 
     const username = profile ? profile.username : "Guest";
@@ -89,6 +177,83 @@ const Header = () => {
             <Menu.Item key="luxury-watches">Luxury Watches</Menu.Item>
             <Menu.Item key="fashion-watches">Fashion Watches</Menu.Item>
             <Menu.Item key="smart-watches">Smart Watches</Menu.Item>
+        </Menu>
+    );
+
+    const notificationsMenu = (
+        <Menu className="white-dropdown" style={{ width: 350 }}>
+            {orders.length > 0 ? (
+                orders.slice(0, 3).map((order) => {
+                    const product = order.order_details?.[0]?.product || {};
+                    console.log("Rendering order:", order);
+                    return (
+                        <Menu.Item
+                            key={order.id}
+                            onClick={() =>
+                                navigate(`/order-tracking/${order.id}`)
+                            }
+                            style={{
+                                height: "auto",
+                                padding: "10px",
+                                cursor: "pointer",
+                            }}
+                        >
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <img
+                                    src={
+                                        product.main_image
+                                            ? `http://localhost:8000/storage/${product.main_image}`
+                                            : "/images/default-product.png"
+                                    }
+                                    alt={product.product_name || "Product"}
+                                    style={{
+                                        width: 50,
+                                        height: 50,
+                                        objectFit: "cover",
+                                        marginRight: 10,
+                                        borderRadius: 4,
+                                    }}
+                                    onError={(e) => {
+                                        e.target.src =
+                                            "/images/default-product.png";
+                                    }}
+                                />
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: "bold" }}>
+                                        {product.product_name ||
+                                            "Unnamed Product"}
+                                    </div>
+                                    <div
+                                        style={{
+                                            fontSize: "12px",
+                                            color: "#888",
+                                        }}
+                                    >
+                                        {order.order_status} -{" "}
+                                        {new Date(
+                                            order.order_date
+                                        ).toLocaleString()}
+                                    </div>
+                                </div>
+                            </div>
+                        </Menu.Item>
+                    );
+                })
+            ) : (
+                <Menu.Item key="no-notif">No new notifications</Menu.Item>
+            )}
+            <Menu.Item
+                key="view-all"
+                style={{ textAlign: "center" }}
+                onClick={() => navigate("/user-purchase")}
+            >
+                View All Orders
+            </Menu.Item>
         </Menu>
     );
 
@@ -107,7 +272,7 @@ const Header = () => {
     };
 
     const handleProfileClick = () => {
-        navigate("/user-Profile");
+        navigate("/user-profile");
     };
 
     const handleNavigation = (path) => {
@@ -130,17 +295,10 @@ const Header = () => {
         setIsMobileMenuVisible(!isMobileMenuVisible);
     };
 
-    const getSelectedKey = () => {
-        switch (location.pathname) {
-            case "/user-home":
-                return "home";
-            case "/aboutus":
-                return "about";
-            case "/user-collection":
-                return "collection";
-            default:
-                return "";
-        }
+    // Prevent any selection behavior on click or double-click
+    const handleMenuClick = (e) => {
+        e.domEvent.preventDefault(); // Prevent default behavior
+        handleNavigation(e.item.props.path); // Navigate without highlighting
     };
 
     return (
@@ -154,26 +312,17 @@ const Header = () => {
             <Menu
                 theme="light"
                 mode="horizontal"
-                selectedKeys={[getSelectedKey()]}
                 className={`nav-menu ${isMobileMenuVisible ? "visible" : ""}`}
+                selectedKeys={[]} // Explicitly empty to prevent highlighting
+                onClick={handleMenuClick} // Custom click handler
             >
-                <Menu.Item
-                    key="home"
-                    icon={<HomeOutlined style={{ fontSize: "24px" }} />}
-                    onClick={() => handleNavigation("/user-home")}
-                >
+                <Menu.Item key="home" path="/user-home">
                     Home
                 </Menu.Item>
-                <Menu.Item
-                    key="about"
-                    onClick={() => handleNavigation("/aboutus")}
-                >
+                <Menu.Item key="about" path="/aboutus">
                     About Us
                 </Menu.Item>
-                <Menu.Item
-                    key="collection"
-                    onClick={() => handleNavigation("/user-collection")}
-                >
+                <Menu.Item key="collection" path="/user-collection">
                     Collection
                 </Menu.Item>
                 <Dropdown overlay={categoriesMenu} placement="bottomLeft">
@@ -181,12 +330,14 @@ const Header = () => {
                 </Dropdown>
             </Menu>
             <div className="header-icons">
-                <Badge count={0} className="icon-badge">
-                    <BellOutlined
-                        style={{ fontSize: "24px" }}
-                        className="icon"
-                    />
-                </Badge>
+                <Dropdown overlay={notificationsMenu} trigger={["click"]}>
+                    <Badge count={notificationCount} className="icon-badge">
+                        <BellOutlined
+                            style={{ fontSize: "24px", cursor: "pointer" }}
+                            className="icon"
+                        />
+                    </Badge>
+                </Dropdown>
                 <Badge count={cartCount} className="icon-badge">
                     <ShoppingCartOutlined
                         style={{ fontSize: "24px", cursor: "pointer" }}

@@ -30,10 +30,12 @@ import ProductOverview from "./UserPage/ProductOverview/Productview";
 import AboutUs from "./UserPage/AboutUsPage/Aboutus";
 import CartPage from "./UserPage/CartPage/Cart";
 import OrderCheckout from "./UserPage/Checkout/Checkout";
+import OrderTracking from "./UserPage/OrderTrack/OrderTracking";
+import MyPurchase from "./UserPage/ProfilePage/MyPurchase/MyPurchase";
+import MyAddress from "./UserPage/ProfilePage/Address/MyAddress";
 
 // Single route protection component
 import PrivateRoute from "./PrivateRoute";
-import MyAddress from "./UserPage/ProfilePage/Address/MyAddress";
 import ReviewsManagement from "./AdminPage/AdminReview/Reviews";
 
 function Routers() {
@@ -91,6 +93,11 @@ function Routers() {
                     <Route path="/user-cart" element={<CartPage />} />
                     <Route path="/user-checkout" element={<OrderCheckout />} />
                     <Route path="/user-Address" element={<MyAddress />} />
+                    <Route
+                        path="/order-tracking/:orderId"
+                        element={<OrderTracking />}
+                    />
+                    <Route path="/user-purchase" element={<MyPurchase />} />
                 </Route>
 
                 {/* Catch-all redirect */}

@@ -1,0 +1,386 @@
+// Base layout styles
+.order-tracking {
+    min-height: 100vh;
+
+    .content-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px;
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+
+            .ant-btn-link {
+                height: 32px;
+                padding: 0 8px;
+                font-size: 14px;
+                line-height: 30px;
+
+                &:hover {
+                    color: #40a9ff;
+                }
+            }
+
+            .ant-typography {
+                margin: 0;
+            }
+        }
+
+        .loading-text {
+            display: block;
+            text-align: center;
+            font-size: 16px;
+            margin: 40px 0;
+        }
+
+        .main-content {
+            display: grid;
+            gap: 24px;
+            grid-template-columns: 1fr;
+
+            // Timeline Card
+            .timeline-card {
+                padding: 24px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+                .ant-typography {
+                    margin-bottom: 16px;
+                }
+
+                .horizontal-timeline {
+                    display: flex;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                    gap: 16px;
+
+                    .timeline-step {
+                        text-align: center;
+                        flex: 1;
+                        min-width: 120px;
+
+                        .icon-circle {
+                            width: 40px;
+                            height: 40px;
+                            background-color: #f0f0f0;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin: 0 auto 8px;
+                            font-size: 18px;
+                            color: #888;
+                            transition: all 0.3s;
+
+                            .anticon {
+                                vertical-align: middle;
+                            }
+                        }
+
+                        &.completed {
+                            .icon-circle {
+                                background-color: #1890ff;
+                                color: #fff;
+                            }
+
+                            .step-label {
+                                color: #1890ff;
+                            }
+                        }
+
+                        .step-label {
+                            display: block;
+                            font-size: 14px;
+                            color: #333;
+                        }
+
+                        .step-timestamp {
+                            display: block;
+                            font-size: 12px;
+                            color: #888;
+                        }
+                    }
+                }
+            }
+
+            // Action Buttons Card
+            .action-buttons-card {
+                padding: 16px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+                .action-buttons {
+                    display: flex;
+                    gap: 16px;
+                    justify-content: flex-end;
+
+                    .ant-btn {
+                        &.primary-btn {
+                            background-color: #1890ff;
+                            border-color: #1890ff;
+                            color: #fff;
+                            height: 32px;
+                            padding: 0 8px;
+                            font-size: 14px;
+                            border-radius: 4px;
+                            line-height: 30px;
+
+                            &:hover,
+                            &:focus {
+                                background-color: #40a9ff;
+                                border-color: #40a9ff;
+                            }
+                        }
+
+                        &.danger-btn {
+                            background-color: #f5222d;
+                            border-color: #f5222d;
+                            color: #fff;
+                            height: 32px;
+                            padding: 0 8px;
+                            font-size: 14px;
+                            border-radius: 4px;
+                            line-height: 30px;
+
+                            &:hover,
+                            &:focus {
+                                background-color: #ff4d4f;
+                                border-color: #ff4d4f;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Order Details Card
+            .order-details-card {
+                padding: 24px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+                .ant-typography {
+                    margin-bottom: 16px;
+
+                    &.ant-typography-level-4 {
+                        margin-bottom: 16px;
+                    }
+                }
+
+                .order-summary {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 24px;
+
+                    .ant-typography {
+                        font-size: 16px;
+                        margin: 0;
+                    }
+                }
+
+                .order-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    padding: 16px 0;
+                    border-bottom: 1px solid #f0f0f0;
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+
+                    .item-image {
+                        border-radius: 4px;
+                        object-fit: cover;
+                    }
+
+                    .item-info {
+                        flex: 1;
+
+                        .ant-typography {
+                            display: block;
+                            margin: 4px 0;
+
+                            &:first-child {
+                                font-size: 18px;
+                                font-weight: 500;
+                            }
+
+                            &:not(:first-child) {
+                                font-size: 16px;
+                            }
+                        }
+                    }
+                }
+
+                .ant-typography-strong {
+                    font-size: 20px;
+                    display: block;
+                    text-align: right;
+                    margin-top: 20px;
+                }
+            }
+
+            // Shipping Card
+            .shipping-card {
+                padding: 24px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+                .ant-typography {
+                    margin-bottom: 16px;
+                }
+
+                .shipping-info {
+                    .ant-typography {
+                        margin: 8px 0;
+                        display: block;
+                        font-size: 16px;
+                    }
+                }
+            }
+        }
+
+        .no-tracking {
+            text-align: center;
+            font-size: 16px;
+            margin: 40px 0;
+        }
+    }
+}
+
+// Modal styles
+.cancel-modal {
+    .ant-modal-title {
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 24px;
+        margin-bottom: 8px;
+    }
+
+    .modal-description {
+        display: block;
+        font-size: 14px;
+        color: #595959;
+        margin-bottom: 24px;
+        line-height: 20px;
+    }
+
+    .cancel-reasons {
+        width: 100%;
+        margin-bottom: 24px;
+
+        .ant-space {
+            width: 100%;
+
+            .ant-radio-wrapper {
+                margin-bottom: 16px;
+                font-size: 14px;
+                color: #333;
+                line-height: 20px;
+
+                .ant-radio {
+                    margin-right: 8px;
+
+                    .ant-radio-inner {
+                        width: 16px;
+                        height: 16px;
+
+                        &::after {
+                            width: 6px;
+                            height: 6px;
+                            top: 4px;
+                            left: 4px;
+                        }
+                    }
+
+                    &.ant-radio-checked .ant-radio-inner {
+                        border-color: #1890ff;
+                        background-color: #fff;
+
+                        &::after {
+                            background-color: #1890ff;
+                        }
+                    }
+
+                    &:hover .ant-radio-inner {
+                        border-color: #40a9ff;
+                    }
+                }
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
+
+    .ant-modal-footer {
+        padding: 10px 16px;
+        border-top: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+
+        .ant-btn {
+            height: 32px;
+            padding: 0 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            line-height: 30px;
+
+            &.ant-btn-default {
+                color: #595959;
+                border-color: #d9d9d9;
+                background-color: #fff;
+
+                &:hover {
+                    color: #40a9ff;
+                    border-color: #40a9ff;
+                }
+
+                &:disabled {
+                    color: #bfbfbf;
+                    border-color: #d9d9d9;
+                    background-color: #f5f5f5;
+                }
+            }
+
+            &.ant-btn-primary {
+                background-color: #1890ff;
+                border-color: #1890ff;
+                color: #fff;
+
+                &:hover,
+                &:focus {
+                    background-color: #40a9ff;
+                    border-color: #40a9ff;
+                }
+
+                &:disabled {
+                    background-color: #bfbfbf;
+                    border-color: #bfbfbf;
+                    color: #fff;
+                }
+            }
+        }
+    }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+
+    .horizontal-timeline {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .timeline-step {
+        min-width: 100%;
+    }
+}

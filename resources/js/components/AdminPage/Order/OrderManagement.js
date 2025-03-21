@@ -20,7 +20,7 @@ import {
     FolderOpenOutlined,
     EyeOutlined,
 } from "@ant-design/icons";
-import Sidebar from "../AdminSidebar/Sidebar";
+import Sidebar from "../AdminSidebar/Sidebar"; // Adjust path as needed
 import axios from "axios";
 
 const { Header, Content, Sider } = Layout;
@@ -41,17 +41,17 @@ const OrderManagement = () => {
 
     const fetchOrders = () => {
         axios
-            .get(API_URL, {
+            .get(`${API_URL}?all=true`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             })
             .then((res) => {
-                console.log("API Response:", res.data); // Debug
+                console.log("API Response:", res.data);
                 const transformedOrders = res.data.map((order) => ({
                     ...order,
                     order_date: order.order_date || order.created_at,
-                    shipping: order.shipping || {}, // Ensure shipping is an object
+                    shipping: order.shipping || {},
                 }));
                 setOrders(
                     transformedOrders.filter((order) => !order.deleted_at)
@@ -61,8 +61,12 @@ const OrderManagement = () => {
                 );
             })
             .catch((err) => {
-                message.error("Error fetching orders");
-                console.error(err.response?.data || err);
+                const errorMsg =
+                    err.response?.data?.message ||
+                    err.message ||
+                    "Unknown error";
+                message.error(`Error fetching orders: ${errorMsg}`);
+                console.error("Error details:", err.response?.data || err);
             });
     };
 
@@ -70,6 +74,7 @@ const OrderManagement = () => {
         fetchOrders();
     }, []);
 
+    // Main table columns
     const mainColumns = [
         {
             title: "Actions",
@@ -253,7 +258,6 @@ const OrderManagement = () => {
 
         return (
             <div style={{ padding: "16px" }}>
-                {/* Order Summary */}
                 <Title level={4} style={{ marginBottom: "16px" }}>
                     Order Summary
                 </Title>
@@ -317,7 +321,6 @@ const OrderManagement = () => {
                     </Descriptions.Item>
                 </Descriptions>
 
-                {/* Customer Details */}
                 <Title level={4} style={{ margin: "24px 0 16px" }}>
                     Customer Details
                 </Title>
@@ -346,7 +349,6 @@ const OrderManagement = () => {
                     </Col>
                 </Row>
 
-                {/* Payment and Shipping Information */}
                 <Title level={4} style={{ margin: "24px 0 16px" }}>
                     Payment and Shipping
                 </Title>
@@ -429,6 +431,7 @@ const OrderManagement = () => {
                     />
                 </Content>
             </Layout>
+
             <Modal
                 title="Archived Orders"
                 open={openArchiveModal}
@@ -449,6 +452,7 @@ const OrderManagement = () => {
                     rowKey="id"
                 />
             </Modal>
+
             <Modal
                 title="Edit Order"
                 open={openEditModal}
@@ -468,10 +472,11 @@ const OrderManagement = () => {
                             }
                             style={{ width: "100%", marginBottom: 16 }}
                         >
-                            <Option value="pending">Pending</Option>
+                            <Option value="pending">To Pay</Option>
+                            <Option value="processing">To Ship</Option>
+                            <Option value="shipped">To Receive</Option>
                             <Option value="completed">Completed</Option>
                             <Option value="cancelled">Cancelled</Option>
-                            <Option value="processing">Processing</Option>
                         </Select>
                         <Input
                             value={
@@ -491,6 +496,7 @@ const OrderManagement = () => {
                     </div>
                 )}
             </Modal>
+
             <Modal
                 title={`Order #${selectedOrder?.id || ""} Details`}
                 open={openViewModal}

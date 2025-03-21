@@ -14,14 +14,17 @@ use Illuminate\Support\Facades\DB;
 
 class UserOrderController extends Controller
 {
+    /**
+     * Store a new order.
+     */
     public function store(Request $request)
     {
         $request->validate([
-            'address_id' => 'sometimes|exists:addresses,id', // Optional, must exist if provided
+            'address_id' => 'sometimes|exists:addresses,id',
             'address.street' => 'required_without:address_id|string',
             'address.city' => 'required_without:address_id|string',
             'address.state' => 'required_without:address_id|string',
-            'address.barangay' => 'required_without:address_id|string', // Add this
+            'address.barangay' => 'required_without:address_id|string',
             'address.postal_code' => 'required_without:address_id|string',
             'address.country' => 'required_without:address_id|string',
             'address.phone' => 'required_without:address_id|string',
@@ -41,7 +44,6 @@ class UserOrderController extends Controller
         $profile = $user->profile;
 
         return DB::transaction(function () use ($request, $profile) {
-            // Determine or create the address
             if ($request->has('address_id')) {
                 $address = Address::findOrFail($request->address_id);
             } else {
@@ -54,8 +56,7 @@ class UserOrderController extends Controller
                     [
                         'city' => $addressData['city'],
                         'state' => $addressData['state'],
-                        'barangay' => $addressData['barangay'], // Added barangay
-
+                        'barangay' => $addressData['barangay'],
                         'postal_code' => $addressData['postal_code'],
                         'country' => $addressData['country'],
                         'phone' => $addressData['phone'],
@@ -63,7 +64,6 @@ class UserOrderController extends Controller
                 );
             }
 
-            // Create order
             $order = Order::create([
                 'profile_id' => $profile->id,
                 'total_amount' => $request->total,
@@ -71,7 +71,6 @@ class UserOrderController extends Controller
                 'order_date' => now(),
             ]);
 
-            // Process cart items and update inventory
             foreach ($request->cart_items as $item) {
                 $inventory = Inventory::findOrFail($item['inventory_id']);
                 if ($inventory->quantity < $item['quantity']) {
@@ -94,7 +93,6 @@ class UserOrderController extends Controller
                 $inventory->save();
             }
 
-            // Create shipping record
             $shipping = Shipping::create([
                 'order_id' => $order->id,
                 'payment_method_id' => $request->payment_method_id,
@@ -110,8 +108,48 @@ class UserOrderController extends Controller
             return response()->json([
                 'message' => 'Order created successfully',
                 'order_id' => $order->id,
-                'address_id' => $address->id, // Optional: Return the address used
+                'address_id' => $address->id,
             ], 201);
         }, 5);
+    }
+
+    /**
+     * Fetch the authenticated user's purchases.
+     */
+    public function myPurchases(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user || !$user->profile) {
+            return response()->json(['message' => 'User profile not found'], 404);
+        }
+
+        try {
+            $query = Order::where('profile_id', $user->profile->id)
+                ->with([
+                    'orderDetails.product',       // Product details (name, description, etc.)
+                    'orderDetails.inventory',     // Inventory details
+                    'shipping.shippingMethod',    // Shipping method
+                    'shipping.paymentMethod',     // Payment method
+                    'shipping.address'            // Address
+                ])
+                ->withTrashed()                   // Include soft-deleted orders
+                ->orderBy('order_date', 'desc');  // Latest orders first
+
+            // Filter by order_id if provided
+            if ($request->has('order_id')) {
+                $order = $query->where('id', $request->input('order_id'))->firstOrFail();
+                return response()->json($order);
+            }
+
+            // Otherwise, return paginated results
+            $orders = $query->paginate(10);
+            return response()->json($orders);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error fetching purchases',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
