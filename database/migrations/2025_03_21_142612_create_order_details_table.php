@@ -4,17 +4,18 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+// order_details migration
 class CreateOrderDetailsTable extends Migration
 {
     public function up()
     {
         Schema::create('order_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
-            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-            $table->foreignId('inventory_id')->constrained('inventory')->onDelete('cascade');
-            $table->integer('quantity');
-            $table->decimal('price', 10, 2); // Price at the time of purchase
+            $table->unsignedBigInteger('order_id')->nullable();
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->unsignedBigInteger('inventory_id')->nullable();
+            $table->integer('quantity')->default(0);
+            $table->decimal('price', 10, 2)->default(0.00);
             $table->timestamps();
             $table->softDeletes();
         });

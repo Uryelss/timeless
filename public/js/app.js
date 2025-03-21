@@ -66300,7 +66300,7 @@ function usePanelRef(panelSelector) {
 "use strict";
 /* provided dependency */ var process = __webpack_require__(/*! process/browser.js */ "./node_modules/process/browser.js");
 /* provided dependency */ var Buffer = __webpack_require__(/*! buffer */ "./node_modules/buffer/index.js")["Buffer"];
-/*! Axios v1.8.2 Copyright (c) 2025 Matt Zabriskie and contributors */
+/*! Axios v1.8.4 Copyright (c) 2025 Matt Zabriskie and contributors */
 
 
 function bind(fn, thisArg) {
@@ -68530,7 +68530,7 @@ function combineURLs(baseURL, relativeURL) {
  */
 function buildFullPath(baseURL, requestedURL, allowAbsoluteUrls) {
   let isRelativeUrl = !isAbsoluteURL(requestedURL);
-  if (baseURL && isRelativeUrl || allowAbsoluteUrls == false) {
+  if (baseURL && (isRelativeUrl || allowAbsoluteUrls == false)) {
     return combineURLs(baseURL, requestedURL);
   }
   return requestedURL;
@@ -68645,7 +68645,7 @@ var resolveConfig = (config) => {
 
   newConfig.headers = headers = AxiosHeaders$1.from(headers);
 
-  newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url), config.params, config.paramsSerializer);
+  newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls), config.params, config.paramsSerializer);
 
   // HTTP basic authentication
   if (auth) {
@@ -69370,7 +69370,7 @@ function dispatchRequest(config) {
   });
 }
 
-const VERSION = "1.8.2";
+const VERSION = "1.8.4";
 
 const validators$1 = {};
 
@@ -71740,7 +71740,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 function buildFullPath(baseURL, requestedURL, allowAbsoluteUrls) {
   let isRelativeUrl = !(0,_helpers_isAbsoluteURL_js__WEBPACK_IMPORTED_MODULE_0__["default"])(requestedURL);
-  if (baseURL && isRelativeUrl || allowAbsoluteUrls == false) {
+  if (baseURL && (isRelativeUrl || allowAbsoluteUrls == false)) {
     return (0,_helpers_combineURLs_js__WEBPACK_IMPORTED_MODULE_1__["default"])(baseURL, requestedURL);
   }
   return requestedURL;
@@ -72279,7 +72279,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VERSION: () => (/* binding */ VERSION)
 /* harmony export */ });
-const VERSION = "1.8.2";
+const VERSION = "1.8.4";
 
 /***/ }),
 
@@ -73115,7 +73115,7 @@ __webpack_require__.r(__webpack_exports__);
 
   newConfig.headers = headers = _core_AxiosHeaders_js__WEBPACK_IMPORTED_MODULE_1__["default"].from(headers);
 
-  newConfig.url = (0,_buildURL_js__WEBPACK_IMPORTED_MODULE_2__["default"])((0,_core_buildFullPath_js__WEBPACK_IMPORTED_MODULE_3__["default"])(newConfig.baseURL, newConfig.url), config.params, config.paramsSerializer);
+  newConfig.url = (0,_buildURL_js__WEBPACK_IMPORTED_MODULE_2__["default"])((0,_core_buildFullPath_js__WEBPACK_IMPORTED_MODULE_3__["default"])(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls), config.params, config.paramsSerializer);
 
   // HTTP basic authentication
   if (auth) {
@@ -182604,25 +182604,33 @@ var ReviewsManagement = function ReviewsManagement() {
     }).map(function (r) {
       return r.id;
     }));
-    var allSelected = updatedReviews.every(function (r) {
-      return r.selected;
+    var filtered = updatedReviews.filter(function (review) {
+      var matchesRating = selectedRating ? review.rating === selectedRating : true;
+      var matchesSearch = review.username.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesRating && matchesSearch;
     });
-    setSelectAllActive(allSelected);
+    setSelectAllActive(filtered.every(function (r) {
+      return r.selected;
+    }));
   };
 
-  // Select All checkbox handling for active reviews
+  // Select All checkbox handling for active reviews, respecting filters
   var handleSelectAllActiveChange = function handleSelectAllActiveChange(e) {
     var checked = e.target.checked;
     setSelectAllActive(checked);
     var updatedReviews = reviews.map(function (review) {
+      var matchesRating = selectedRating ? review.rating === selectedRating : true;
+      var matchesSearch = review.username.toLowerCase().includes(searchQuery.toLowerCase());
       return _objectSpread(_objectSpread({}, review), {}, {
-        selected: checked
+        selected: checked && matchesRating && matchesSearch
       });
     });
     setReviews(updatedReviews);
-    setSelectedActiveReviews(checked ? updatedReviews.map(function (r) {
+    setSelectedActiveReviews(updatedReviews.filter(function (r) {
+      return r.selected;
+    }).map(function (r) {
       return r.id;
-    }) : []);
+    }));
   };
 
   // Checkbox handling for archived reviews
@@ -182957,7 +182965,7 @@ var ReviewsManagement = function ReviewsManagement() {
         style: {
           width: "60px",
           borderRadius: 5,
-          heigth: "70px"
+          height: "70px"
         }
       });
     }
@@ -183067,7 +183075,15 @@ var ReviewsManagement = function ReviewsManagement() {
               },
               allowClear: true,
               onChange: function onChange(value) {
-                return setSelectedRating(value);
+                setSelectedRating(value);
+                setSelectAllActive(false); // Reset Select All when filter changes
+                setSelectedActiveReviews([]); // Reset selected reviews when filter changes
+                var updatedReviews = reviews.map(function (review) {
+                  return _objectSpread(_objectSpread({}, review), {}, {
+                    selected: false
+                  });
+                });
+                setReviews(updatedReviews);
               },
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
                 value: 1,
@@ -183193,7 +183209,15 @@ var ReviewsManagement = function ReviewsManagement() {
         return setOpenArchiveModal(false);
       },
       width: 1000,
-      footer: [],
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+        onClick: function onClick() {
+          return setOpenArchiveModal(false);
+        },
+        style: {
+          width: "131px"
+        },
+        children: "Close"
+      }, "close")],
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
         style: {
           display: "flex",
@@ -184287,7 +184311,8 @@ var CustomerManagement = function CustomerManagement() {
         alt: "customer",
         style: {
           width: "60px",
-          height: "70px"
+          height: "70px",
+          objectFit: "contain"
         }
       });
     }

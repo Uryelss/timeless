@@ -251,7 +251,11 @@ const CustomerManagement = () => {
                         image || "https://via.placeholder.com/100?text=Customer"
                     }
                     alt="customer"
-                    style={{ width: "60px", height: "70px" }}
+                    style={{
+                        width: "60px",
+                        height: "70px",
+                        objectFit: "contain",
+                    }}
                 />
             ),
         },

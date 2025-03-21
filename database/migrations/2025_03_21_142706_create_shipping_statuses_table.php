@@ -4,13 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePaymentMethodsTable extends Migration
+// shipping_statuses migration
+class CreateShippingStatusesTable extends Migration
 {
     public function up()
     {
-        Schema::create('payment_methods', function (Blueprint $table) {
+        Schema::create('shipping_statuses', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique(); // e.g., "Credit Card", "PayPal"
+            $table->string('name')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -18,6 +19,6 @@ class CreatePaymentMethodsTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('payment_methods');
+        Schema::dropIfExists('shipping_statuses');
     }
 }

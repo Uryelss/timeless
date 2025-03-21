@@ -1,5 +1,5 @@
 <?php
-
+// addresses migration
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,19 +10,17 @@ class CreateAddressesTable extends Migration
     {
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('profile_id');
-            $table->string('street');
-            $table->string('city');
-            $table->string('state');
+            $table->unsignedBigInteger('profile_id')->nullable();
+            $table->string('street')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
             $table->string('barangay')->nullable();
-            $table->string('postal_code');
-            $table->string('country');
-            $table->string('phone');
+            $table->string('postal_code')->nullable();
+            $table->string('country')->nullable();
+            $table->string('phone')->nullable();
             $table->boolean('is_default')->default(false);
             $table->timestamps();
             $table->softDeletes();
-
-            $table->foreign('profile_id')->references('id')->on('profiles')->onDelete('cascade');
         });
     }
 

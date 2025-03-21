@@ -79,21 +79,37 @@ const ReviewsManagement = () => {
         setSelectedActiveReviews(
             updatedReviews.filter((r) => r.selected).map((r) => r.id)
         );
-        const allSelected = updatedReviews.every((r) => r.selected);
-        setSelectAllActive(allSelected);
+        const filtered = updatedReviews.filter((review) => {
+            const matchesRating = selectedRating
+                ? review.rating === selectedRating
+                : true;
+            const matchesSearch = review.username
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase());
+            return matchesRating && matchesSearch;
+        });
+        setSelectAllActive(filtered.every((r) => r.selected));
     };
 
-    // Select All checkbox handling for active reviews
+    // Select All checkbox handling for active reviews, respecting filters
     const handleSelectAllActiveChange = (e) => {
         const checked = e.target.checked;
         setSelectAllActive(checked);
-        const updatedReviews = reviews.map((review) => ({
-            ...review,
-            selected: checked,
-        }));
+        const updatedReviews = reviews.map((review) => {
+            const matchesRating = selectedRating
+                ? review.rating === selectedRating
+                : true;
+            const matchesSearch = review.username
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase());
+            return {
+                ...review,
+                selected: checked && matchesRating && matchesSearch,
+            };
+        });
         setReviews(updatedReviews);
         setSelectedActiveReviews(
-            checked ? updatedReviews.map((r) => r.id) : []
+            updatedReviews.filter((r) => r.selected).map((r) => r.id)
         );
     };
 
@@ -339,7 +355,7 @@ const ReviewsManagement = () => {
                 <img
                     src={image || "https://via.placeholder.com/50"}
                     alt="Product"
-                    style={{ width: "60px", borderRadius: 5, heigth: "70px" }}
+                    style={{ width: "60px", borderRadius: 5, height: "70px" }}
                 />
             ),
         },
@@ -440,7 +456,18 @@ const ReviewsManagement = () => {
                                 placeholder="Filter by rating"
                                 style={{ width: 200 }}
                                 allowClear
-                                onChange={(value) => setSelectedRating(value)}
+                                onChange={(value) => {
+                                    setSelectedRating(value);
+                                    setSelectAllActive(false); // Reset Select All when filter changes
+                                    setSelectedActiveReviews([]); // Reset selected reviews when filter changes
+                                    const updatedReviews = reviews.map(
+                                        (review) => ({
+                                            ...review,
+                                            selected: false,
+                                        })
+                                    );
+                                    setReviews(updatedReviews);
+                                }}
                             >
                                 <Option value={1}>⭐ 1 Star</Option>
                                 <Option value={2}>⭐⭐ 2 Stars</Option>
@@ -548,7 +575,15 @@ const ReviewsManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1000}
-                footer={[]}
+                footer={[
+                    <Button
+                        key="close"
+                        onClick={() => setOpenArchiveModal(false)}
+                        style={{ width: "131px" }}
+                    >
+                        Close
+                    </Button>,
+                ]}
             >
                 <div
                     style={{

@@ -4,16 +4,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+// reviews migration
+class CreateReviewsTable extends Migration
+{
     public function up()
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->text('comment');
-            $table->integer('rating')->default(5); // Default rating 5 stars
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->text('comment')->nullable();
+            $table->integer('rating')->nullable();
             $table->timestamps();
+            $table->boolean('is_archived')->default(false);
         });
     }
 
@@ -21,4 +24,4 @@ return new class extends Migration {
     {
         Schema::dropIfExists('reviews');
     }
-};
+}
