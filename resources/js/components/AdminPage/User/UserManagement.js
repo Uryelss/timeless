@@ -31,8 +31,10 @@ const UserManagement = () => {
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
     const [openAddEditModal, setOpenAddEditModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectAll, setSelectAll] = useState(false);
-    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [selectAllActive, setSelectAllActive] = useState(false);
+    const [selectedActiveUsers, setSelectedActiveUsers] = useState([]);
+    const [selectAllArchived, setSelectAllArchived] = useState(false);
+    const [selectedArchivedUsers, setSelectedArchivedUsers] = useState([]);
     const [editingUser, setEditingUser] = useState(null);
     const [form] = Form.useForm();
 
@@ -69,7 +71,9 @@ const UserManagement = () => {
             })
             .then((res) => {
                 console.log("Fetched archived users:", res.data);
-                setArchivedUsers(res.data);
+                setArchivedUsers(
+                    res.data.map((user) => ({ ...user, selected: false }))
+                );
             })
             .catch((err) => {
                 message.error("Error fetching archived users");
@@ -87,29 +91,56 @@ const UserManagement = () => {
         }
     }, [openArchiveModal]);
 
-    // Checkbox handling for individual users
-    const handleCheckboxChange = (userId) => {
+    // Checkbox handling for active users
+    const handleActiveCheckboxChange = (userId) => {
         const updatedUsers = users.map((user) =>
             user.id === userId ? { ...user, selected: !user.selected } : user
         );
         setUsers(updatedUsers);
-        setSelectedUsers(
+        setSelectedActiveUsers(
             updatedUsers.filter((u) => u.selected).map((u) => u.id)
         );
         const allSelected = updatedUsers.every((u) => u.selected);
-        setSelectAll(allSelected);
+        setSelectAllActive(allSelected);
     };
 
-    // Select All checkbox handling
-    const handleSelectAllChange = (e) => {
+    // Select All checkbox handling for active users
+    const handleSelectAllActiveChange = (e) => {
         const checked = e.target.checked;
-        setSelectAll(checked);
+        setSelectAllActive(checked);
         const updatedUsers = users.map((user) => ({
             ...user,
             selected: checked,
         }));
         setUsers(updatedUsers);
-        setSelectedUsers(checked ? updatedUsers.map((u) => u.id) : []);
+        setSelectedActiveUsers(checked ? updatedUsers.map((u) => u.id) : []);
+    };
+
+    // Checkbox handling for archived users
+    const handleArchivedCheckboxChange = (userId) => {
+        const updatedArchived = archivedUsers.map((user) =>
+            user.id === userId ? { ...user, selected: !user.selected } : user
+        );
+        setArchivedUsers(updatedArchived);
+        setSelectedArchivedUsers(
+            updatedArchived.filter((u) => u.selected).map((u) => u.id)
+        );
+        const allSelected = updatedArchived.every((u) => u.selected);
+        setSelectAllArchived(allSelected);
+    };
+
+    // Select All checkbox handling for archived users
+    const handleSelectAllArchivedChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAllArchived(checked);
+        const updatedArchived = archivedUsers.map((user) => ({
+            ...user,
+            selected: checked,
+        }));
+        setArchivedUsers(updatedArchived);
+        setSelectedArchivedUsers(
+            checked ? updatedArchived.map((u) => u.id) : []
+        );
     };
 
     // Table columns for active users
@@ -121,7 +152,7 @@ const UserManagement = () => {
                 <Space>
                     <Checkbox
                         checked={record.selected}
-                        onChange={() => handleCheckboxChange(record.id)}
+                        onChange={() => handleActiveCheckboxChange(record.id)}
                     />
                     <EditOutlined
                         onClick={() => handleEdit(record)}
@@ -173,9 +204,18 @@ const UserManagement = () => {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
-                <Button type="link" onClick={() => handleRestore(record.id)}>
-                    <UndoOutlined style={{ fontSize: "18px" }} />
-                </Button>
+                <Space>
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleArchivedCheckboxChange(record.id)}
+                    />
+                    <Button
+                        type="link"
+                        onClick={() => handleRestore(record.id)}
+                    >
+                        <UndoOutlined style={{ fontSize: "18px" }} />
+                    </Button>
+                </Space>
             ),
         },
         ...mainColumns.slice(1),
@@ -246,17 +286,17 @@ const UserManagement = () => {
             });
     };
 
-    // Bulk archive handler
+    // Bulk archive handler for active users
     const handleArchiveAll = () => {
-        if (selectedUsers.length === 0) {
+        if (selectedActiveUsers.length === 0) {
             message.warning("Please select at least one user to archive");
             return;
         }
         Modal.confirm({
-            title: `Are you sure you want to archive ${selectedUsers.length} selected user(s)?`,
+            title: `Are you sure you want to archive ${selectedActiveUsers.length} selected user(s)?`,
             onOk: () => {
                 Promise.all(
-                    selectedUsers.map((id) =>
+                    selectedActiveUsers.map((id) =>
                         axios.delete(`${API_URL}/${id}`, {
                             headers: {
                                 Authorization: `Bearer ${localStorage.getItem(
@@ -269,11 +309,51 @@ const UserManagement = () => {
                     .then(() => {
                         message.success("Selected users archived successfully");
                         fetchUsers();
-                        setSelectedUsers([]);
-                        setSelectAll(false);
+                        setSelectedActiveUsers([]);
+                        setSelectAllActive(false);
                     })
                     .catch((err) =>
                         message.error("Failed to archive some users")
+                    );
+            },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
+        });
+    };
+
+    // Bulk restore handler for archived users
+    const handleRestoreAll = () => {
+        if (selectedArchivedUsers.length === 0) {
+            message.warning("Please select at least one user to restore");
+            return;
+        }
+        Modal.confirm({
+            title: `Are you sure you want to restore ${selectedArchivedUsers.length} selected user(s)?`,
+            onOk: () => {
+                Promise.all(
+                    selectedArchivedUsers.map((id) =>
+                        axios.post(
+                            `${API_URL}/${id}/restore`,
+                            {},
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                    )
+                )
+                    .then(() => {
+                        message.success("Selected users restored successfully");
+                        fetchArchivedUsers();
+                        fetchUsers();
+                        setSelectedArchivedUsers([]);
+                        setSelectAllArchived(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to restore some users")
                     );
             },
             okButtonProps: { style: { width: "80px" } },
@@ -349,6 +429,17 @@ const UserManagement = () => {
         );
     });
 
+    // Filter archived users based on search query
+    const filteredArchivedUsers = archivedUsers.filter((user) => {
+        const lower = searchQuery.toLowerCase();
+        return (
+            user.username.toLowerCase().includes(lower) ||
+            user.email.toLowerCase().includes(lower) ||
+            (user.role && user.role.name.toLowerCase().includes(lower)) ||
+            user.status.toLowerCase().includes(lower)
+        );
+    });
+
     return (
         <Layout>
             <Sider width={256} style={{ minHeight: "100vh" }}>
@@ -380,13 +471,14 @@ const UserManagement = () => {
                                 style={{ width: 300 }}
                             />
                             <Checkbox
-                                checked={selectAll}
-                                onChange={handleSelectAllChange}
+                                checked={selectAllActive}
+                                onChange={handleSelectAllActiveChange}
                                 style={{ marginLeft: 16 }}
                             >
                                 Select All
                             </Checkbox>
-                            {(selectAll || selectedUsers.length > 0) && (
+                            {(selectAllActive ||
+                                selectedActiveUsers.length > 0) && (
                                 <Button
                                     type="link"
                                     onClick={handleArchiveAll}
@@ -395,8 +487,9 @@ const UserManagement = () => {
                                     <FolderOpenOutlined
                                         style={{ fontSize: "18px" }}
                                     />
-                                    {selectedUsers.length > 0 &&
-                                        ` (${selectedUsers.length})`}
+                                    Archive
+                                    {selectedActiveUsers.length > 0 &&
+                                        ` (${selectedActiveUsers.length})`}
                                 </Button>
                             )}
                         </div>
@@ -443,13 +536,50 @@ const UserManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1200}
-                footer={[]}
+                footer={[
+                    <Button
+                        key="close"
+                        onClick={() => setOpenArchiveModal(false)}
+                        style={{ width: "131px" }}
+                    >
+                        Close
+                    </Button>,
+                ]}
             >
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: 16,
+                    }}
+                >
+                    <Checkbox
+                        checked={selectAllArchived}
+                        onChange={handleSelectAllArchivedChange}
+                        style={{ marginRight: 16 }}
+                    >
+                        Select All
+                    </Checkbox>
+                    {(selectAllArchived ||
+                        selectedArchivedUsers.length > 0) && (
+                        <Button
+                            type="link"
+                            onClick={handleRestoreAll}
+                            style={{ marginRight: 8 }}
+                        >
+                            <UndoOutlined style={{ fontSize: "18px" }} />
+                            Restore
+                            {selectedArchivedUsers.length > 0 &&
+                                ` (${selectedArchivedUsers.length})`}
+                        </Button>
+                    )}
+                </div>
                 <Table
                     columns={archiveColumns}
-                    dataSource={archivedUsers}
+                    dataSource={filteredArchivedUsers}
                     rowKey="id"
                     pagination={false}
+                    scroll={{ x: 1200 }}
                 />
             </Modal>
             {/* Add/Edit User Modal */}

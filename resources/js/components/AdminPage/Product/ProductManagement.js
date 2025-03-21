@@ -30,24 +30,25 @@ const { Option } = Select;
 const { TextArea, Search } = Input;
 
 const ProductManagement = () => {
-    // Modal and form states
     const [openAddModal, setOpenAddModal] = useState(false);
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
     const [form] = Form.useForm();
     const [searchText, setSearchText] = useState("");
-    const [selectAll, setSelectAll] = useState(false);
-    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [selectAllActive, setSelectAllActive] = useState(false);
+    const [selectAllArchived, setSelectAllArchived] = useState(false);
+    const [selectedActiveProducts, setSelectedActiveProducts] = useState([]);
+    const [selectedArchivedProducts, setSelectedArchivedProducts] = useState(
+        []
+    );
     const [products, setProducts] = useState([]);
     const [archivedProducts, setArchivedProducts] = useState([]);
     const [currentProduct, setCurrentProduct] = useState(null);
 
-    // Image states for main and side images
     const [mainImageFile, setMainImageFile] = useState(null);
     const [mainImagePreview, setMainImagePreview] = useState("");
     const [sideImagesFiles, setSideImagesFiles] = useState([null, null, null]);
     const [sideImagesPreview, setSideImagesPreview] = useState(["", "", ""]);
 
-    // Dynamic options for select fields
     const [brands, setBrands] = useState([]);
     const [categories, setCategories] = useState([]);
     const [movements, setMovements] = useState([]);
@@ -55,10 +56,8 @@ const ProductManagement = () => {
     const [genders, setGenders] = useState([]);
     const [sizesOptions, setSizesOptions] = useState([]);
 
-    // Base URL for images
     const imageBaseURL = "http://localhost:8000/storage/";
 
-    // Fetch products from API
     const fetchProducts = () => {
         axios
             .get("http://localhost:8000/api/products", {
@@ -74,7 +73,6 @@ const ProductManagement = () => {
             .catch((err) => message.error("Error fetching products"));
     };
 
-    // Fetch archived products
     const fetchArchivedProducts = () => {
         axios
             .get("http://localhost:8000/api/products?archived=1", {
@@ -82,11 +80,14 @@ const ProductManagement = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             })
-            .then((res) => setArchivedProducts(res.data))
+            .then((res) => {
+                setArchivedProducts(
+                    res.data.map((product) => ({ ...product, selected: false }))
+                );
+            })
             .catch((err) => message.error("Error fetching archived products"));
     };
 
-    // Fetch sub-category options dynamically based on type
     const fetchSubCategoryOptions = (type, setter) => {
         axios
             .get(`http://localhost:8000/api/sub-categories?type=${type}`, {
@@ -114,34 +115,142 @@ const ProductManagement = () => {
 
     const getRule = (message) => [{ required: !currentProduct, message }];
 
-    // Checkbox handling for individual products
-    const handleCheckboxChange = (productId) => {
+    // Handlers for active products
+    const handleActiveCheckboxChange = (productId) => {
         const updatedProducts = products.map((product) =>
             product.id === productId
                 ? { ...product, selected: !product.selected }
                 : product
         );
         setProducts(updatedProducts);
-        setSelectedProducts(
+        setSelectedActiveProducts(
             updatedProducts.filter((p) => p.selected).map((p) => p.id)
         );
         const allSelected = updatedProducts.every((p) => p.selected);
-        setSelectAll(allSelected);
+        setSelectAllActive(allSelected);
     };
 
-    // Select All checkbox handling
-    const handleSelectAllChange = (e) => {
+    const handleSelectAllActiveChange = (e) => {
         const checked = e.target.checked;
-        setSelectAll(checked);
+        setSelectAllActive(checked);
         const updatedProducts = products.map((product) => ({
             ...product,
             selected: checked,
         }));
         setProducts(updatedProducts);
-        setSelectedProducts(checked ? updatedProducts.map((p) => p.id) : []);
+        setSelectedActiveProducts(
+            checked ? updatedProducts.map((p) => p.id) : []
+        );
     };
 
-    // Table columns for active products
+    const handleArchiveAll = () => {
+        if (selectedActiveProducts.length === 0) {
+            message.warning("Please select at least one product to archive");
+            return;
+        }
+        Modal.confirm({
+            title: `Are you sure you want to archive ${selectedActiveProducts.length} selected product(s)?`,
+            onOk: () => {
+                Promise.all(
+                    selectedActiveProducts.map((id) =>
+                        axios.delete(
+                            `http://localhost:8000/api/products/${id}`,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                    )
+                )
+                    .then(() => {
+                        message.success(
+                            "Selected products archived successfully"
+                        );
+                        fetchProducts();
+                        setSelectedActiveProducts([]);
+                        setSelectAllActive(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to archive some products")
+                    );
+            },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
+        });
+    };
+
+    // Handlers for archived products
+    const handleArchivedCheckboxChange = (productId) => {
+        const updatedArchived = archivedProducts.map((product) =>
+            product.id === productId
+                ? { ...product, selected: !product.selected }
+                : product
+        );
+        setArchivedProducts(updatedArchived);
+        setSelectedArchivedProducts(
+            updatedArchived.filter((p) => p.selected).map((p) => p.id)
+        );
+        const allSelected = updatedArchived.every((p) => p.selected);
+        setSelectAllArchived(allSelected);
+    };
+
+    const handleSelectAllArchivedChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAllArchived(checked);
+        const updatedArchived = archivedProducts.map((product) => ({
+            ...product,
+            selected: checked,
+        }));
+        setArchivedProducts(updatedArchived);
+        setSelectedArchivedProducts(
+            checked ? updatedArchived.map((p) => p.id) : []
+        );
+    };
+
+    const handleRestoreAll = () => {
+        if (selectedArchivedProducts.length === 0) {
+            message.warning("Please select at least one product to restore");
+            return;
+        }
+        Modal.confirm({
+            title: `Are you sure you want to restore ${selectedArchivedProducts.length} selected product(s)?`,
+            onOk: () => {
+                Promise.all(
+                    selectedArchivedProducts.map((id) =>
+                        axios.post(
+                            `http://localhost:8000/api/products/${id}/restore`,
+                            {},
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                    )
+                )
+                    .then(() => {
+                        message.success(
+                            "Selected products restored successfully"
+                        );
+                        fetchArchivedProducts();
+                        fetchProducts();
+                        setSelectedArchivedProducts([]);
+                        setSelectAllArchived(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to restore some products")
+                    );
+            },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
+        });
+    };
+
     const mainColumns = [
         {
             title: "Actions",
@@ -150,7 +259,7 @@ const ProductManagement = () => {
                 <Space>
                     <Checkbox
                         checked={record.selected}
-                        onChange={() => handleCheckboxChange(record.id)}
+                        onChange={() => handleActiveCheckboxChange(record.id)}
                     />
                     <EditOutlined
                         onClick={() => handleEdit(record)}
@@ -268,16 +377,24 @@ const ProductManagement = () => {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
-                <Button type="link" onClick={() => handleRestore(record.id)}>
-                    <UndoOutlined style={{ fontSize: "18px" }} />
-                </Button>
+                <Space>
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleArchivedCheckboxChange(record.id)}
+                    />
+                    <Button
+                        type="link"
+                        onClick={() => handleRestore(record.id)}
+                    >
+                        <UndoOutlined style={{ fontSize: "18px" }} />
+                    </Button>
+                </Space>
             ),
         },
         ...mainColumns.slice(1),
     ];
 
     const handleEdit = (record) => {
-        console.log("Edit product:", record);
         setCurrentProduct(record);
         form.setFieldsValue({
             id: record.id,
@@ -344,45 +461,6 @@ const ProductManagement = () => {
                 fetchProducts();
             })
             .catch((err) => message.error("Failed to restore product"));
-    };
-
-    const handleArchiveAll = () => {
-        if (selectedProducts.length === 0) {
-            message.warning("Please select at least one product to archive");
-            return;
-        }
-        Modal.confirm({
-            title: `Are you sure you want to archive ${selectedProducts.length} selected product(s)?`,
-            onOk: () => {
-                Promise.all(
-                    selectedProducts.map((id) =>
-                        axios.delete(
-                            `http://localhost:8000/api/products/${id}`,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${localStorage.getItem(
-                                        "token"
-                                    )}`,
-                                },
-                            }
-                        )
-                    )
-                )
-                    .then(() => {
-                        message.success(
-                            "Selected products archived successfully"
-                        );
-                        fetchProducts();
-                        setSelectedProducts([]);
-                        setSelectAll(false);
-                    })
-                    .catch((err) =>
-                        message.error("Failed to archive some products")
-                    );
-            },
-            okButtonProps: { style: { width: "80px" } },
-            cancelButtonProps: { style: { width: "80px" } },
-        });
     };
 
     const handleAdd = () => {
@@ -521,6 +599,21 @@ const ProductManagement = () => {
         );
     });
 
+    const filteredArchivedProducts = archivedProducts.filter((product) => {
+        const lower = searchText.toLowerCase();
+        return (
+            product.product_name.toLowerCase().includes(lower) ||
+            brands
+                .find((b) => b.id === product.brand_id)
+                ?.name.toLowerCase()
+                .includes(lower) ||
+            categories
+                .find((c) => c.id === product.category_id)
+                ?.name.toLowerCase()
+                .includes(lower)
+        );
+    });
+
     return (
         <Layout>
             <Sider width={256} style={{ minHeight: "100vh" }}>
@@ -553,12 +646,13 @@ const ProductManagement = () => {
                                 style={{ width: 200, marginRight: 8 }}
                             />
                             <Checkbox
-                                checked={selectAll}
-                                onChange={handleSelectAllChange}
+                                checked={selectAllActive}
+                                onChange={handleSelectAllActiveChange}
                             >
                                 Select All
                             </Checkbox>
-                            {(selectAll || selectedProducts.length > 0) && (
+                            {(selectAllActive ||
+                                selectedActiveProducts.length > 0) && (
                                 <Button
                                     type="link"
                                     onClick={handleArchiveAll}
@@ -567,8 +661,8 @@ const ProductManagement = () => {
                                     <FolderOpenOutlined
                                         style={{ fontSize: "18px" }}
                                     />
-                                    {selectedProducts.length > 0 &&
-                                        ` (${selectedProducts.length})`}
+                                    {selectedActiveProducts.length > 0 &&
+                                        ` (${selectedActiveProducts.length})`}
                                 </Button>
                             )}
                         </div>
@@ -609,7 +703,6 @@ const ProductManagement = () => {
                 </Content>
             </Layout>
 
-            {/* Add / Edit Product Modal */}
             <Modal
                 title="Add / Edit Product"
                 centered
@@ -911,9 +1004,37 @@ const ProductManagement = () => {
                 width={1200}
                 footer={[]}
             >
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: 16,
+                    }}
+                >
+                    <Checkbox
+                        checked={selectAllArchived}
+                        onChange={handleSelectAllArchivedChange}
+                        style={{ marginRight: 16 }}
+                    >
+                        Select All
+                    </Checkbox>
+                    {(selectAllArchived ||
+                        selectedArchivedProducts.length > 0) && (
+                        <Button
+                            type="link"
+                            onClick={handleRestoreAll}
+                            style={{ marginRight: 8 }}
+                        >
+                            <UndoOutlined style={{ fontSize: "18px" }} />
+                            Restore
+                            {selectedArchivedProducts.length > 0 &&
+                                ` (${selectedArchivedProducts.length})`}
+                        </Button>
+                    )}
+                </div>
                 <Table
                     columns={archiveColumns}
-                    dataSource={archivedProducts}
+                    dataSource={filteredArchivedProducts}
                     scroll={{ x: 1500 }}
                     pagination={false}
                 />

@@ -109,6 +109,8 @@ const ReviewsManagement = () => {
                     console.error(error);
                 }
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
@@ -251,28 +253,42 @@ const ReviewsManagement = () => {
                             marginBottom: 16,
                         }}
                     >
-                        <Space>
-                            <Search
-                                placeholder="Search by username"
-                                onSearch={(value) => setSearchQuery(value)}
-                                style={{ width: 300 }}
-                            />
-                            <Select
-                                placeholder="Filter by rating"
-                                style={{ width: 200 }}
-                                allowClear
-                                onChange={(value) => setSelectedRating(value)}
-                            >
-                                <Option value={1}>⭐ 1 Star</Option>
-                                <Option value={2}>⭐⭐ 2 Stars</Option>
-                                <Option value={3}>⭐⭐⭐ 3 Stars</Option>
-                                <Option value={4}>⭐⭐⭐⭐ 4 Stars</Option>
-                                <Option value={5}>⭐⭐⭐⭐⭐ 5 Stars</Option>
-                            </Select>
-                        </Space>
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                marginBottom: 16,
+                                flexDirection: "column",
+                            }}
+                        >
+                            <Space>
+                                <Search
+                                    placeholder="Search by username"
+                                    onSearch={(value) => setSearchQuery(value)}
+                                    style={{ width: 300 }}
+                                />
+                                <Select
+                                    placeholder="Filter by rating"
+                                    style={{ width: 200 }}
+                                    allowClear
+                                    onChange={(value) =>
+                                        setSelectedRating(value)
+                                    }
+                                >
+                                    <Option value={1}>⭐ 1 Star</Option>
+                                    <Option value={2}>⭐⭐ 2 Stars</Option>
+                                    <Option value={3}>⭐⭐⭐ 3 Stars</Option>
+                                    <Option value={4}>⭐⭐⭐⭐ 4 Stars</Option>
+                                    <Option value={5}>
+                                        ⭐⭐⭐⭐⭐ 5 Stars
+                                    </Option>
+                                </Select>
+                            </Space>
+                        </div>
                         <Button
                             type="default"
                             onClick={() => setOpenArchiveModal(true)}
+                            style={{ width: "180px" }}
                         >
                             <FolderOpenOutlined style={{ marginRight: 4 }} />{" "}
                             View Archived Reviews

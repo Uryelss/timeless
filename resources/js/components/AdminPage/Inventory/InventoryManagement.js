@@ -28,8 +28,10 @@ const InventoryManagement = () => {
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectAll, setSelectAll] = useState(false);
-    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectAllActive, setSelectAllActive] = useState(false);
+    const [selectedActiveItems, setSelectedActiveItems] = useState([]);
+    const [selectAllArchived, setSelectAllArchived] = useState(false);
+    const [selectedArchivedItems, setSelectedArchivedItems] = useState([]);
     const [editingRecord, setEditingRecord] = useState(null);
     const [form] = Form.useForm();
 
@@ -66,7 +68,9 @@ const InventoryManagement = () => {
             })
             .then((res) => {
                 console.log("Fetched archived inventory:", res.data);
-                setArchivedInventory(res.data);
+                setArchivedInventory(
+                    res.data.map((item) => ({ ...item, selected: false }))
+                );
             })
             .catch((err) => {
                 message.error("Error fetching archived inventory");
@@ -84,29 +88,56 @@ const InventoryManagement = () => {
         }
     }, [openArchiveModal]);
 
-    // Checkbox handling for individual items
-    const handleCheckboxChange = (itemId) => {
+    // Checkbox handling for active items
+    const handleActiveCheckboxChange = (itemId) => {
         const updatedItems = inventoryItems.map((item) =>
             item.id === itemId ? { ...item, selected: !item.selected } : item
         );
         setInventoryItems(updatedItems);
-        setSelectedItems(
+        setSelectedActiveItems(
             updatedItems.filter((i) => i.selected).map((i) => i.id)
         );
         const allSelected = updatedItems.every((i) => i.selected);
-        setSelectAll(allSelected);
+        setSelectAllActive(allSelected);
     };
 
-    // Select All checkbox handling
-    const handleSelectAllChange = (e) => {
+    // Select All checkbox handling for active items
+    const handleSelectAllActiveChange = (e) => {
         const checked = e.target.checked;
-        setSelectAll(checked);
+        setSelectAllActive(checked);
         const updatedItems = inventoryItems.map((item) => ({
             ...item,
             selected: checked,
         }));
         setInventoryItems(updatedItems);
-        setSelectedItems(checked ? updatedItems.map((i) => i.id) : []);
+        setSelectedActiveItems(checked ? updatedItems.map((i) => i.id) : []);
+    };
+
+    // Checkbox handling for archived items
+    const handleArchivedCheckboxChange = (itemId) => {
+        const updatedArchived = archivedInventory.map((item) =>
+            item.id === itemId ? { ...item, selected: !item.selected } : item
+        );
+        setArchivedInventory(updatedArchived);
+        setSelectedArchivedItems(
+            updatedArchived.filter((i) => i.selected).map((i) => i.id)
+        );
+        const allSelected = updatedArchived.every((i) => i.selected);
+        setSelectAllArchived(allSelected);
+    };
+
+    // Select All checkbox handling for archived items
+    const handleSelectAllArchivedChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAllArchived(checked);
+        const updatedArchived = archivedInventory.map((item) => ({
+            ...item,
+            selected: checked,
+        }));
+        setArchivedInventory(updatedArchived);
+        setSelectedArchivedItems(
+            checked ? updatedArchived.map((i) => i.id) : []
+        );
     };
 
     // Table columns for active inventory records
@@ -118,7 +149,7 @@ const InventoryManagement = () => {
                 <Space>
                     <Checkbox
                         checked={record.selected}
-                        onChange={() => handleCheckboxChange(record.id)}
+                        onChange={() => handleActiveCheckboxChange(record.id)}
                     />
                     <EditOutlined
                         onClick={() => handleEdit(record)}
@@ -172,9 +203,18 @@ const InventoryManagement = () => {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
-                <Button type="link" onClick={() => handleRestore(record.id)}>
-                    <UndoOutlined style={{ fontSize: "18px" }} />
-                </Button>
+                <Space>
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleArchivedCheckboxChange(record.id)}
+                    />
+                    <Button
+                        type="link"
+                        onClick={() => handleRestore(record.id)}
+                    >
+                        <UndoOutlined style={{ fontSize: "18px" }} />
+                    </Button>
+                </Space>
             ),
         },
         ...mainColumns.slice(1),
@@ -247,17 +287,17 @@ const InventoryManagement = () => {
             });
     };
 
-    // Bulk archive handler
+    // Bulk archive handler for active items
     const handleArchiveAll = () => {
-        if (selectedItems.length === 0) {
+        if (selectedActiveItems.length === 0) {
             message.warning("Please select at least one item to archive");
             return;
         }
         Modal.confirm({
-            title: `Are you sure you want to archive ${selectedItems.length} selected inventory item(s)?`,
+            title: `Are you sure you want to archive ${selectedActiveItems.length} selected inventory item(s)?`,
             onOk: () => {
                 Promise.all(
-                    selectedItems.map((id) =>
+                    selectedActiveItems.map((id) =>
                         axios.delete(
                             `http://localhost:8000/api/inventory/${id}`,
                             {
@@ -275,11 +315,53 @@ const InventoryManagement = () => {
                             "Selected inventory items archived successfully"
                         );
                         fetchInventory();
-                        setSelectedItems([]);
-                        setSelectAll(false);
+                        setSelectedActiveItems([]);
+                        setSelectAllActive(false);
                     })
                     .catch((err) =>
                         message.error("Failed to archive some inventory items")
+                    );
+            },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
+        });
+    };
+
+    // Bulk restore handler for archived items
+    const handleRestoreAll = () => {
+        if (selectedArchivedItems.length === 0) {
+            message.warning("Please select at least one item to restore");
+            return;
+        }
+        Modal.confirm({
+            title: `Are you sure you want to restore ${selectedArchivedItems.length} selected inventory item(s)?`,
+            onOk: () => {
+                Promise.all(
+                    selectedArchivedItems.map((id) =>
+                        axios.post(
+                            `http://localhost:8000/api/inventory/${id}/restore`,
+                            {},
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                    )
+                )
+                    .then(() => {
+                        message.success(
+                            "Selected inventory items restored successfully"
+                        );
+                        fetchArchivedInventory();
+                        fetchInventory();
+                        setSelectedArchivedItems([]);
+                        setSelectAllArchived(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to restore some inventory items")
                     );
             },
             okButtonProps: { style: { width: "80px" } },
@@ -330,6 +412,17 @@ const InventoryManagement = () => {
         );
     });
 
+    // Filter archived inventory records based on the search query
+    const filteredArchivedInventory = archivedInventory.filter((item) => {
+        const lower = searchQuery.toLowerCase();
+        return (
+            (item.product &&
+                item.product.product_name.toLowerCase().includes(lower)) ||
+            item.size.toLowerCase().includes(lower) ||
+            item.stock_status.toLowerCase().includes(lower)
+        );
+    });
+
     return (
         <Layout>
             <Sider width={256} style={{ minHeight: "100vh" }}>
@@ -361,13 +454,14 @@ const InventoryManagement = () => {
                                 style={{ width: 300 }}
                             />
                             <Checkbox
-                                checked={selectAll}
-                                onChange={handleSelectAllChange}
+                                checked={selectAllActive}
+                                onChange={handleSelectAllActiveChange}
                                 style={{ marginLeft: 16 }}
                             >
                                 Select All
                             </Checkbox>
-                            {(selectAll || selectedItems.length > 0) && (
+                            {(selectAllActive ||
+                                selectedActiveItems.length > 0) && (
                                 <Button
                                     type="link"
                                     onClick={handleArchiveAll}
@@ -376,8 +470,9 @@ const InventoryManagement = () => {
                                     <FolderOpenOutlined
                                         style={{ fontSize: "18px" }}
                                     />
-                                    {selectedItems.length > 0 &&
-                                        ` (${selectedItems.length})`}
+                                    Archive
+                                    {selectedActiveItems.length > 0 &&
+                                        ` (${selectedActiveItems.length})`}
                                 </Button>
                             )}
                         </div>
@@ -395,6 +490,7 @@ const InventoryManagement = () => {
                         columns={mainColumns}
                         dataSource={filteredInventory}
                         rowKey="id"
+                        scroll={{ x: 1200 }}
                     />
                 </Content>
             </Layout>
@@ -405,13 +501,50 @@ const InventoryManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1200}
-                footer={[]}
+                footer={[
+                    <Button
+                        key="close"
+                        onClick={() => setOpenArchiveModal(false)}
+                        style={{ width: "131px" }}
+                    >
+                        Close
+                    </Button>,
+                ]}
             >
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: 16,
+                    }}
+                >
+                    <Checkbox
+                        checked={selectAllArchived}
+                        onChange={handleSelectAllArchivedChange}
+                        style={{ marginRight: 16 }}
+                    >
+                        Select All
+                    </Checkbox>
+                    {(selectAllArchived ||
+                        selectedArchivedItems.length > 0) && (
+                        <Button
+                            type="link"
+                            onClick={handleRestoreAll}
+                            style={{ marginRight: 8 }}
+                        >
+                            <UndoOutlined style={{ fontSize: "18px" }} />
+                            Restore
+                            {selectedArchivedItems.length > 0 &&
+                                ` (${selectedArchivedItems.length})`}
+                        </Button>
+                    )}
+                </div>
                 <Table
                     columns={archiveColumns}
-                    dataSource={archivedInventory}
+                    dataSource={filteredArchivedInventory}
                     rowKey="id"
                     pagination={false}
+                    scroll={{ x: 1200 }}
                 />
             </Modal>
             {/* Edit Inventory Modal */}
