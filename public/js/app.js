@@ -185337,12 +185337,21 @@ var OrderManagement = function OrderManagement() {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      console.log("API Response:", res.data); // Debug
+      console.log("API Response:", res.data);
       var transformedOrders = res.data.map(function (order) {
+        var timestamps = order.status_history ? order.status_history.reduce(function (acc, history) {
+          acc[history.status] = history.timestamp;
+          return acc;
+        }, {}) : {};
         return _objectSpread(_objectSpread({}, order), {}, {
           order_date: order.order_date || order.created_at,
           shipping: order.shipping || {},
-          selected: false // Initialize selected state
+          selected: false,
+          created_at: order.order_date || order.created_at,
+          payment_confirmed_at: timestamps["processing"] || null,
+          shipped_at: timestamps["shipped"] || null,
+          delivered_at: timestamps["delivered"] || null,
+          completed_at: timestamps["completed"] || null
         });
       });
       setOrders(transformedOrders.filter(function (order) {
@@ -185374,10 +185383,9 @@ var OrderManagement = function OrderManagement() {
     }).map(function (o) {
       return o.id;
     }));
-    var allSelected = updatedOrders.every(function (o) {
+    setSelectAllActive(updatedOrders.every(function (o) {
       return o.selected;
-    });
-    setSelectAllActive(allSelected);
+    }));
   };
   var handleSelectAllActiveChange = function handleSelectAllActiveChange(e) {
     var checked = e.target.checked;
@@ -185411,7 +185419,7 @@ var OrderManagement = function OrderManagement() {
           fetchOrders();
           setSelectedActiveOrders([]);
           setSelectAllActive(false);
-        })["catch"](function (err) {
+        })["catch"](function () {
           return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive some orders");
         });
       },
@@ -185441,10 +185449,9 @@ var OrderManagement = function OrderManagement() {
     }).map(function (o) {
       return o.id;
     }));
-    var allSelected = updatedArchived.every(function (o) {
+    setSelectAllArchived(updatedArchived.every(function (o) {
       return o.selected;
-    });
-    setSelectAllArchived(allSelected);
+    }));
   };
   var handleSelectAllArchivedChange = function handleSelectAllArchivedChange(e) {
     var checked = e.target.checked;
@@ -185478,7 +185485,7 @@ var OrderManagement = function OrderManagement() {
           fetchOrders();
           setSelectedArchivedOrders([]);
           setSelectAllArchived(false);
-        })["catch"](function (err) {
+        })["catch"](function () {
           return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore some orders");
         });
       },
@@ -185672,15 +185679,62 @@ var OrderManagement = function OrderManagement() {
     }, 0)) || 0;
     var deliveryCharge = (shipping === null || shipping === void 0 ? void 0 : shipping.shipping_total_amount) || 0;
     var totalAmount = selectedOrder.total_amount || subtotal + deliveryCharge;
+    var getTimelineItems = function getTimelineItems() {
+      var timestamps = {
+        placed: selectedOrder.created_at,
+        paymentConfirmed: selectedOrder.payment_confirmed_at,
+        shipped: selectedOrder.shipped_at,
+        delivered: selectedOrder.delivered_at,
+        completed: selectedOrder.completed_at
+      };
+      var formatTimestamp = function formatTimestamp(timestamp) {
+        if (!timestamp) return "Awaiting";
+        var date = new Date(timestamp);
+        return "".concat((date.getMonth() + 1).toString().padStart(2, "0"), "/").concat(date.getDate().toString().padStart(2, "0"), "/").concat(date.getFullYear(), " ").concat(date.getHours().toString().padStart(2, "0"), ":").concat(date.getMinutes().toString().padStart(2, "0"));
+      };
+      return [{
+        label: "Order Placed",
+        timestamp: formatTimestamp(timestamps.placed)
+      }, {
+        label: "Payment Confirmed",
+        timestamp: formatTimestamp(timestamps.paymentConfirmed)
+      }, {
+        label: "Shipped",
+        timestamp: formatTimestamp(timestamps.shipped)
+      }, {
+        label: "Delivered",
+        timestamp: formatTimestamp(timestamps.delivered)
+      }, {
+        label: "Completed",
+        timestamp: formatTimestamp(timestamps.completed)
+      }];
+    };
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
       style: {
         padding: "16px"
       },
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
         level: 4,
+        children: "Order Timeline"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
         style: {
-          marginBottom: "16px"
+          marginBottom: "24px"
         },
+        children: getTimelineItems().map(function (step, index) {
+          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            style: {
+              marginBottom: "8px"
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
+              strong: true,
+              children: [step.label, ": "]
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
+              children: step.timestamp
+            })]
+          }, index);
+        })
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
+        level: 4,
         children: "Order Summary"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
         dataSource: order_details,
@@ -185861,19 +185915,12 @@ var OrderManagement = function OrderManagement() {
                 }
               }), selectedActiveOrders.length > 0 && " (".concat(selectedActiveOrders.length, ")")]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-            style: {
-              display: "flex",
-              gap: 8,
-              alignItems: "center"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+            type: "default",
+            onClick: function onClick() {
+              return setOpenArchiveModal(true);
             },
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
-              type: "default",
-              onClick: function onClick() {
-                return setOpenArchiveModal(true);
-              },
-              children: "Archived Orders"
-            })
+            children: "Archived Orders"
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
           columns: mainColumns,
@@ -185966,14 +186013,20 @@ var OrderManagement = function OrderManagement() {
             value: "pending",
             children: "Pending"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+            value: "processing",
+            children: "Processing"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+            value: "shipped",
+            children: "Shipped"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+            value: "delivered",
+            children: "Delivered"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
             value: "completed",
             children: "Completed"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
             value: "cancelled",
             children: "Cancelled"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-            value: "processing",
-            children: "Processing"
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
           value: ((_selectedOrder$shippi = selectedOrder.shipping) === null || _selectedOrder$shippi === void 0 ? void 0 : _selectedOrder$shippi.tracking_number) || "",
@@ -190218,19 +190271,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/typography/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/radio/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/radio/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FileTextOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DollarOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/TruckOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DownloadOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/StarOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/LeftOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/CloseOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/CloseOutlined.js");
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var _Navbar_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Navbar/Navbar */ "./resources/js/components/UserPage/Navbar/Navbar.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
@@ -190296,7 +190348,7 @@ var OrderTracking = function OrderTracking() {
   var baseUrl = "http://localhost:8000";
   var fetchOrderDetails = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      var res, orderData, transformedOrder, _error$response, _error$response2;
+      var res, orders, orderData, _error$response, _error$response2;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
@@ -190311,32 +190363,34 @@ var OrderTracking = function OrderTracking() {
             setLoading(true);
             _context.prev = 5;
             _context.next = 8;
-            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(baseUrl, "/api/my-purchases?order_id=").concat(orderId), {
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(baseUrl, "/api/my-purchases"), {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 8:
             res = _context.sent;
-            orderData = res.data;
-            if (!(!orderData || !orderData.id)) {
-              _context.next = 12;
+            orders = res.data;
+            orderData = orders.find(function (order) {
+              return order.id === parseInt(orderId);
+            });
+            if (orderData) {
+              _context.next = 13;
               break;
             }
             throw new Error("Order not found in response");
-          case 12:
-            transformedOrder = _objectSpread(_objectSpread({}, orderData), {}, {
+          case 13:
+            setOrder(_objectSpread(_objectSpread({}, orderData), {}, {
               order_date: orderData.order_date || orderData.created_at,
               shipping: orderData.shipping || {},
-              order_details: orderData.order_details || orderData.orderDetails || [],
+              order_details: orderData.order_details || [],
               total_amount: orderData.total_amount || 0,
               created_at: orderData.created_at || null,
               payment_confirmed_at: orderData.payment_confirmed_at || null,
               shipped_at: orderData.shipped_at || null,
               delivered_at: orderData.delivered_at || null,
               completed_at: orderData.completed_at || null
-            });
-            setOrder(transformedOrder);
+            }));
             _context.next = 20;
             break;
           case 16:
@@ -190360,50 +190414,47 @@ var OrderTracking = function OrderTracking() {
   }();
   var fetchUsername = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      var res, _error$response3, _error$response4, _error$response5;
+      var res, _error$response3, _error$response4;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             if (token) {
-              _context2.next = 5;
+              _context2.next = 4;
               break;
             }
-            console.log("No token found in localStorage");
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Please log in to view your username.");
             navigate("/login");
             return _context2.abrupt("return");
-          case 5:
-            _context2.prev = 5;
-            console.log("Fetching username with token:", token);
-            _context2.next = 9;
+          case 4:
+            _context2.prev = 4;
+            _context2.next = 7;
             return axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(baseUrl, "/api/users/me"), {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
-          case 9:
+          case 7:
             res = _context2.sent;
-            console.log("Username response:", res.data);
             setUsername(res.data.username);
-            _context2.next = 19;
+            _context2.next = 16;
             break;
-          case 14:
-            _context2.prev = 14;
-            _context2.t0 = _context2["catch"](5);
+          case 11:
+            _context2.prev = 11;
+            _context2.t0 = _context2["catch"](4);
             console.error("Error fetching username:", ((_error$response3 = _context2.t0.response) === null || _error$response3 === void 0 ? void 0 : _error$response3.data) || _context2.t0);
             if (((_error$response4 = _context2.t0.response) === null || _error$response4 === void 0 ? void 0 : _error$response4.status) === 401) {
               antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Session expired. Please log in again.");
               localStorage.removeItem("token");
               navigate("/login");
-            } else if (((_error$response5 = _context2.t0.response) === null || _error$response5 === void 0 ? void 0 : _error$response5.status) === 500) {
-              antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Server error fetching username. Please try again later.");
+            } else {
+              antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Error fetching username.");
             }
             setUsername("N/A");
-          case 19:
+          case 16:
           case "end":
             return _context2.stop();
         }
-      }, _callee2, null, [[5, 14]]);
+      }, _callee2, null, [[4, 11]]);
     }));
     return function fetchUsername() {
       return _ref2.apply(this, arguments);
@@ -190415,12 +190466,9 @@ var OrderTracking = function OrderTracking() {
       fetchUsername();
     }
   }, [orderId, token]);
-  var handleBackToShipped = function handleBackToShipped() {
-    navigate("/user-shipped");
-  };
   var handleConfirmReceipt = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-      var _error$response6, _error$response7;
+      var _error$response5, _error$response6;
       return _regeneratorRuntime().wrap(function _callee3$(_context3) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
@@ -190440,8 +190488,8 @@ var OrderTracking = function OrderTracking() {
           case 8:
             _context3.prev = 8;
             _context3.t0 = _context3["catch"](1);
-            console.error("Error confirming receipt:", ((_error$response6 = _context3.t0.response) === null || _error$response6 === void 0 ? void 0 : _error$response6.data) || _context3.t0);
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Failed to confirm receipt: " + (((_error$response7 = _context3.t0.response) === null || _error$response7 === void 0 || (_error$response7 = _error$response7.data) === null || _error$response7 === void 0 ? void 0 : _error$response7.error) || "Unknown error"));
+            console.error("Error confirming receipt:", ((_error$response5 = _context3.t0.response) === null || _error$response5 === void 0 ? void 0 : _error$response5.data) || _context3.t0);
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Failed to confirm receipt: " + (((_error$response6 = _context3.t0.response) === null || _error$response6 === void 0 || (_error$response6 = _error$response6.data) === null || _error$response6 === void 0 ? void 0 : _error$response6.error) || "Unknown error"));
           case 12:
             _context3.prev = 12;
             setIsConfirmReceiptLoading(false);
@@ -190461,7 +190509,7 @@ var OrderTracking = function OrderTracking() {
   };
   var handleCancelOrder = /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-      var _error$response8, _error$response9;
+      var _error$response7, _error$response8;
       return _regeneratorRuntime().wrap(function _callee4$(_context4) {
         while (1) switch (_context4.prev = _context4.next) {
           case 0:
@@ -190492,8 +190540,8 @@ var OrderTracking = function OrderTracking() {
           case 13:
             _context4.prev = 13;
             _context4.t0 = _context4["catch"](4);
-            console.error("Error cancelling order:", ((_error$response8 = _context4.t0.response) === null || _error$response8 === void 0 ? void 0 : _error$response8.data) || _context4.t0);
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Failed to cancel order: " + (((_error$response9 = _context4.t0.response) === null || _error$response9 === void 0 || (_error$response9 = _error$response9.data) === null || _error$response9 === void 0 ? void 0 : _error$response9.error) || "Unknown error"));
+            console.error("Error cancelling order:", ((_error$response7 = _context4.t0.response) === null || _error$response7 === void 0 ? void 0 : _error$response7.data) || _context4.t0);
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Failed to cancel order: " + (((_error$response8 = _context4.t0.response) === null || _error$response8 === void 0 || (_error$response8 = _error$response8.data) === null || _error$response8 === void 0 ? void 0 : _error$response8.error) || "Unknown error"));
           case 17:
             _context4.prev = 17;
             setIsCancelLoading(false);
@@ -190523,7 +190571,7 @@ var OrderTracking = function OrderTracking() {
         return "Awaiting";
       }
       var date = new Date(timestamp);
-      return "".concat((date.getMonth() + 1).toString().padStart(2, "0"), "/").concat(date.getDate().toString().padStart(2, "0"), "/").concat(date.getFullYear(), " ").concat(date.getHours(), ":").concat(date.getMinutes().toString().padStart(2, "0"));
+      return "".concat((date.getMonth() + 1).toString().padStart(2, "0"), "/").concat(date.getDate().toString().padStart(2, "0"), "/").concat(date.getFullYear(), " ").concat(date.getHours().toString().padStart(2, "0"), ":").concat(date.getMinutes().toString().padStart(2, "0"));
     };
     var statusOrder = ["pending", "processing", "shipped", "delivered", "completed"];
     var currentStatusIndex = statusOrder.indexOf(status);
@@ -190577,23 +190625,12 @@ var OrderTracking = function OrderTracking() {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_Navbar_Navbar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Content, {
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
         className: "content-wrapper",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-          className: "header-section",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-            type: "link",
-            icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {}),
-            onClick: handleBackToShipped,
-            children: "Back to Shipped Orders"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
-            level: 2,
-            children: productName
-          })]
-        }), loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
+        children: [loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
           className: "loading-text",
           children: "Loading order tracking..."
         }) : order ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           className: "main-content",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
             className: "timeline-card",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
               level: 4,
@@ -190618,46 +190655,44 @@ var OrderTracking = function OrderTracking() {
                 }, index);
               })
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
             className: "action-buttons-card",
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
               className: "action-buttons",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                 className: "primary-btn",
                 onClick: handleTrackOrder,
                 children: "Track Order"
-              }), ["pending", "processing", "shipped"].includes((_order$order_status2 = order.order_status) === null || _order$order_status2 === void 0 ? void 0 : _order$order_status2.toLowerCase()) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+              }), ["pending", "processing", "shipped"].includes((_order$order_status2 = order.order_status) === null || _order$order_status2 === void 0 ? void 0 : _order$order_status2.toLowerCase()) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                 className: "danger-btn",
-                icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {}),
+                icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {}),
                 onClick: function onClick() {
                   return setIsCancelModalVisible(true);
                 },
                 children: "Cancel Order"
-              }), ((_order$order_status3 = order.order_status) === null || _order$order_status3 === void 0 ? void 0 : _order$order_status3.toLowerCase()) === "delivered" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+              }), ((_order$order_status3 = order.order_status) === null || _order$order_status3 === void 0 ? void 0 : _order$order_status3.toLowerCase()) === "delivered" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                 className: "primary-btn",
                 onClick: handleConfirmReceipt,
                 loading: isConfirmReceiptLoading,
                 children: "Confirm Receipt"
               })]
             })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
             className: "order-details-card",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
               level: 4,
               children: "Order Details"
             }), order.order_details && order.order_details.length > 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
                 className: "order-summary",
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
-                  children: ["Order Date:", " ", formatDate(order.order_date)]
-                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
-                  children: ["Status:", " ", order.order_status || "N/A"]
-                })]
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
+                  children: ["Order Date: ", formatDate(order.order_date)]
+                })
               }), order.order_details.map(function (detail) {
                 var _detail$product, _detail$product2, _detail$product3;
                 return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                   className: "order-item",
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
                     src: (_detail$product = detail.product) !== null && _detail$product !== void 0 && _detail$product.main_image ? "".concat(baseUrl, "/storage/").concat(detail.product.main_image) : "https://via.placeholder.com/80",
                     alt: ((_detail$product2 = detail.product) === null || _detail$product2 === void 0 ? void 0 : _detail$product2.product_name) || "Product",
                     className: "item-image",
@@ -190669,7 +190704,7 @@ var OrderTracking = function OrderTracking() {
                       strong: true,
                       children: ((_detail$product3 = detail.product) === null || _detail$product3 === void 0 ? void 0 : _detail$product3.product_name) || "Unknown Product"
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
-                      children: ["Quantity:", " ", detail.quantity]
+                      children: ["Quantity: ", detail.quantity]
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                       children: ["Subtotal: \u20B1", detail.price ? (detail.price * detail.quantity).toLocaleString() : "N/A"]
                     })]
@@ -190682,7 +190717,7 @@ var OrderTracking = function OrderTracking() {
             }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
               children: "No order details available."
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
             className: "shipping-card",
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
               level: 4,
@@ -190694,35 +190729,35 @@ var OrderTracking = function OrderTracking() {
                 children: ["Username: ", username || "N/A"]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                 block: true,
-                children: ["Address:", " ", formatAddress((_order$shipping = order.shipping) === null || _order$shipping === void 0 ? void 0 : _order$shipping.address) || "Not Available"]
+                children: ["Address: ", formatAddress((_order$shipping = order.shipping) === null || _order$shipping === void 0 ? void 0 : _order$shipping.address) || "Not Available"]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                 block: true,
-                children: ["Phone:", " ", ((_order$shipping2 = order.shipping) === null || _order$shipping2 === void 0 || (_order$shipping2 = _order$shipping2.address) === null || _order$shipping2 === void 0 ? void 0 : _order$shipping2.phone) || "Not Available"]
+                children: ["Phone: ", ((_order$shipping2 = order.shipping) === null || _order$shipping2 === void 0 || (_order$shipping2 = _order$shipping2.address) === null || _order$shipping2 === void 0 ? void 0 : _order$shipping2.phone) || "Not Available"]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                 block: true,
-                children: ["Tracking Number:", " ", ((_order$shipping3 = order.shipping) === null || _order$shipping3 === void 0 ? void 0 : _order$shipping3.tracking_number) || "Not Available"]
+                children: ["Tracking Number: ", ((_order$shipping3 = order.shipping) === null || _order$shipping3 === void 0 ? void 0 : _order$shipping3.tracking_number) || "Not Available"]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                 block: true,
-                children: ["Shipping Method:", " ", ((_order$shipping4 = order.shipping) === null || _order$shipping4 === void 0 || (_order$shipping4 = _order$shipping4.shipping_method) === null || _order$shipping4 === void 0 ? void 0 : _order$shipping4.name) || "N/A"]
+                children: ["Shipping Method: ", ((_order$shipping4 = order.shipping) === null || _order$shipping4 === void 0 || (_order$shipping4 = _order$shipping4.shipping_method) === null || _order$shipping4 === void 0 ? void 0 : _order$shipping4.name) || "N/A"]
               })]
             })]
           })]
         }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
           className: "no-tracking",
           children: "No order tracking available."
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
           title: "Cancel Order",
           open: isCancelModalVisible,
           onCancel: function onCancel() {
             return setIsCancelModalVisible(false);
           },
-          footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+          footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
             onClick: function onClick() {
               return setIsCancelModalVisible(false);
             },
             disabled: isCancelLoading,
             children: "Cancel"
-          }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+          }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
             type: "primary",
             onClick: handleCancelOrder,
             loading: isCancelLoading,
@@ -190732,27 +190767,27 @@ var OrderTracking = function OrderTracking() {
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
             className: "modal-description",
             children: "Please select a reason for cancelling your order. Note that this action will cancel all items and cannot be undone."
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"].Group, {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"].Group, {
             onChange: function onChange(e) {
               return setCancelReason(e.target.value);
             },
             value: cancelReason,
             className: "cancel-reasons",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
               direction: "vertical",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
                 value: "Need to change delivery address",
                 children: "Need to change delivery address"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
                 value: "Need to modify order (size, quantity, etc)",
                 children: "Need to modify order (size, quantity, etc)"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
                 value: "Payment process too troublesome",
                 children: "Payment process too troublesome"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
                 value: "Don't want to buy anymore",
                 children: "Don\u2019t want to buy anymore"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
                 value: "Others",
                 children: "Others"
               })]

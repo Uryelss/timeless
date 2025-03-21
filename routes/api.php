@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccessController;
 use App\Http\Controllers\API\SubCategoryController;
 use App\Http\Controllers\API\ProductController;
@@ -13,15 +12,10 @@ use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\UserOrderController;
 use App\Http\Controllers\API\AddressController;
-use App\Http\Controllers\API\ForgotPasswordController; // Correct namespace
-/*
-|--------------------------------------------------------------------------
-| Public Routes (No Authentication Required)
-|--------------------------------------------------------------------------
-*/
+use App\Http\Controllers\API\ForgotPasswordController;
 
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
-Route::post('/verify-reset-code', [ForgotPasswordController::class, 'verifyResetCode']); // New endpoint
+Route::post('/verify-reset-code', [ForgotPasswordController::class, 'verifyResetCode']);
 Route::post('/reset-password', [ForgotPasswordController::class, 'reset']);
 Route::post('/register', [AccessController::class, 'register'])->name('register');
 Route::post('/login', [AccessController::class, 'login'])->name('login');
@@ -29,11 +23,6 @@ Route::get('/products/public', [ProductController::class, 'publicIndex'])->name(
 Route::get('/sub-categories/public', [SubCategoryController::class, 'publicIndex'])->name('subcategories.public');
 Route::get('/products/{id}', [ProductViewController::class, 'show'])->name('products.show');
 
-/*
-|--------------------------------------------------------------------------
-| Authenticated Routes (Requires API Token)
-|--------------------------------------------------------------------------
-*/
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AccessController::class, 'logout'])->name('logout');
     Route::get('/validate-token', [AccessController::class, 'validateToken'])->name('validate.token');
@@ -42,33 +31,25 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/inventory-public', [InventoryController::class, 'index'])->name('inventory.public');
     Route::get('/payment-methods', fn() => App\Models\PaymentMethod::all())->name('payment.methods');
     Route::get('/shipping-methods', fn() => App\Models\ShippingMethod::all())->name('shipping.methods');
-    Route::get('/my-purchases', [UserOrderController::class, 'myPurchases'])->name('user.orders.my_purchases');
+    Route::get('/my-purchases', [OrderController::class, 'userOrders'])->name('user.orders.my_purchases'); // Updated to OrderController
     Route::get('/users/me', [UserController::class, 'getCurrentUser'])->name('users.me');
+    Route::post('/orders/{id}/confirm-receipt', [OrderController::class, 'confirmReceipt']); // New endpoint
+    Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder']); // New endpoint
 });
 
-/*
-|--------------------------------------------------------------------------
-| User Routes (Requires 'user' Role)
-|--------------------------------------------------------------------------
-*/
 Route::middleware(['auth:api', 'check.role:user'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/orders/create', [UserOrderController::class, 'store'])->name('orders.store');
-    Route::get('/orders', [OrderController::class, 'userOrders'])->name('orders.user'); // User-specific orders
+    Route::get('/orders', [OrderController::class, 'userOrders'])->name('orders.user');
 
     Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
     Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
-    Route::put('/addresses/{id}', [AddressController::class, 'update'])->name('addresses.update'); // Add this
+    Route::put('/addresses/{id}', [AddressController::class, 'update'])->name('addresses.update');
     Route::delete('/addresses/{id}', [AddressController::class, 'destroy'])->name('addresses.destroy');
-    Route::put('/addresses/{id}/set-default', [AddressController::class, 'setDefault'])->name('addresses.set-default');;
+    Route::put('/addresses/{id}/set-default', [AddressController::class, 'setDefault'])->name('addresses.set-default');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Admin Routes (Requires 'admin' Role)
-|--------------------------------------------------------------------------
-*/
 Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('/admin-dashboard', fn() => response()->json(['message' => 'Welcome to the Admin Dashboard']))
         ->name('admin.dashboard');
@@ -120,6 +101,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::post('/{id}/archive', [OrderController::class, 'archive'])->name('archive');
         Route::post('/{id}/restore', [OrderController::class, 'restore'])->name('restore');
     });
+
     Route::prefix('admin/reviews')->name('admin.reviews.')->group(function () {
         Route::get('/', [ReviewController::class, 'adminIndex'])->name('index');
         Route::put('/{id}', [ReviewController::class, 'update'])->name('update');

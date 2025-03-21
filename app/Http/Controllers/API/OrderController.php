@@ -17,7 +17,8 @@ class OrderController extends Controller
             'shipping.paymentMethod',
             'shipping.address',
             'orderDetails.product',
-        ]); // Removed 'orderStatus'
+            'statusHistory',
+        ]);
 
         if ($request->query('archived')) {
             $query->onlyTrashed();
@@ -37,11 +38,32 @@ class OrderController extends Controller
             'shipping.paymentMethod',
             'shipping.address',
             'orderDetails.product',
-        ]) // Removed 'orderStatus'
-            ->withTrashed()
-            ->findOrFail($id);
+            'statusHistory',
+        ])->withTrashed()->findOrFail($id);
 
-        return response()->json($order);
+        $timestamps = $order->statusHistory
+            ->groupBy('status')
+            ->map(function ($group) {
+                return $group->sortByDesc('timestamp')->first()->timestamp;
+            });
+
+        return response()->json([
+            'id' => $order->id,
+            'profile_id' => $order->profile_id,
+            'shipping_id' => $order->shipping_id,
+            'total_amount' => $order->total_amount,
+            'order_status' => $order->order_status,
+            'order_date' => $order->order_date,
+            'created_at' => $order->order_date ?? $order->created_at,
+            'payment_confirmed_at' => $timestamps['processing'] ?? null,
+            'shipped_at' => $timestamps['shipped'] ?? null,
+            'delivered_at' => $timestamps['delivered'] ?? null,
+            'completed_at' => $timestamps['completed'] ?? null,
+            'shipping' => $order->shipping,
+            'order_details' => $order->orderDetails,
+            'status_history' => $order->statusHistory, // Included for debugging or additional use
+            'deleted_at' => $order->deleted_at,
+        ]);
     }
 
     public function update(Request $request, $id)
@@ -50,14 +72,15 @@ class OrderController extends Controller
             $order = Order::withTrashed()->findOrFail($id);
 
             $request->validate([
-                'order_status' => 'sometimes|in:pending,processing,shipped,delivered,cancelled', // Define valid statuses
+                'order_status' => 'sometimes|in:pending,processing,shipped,delivered,completed,cancelled',
                 'shipping.shipping_status_id' => 'sometimes|exists:shipping_statuses,id',
             ]);
 
-            // Update order_status as a string
-            $order->order_status = $request->input('order_status', $order->order_status);
+            if ($request->has('order_status')) {
+                $newStatus = $request->input('order_status');
+                $order->updateStatus($newStatus, $request->input('details', 'Updated by admin'));
+            }
 
-            // Check if shipping exists; create it if not
             if (!$order->shipping) {
                 $order->shipping()->create([
                     'order_id' => $order->id,
@@ -70,7 +93,6 @@ class OrderController extends Controller
                 ]);
             }
 
-            // Automatically generate tracking number when order_status is "shipped"
             if ($order->order_status === 'shipped' && !$order->shipping->tracking_number) {
                 $date = now()->format('Ymd');
                 $random = strtoupper(substr(uniqid(), -5));
@@ -79,23 +101,17 @@ class OrderController extends Controller
                 $order->shipping->save();
             }
 
-            // Update shipping status ID if provided
-            if ($request->has('shipping.shipping_status_id')) {
-                $order->shipping->shipping_status_id = $request->input('shipping.shipping_status_id');
-                $order->shipping->save();
+            if ($request->has('shipping')) {
+                $shippingData = $request->input('shipping');
+                $order->shipping->update([
+                    'tracking_number' => $shippingData['tracking_number'] ?? $order->shipping->tracking_number,
+                    'shipping_status_id' => $shippingData['shipping_status_id'] ?? $order->shipping->shipping_status_id,
+                ]);
             }
 
             $order->save();
 
-            $order->load([
-                'profile.user',
-                'shipping.shippingMethod',
-                'shipping.paymentMethod',
-                'shipping.address',
-                'orderDetails.product',
-            ]); // Removed 'orderStatus'
-
-            return response()->json(['message' => 'Order updated successfully', 'order' => $order]);
+            return $this->show($id);
         } catch (\Exception $e) {
             Log::error("Order update failed: " . $e->getMessage());
             return response()->json(['message' => 'Failed to update order', 'error' => $e->getMessage()], 500);
@@ -125,23 +141,64 @@ class OrderController extends Controller
             'shipping.paymentMethod',
             'shipping.address',
             'orderDetails.product',
-        ]) // Removed 'orderStatus'
-            ->where('user_id', $user->id)
+            'statusHistory',
+        ])
+            ->whereHas('profile', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
             ->whereNull('deleted_at')
             ->get();
 
-        return response()->json($orders);
+        return response()->json(
+            $orders->map(function ($order) {
+                $timestamps = $order->statusHistory
+                    ->groupBy('status')
+                    ->map(function ($group) {
+                        return $group->sortByDesc('timestamp')->first()->timestamp;
+                    });
+
+                return [
+                    'id' => $order->id,
+                    'profile_id' => $order->profile_id,
+                    'shipping_id' => $order->shipping_id,
+                    'total_amount' => $order->total_amount,
+                    'order_status' => $order->order_status,
+                    'order_date' => $order->order_date,
+                    'created_at' => $order->order_date ?? $order->created_at,
+                    'payment_confirmed_at' => $timestamps['processing'] ?? null,
+                    'shipped_at' => $timestamps['shipped'] ?? null,
+                    'delivered_at' => $timestamps['delivered'] ?? null,
+                    'completed_at' => $timestamps['completed'] ?? null,
+                    'shipping' => $order->shipping,
+                    'order_details' => $order->orderDetails,
+                ];
+            })
+        );
     }
 
-    // Replace getOrderStatuses with a hardcoded list since there's no table
     public function getOrderStatuses()
     {
         try {
-            $statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled']; // Adjust as needed
+            $statuses = ['pending', 'processing', 'shipped', 'delivered', 'completed', 'cancelled'];
             return response()->json($statuses);
         } catch (\Exception $e) {
             Log::error("Failed to fetch order statuses: " . $e->getMessage());
             return response()->json(['error' => 'Failed to fetch order statuses'], 500);
         }
+    }
+
+    public function confirmReceipt($id)
+    {
+        $order = Order::findOrFail($id);
+        $order->updateStatus('delivered', 'Customer confirmed receipt');
+        return $this->show($id);
+    }
+
+    public function cancelOrder($id, Request $request)
+    {
+        $request->validate(['reason' => 'required|string']);
+        $order = Order::findOrFail($id);
+        $order->updateStatus('cancelled', $request->input('reason'));
+        return $this->show($id);
     }
 }

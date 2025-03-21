@@ -25,4 +25,22 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetail::class);
     }
+
+    public function statusHistory()
+    {
+        return $this->hasMany(OrderStatusHistory::class);
+    }
+
+    // Helper method to update status and log it in history
+    public function updateStatus($newStatus, $details = null)
+    {
+        $this->order_status = $newStatus;
+        $this->save();
+
+        $this->statusHistory()->create([
+            'status' => $newStatus,
+            'timestamp' => now(),
+            'details' => $details,
+        ]);
+    }
 }
