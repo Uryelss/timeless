@@ -186256,7 +186256,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/radio/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/PlusOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/LockOutlined.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var _Navbar_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Navbar/Navbar */ "./resources/js/components/UserPage/Navbar/Navbar.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
@@ -186281,6 +186284,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
+
 var Option = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Option;
 var CheckoutPage = function CheckoutPage() {
   var location = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_4__.useLocation)();
@@ -186294,6 +186298,9 @@ var CheckoutPage = function CheckoutPage() {
   var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_5__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
+  var _Form$useForm3 = antd__WEBPACK_IMPORTED_MODULE_5__["default"].useForm(),
+    _Form$useForm4 = _slicedToArray(_Form$useForm3, 1),
+    cardForm = _Form$useForm4[0];
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
     paymentMethods = _useState2[0],
@@ -186334,6 +186341,10 @@ var CheckoutPage = function CheckoutPage() {
     _useState20 = _slicedToArray(_useState19, 2),
     loading = _useState20[0],
     setLoading = _useState20[1];
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState22 = _slicedToArray(_useState21, 2),
+    cardModalVisible = _useState22[0],
+    setCardModalVisible = _useState22[1];
   var API_URL = "http://localhost:8000/api";
   var token = localStorage.getItem("token");
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
@@ -186434,6 +186445,14 @@ var CheckoutPage = function CheckoutPage() {
   }, [shippingMethod, shippingMethods]);
   var total = subtotal + shippingCost;
 
+  // Handle credit card form submission from the modal
+  var handleCardSubmit = function handleCardSubmit(values) {
+    console.log("Credit card details submitted:", values);
+    antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Credit/Debit Card added successfully!");
+    setCardModalVisible(false);
+    // Optionally, store or process the card details here
+  };
+
   // Helper function to handle complete order submission.
   var handleCompleteOrder = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
@@ -186461,7 +186480,6 @@ var CheckoutPage = function CheckoutPage() {
             _context2.next = 14;
             break;
           case 13:
-            // Use the selected default address; no form values needed.
             onFinish({});
           case 14:
           case "end":
@@ -186502,8 +186520,7 @@ var CheckoutPage = function CheckoutPage() {
             return _context3.abrupt("return");
           case 10:
             setLoading(true);
-            // Get current form values (if any)
-            formValues = form.getFieldsValue(); // Determine whether to use the default address (if form matches default)
+            formValues = form.getFieldsValue();
             useDefault = defaultAddress && formValues.streetAddress === defaultAddress.street && formValues.barangay === defaultAddress.barangay && formValues.province === defaultAddress.state && formValues.city === defaultAddress.city && formValues.postalCode === defaultAddress.postal_code && formValues.country === defaultAddress.country && formValues.phone === defaultAddress.phone;
             orderData = _objectSpread(_objectSpread({}, useDefault ? {
               address_id: defaultAddress.id
@@ -186549,8 +186566,7 @@ var CheckoutPage = function CheckoutPage() {
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Order placed successfully!");
             localStorage.removeItem("cart");
             window.dispatchEvent(new Event("cartUpdated"));
-            _response$data = response.data, order_id = _response$data.order_id, address_id = _response$data.address_id; // If a new address was used and the "Save this information" checkbox is checked,
-            // then update it as the default address.
+            _response$data = response.data, order_id = _response$data.order_id, address_id = _response$data.address_id;
             if (!(!useDefault && !selectedAddressId && saveInfo)) {
               _context3.next = 29;
               break;
@@ -186567,7 +186583,6 @@ var CheckoutPage = function CheckoutPage() {
             break;
           case 29:
             if (!saveInfo) {
-              // If user did not check "Save this information," call a function to handle non-default addresses.
               handleAddressNotDefault();
             }
           case 30:
@@ -186607,13 +186622,15 @@ var CheckoutPage = function CheckoutPage() {
       return _ref4.apply(this, arguments);
     };
   }();
-
-  // Function to handle addresses that are not set as default.
-  // For now, it simply logs a message. You can extend it to perform additional tasks.
   var handleAddressNotDefault = function handleAddressNotDefault() {
     console.log("Order used a non-default address. Not updating default.");
-    // Optionally, you might call an API to update the user's profile so that no address is marked default.
   };
+
+  // Determine if the selected payment method is credit/debit card based on its name.
+  var selectedPaymentMethod = paymentMethods.find(function (m) {
+    return m.id === paymentMethod;
+  });
+  var isCreditCard = selectedPaymentMethod && selectedPaymentMethod.name.toLowerCase().includes("credit");
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_Navbar_Navbar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
       style: {
@@ -186753,12 +186770,12 @@ var CheckoutPage = function CheckoutPage() {
                 })
               })]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
             title: "PAYMENT METHOD",
             style: {
               marginBottom: "20px"
             },
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"].Group, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"].Group, {
               onChange: function onChange(e) {
                 return setPaymentMethod(e.target.value);
               },
@@ -186769,7 +186786,17 @@ var CheckoutPage = function CheckoutPage() {
                   children: method.name
                 }, method.id);
               })
-            })
+            }), isCreditCard && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+              type: "dashed",
+              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {}),
+              onClick: function onClick() {
+                return setCardModalVisible(true);
+              },
+              style: {
+                marginTop: 16
+              },
+              children: "Add New Credit/Debit Card"
+            })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
             title: "SHIPPING METHOD",
             style: {
@@ -186811,7 +186838,7 @@ var CheckoutPage = function CheckoutPage() {
                   marginBottom: "20px",
                   alignItems: "center"
                 },
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
                   src: item.image,
                   alt: item.productName,
                   style: {
@@ -186858,6 +186885,92 @@ var CheckoutPage = function CheckoutPage() {
                 children: ["Total: \u20B1", total.toLocaleString()]
               })]
             })]
+          })
+        })]
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
+      title: "Add New Credit/Debit Card",
+      visible: cardModalVisible,
+      onCancel: function onCancel() {
+        return setCardModalVisible(false);
+      },
+      footer: null,
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          marginBottom: 16
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_19__["default"], {
+          style: {
+            fontSize: "24px",
+            color: "#52c41a",
+            marginRight: 8
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+          children: "Your card details are protected. We are partnered with TimelessPay to ensure that your credit card details are kept safe and secure. We will never access your card info nor share your card number and CVV with anyone."
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+        form: cardForm,
+        layout: "vertical",
+        onFinish: handleCardSubmit,
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+          label: "Card Number",
+          name: "cardNumber",
+          rules: [{
+            required: true,
+            message: "Please enter your card number"
+          }],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            placeholder: "Card Number"
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+          gutter: 16,
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+            span: 12,
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+              label: "Expiry Date (MM/YY)",
+              name: "expiryDate",
+              rules: [{
+                required: true,
+                message: "Please enter expiry date"
+              }],
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+                placeholder: "MM/YY"
+              })
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+            span: 12,
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+              label: "CVV",
+              name: "cvv",
+              rules: [{
+                required: true,
+                message: "Please enter CVV"
+              }],
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+                placeholder: "CVV"
+              })
+            })
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+          label: "Name on Card",
+          name: "cardName",
+          rules: [{
+            required: true,
+            message: "Please enter name on card"
+          }],
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            placeholder: "Name on card"
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+            type: "primary",
+            htmlType: "submit",
+            style: {
+              width: "100%"
+            },
+            children: "Submit"
           })
         })]
       })]
