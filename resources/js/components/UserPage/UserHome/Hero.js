@@ -4,7 +4,7 @@ const Hero = () => {
     return (
         <div className="hero-container">
             <img
-                src="/images/Hero.png"
+                src="/images/lapse.png"
                 alt="Timeless Watches"
                 className="hero-image"
             />

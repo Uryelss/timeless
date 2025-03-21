@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Tabs, Input, Button, Card, Row, Col, Badge, Space, Image, Pagination } from 'antd';
-import { SearchOutlined, MessageOutlined, ShopOutlined } from '@ant-design/icons';
+import { Tabs, Input, Button, Card, Row, Col, Badge, Space, Pagination, Image } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import Navbar from "../../Navbar/Navbar"; // Adjust path as needed
 import axios from 'axios';
 
@@ -29,7 +29,7 @@ const MyPurchase = () => {
             name: detail.product?.product_name || 'Unknown Product',
             quantity: detail.quantity || 0,
             price: detail.price || 0,
-            description: detail.product?.description || 'No description available', // Fetch product description
+            size: detail.inventory?.size || 'N/A', // Assuming size comes from inventory
             image: detail.product?.main_image
               ? `http://localhost:8000/storage/${detail.product.main_image}`
               : 'https://via.placeholder.com/80',
@@ -79,8 +79,7 @@ const MyPurchase = () => {
       order.id.toString().includes(lowerSearch) ||
       order.seller.toLowerCase().includes(lowerSearch) ||
       order.products.some((product) =>
-        product.name.toLowerCase().includes(lowerSearch) ||
-        product.description.toLowerCase().includes(lowerSearch) // Include description in search
+        product.name.toLowerCase().includes(lowerSearch)
       )
     );
   });
@@ -90,7 +89,7 @@ const MyPurchase = () => {
       <Navbar />
       <div style={{ padding: '20px' }}>
         <Input
-          placeholder="Search by Seller Name, Order ID, Product Name, or Description"
+          placeholder="Search by Seller Name, Order ID, or Product Name"
           prefix={<SearchOutlined />}
           onChange={(e) => setSearchText(e.target.value)}
           style={{ marginBottom: '20px', width: '100%' }}
@@ -138,12 +137,7 @@ const OrderList = ({ orders }) => (
       <Card key={order.id} style={{ marginBottom: '20px' }}>
         <Row align="middle">
           <Col span={12}>
-            <Space>
-              <ShopOutlined />
-              <span>{order.seller || ''}</span>
-              <Button type="primary" icon={<MessageOutlined />} size="small">Chat</Button>
-              <Button size="small">View Shop</Button>
-            </Space>
+            <span>{order.seller || ''}</span>
           </Col>
           <Col span={12} style={{ textAlign: 'right' }}>
             <span style={{ color: '#13c2c2' }}>
@@ -158,12 +152,12 @@ const OrderList = ({ orders }) => (
             <Col span={4}>
               <Image src={product.image} alt={product.name} style={{ width: '80px', height: '80px' }} />
             </Col>
-            <Col span={16}>
+            <Col span={12}>
               <div><strong>{product.name}</strong></div>
-              <div>{product.description}</div>
+              <div>Size: {product.size}</div>
               <div>Quantity: {product.quantity}</div>
             </Col>
-            <Col span={4} style={{ textAlign: 'right' }}>
+            <Col span={8} style={{ textAlign: 'right' }}>
               <div>₱{product.price.toLocaleString()}</div>
             </Col>
           </Row>

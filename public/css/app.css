@@ -12931,50 +12931,97 @@ h3, .h3 {
 
 .cancel-modal .ant-modal-title {
   font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+  margin-bottom: 8px;
 }
-.cancel-modal .ant-typography {
-  margin-bottom: 16px;
-}
-.cancel-modal .ant-typography.ant-typography-secondary {
+.cancel-modal .modal-description {
+  display: block;
   font-size: 14px;
+  color: #595959;
+  margin-bottom: 24px;
+  line-height: 20px;
+}
+.cancel-modal .cancel-reasons {
+  width: 100%;
   margin-bottom: 24px;
 }
-.cancel-modal .ant-radio-group {
+.cancel-modal .cancel-reasons .ant-space {
   width: 100%;
 }
-.cancel-modal .ant-radio-group .ant-space {
-  width: 100%;
-}
-.cancel-modal .ant-radio-group .ant-space .ant-radio-wrapper {
-  margin-bottom: 12px;
+.cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper {
+  margin-bottom: 16px;
   font-size: 14px;
+  color: #333;
+  line-height: 20px;
 }
-.cancel-modal .ant-radio-group .ant-space .ant-radio-wrapper .ant-radio-checked .ant-radio-inner {
+.cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper .ant-radio {
+  margin-right: 8px;
+}
+.cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper .ant-radio .ant-radio-inner {
+  width: 16px;
+  height: 16px;
+}
+.cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper .ant-radio .ant-radio-inner::after {
+  width: 6px;
+  height: 6px;
+  top: 4px;
+  left: 4px;
+}
+.cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper .ant-radio.ant-radio-checked .ant-radio-inner {
   border-color: #1890ff;
+  background-color: #fff;
+}
+.cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper .ant-radio.ant-radio-checked .ant-radio-inner::after {
   background-color: #1890ff;
 }
-.cancel-modal .ant-btn.primary-btn {
-  background-color: #1890ff;
-  border-color: #1890ff;
-  color: #fff;
+.cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper .ant-radio:hover .ant-radio-inner {
+  border-color: #40a9ff;
+}
+.cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper:last-child {
+  margin-bottom: 0;
+}
+.cancel-modal .ant-modal-footer {
+  padding: 10px 16px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.cancel-modal .ant-modal-footer .ant-btn {
   height: 32px;
-  padding: 0 8px;
+  padding: 0 15px;
   font-size: 14px;
   border-radius: 4px;
   line-height: 30px;
 }
-.cancel-modal .ant-btn.primary-btn:hover, .cancel-modal .ant-btn.primary-btn:focus {
+.cancel-modal .ant-modal-footer .ant-btn.ant-btn-default {
+  color: #595959;
+  border-color: #d9d9d9;
+  background-color: #fff;
+}
+.cancel-modal .ant-modal-footer .ant-btn.ant-btn-default:hover {
+  color: #40a9ff;
+  border-color: #40a9ff;
+}
+.cancel-modal .ant-modal-footer .ant-btn.ant-btn-default:disabled {
+  color: #bfbfbf;
+  border-color: #d9d9d9;
+  background-color: #f5f5f5;
+}
+.cancel-modal .ant-modal-footer .ant-btn.ant-btn-primary {
+  background-color: #1890ff;
+  border-color: #1890ff;
+  color: #fff;
+}
+.cancel-modal .ant-modal-footer .ant-btn.ant-btn-primary:hover, .cancel-modal .ant-modal-footer .ant-btn.ant-btn-primary:focus {
   background-color: #40a9ff;
   border-color: #40a9ff;
 }
-.cancel-modal .ant-btn.ant-btn-link {
-  height: 32px;
-  padding: 0 8px;
-  font-size: 14px;
-  line-height: 30px;
-}
-.cancel-modal .ant-btn.ant-btn-link:hover {
-  color: #40a9ff;
+.cancel-modal .ant-modal-footer .ant-btn.ant-btn-primary:disabled {
+  background-color: #bfbfbf;
+  border-color: #bfbfbf;
+  color: #fff;
 }
 
 @media (max-width: 768px) {

@@ -25,4 +25,6 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetail::class);
     }
+
+    // Removed Orderstatus() since order_status is a string column, not a relationship
 }

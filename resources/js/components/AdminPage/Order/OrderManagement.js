@@ -37,29 +37,29 @@ const OrderManagement = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchText, setSearchText] = useState("");
 
-  const API_URL = "http://localhost:8000/api/orders"; // Adjust to your API endpoint
+  const API_URL = "http://localhost:8000/api/orders";
 
-  // Fetch orders from the API
   const fetchOrders = () => {
     axios
-      .get(API_URL, {
+      .get(`${API_URL}?all=true`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
       .then((res) => {
-        console.log("API Response:", res.data); // Debug
+        console.log("API Response:", res.data);
         const transformedOrders = res.data.map((order) => ({
           ...order,
           order_date: order.order_date || order.created_at,
-          shipping: order.shipping || {}, // Ensure shipping is an object
+          shipping: order.shipping || {},
         }));
         setOrders(transformedOrders.filter((order) => !order.deleted_at));
         setArchivedOrders(transformedOrders.filter((order) => order.deleted_at));
       })
       .catch((err) => {
-        message.error("Error fetching orders");
-        console.error(err.response?.data || err);
+        const errorMsg = err.response?.data?.message || err.message || "Unknown error";
+        message.error(`Error fetching orders: ${errorMsg}`);
+        console.error("Error details:", err.response?.data || err);
       });
   };
 
@@ -125,7 +125,6 @@ const OrderManagement = () => {
     },
   ];
 
-  // Archived table columns
   const archiveColumns = [
     {
       title: "Actions",
@@ -139,13 +138,11 @@ const OrderManagement = () => {
     ...mainColumns.slice(1),
   ];
 
-  // Handle edit action
   const handleEdit = (record) => {
     setSelectedOrder(record);
     setOpenEditModal(true);
   };
 
-  // Handle archive action
   const handleArchive = (record) => {
     Modal.confirm({
       title: "Are you sure you want to archive this order?",
@@ -172,7 +169,6 @@ const OrderManagement = () => {
     });
   };
 
-  // Handle restore action
   const handleRestore = (id) => {
     axios
       .post(
@@ -194,7 +190,6 @@ const OrderManagement = () => {
       });
   };
 
-  // Handle update action
   const handleUpdate = () => {
     axios
       .put(
@@ -223,13 +218,11 @@ const OrderManagement = () => {
       });
   };
 
-  // Handle view action
   const handleView = (record) => {
     setSelectedOrder(record);
     setOpenViewModal(true);
   };
 
-  // Render order details in view modal
   const renderOrderDetails = () => {
     if (!selectedOrder) return null;
 
@@ -244,7 +237,6 @@ const OrderManagement = () => {
 
     return (
       <div style={{ padding: "16px" }}>
-        {/* Order Summary */}
         <Title level={4} style={{ marginBottom: "16px" }}>
           Order Summary
         </Title>
@@ -300,7 +292,6 @@ const OrderManagement = () => {
           </Descriptions.Item>
         </Descriptions>
 
-        {/* Customer Details */}
         <Title level={4} style={{ margin: "24px 0 16px" }}>
           Customer Details
         </Title>
@@ -326,7 +317,6 @@ const OrderManagement = () => {
           </Col>
         </Row>
 
-        {/* Payment and Shipping Information */}
         <Title level={4} style={{ margin: "24px 0 16px" }}>
           Payment and Shipping
         </Title>
@@ -345,7 +335,6 @@ const OrderManagement = () => {
     );
   };
 
-  // Filter orders based on search text
   const filteredOrders = orders.filter((order) => {
     const lowerSearch = searchText.toLowerCase();
     return (
@@ -399,7 +388,6 @@ const OrderManagement = () => {
         </Content>
       </Layout>
 
-      {/* Archived Orders Modal */}
       <Modal
         title="Archived Orders"
         open={openArchiveModal}
@@ -414,7 +402,6 @@ const OrderManagement = () => {
         <Table columns={archiveColumns} dataSource={archivedOrders} rowKey="id" />
       </Modal>
 
-      {/* Edit Order Modal */}
       <Modal
         title="Edit Order"
         open={openEditModal}
@@ -457,7 +444,6 @@ const OrderManagement = () => {
         )}
       </Modal>
 
-      {/* View Order Details Modal */}
       <Modal
         title={`Order #${selectedOrder?.id || ""} Details`}
         open={openViewModal}

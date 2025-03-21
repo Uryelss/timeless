@@ -428,7 +428,6 @@ const OrderTracking = () => {
                         footer={[
                             <Button
                                 key="cancel"
-                                type="link"
                                 onClick={() => setIsCancelModalVisible(false)}
                                 disabled={isCancelLoading}
                             >
@@ -436,7 +435,7 @@ const OrderTracking = () => {
                             </Button>,
                             <Button
                                 key="confirm"
-                                className="primary-btn"
+                                type="primary"
                                 onClick={handleCancelOrder}
                                 loading={isCancelLoading}
                             >
@@ -445,14 +444,13 @@ const OrderTracking = () => {
                         ]}
                         className="cancel-modal"
                     >
-                        <Text strong>Select Cancellation Reason</Text>
-                        <Text type="secondary" block>
-                            Please take note that this will cancel all items in the order
-                            and the action cannot be undone.
+                        <Text className="modal-description">
+                            Please select a reason for cancelling your order. Note that this action will cancel all items and cannot be undone.
                         </Text>
                         <Radio.Group
                             onChange={(e) => setCancelReason(e.target.value)}
                             value={cancelReason}
+                            className="cancel-reasons"
                         >
                             <Space direction="vertical">
                                 <Radio value="Need to change delivery address">

@@ -2,13 +2,12 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Layout, Menu, Dropdown, Badge, Avatar, Button, notification } from "antd";
 import {
-    HomeOutlined,
     ShoppingCartOutlined,
     BellOutlined,
     MenuOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const { Header: AntHeader } = Layout;
 
@@ -21,7 +20,6 @@ const Header = () => {
     const [notificationCount, setNotificationCount] = useState(0);
 
     const navigate = useNavigate();
-    const location = useLocation();
     const token = localStorage.getItem("token");
 
     // Fetch profile when token is available
@@ -256,6 +254,12 @@ const Header = () => {
         setIsMobileMenuVisible(!isMobileMenuVisible);
     };
 
+    // Prevent any selection behavior on click or double-click
+    const handleMenuClick = (e) => {
+        e.domEvent.preventDefault(); // Prevent default behavior
+        handleNavigation(e.item.props.path); // Navigate without highlighting
+    };
+
     return (
         <AntHeader className="header">
             <div className="logo">
@@ -268,24 +272,16 @@ const Header = () => {
                 theme="light"
                 mode="horizontal"
                 className={`nav-menu ${isMobileMenuVisible ? "visible" : ""}`}
+                selectedKeys={[]} // Explicitly empty to prevent highlighting
+                onClick={handleMenuClick} // Custom click handler
             >
-                <Menu.Item
-                    key="home"
-                    icon={<HomeOutlined style={{ fontSize: "24px" }} />}
-                    onClick={() => handleNavigation("/user-home")}
-                >
+                <Menu.Item key="home" path="/user-home">
                     Home
                 </Menu.Item>
-                <Menu.Item
-                    key="about"
-                    onClick={() => handleNavigation("/aboutus")}
-                >
+                <Menu.Item key="about" path="/aboutus">
                     About Us
                 </Menu.Item>
-                <Menu.Item
-                    key="collection"
-                    onClick={() => handleNavigation("/user-collection")}
-                >
+                <Menu.Item key="collection" path="/user-collection">
                     Collection
                 </Menu.Item>
                 <Dropdown overlay={categoriesMenu} placement="bottomLeft">
