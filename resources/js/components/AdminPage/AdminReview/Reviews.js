@@ -9,6 +9,7 @@ import {
     Select,
     Form,
     message,
+    Checkbox,
 } from "antd";
 import {
     EditOutlined,
@@ -32,6 +33,10 @@ const ReviewsManagement = () => {
     const [editingReview, setEditingReview] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedRating, setSelectedRating] = useState(null);
+    const [selectAllActive, setSelectAllActive] = useState(false);
+    const [selectedActiveReviews, setSelectedActiveReviews] = useState([]);
+    const [selectAllArchived, setSelectAllArchived] = useState(false);
+    const [selectedArchivedReviews, setSelectedArchivedReviews] = useState([]);
     const [form] = Form.useForm();
 
     useEffect(() => {
@@ -45,12 +50,80 @@ const ReviewsManagement = () => {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
-            setReviews(response.data.reviews);
-            setArchivedReviews(response.data.archived_reviews);
+            setReviews(
+                response.data.reviews.map((review) => ({
+                    ...review,
+                    selected: false,
+                }))
+            );
+            setArchivedReviews(
+                response.data.archived_reviews.map((review) => ({
+                    ...review,
+                    selected: false,
+                }))
+            );
         } catch (error) {
             message.error("Failed to fetch reviews");
             console.error(error);
         }
+    };
+
+    // Checkbox handling for active reviews
+    const handleActiveCheckboxChange = (reviewId) => {
+        const updatedReviews = reviews.map((review) =>
+            review.id === reviewId
+                ? { ...review, selected: !review.selected }
+                : review
+        );
+        setReviews(updatedReviews);
+        setSelectedActiveReviews(
+            updatedReviews.filter((r) => r.selected).map((r) => r.id)
+        );
+        const allSelected = updatedReviews.every((r) => r.selected);
+        setSelectAllActive(allSelected);
+    };
+
+    // Select All checkbox handling for active reviews
+    const handleSelectAllActiveChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAllActive(checked);
+        const updatedReviews = reviews.map((review) => ({
+            ...review,
+            selected: checked,
+        }));
+        setReviews(updatedReviews);
+        setSelectedActiveReviews(
+            checked ? updatedReviews.map((r) => r.id) : []
+        );
+    };
+
+    // Checkbox handling for archived reviews
+    const handleArchivedCheckboxChange = (reviewId) => {
+        const updatedArchived = archivedReviews.map((review) =>
+            review.id === reviewId
+                ? { ...review, selected: !review.selected }
+                : review
+        );
+        setArchivedReviews(updatedArchived);
+        setSelectedArchivedReviews(
+            updatedArchived.filter((r) => r.selected).map((r) => r.id)
+        );
+        const allSelected = updatedArchived.every((r) => r.selected);
+        setSelectAllArchived(allSelected);
+    };
+
+    // Select All checkbox handling for archived reviews
+    const handleSelectAllArchivedChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAllArchived(checked);
+        const updatedArchived = archivedReviews.map((review) => ({
+            ...review,
+            selected: checked,
+        }));
+        setArchivedReviews(updatedArchived);
+        setSelectedArchivedReviews(
+            checked ? updatedArchived.map((r) => r.id) : []
+        );
     };
 
     const handleEdit = (record) => {
@@ -114,6 +187,45 @@ const ReviewsManagement = () => {
         });
     };
 
+    // Bulk archive handler for active reviews
+    const handleArchiveAll = () => {
+        if (selectedActiveReviews.length === 0) {
+            message.warning("Please select at least one review to archive");
+            return;
+        }
+        Modal.confirm({
+            title: `Are you sure you want to archive ${selectedActiveReviews.length} selected review(s)?`,
+            onOk: async () => {
+                try {
+                    await Promise.all(
+                        selectedActiveReviews.map((id) =>
+                            axios.post(
+                                `/api/admin/reviews/${id}/archive`,
+                                {},
+                                {
+                                    headers: {
+                                        Authorization: `Bearer ${localStorage.getItem(
+                                            "token"
+                                        )}`,
+                                    },
+                                }
+                            )
+                        )
+                    );
+                    message.success("Selected reviews archived successfully");
+                    fetchReviews();
+                    setSelectedActiveReviews([]);
+                    setSelectAllActive(false);
+                } catch (error) {
+                    message.error("Failed to archive some reviews");
+                    console.error(error);
+                }
+            },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
+        });
+    };
+
     const handleRestore = async (record) => {
         try {
             const response = await axios.post(
@@ -135,7 +247,56 @@ const ReviewsManagement = () => {
         }
     };
 
+    // Bulk restore handler for archived reviews
+    const handleRestoreAll = () => {
+        if (selectedArchivedReviews.length === 0) {
+            message.warning("Please select at least one review to restore");
+            return;
+        }
+        Modal.confirm({
+            title: `Are you sure you want to restore ${selectedArchivedReviews.length} selected review(s)?`,
+            onOk: async () => {
+                try {
+                    await Promise.all(
+                        selectedArchivedReviews.map((id) =>
+                            axios.post(
+                                `/api/admin/reviews/${id}/restore`,
+                                {},
+                                {
+                                    headers: {
+                                        Authorization: `Bearer ${localStorage.getItem(
+                                            "token"
+                                        )}`,
+                                    },
+                                }
+                            )
+                        )
+                    );
+                    message.success("Selected reviews restored successfully");
+                    fetchReviews();
+                    setSelectedArchivedReviews([]);
+                    setSelectAllArchived(false);
+                } catch (error) {
+                    message.error("Failed to restore some reviews");
+                    console.error(error);
+                }
+            },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
+        });
+    };
+
     const filteredReviews = reviews.filter((review) => {
+        const matchesSearch = review.username
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase());
+        const matchesRating = selectedRating
+            ? review.rating === selectedRating
+            : true;
+        return matchesSearch && matchesRating;
+    });
+
+    const filteredArchivedReviews = archivedReviews.filter((review) => {
         const matchesSearch = review.username
             .toLowerCase()
             .includes(searchQuery.toLowerCase());
@@ -151,6 +312,10 @@ const ReviewsManagement = () => {
             key: "actions",
             render: (_, record) => (
                 <Space>
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleActiveCheckboxChange(record.id)}
+                    />
                     <EditOutlined
                         onClick={() => handleEdit(record)}
                         style={{ fontSize: "16px", cursor: "pointer" }}
@@ -174,7 +339,7 @@ const ReviewsManagement = () => {
                 <img
                     src={image || "https://via.placeholder.com/50"}
                     alt="Product"
-                    style={{ width: 50, borderRadius: 5 }}
+                    style={{ width: "60px", borderRadius: 5, heigth: "70px" }}
                 />
             ),
         },
@@ -221,9 +386,15 @@ const ReviewsManagement = () => {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
-                <Button type="link" onClick={() => handleRestore(record)}>
-                    <UndoOutlined style={{ fontSize: "18px" }} />
-                </Button>
+                <Space>
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleArchivedCheckboxChange(record.id)}
+                    />
+                    <Button type="link" onClick={() => handleRestore(record)}>
+                        <UndoOutlined style={{ fontSize: "18px" }} />
+                    </Button>
+                </Space>
             ),
         },
         ...columns.slice(1),
@@ -256,34 +427,44 @@ const ReviewsManagement = () => {
                         <div
                             style={{
                                 display: "flex",
-                                justifyContent: "space-between",
-                                marginBottom: 16,
-                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: 16,
                             }}
                         >
-                            <Space>
-                                <Search
-                                    placeholder="Search by username"
-                                    onSearch={(value) => setSearchQuery(value)}
-                                    style={{ width: 300 }}
-                                />
-                                <Select
-                                    placeholder="Filter by rating"
-                                    style={{ width: 200 }}
-                                    allowClear
-                                    onChange={(value) =>
-                                        setSelectedRating(value)
-                                    }
-                                >
-                                    <Option value={1}>⭐ 1 Star</Option>
-                                    <Option value={2}>⭐⭐ 2 Stars</Option>
-                                    <Option value={3}>⭐⭐⭐ 3 Stars</Option>
-                                    <Option value={4}>⭐⭐⭐⭐ 4 Stars</Option>
-                                    <Option value={5}>
-                                        ⭐⭐⭐⭐⭐ 5 Stars
-                                    </Option>
-                                </Select>
-                            </Space>
+                            <Search
+                                placeholder="Search by username"
+                                onSearch={(value) => setSearchQuery(value)}
+                                style={{ width: 300 }}
+                            />
+                            <Select
+                                placeholder="Filter by rating"
+                                style={{ width: 200 }}
+                                allowClear
+                                onChange={(value) => setSelectedRating(value)}
+                            >
+                                <Option value={1}>⭐ 1 Star</Option>
+                                <Option value={2}>⭐⭐ 2 Stars</Option>
+                                <Option value={3}>⭐⭐⭐ 3 Stars</Option>
+                                <Option value={4}>⭐⭐⭐⭐ 4 Stars</Option>
+                                <Option value={5}>⭐⭐⭐⭐⭐ 5 Stars</Option>
+                            </Select>
+                            <Checkbox
+                                checked={selectAllActive}
+                                onChange={handleSelectAllActiveChange}
+                            >
+                                Select All
+                            </Checkbox>
+                            {(selectAllActive ||
+                                selectedActiveReviews.length > 0) && (
+                                <Button type="link" onClick={handleArchiveAll}>
+                                    <FolderOpenOutlined
+                                        style={{ fontSize: "18px" }}
+                                    />
+                                    Archive
+                                    {selectedActiveReviews.length > 0 &&
+                                        ` (${selectedActiveReviews.length})`}
+                                </Button>
+                            )}
                         </div>
                         <Button
                             type="default"
@@ -309,6 +490,23 @@ const ReviewsManagement = () => {
                 open={openEditModal}
                 onOk={handleUpdate}
                 onCancel={() => setOpenEditModal(false)}
+                footer={[
+                    <Button
+                        key="cancel"
+                        onClick={() => setOpenEditModal(false)}
+                        style={{ width: "131px" }}
+                    >
+                        Cancel
+                    </Button>,
+                    <Button
+                        key="save"
+                        type="primary"
+                        onClick={handleUpdate}
+                        style={{ width: "131px" }}
+                    >
+                        Update Review
+                    </Button>,
+                ]}
             >
                 <Form form={form} layout="vertical">
                     <Form.Item
@@ -350,18 +548,39 @@ const ReviewsManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1000}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
             >
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: 16,
+                    }}
+                >
+                    <Checkbox
+                        checked={selectAllArchived}
+                        onChange={handleSelectAllArchivedChange}
+                        style={{ marginRight: 16 }}
+                    >
+                        Select All
+                    </Checkbox>
+                    {(selectAllArchived ||
+                        selectedArchivedReviews.length > 0) && (
+                        <Button
+                            type="link"
+                            onClick={handleRestoreAll}
+                            style={{ marginRight: 8 }}
+                        >
+                            <UndoOutlined style={{ fontSize: "18px" }} />
+                            Restore
+                            {selectedArchivedReviews.length > 0 &&
+                                ` (${selectedArchivedReviews.length})`}
+                        </Button>
+                    )}
+                </div>
                 <Table
                     columns={archiveColumns}
-                    dataSource={archivedReviews}
+                    dataSource={filteredArchivedReviews}
                     rowKey="id"
                     pagination={false}
                     scroll={{ x: 1000 }}
