@@ -11,9 +11,10 @@ import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
     LogoutOutlined,
-    StarOutlined, // Import Star Icon
+    StarOutlined,
+    CreditCardOutlined, // New Transaction Icon
 } from "@ant-design/icons";
-import { Button, Menu, Modal } from "antd"; // Import Modal from antd
+import { Button, Menu, Modal } from "antd";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../AccessPage/Auth";
 
@@ -56,9 +57,15 @@ const items = [
     },
     {
         key: "reviews",
-        icon: <StarOutlined />, // Added Reviews Section with Star Icon
+        icon: <StarOutlined />,
         label: "Reviews",
         path: "/Reviews",
+    },
+    {
+        key: "transaction",
+        icon: <CreditCardOutlined />, // Added Transaction Icon
+        label: "Transaction",
+        path: "/Transactions",
     },
     {
         key: "admin-settings",
@@ -109,9 +116,9 @@ const Sidebar = () => {
     };
 
     const handleLogout = () => {
-        setIsLoggingOut(true); // Show the modal
+        setIsLoggingOut(true);
         setTimeout(() => {
-            logout(); // Redirect after 1 second
+            logout();
         }, 1000);
     };
 
@@ -143,14 +150,12 @@ const Sidebar = () => {
                     {!collapsed && "Log Out"}
                 </Button>
             </div>
-
-            {/* Modal for logout redirection */}
             <Modal
                 visible={isLoggingOut}
-                footer={null} // No footer buttons
-                closable={false} // No close button
-                maskClosable={false} // Can't click outside to close
-                centered // Center the modal
+                footer={null}
+                closable={false}
+                maskClosable={false}
+                centered
                 bodyStyle={{ textAlign: "center", padding: "20px" }}
             >
                 <p>Redirecting you to login page...</p>

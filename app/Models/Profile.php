@@ -20,6 +20,9 @@ class Profile extends Model
         'profile_image'
     ];
 
+    // Automatically include the computed customer_name in JSON responses.
+    protected $appends = ['customer_name'];
+
     protected $casts = [
         'date_of_birth' => 'date',
     ];
@@ -42,6 +45,6 @@ class Profile extends Model
         $first = ucfirst($this->first_name);
         $middle = $this->middle_name ? strtoupper(substr($this->middle_name, 0, 1)) . '. ' : '';
         $last = ucfirst($this->last_name);
-        return $first . ' ' . $middle . $last;
+        return trim("$first $middle$last");
     }
 }

@@ -17,7 +17,7 @@ import InventoryManagement from "./AdminPage/Inventory/InventoryManagement";
 import AdminProfile from "./AdminPage/AdminSettings/AdminProfile";
 import SubCategory from "./AdminPage/AdminSettings/SubCategory";
 import CustomerManagement from "./AdminPage/Customer/CustomerManagement";
-
+import TransactionManagement from "./AdminPage/Transaction/Transaction";
 // Auth pages
 import Register from "./AccessPage/RegisterPage/Register";
 import Login from "./AccessPage/LoginPage/Login";
@@ -74,6 +74,10 @@ function Routers() {
                     <Route path="/customers" element={<CustomerManagement />} />
                     <Route path="/users" element={<UserManagement />} />
                     <Route path="/Reviews" element={<ReviewsManagement />} />
+                    <Route
+                        path="/Transactions"
+                        element={<TransactionManagement />}
+                    />
 
                     <Route
                         path="/inventory"

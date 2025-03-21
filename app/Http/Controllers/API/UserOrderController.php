@@ -8,6 +8,7 @@ use App\Models\OrderDetail;
 use App\Models\Shipping;
 use App\Models\Address;
 use App\Models\Inventory;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -43,7 +44,7 @@ class UserOrderController extends Controller
         $user = Auth::user();
         $profile = $user->profile;
 
-        return DB::transaction(function () use ($request, $profile) {
+        return DB::transaction(function () use ($request, $profile, $user) {
             if ($request->has('address_id')) {
                 $address = Address::findOrFail($request->address_id);
             } else {
@@ -89,7 +90,9 @@ class UserOrderController extends Controller
 
                 $inventory->quantity -= $item['quantity'];
                 $inventory->sold += $item['quantity'];
-                $inventory->stock_status = $inventory->quantity == 0 ? 'Out of Stock' : ($inventory->quantity < 10 ? 'Low Stock' : 'In Stock');
+                $inventory->stock_status = $inventory->quantity == 0
+                    ? 'Out of Stock'
+                    : ($inventory->quantity < 10 ? 'Low Stock' : 'In Stock');
                 $inventory->save();
             }
 
@@ -104,6 +107,16 @@ class UserOrderController extends Controller
             ]);
 
             $order->update(['shipping_id' => $shipping->id]);
+
+            // Create a transaction record for this order.
+            Transaction::create([
+                'profile_id'        => $profile->id, // Use the profile id here.
+                'order_id'          => $order->id,
+                'payment_method_id' => $request->payment_method_id,
+                'payment_status_id' => 1, // Assuming '1' represents a pending payment status.
+                'transaction_status' => 'pending',
+                'payment_option'    => $request->payment_option ?? null,
+            ]);
 
             return response()->json([
                 'message' => 'Order created successfully',
