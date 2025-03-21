@@ -61,7 +61,7 @@ class OrderController extends Controller
             'completed_at' => $timestamps['completed'] ?? null,
             'shipping' => $order->shipping,
             'order_details' => $order->orderDetails,
-            'status_history' => $order->statusHistory, // Included for debugging or additional use
+            'status_history' => $order->statusHistory,
             'deleted_at' => $order->deleted_at,
         ]);
     }
@@ -91,14 +91,6 @@ class OrderController extends Controller
                     'shipping_status_id' => $request->input('shipping.shipping_status_id', 1),
                     'shipping_total_amount' => 0,
                 ]);
-            }
-
-            if ($order->order_status === 'shipped' && !$order->shipping->tracking_number) {
-                $date = now()->format('Ymd');
-                $random = strtoupper(substr(uniqid(), -5));
-                $trackingNumber = "TRK-{$date}-{$random}";
-                $order->shipping->tracking_number = $trackingNumber;
-                $order->shipping->save();
             }
 
             if ($request->has('shipping')) {

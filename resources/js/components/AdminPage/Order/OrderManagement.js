@@ -22,7 +22,7 @@ import {
     EyeOutlined,
     UndoOutlined,
 } from "@ant-design/icons";
-import Sidebar from "../AdminSidebar/Sidebar";
+import Sidebar from "../AdminSidebar/Sidebar"; // Adjust path as needed
 import axios from "axios";
 
 const { Header, Content, Sider } = Layout;
@@ -223,6 +223,11 @@ const OrderManagement = () => {
             render: (status) => status || "N/A",
         },
         {
+            title: "Tracking Number",
+            key: "tracking_number",
+            render: (record) => record.shipping?.tracking_number || "Not Assigned",
+        },
+        {
             title: "Total Amount",
             dataIndex: "total_amount",
             key: "total_amount",
@@ -303,19 +308,16 @@ const OrderManagement = () => {
                 `${API_URL}/${selectedOrder.id}`,
                 {
                     order_status: selectedOrder.order_status,
-                    shipping: {
-                        tracking_number: selectedOrder.shipping.tracking_number || null,
-                        shipping_status_id: selectedOrder.shipping.shipping_status_id || 1,
-                    },
                 },
                 {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 }
             )
-            .then(() => {
+            .then((response) => {
                 message.success("Order updated successfully");
                 setOpenEditModal(false);
                 fetchOrders();
+                setSelectedOrder(response.data);
             })
             .catch((err) => {
                 message.error("Failed to update order");
@@ -456,7 +458,7 @@ const OrderManagement = () => {
                         {shipping?.shipping_method?.name || "N/A"}
                     </Descriptions.Item>
                     <Descriptions.Item label="Tracking Number">
-                        {shipping?.tracking_number || "Not Available"}
+                        {shipping?.tracking_number || "Not Assigned"}
                     </Descriptions.Item>
                 </Descriptions>
             </div>
@@ -471,7 +473,8 @@ const OrderManagement = () => {
                 `${order.profile.first_name || ""} ${order.profile.last_name || ""}`
                     .toLowerCase()
                     .includes(lowerSearch)) ||
-            order.order_status?.toLowerCase().includes(lowerSearch)
+            order.order_status?.toLowerCase().includes(lowerSearch) ||
+            (order.shipping?.tracking_number || "").toLowerCase().includes(lowerSearch)
         );
     });
 
@@ -483,7 +486,8 @@ const OrderManagement = () => {
                 `${order.profile.first_name || ""} ${order.profile.last_name || ""}`
                     .toLowerCase()
                     .includes(lowerSearch)) ||
-            order.order_status?.toLowerCase().includes(lowerSearch)
+            order.order_status?.toLowerCase().includes(lowerSearch) ||
+            (order.shipping?.tracking_number || "").toLowerCase().includes(lowerSearch)
         );
     });
 
@@ -505,7 +509,7 @@ const OrderManagement = () => {
                     >
                         <div style={{ display: "flex", alignItems: "center" }}>
                             <Search
-                                placeholder="Search orders by ID, customer, or status"
+                                placeholder="Search orders by ID, customer, status, or tracking number"
                                 allowClear
                                 onChange={(e) => setSearchText(e.target.value)}
                                 style={{ width: 300, marginRight: 16 }}
@@ -586,16 +590,14 @@ const OrderManagement = () => {
                             <Option value="completed">Completed</Option>
                             <Option value="cancelled">Cancelled</Option>
                         </Select>
-                        <Input
-                            value={selectedOrder.shipping?.tracking_number || ""}
-                            onChange={(e) =>
-                                setSelectedOrder({
-                                    ...selectedOrder,
-                                    shipping: { ...selectedOrder.shipping, tracking_number: e.target.value },
-                                })
-                            }
-                            placeholder="Tracking Number"
-                        />
+                        {selectedOrder.order_status === "shipped" && (
+                            <Input
+                                value={selectedOrder.shipping?.tracking_number || "Auto-generated when shipped"}
+                                disabled
+                                placeholder="Tracking Number (auto-generated)"
+                                style={{ marginBottom: 16 }}
+                            />
+                        )}
                     </div>
                 )}
             </Modal>

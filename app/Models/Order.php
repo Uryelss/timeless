@@ -31,16 +31,25 @@ class Order extends Model
         return $this->hasMany(OrderStatusHistory::class);
     }
 
-    // Helper method to update status and log it in history
     public function updateStatus($newStatus, $details = null)
     {
         $this->order_status = $newStatus;
         $this->save();
 
+        // Log the status change to order_status_history
         $this->statusHistory()->create([
             'status' => $newStatus,
             'timestamp' => now(),
             'details' => $details,
         ]);
+
+        // Automatically generate tracking number when status is "shipped"
+        if ($newStatus === 'shipped' && $this->shipping && !$this->shipping->tracking_number) {
+            $date = now()->format('Ymd');
+            $random = strtoupper(substr(uniqid(), -5));
+            $trackingNumber = "TRK-{$date}-{$random}";
+            $this->shipping->tracking_number = $trackingNumber;
+            $this->shipping->save();
+        }
     }
 }

@@ -185274,7 +185274,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
-
+ // Adjust path as needed
 
 
 var Header = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Header,
@@ -185561,6 +185561,13 @@ var OrderManagement = function OrderManagement() {
       return status || "N/A";
     }
   }, {
+    title: "Tracking Number",
+    key: "tracking_number",
+    render: function render(record) {
+      var _record$shipping2;
+      return ((_record$shipping2 = record.shipping) === null || _record$shipping2 === void 0 ? void 0 : _record$shipping2.tracking_number) || "Not Assigned";
+    }
+  }, {
     title: "Total Amount",
     dataIndex: "total_amount",
     key: "total_amount",
@@ -185646,19 +185653,16 @@ var OrderManagement = function OrderManagement() {
   };
   var handleUpdate = function handleUpdate() {
     axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("".concat(API_URL, "/").concat(selectedOrder.id), {
-      order_status: selectedOrder.order_status,
-      shipping: {
-        tracking_number: selectedOrder.shipping.tracking_number || null,
-        shipping_status_id: selectedOrder.shipping.shipping_status_id || 1
-      }
+      order_status: selectedOrder.order_status
     }, {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
-    }).then(function () {
+    }).then(function (response) {
       antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Order updated successfully");
       setOpenEditModal(false);
       fetchOrders();
+      setSelectedOrder(response.data);
     })["catch"](function (err) {
       antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update order");
       console.error(err);
@@ -185843,20 +185847,20 @@ var OrderManagement = function OrderManagement() {
           children: (shipping === null || shipping === void 0 || (_shipping$shipping_me = shipping.shipping_method) === null || _shipping$shipping_me === void 0 ? void 0 : _shipping$shipping_me.name) || "N/A"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"].Item, {
           label: "Tracking Number",
-          children: (shipping === null || shipping === void 0 ? void 0 : shipping.tracking_number) || "Not Available"
+          children: (shipping === null || shipping === void 0 ? void 0 : shipping.tracking_number) || "Not Assigned"
         })]
       })]
     });
   };
   var filteredOrders = orders.filter(function (order) {
-    var _order$order_status;
+    var _order$order_status, _order$shipping;
     var lowerSearch = searchText.toLowerCase();
-    return order.id.toString().includes(lowerSearch) || order.profile && "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").toLowerCase().includes(lowerSearch) || ((_order$order_status = order.order_status) === null || _order$order_status === void 0 ? void 0 : _order$order_status.toLowerCase().includes(lowerSearch));
+    return order.id.toString().includes(lowerSearch) || order.profile && "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").toLowerCase().includes(lowerSearch) || ((_order$order_status = order.order_status) === null || _order$order_status === void 0 ? void 0 : _order$order_status.toLowerCase().includes(lowerSearch)) || (((_order$shipping = order.shipping) === null || _order$shipping === void 0 ? void 0 : _order$shipping.tracking_number) || "").toLowerCase().includes(lowerSearch);
   });
   var filteredArchivedOrders = archivedOrders.filter(function (order) {
-    var _order$order_status2;
+    var _order$order_status2, _order$shipping2;
     var lowerSearch = searchText.toLowerCase();
-    return order.id.toString().includes(lowerSearch) || order.profile && "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").toLowerCase().includes(lowerSearch) || ((_order$order_status2 = order.order_status) === null || _order$order_status2 === void 0 ? void 0 : _order$order_status2.toLowerCase().includes(lowerSearch));
+    return order.id.toString().includes(lowerSearch) || order.profile && "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").toLowerCase().includes(lowerSearch) || ((_order$order_status2 = order.order_status) === null || _order$order_status2 === void 0 ? void 0 : _order$order_status2.toLowerCase().includes(lowerSearch)) || (((_order$shipping2 = order.shipping) === null || _order$shipping2 === void 0 ? void 0 : _order$shipping2.tracking_number) || "").toLowerCase().includes(lowerSearch);
   });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
@@ -185890,7 +185894,7 @@ var OrderManagement = function OrderManagement() {
               alignItems: "center"
             },
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Search, {
-              placeholder: "Search orders by ID, customer, or status",
+              placeholder: "Search orders by ID, customer, status, or tracking number",
               allowClear: true,
               onChange: function onChange(e) {
                 return setSearchText(e.target.value);
@@ -186028,16 +186032,13 @@ var OrderManagement = function OrderManagement() {
             value: "cancelled",
             children: "Cancelled"
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
-          value: ((_selectedOrder$shippi = selectedOrder.shipping) === null || _selectedOrder$shippi === void 0 ? void 0 : _selectedOrder$shippi.tracking_number) || "",
-          onChange: function onChange(e) {
-            return setSelectedOrder(_objectSpread(_objectSpread({}, selectedOrder), {}, {
-              shipping: _objectSpread(_objectSpread({}, selectedOrder.shipping), {}, {
-                tracking_number: e.target.value
-              })
-            }));
-          },
-          placeholder: "Tracking Number"
+        }), selectedOrder.order_status === "shipped" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+          value: ((_selectedOrder$shippi = selectedOrder.shipping) === null || _selectedOrder$shippi === void 0 ? void 0 : _selectedOrder$shippi.tracking_number) || "Auto-generated when shipped",
+          disabled: true,
+          placeholder: "Tracking Number (auto-generated)",
+          style: {
+            marginBottom: 16
+          }
         })]
       })
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
