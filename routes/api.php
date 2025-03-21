@@ -40,6 +40,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/payment-methods', fn() => App\Models\PaymentMethod::all())->name('payment.methods');
     Route::get('/shipping-methods', fn() => App\Models\ShippingMethod::all())->name('shipping.methods');
     Route::get('/my-purchases', [UserOrderController::class, 'myPurchases'])->name('user.orders.my_purchases');
+    Route::get('/users/me', [UserController::class, 'getCurrentUser'])->name('users.me');
 });
 
 /*

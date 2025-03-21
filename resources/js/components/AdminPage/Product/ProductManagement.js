@@ -397,22 +397,13 @@ const ProductManagement = () => {
 
     const handleSave = () => {
         form.validateFields()
-            .then((values) => {
+            .then(async (values) => {
                 const formData = new FormData();
                 formData.append("product_name", values.product_name);
                 formData.append("brand_id", parseInt(values.brand_id, 10));
-                formData.append(
-                    "category_id",
-                    parseInt(values.category_id, 10)
-                );
-                formData.append(
-                    "movement_id",
-                    parseInt(values.movement_id, 10)
-                );
-                formData.append(
-                    "strap_material_id",
-                    parseInt(values.strap_material_id, 10)
-                );
+                formData.append("category_id", parseInt(values.category_id, 10));
+                formData.append("movement_id", parseInt(values.movement_id, 10));
+                formData.append("strap_material_id", parseInt(values.strap_material_id, 10));
                 formData.append("gender_id", parseInt(values.gender_id, 10));
                 formData.append("price", values.price);
                 formData.append("description", values.description);
@@ -430,53 +421,102 @@ const ProductManagement = () => {
                     if (file) formData.append(`side_image_${index + 1}`, file);
                 });
 
-                if (values.id) {
-                    formData.append("_method", "PUT");
-                    axios
-                        .post(
+                try {
+                    let productId;
+                    let response;
+
+                    if (values.id) {
+                        // Update existing product
+                        formData.append("_method", "PUT");
+                        response = await axios.post(
                             `http://localhost:8000/api/products/${values.id}`,
                             formData,
                             {
                                 headers: {
-                                    Authorization: `Bearer ${localStorage.getItem(
-                                        "token"
-                                    )}`,
+                                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                                     "Content-Type": "multipart/form-data",
                                 },
                             }
-                        )
-                        .then(() => {
-                            message.success("Product updated successfully");
-                            setOpenAddModal(false);
-                            fetchProducts();
-                        })
-                        .catch((err) => {
-                            console.error(err);
-                            message.error("Failed to update product");
-                        });
-                } else {
-                    if (!mainImageFile) {
-                        message.error("Main product image is required.");
-                        return;
+                        );
+                        productId = values.id;
+                    } else {
+                        // Create new product
+                        if (!mainImageFile) {
+                            message.error("Main product image is required.");
+                            return;
+                        }
+                        response = await axios.post(
+                            "http://localhost:8000/api/products",
+                            formData,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                    "Content-Type": "multipart/form-data",
+                                },
+                            }
+                        );
+                        productId = response.data.id; // Assuming the API returns the new product ID
                     }
-                    axios
-                        .post("http://localhost:8000/api/products", formData, {
-                            headers: {
-                                Authorization: `Bearer ${localStorage.getItem(
-                                    "token"
-                                )}`,
-                                "Content-Type": "multipart/form-data",
-                            },
+
+                    // Sync inventory records with sizesDetails
+                    await Promise.all(
+                        sizesDetails.map(async (sizeDetail) => {
+                            // Check if an inventory record already exists for this size
+                            const inventoryResponse = await axios.get(
+                                `http://localhost:8000/api/inventory?product_id=${productId}`,
+                                {
+                                    headers: {
+                                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                    },
+                                }
+                            );
+
+                            const existingInventory = inventoryResponse.data.find(
+                                (item) => item.size === sizeDetail.size
+                            );
+
+                            if (existingInventory) {
+                                // Update existing inventory record
+                                await axios.put(
+                                    `http://localhost:8000/api/inventory/${existingInventory.id}`,
+                                    {
+                                        size: sizeDetail.size,
+                                        quantity: sizeDetail.quantity,
+                                    },
+                                    {
+                                        headers: {
+                                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                        },
+                                    }
+                                );
+                            } else {
+                                // Create new inventory record
+                                await axios.post(
+                                    `http://localhost:8000/api/inventory/${productId}`,
+                                    {
+                                        size: sizeDetail.size,
+                                        quantity: sizeDetail.quantity,
+                                    },
+                                    {
+                                        headers: {
+                                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                                        },
+                                    }
+                                );
+                            }
                         })
-                        .then(() => {
-                            message.success("Product added successfully");
-                            setOpenAddModal(false);
-                            fetchProducts();
-                        })
-                        .catch((err) => {
-                            console.error(err);
-                            message.error("Failed to add product");
-                        });
+                    );
+
+                    message.success(
+                        values.id
+                            ? "Product and inventory updated successfully"
+                            : "Product and inventory added successfully"
+                    );
+                    setOpenAddModal(false);
+                    fetchProducts();
+                } catch (err) {
+                    console.error(err);
+                    message.error(`Failed to ${values.id ? "update" : "add"} product and inventory`);
                 }
             })
             .catch((err) => {

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { Layout, Menu, Dropdown, Badge, Avatar, Button } from "antd";
+import { Layout, Menu, Dropdown, Badge, Avatar, Button, notification } from "antd";
 import {
     HomeOutlined,
     ShoppingCartOutlined,
@@ -90,9 +90,15 @@ const Header = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             console.log("Fetched orders from my-purchases:", response.data);
-            const orderData = response.data.data || response.data; // Handle paginated or non-paginated response
-            setOrders(Array.isArray(orderData) ? orderData : []);
-            setNotificationCount(Array.isArray(orderData) ? orderData.length : 0); // Update notification count
+            const orderData = response.data.data || response.data;
+            const allOrders = Array.isArray(orderData) ? orderData : [];
+            setOrders(allOrders);
+
+            // Filter out completed orders for notification count
+            const activeOrders = allOrders.filter(
+                order => order.order_status.toLowerCase() !== "completed"
+            );
+            setNotificationCount(activeOrders.length);
         } catch (err) {
             console.error("Error fetching orders:", err.response?.data || err.message);
             setOrders([]);
@@ -100,16 +106,43 @@ const Header = () => {
         }
     };
 
-    // Listen for order placement events and update notification count
+    // Listen for order-related events
     useEffect(() => {
-        const handleOrderPlaced = () => {
-            console.log("Order placed event triggered");
-            fetchOrders(); // Refetch orders when a new order is placed
+        const handleOrderPlaced = (e) => {
+            console.log("Order placed event triggered:", e.detail);
+            const order = e.detail;
+            const productName = order?.order_details?.[0]?.product?.product_name || "Unknown Product";
+            notification.success({
+                message: "Order Placed",
+                description: `You've ordered ${productName}`,
+                placement: "topRight",
+                duration: 3,
+            });
+            fetchOrders();
+        };
+
+        const handleOrderStatusUpdate = (e) => {
+            console.log("Order status update event triggered:", e.detail);
+            const order = e.detail;
+            const productName = order?.order_details?.[0]?.product?.product_name || "Unknown Product";
+            
+            if (order.order_status.toLowerCase() === "shipped") {
+                notification.info({
+                    message: "Order Shipped",
+                    description: `Admin has shipped your product: ${productName}`,
+                    placement: "topRight",
+                    duration: 3,
+                });
+            }
+            fetchOrders();
         };
 
         window.addEventListener("orderPlaced", handleOrderPlaced);
+        window.addEventListener("orderStatusUpdated", handleOrderStatusUpdate);
+
         return () => {
             window.removeEventListener("orderPlaced", handleOrderPlaced);
+            window.removeEventListener("orderStatusUpdated", handleOrderStatusUpdate);
         };
     }, []);
 
@@ -128,17 +161,16 @@ const Header = () => {
         </Menu>
     );
 
-    // Notification dropdown menu with clickable order IDs
     const notificationsMenu = (
         <Menu className="white-dropdown" style={{ width: 350 }}>
             {orders.length > 0 ? (
                 orders.slice(0, 3).map((order) => {
-                    const product = order.order_details?.[0]?.product || {}; // Adjusted to order_details
+                    const product = order.order_details?.[0]?.product || {};
                     console.log("Rendering order:", order);
                     return (
                         <Menu.Item
                             key={order.id}
-                            onClick={() => navigate(`/order-tracking/${order.id}`)} // Navigate to OrderTracking
+                            onClick={() => navigate(`/order-tracking/${order.id}`)}
                             style={{ height: "auto", padding: "10px", cursor: "pointer" }}
                         >
                             <div style={{ display: "flex", alignItems: "center" }}>
@@ -162,10 +194,7 @@ const Header = () => {
                                 />
                                 <div style={{ flex: 1 }}>
                                     <div style={{ fontWeight: "bold" }}>
-                                        Order #{order.id} - {product.product_name || "Unnamed Product"}
-                                    </div>
-                                    <div style={{ fontSize: "12px", color: "#555" }}>
-                                        {product.description || "No description available"}
+                                        {product.product_name || "Unnamed Product"}
                                     </div>
                                     <div style={{ fontSize: "12px", color: "#888" }}>
                                         {order.order_status} -{" "}
@@ -182,7 +211,7 @@ const Header = () => {
             <Menu.Item
                 key="view-all"
                 style={{ textAlign: "center" }}
-                onClick={() => navigate("/user-purchase")} // Navigate to MyPurchase page
+                onClick={() => navigate("/user-purchase")}
             >
                 View All Orders
             </Menu.Item>
@@ -204,7 +233,7 @@ const Header = () => {
     };
 
     const handleProfileClick = () => {
-        navigate("/user-profile"); // Fixed capitalization to match your routes
+        navigate("/user-profile");
     };
 
     const handleNavigation = (path) => {
