@@ -12,13 +12,13 @@ import {
     Card,
 } from "antd";
 import {
-    LeftOutlined,
     FileTextOutlined,
     DollarOutlined,
     TruckOutlined,
     DownloadOutlined,
     StarOutlined,
     CloseOutlined,
+    // Removed HomeOutlined
 } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
@@ -127,9 +127,7 @@ const OrderTracking = () => {
         }
     }, [orderId, token]);
 
-    const handleBackToShipped = () => {
-        navigate("/user-shipped");
-    };
+    // Removed handleReturnToDashboard function
 
     const handleConfirmReceipt = async () => {
         setIsConfirmReceiptLoading(true);
@@ -284,17 +282,7 @@ const OrderTracking = () => {
             <Navbar />
             <Content>
                 <div className="content-wrapper">
-                    <div className="header-section">
-                        <Button
-                            type="link"
-                            icon={<LeftOutlined />}
-                            onClick={handleBackToShipped}
-                        >
-                            Back to Shipped Orders
-                        </Button>
-                        <Title level={2}>{productName}</Title>
-                    </div>
-
+                    {/* Removed the entire header-section div */}
                     {loading ? (
                         <Text className="loading-text">
                             Loading order tracking...
