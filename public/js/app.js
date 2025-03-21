@@ -183037,6 +183037,16 @@ var InventoryManagement = function InventoryManagement() {
     dataIndex: "sold",
     key: "sold"
   }, {
+    title: "Total Amount",
+    key: "total_amount",
+    render: function render(record) {
+      var _record$product2;
+      // Ensure that product exists and has a price
+      var productPrice = ((_record$product2 = record.product) === null || _record$product2 === void 0 ? void 0 : _record$product2.price) || 0;
+      var total = record.sold * productPrice;
+      return "$".concat(total);
+    }
+  }, {
     title: "Stock Status",
     dataIndex: "stock_status",
     key: "stock_status"
@@ -183304,16 +183314,16 @@ var InventoryManagement = function InventoryManagement() {
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
         form: form,
         layout: "vertical",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
           name: "size",
           label: "Size",
           rules: [{
             required: true,
             message: "Size is required"
           }],
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
             disabled: true
-          }), " "]
+          })
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
           name: "quantity",
           label: "Stock Quantity",
@@ -187853,6 +187863,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/dist/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/typography/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/tabs/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
@@ -187865,10 +187876,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UserOutlined.js");
 /* harmony import */ var _Navbar_Navbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Navbar/Navbar */ "./resources/js/components/UserPage/Navbar/Navbar.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -187932,7 +187949,6 @@ var ProductOverview = function ProductOverview() {
     _useState18 = _slicedToArray(_useState17, 2),
     inventoryRecords = _useState18[0],
     setInventoryRecords = _useState18[1];
-  // New state for quantity modal
   var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState20 = _slicedToArray(_useState19, 2),
     showQuantityModal = _useState20[0],
@@ -187942,6 +187958,7 @@ var ProductOverview = function ProductOverview() {
     buyNowQuantity = _useState22[0],
     setBuyNowQuantity = _useState22[1];
   var isLoggedIn = Boolean(localStorage.getItem("token"));
+  var baseUrl = "http://localhost:8000"; // Base URL for image paths
 
   // Fetch product details
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
@@ -187950,7 +187967,7 @@ var ProductOverview = function ProductOverview() {
       navigate("/");
       return;
     }
-    axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("http://localhost:8000/api/products/".concat(id)).then(function (res) {
+    axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("".concat(baseUrl, "/api/products/").concat(id)).then(function (res) {
       var fetchedProduct = res.data.product || res.data;
       setProduct(fetchedProduct);
       setCurrentMainImage(fetchedProduct.main_image);
@@ -187971,17 +187988,19 @@ var ProductOverview = function ProductOverview() {
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var token = localStorage.getItem("token");
     if (token) {
-      axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("http://localhost:8000/api/reviews/".concat(id), {
+      axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("".concat(baseUrl, "/api/reviews/").concat(id), {
         headers: {
           Authorization: "Bearer ".concat(token)
         }
       }).then(function (res) {
-        return setReviews(res.data);
+        console.log("Fetched Reviews:", res.data); // Debug log
+        setReviews(res.data);
       })["catch"](function (err) {
         var _err$response2;
         if (((_err$response2 = err.response) === null || _err$response2 === void 0 ? void 0 : _err$response2.status) === 401) {
           antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please log in to view reviews.");
         }
+        console.error("Error fetching reviews:", err);
       });
     }
   }, [id]);
@@ -187990,11 +188009,12 @@ var ProductOverview = function ProductOverview() {
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var token = localStorage.getItem("token");
     if (token && !userProfile) {
-      axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("http://localhost:8000/api/profile", {
+      axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("".concat(baseUrl, "/api/profile"), {
         headers: {
           Authorization: "Bearer ".concat(token)
         }
       }).then(function (res) {
+        console.log("Fetched User Profile:", res.data); // Debug log
         setUserProfile(res.data);
         localStorage.setItem("user", JSON.stringify(res.data));
       })["catch"](function (err) {
@@ -188007,7 +188027,7 @@ var ProductOverview = function ProductOverview() {
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var token = localStorage.getItem("token");
     if (token) {
-      axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("http://localhost:8000/api/inventory-public?product_id=".concat(id), {
+      axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("".concat(baseUrl, "/api/inventory-public?product_id=").concat(id), {
         headers: {
           Authorization: "Bearer ".concat(token)
         }
@@ -188018,6 +188038,45 @@ var ProductOverview = function ProductOverview() {
       });
     }
   }, [id]);
+
+  // Handle review submission
+  var handleSubmitReview = function handleSubmitReview() {
+    var token = localStorage.getItem("token");
+    if (!token) {
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please log in to post a review.");
+      return;
+    }
+    if (!reviewText.trim()) {
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please enter a comment.");
+      return;
+    }
+    if (reviewRating === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select a rating.");
+      return;
+    }
+    axios__WEBPACK_IMPORTED_MODULE_8__["default"].post("".concat(baseUrl, "/api/reviews"), {
+      product_id: id,
+      comment: reviewText,
+      rating: reviewRating
+    }, {
+      headers: {
+        Authorization: "Bearer ".concat(token)
+      }
+    }).then(function (res) {
+      console.log("Review Submission Response:", res.data); // Debug log
+      setReviews([res.data.review].concat(_toConsumableArray(reviews)));
+      setReviewText("");
+      setReviewRating(0);
+      axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("".concat(baseUrl, "/api/products/").concat(id)).then(function (res) {
+        var fetchedProduct = res.data.product || res.data;
+        setProduct(fetchedProduct);
+      });
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Review posted successfully!");
+    })["catch"](function (err) {
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to submit review.");
+      console.error("Error submitting review:", err);
+    });
+  };
 
   // Helper to format numbers (price)
   var number_format = function number_format(number) {
@@ -188044,7 +188103,7 @@ var ProductOverview = function ProductOverview() {
     return normalizeSize(inv.size) === normalizeSize(selectedSize || "");
   });
 
-  // Function to add product to cart (used by "Add to Cart" button)
+  // Function to add product to cart
   var handleAddToCart = function handleAddToCart() {
     var quantity = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
     if (!selectedSize) {
@@ -188062,7 +188121,7 @@ var ProductOverview = function ProductOverview() {
       id: product.id,
       inventory_id: selectedInventory.id,
       productName: product.product_name,
-      image: "http://localhost:8000/storage/".concat(product.main_image),
+      image: "".concat(baseUrl, "/storage/").concat(product.main_image),
       size: selectedSize,
       price: product.price,
       quantity: quantity,
@@ -188103,7 +188162,7 @@ var ProductOverview = function ProductOverview() {
     setShowQuantityModal(true);
   };
 
-  // Confirm quantity modal: add product (without saving to persistent cart) and navigate directly to checkout
+  // Confirm quantity modal: add product and navigate to checkout
   var handleConfirmBuyNow = function handleConfirmBuyNow() {
     var selectedInventory = inventoryRecords.find(function (inv) {
       return normalizeSize(inv.size) === normalizeSize(selectedSize);
@@ -188120,7 +188179,7 @@ var ProductOverview = function ProductOverview() {
       id: product.id,
       inventory_id: selectedInventory.id,
       productName: product.product_name,
-      image: "http://localhost:8000/storage/".concat(product.main_image),
+      image: "".concat(baseUrl, "/storage/").concat(product.main_image),
       size: selectedSize,
       price: product.price,
       quantity: buyNowQuantity,
@@ -188135,7 +188194,7 @@ var ProductOverview = function ProductOverview() {
     setShowQuantityModal(false);
   };
 
-  // Render modal overview content (simplified: no side images)
+  // Render modal overview content
   var renderModalOverview = function renderModalOverview() {
     if (!product) return null;
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
@@ -188146,7 +188205,7 @@ var ProductOverview = function ProductOverview() {
       },
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
         children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-          src: "http://localhost:8000/storage/".concat(currentMainImage),
+          src: "".concat(baseUrl, "/storage/").concat(currentMainImage),
           alt: product.product_name,
           style: {
             width: "300px",
@@ -188230,11 +188289,11 @@ var ProductOverview = function ProductOverview() {
       style: {
         width: "100%"
       }
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
       style: {
         marginTop: "90px"
       },
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
         gutter: 16,
         justify: "center",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
@@ -188253,7 +188312,7 @@ var ProductOverview = function ProductOverview() {
               padding: 0
             },
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
-              src: "http://localhost:8000/storage/".concat(currentMainImage),
+              src: "".concat(baseUrl, "/storage/").concat(currentMainImage),
               alt: product.product_name,
               preview: false,
               style: {
@@ -188289,7 +188348,7 @@ var ProductOverview = function ProductOverview() {
                   padding: 0
                 },
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
-                  src: "http://localhost:8000/storage/".concat(product.side_image_1),
+                  src: "".concat(baseUrl, "/storage/").concat(product.side_image_1),
                   alt: "Side 1",
                   preview: false,
                   onMouseEnter: function onMouseEnter() {
@@ -188312,7 +188371,7 @@ var ProductOverview = function ProductOverview() {
                   padding: 0
                 },
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
-                  src: "http://localhost:8000/storage/".concat(product.side_image_2),
+                  src: "".concat(baseUrl, "/storage/").concat(product.side_image_2),
                   alt: "Side 2",
                   preview: false,
                   onMouseEnter: function onMouseEnter() {
@@ -188335,7 +188394,7 @@ var ProductOverview = function ProductOverview() {
                   padding: 0
                 },
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
-                  src: "http://localhost:8000/storage/".concat(product.side_image_3),
+                  src: "".concat(baseUrl, "/storage/").concat(product.side_image_3),
                   alt: "Side 3",
                   preview: false,
                   onMouseEnter: function onMouseEnter() {
@@ -188490,8 +188549,126 @@ var ProductOverview = function ProductOverview() {
             })]
           })]
         })]
-      })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+        justify: "center",
+        style: {
+          marginTop: "20px"
+        },
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+          xs: 24,
+          md: 24,
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+              defaultActiveKey: "1",
+              type: "card",
+              size: "large",
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(TabPane, {
+                tab: "Details",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
+                    children: product.description
+                  })
+                })
+              }, "1"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(TabPane, {
+                tab: "Comments",
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+                  children: [isLoggedIn ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                    style: {
+                      marginBottom: "15px"
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                      style: {
+                        marginBottom: "10px"
+                      },
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("label", {
+                        style: {
+                          marginRight: "10px"
+                        },
+                        children: "Rate this product:"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                        value: reviewRating,
+                        onChange: function onChange(value) {
+                          return setReviewRating(value);
+                        }
+                      })]
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(TextArea, {
+                      placeholder: "Write a comment...",
+                      value: reviewText,
+                      onChange: function onChange(e) {
+                        return setReviewText(e.target.value);
+                      },
+                      rows: 3,
+                      style: {
+                        marginTop: "5px"
+                      }
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+                      type: "primary",
+                      onClick: handleSubmitReview,
+                      style: {
+                        marginTop: "10px"
+                      },
+                      children: "Post Review"
+                    })]
+                  }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Paragraph, {
+                    style: {
+                      textAlign: "center"
+                    },
+                    children: ["Please", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_17__.Link, {
+                      to: "/login",
+                      children: "log in"
+                    }), " ", "to leave a review."]
+                  }), reviews.length > 0 ? reviews.map(function (review) {
+                    var _review$user, _review$user2;
+                    // Handle profile_image: if it's a full URL, use it; otherwise, prepend baseUrl
+                    var avatarSrc = (_review$user = review.user) !== null && _review$user !== void 0 && (_review$user = _review$user.profile) !== null && _review$user !== void 0 && _review$user.profile_image ? review.user.profile.profile_image.startsWith("http") ? review.user.profile.profile_image : "".concat(baseUrl).concat(review.user.profile.profile_image) : null;
+                    console.log("Review ".concat(review.id, " Avatar Src:"), avatarSrc); // Debug log
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+                      style: {
+                        marginBottom: "10px"
+                      },
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                        style: {
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px"
+                        },
+                        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
+                          src: avatarSrc,
+                          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_19__["default"], {}),
+                          onError: function onError() {
+                            console.log("Failed to load image for review ".concat(review.id, ": ").concat(avatarSrc));
+                            return true; // Fallback to icon
+                          }
+                        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+                          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
+                            children: ((_review$user2 = review.user) === null || _review$user2 === void 0 ? void 0 : _review$user2.username) || "Unknown User"
+                          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+                            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                              disabled: true,
+                              value: review.rating,
+                              style: {
+                                fontSize: "14px"
+                              }
+                            })
+                          })]
+                        })]
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
+                        style: {
+                          marginTop: "5px"
+                        },
+                        children: review.comment
+                      })]
+                    }, review.id);
+                  }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
+                    children: "No comments yet."
+                  })]
+                })
+              }, "2")]
+            })
+          })
+        })
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
       title: product ? product.product_name : "Product Overview",
       visible: showQuantityModal,
       onCancel: function onCancel() {

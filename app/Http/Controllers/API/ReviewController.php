@@ -6,15 +6,102 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Review;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage; // Add this import
+use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
-    // Get all reviews for admin
+    public function index($id)
+    {
+        $reviews = Review::where('product_id', $id)
+            ->where('is_archived', false)
+            ->with(['user' => function ($query) {
+                $query->withTrashed();
+            }, 'user.profile'])
+            ->latest()
+            ->get()
+            ->map(function ($review) {
+                $username = 'Deleted User';
+                $profileImage = null;
+
+                if ($review->user) {
+                    $username = $review->user->profile
+                        ? ($review->user->profile->username ?? $review->user->username)
+                        : ($review->user->username ?? $review->user->email ?? 'Unknown User');
+
+                    if ($review->user->profile && $review->user->profile->profile_image) {
+                        $profileImage = str_starts_with($review->user->profile->profile_image, 'http')
+                            ? $review->user->profile->profile_image
+                            : Storage::url($review->user->profile->profile_image);
+                    }
+                }
+
+                return [
+                    'id' => $review->id,
+                    'user' => [
+                        'username' => $username,
+                        'profile' => $review->user->profile ? [
+                            'profile_image' => $profileImage,
+                        ] : null,
+                    ],
+                    'rating' => $review->rating,
+                    'comment' => $review->comment,
+                    'created_at' => $review->created_at->toDateString(),
+                ];
+            });
+
+        return response()->json($reviews);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'comment' => 'required|string',
+            'rating' => 'required|integer|min:1|max:5',
+        ]);
+
+        $review = Review::create([
+            'user_id' => Auth::id(),
+            'product_id' => $request->product_id,
+            'comment' => $request->comment,
+            'rating' => $request->rating,
+        ]);
+
+        $review->load(['user' => function ($query) {
+            $query->withTrashed();
+        }, 'user.profile']);
+
+        $username = $review->user->profile
+            ? ($review->user->profile->username ?? $review->user->username)
+            : ($review->user->username ?? $review->user->email ?? 'Unknown User');
+
+        $profileImage = $review->user->profile && $review->user->profile->profile_image
+            ? (str_starts_with($review->user->profile->profile_image, 'http')
+                ? $review->user->profile->profile_image
+                : Storage::url($review->user->profile->profile_image))
+            : null;
+
+        return response()->json([
+            'message' => 'Review created successfully',
+            'review' => [
+                'id' => $review->id,
+                'user' => [
+                    'username' => $username,
+                    'profile' => $review->user->profile ? [
+                        'profile_image' => $profileImage,
+                    ] : null,
+                ],
+                'rating' => $review->rating,
+                'comment' => $review->comment,
+                'created_at' => $review->created_at->toDateString(),
+            ]
+        ], 201);
+    }
+
     public function adminIndex()
     {
         $reviews = Review::with(['user' => function ($query) {
-            $query->withTrashed(); // Include soft-deleted users
+            $query->withTrashed();
         }, 'user.profile', 'product'])
             ->latest()
             ->get()
@@ -26,7 +113,6 @@ class ReviewController extends Controller
                         : ($review->user->username ?? $review->user->email ?? 'Unknown User');
                 }
 
-                // Use main_image instead of image, and prepend storage URL if needed
                 $productImage = $review->product
                     ? Storage::url($review->product->main_image)
                     : 'https://via.placeholder.com/50';
@@ -50,7 +136,6 @@ class ReviewController extends Controller
         ]);
     }
 
-    // Update a review
     public function update(Request $request, $id)
     {
         $review = Review::findOrFail($id);
@@ -67,7 +152,6 @@ class ReviewController extends Controller
         return response()->json(['message' => 'Review updated successfully', 'review' => $review]);
     }
 
-    // Archive a review
     public function archive($id)
     {
         $review = Review::findOrFail($id);
@@ -77,7 +161,6 @@ class ReviewController extends Controller
         return response()->json(['message' => 'Review archived successfully']);
     }
 
-    // Restore an archived review
     public function restore($id)
     {
         $review = Review::findOrFail($id);
@@ -87,7 +170,6 @@ class ReviewController extends Controller
         return response()->json(['message' => 'Review restored successfully']);
     }
 
-    // Delete a review permanently
     public function destroy($id)
     {
         $review = Review::findOrFail($id);

@@ -8,11 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div id="root">
-        <div class="container">
-            <h1>Hello World</h1>
-        </div>
-    </div>
+    <div id="root"></div>
     <script src="{{ mix('js/app.js') }}"></script>
 </body>
 </html>

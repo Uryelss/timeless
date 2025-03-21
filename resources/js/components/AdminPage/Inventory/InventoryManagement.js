@@ -159,6 +159,16 @@ const InventoryManagement = () => {
         { title: "Stock Quantity", dataIndex: "quantity", key: "quantity" },
         { title: "Sold", dataIndex: "sold", key: "sold" },
         {
+            title: "Total Amount",
+            key: "total_amount",
+            render: (record) => {
+                // Ensure that product exists and has a price
+                const productPrice = record.product?.price || 0;
+                const total = record.sold * productPrice;
+                return `$${total}`;
+            },
+        },
+        {
             title: "Stock Status",
             dataIndex: "stock_status",
             key: "stock_status",
@@ -447,8 +457,7 @@ const InventoryManagement = () => {
                             { required: true, message: "Size is required" },
                         ]}
                     >
-                        <Input disabled />{" "}
-                        {/* Size is typically not editable */}
+                        <Input disabled />
                     </Form.Item>
                     <Form.Item
                         name="quantity"

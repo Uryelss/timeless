@@ -42,11 +42,11 @@ const ProductOverview = () => {
         return storedUser ? JSON.parse(storedUser) : null;
     });
     const [inventoryRecords, setInventoryRecords] = useState([]);
-    // New state for quantity modal
     const [showQuantityModal, setShowQuantityModal] = useState(false);
     const [buyNowQuantity, setBuyNowQuantity] = useState(1);
 
     const isLoggedIn = Boolean(localStorage.getItem("token"));
+    const baseUrl = "http://localhost:8000"; // Base URL for image paths
 
     // Fetch product details
     useEffect(() => {
@@ -56,7 +56,7 @@ const ProductOverview = () => {
             return;
         }
         axios
-            .get(`http://localhost:8000/api/products/${id}`)
+            .get(`${baseUrl}/api/products/${id}`)
             .then((res) => {
                 const fetchedProduct = res.data.product || res.data;
                 setProduct(fetchedProduct);
@@ -79,14 +79,18 @@ const ProductOverview = () => {
         const token = localStorage.getItem("token");
         if (token) {
             axios
-                .get(`http://localhost:8000/api/reviews/${id}`, {
+                .get(`${baseUrl}/api/reviews/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
-                .then((res) => setReviews(res.data))
+                .then((res) => {
+                    console.log("Fetched Reviews:", res.data); // Debug log
+                    setReviews(res.data);
+                })
                 .catch((err) => {
                     if (err.response?.status === 401) {
                         message.warning("Please log in to view reviews.");
                     }
+                    console.error("Error fetching reviews:", err);
                 });
         }
     }, [id]);
@@ -96,10 +100,11 @@ const ProductOverview = () => {
         const token = localStorage.getItem("token");
         if (token && !userProfile) {
             axios
-                .get("http://localhost:8000/api/profile", {
+                .get(`${baseUrl}/api/profile`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 .then((res) => {
+                    console.log("Fetched User Profile:", res.data); // Debug log
                     setUserProfile(res.data);
                     localStorage.setItem("user", JSON.stringify(res.data));
                 })
@@ -112,12 +117,9 @@ const ProductOverview = () => {
         const token = localStorage.getItem("token");
         if (token) {
             axios
-                .get(
-                    `http://localhost:8000/api/inventory-public?product_id=${id}`,
-                    {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }
-                )
+                .get(`${baseUrl}/api/inventory-public?product_id=${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
                 .then((res) => {
                     setInventoryRecords(res.data);
                 })
@@ -126,6 +128,44 @@ const ProductOverview = () => {
                 });
         }
     }, [id]);
+
+    // Handle review submission
+    const handleSubmitReview = () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            message.warning("Please log in to post a review.");
+            return;
+        }
+        if (!reviewText.trim()) {
+            message.warning("Please enter a comment.");
+            return;
+        }
+        if (reviewRating === 0) {
+            message.warning("Please select a rating.");
+            return;
+        }
+        axios
+            .post(
+                `${baseUrl}/api/reviews`,
+                { product_id: id, comment: reviewText, rating: reviewRating },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            .then((res) => {
+                console.log("Review Submission Response:", res.data); // Debug log
+                setReviews([res.data.review, ...reviews]);
+                setReviewText("");
+                setReviewRating(0);
+                axios.get(`${baseUrl}/api/products/${id}`).then((res) => {
+                    const fetchedProduct = res.data.product || res.data;
+                    setProduct(fetchedProduct);
+                });
+                message.success("Review posted successfully!");
+            })
+            .catch((err) => {
+                message.error("Failed to submit review.");
+                console.error("Error submitting review:", err);
+            });
+    };
 
     // Helper to format numbers (price)
     const number_format = (number) =>
@@ -157,7 +197,7 @@ const ProductOverview = () => {
         (inv) => normalizeSize(inv.size) === normalizeSize(selectedSize || "")
     );
 
-    // Function to add product to cart (used by "Add to Cart" button)
+    // Function to add product to cart
     const handleAddToCart = (quantity = 1) => {
         if (!selectedSize) {
             message.warning("Please select a size.");
@@ -176,7 +216,7 @@ const ProductOverview = () => {
             id: product.id,
             inventory_id: selectedInventory.id,
             productName: product.product_name,
-            image: `http://localhost:8000/storage/${product.main_image}`,
+            image: `${baseUrl}/storage/${product.main_image}`,
             size: selectedSize,
             price: product.price,
             quantity,
@@ -223,7 +263,7 @@ const ProductOverview = () => {
         setShowQuantityModal(true);
     };
 
-    // Confirm quantity modal: add product (without saving to persistent cart) and navigate directly to checkout
+    // Confirm quantity modal: add product and navigate to checkout
     const handleConfirmBuyNow = () => {
         const selectedInventory = inventoryRecords.find(
             (inv) => normalizeSize(inv.size) === normalizeSize(selectedSize)
@@ -244,7 +284,7 @@ const ProductOverview = () => {
             id: product.id,
             inventory_id: selectedInventory.id,
             productName: product.product_name,
-            image: `http://localhost:8000/storage/${product.main_image}`,
+            image: `${baseUrl}/storage/${product.main_image}`,
             size: selectedSize,
             price: product.price,
             quantity: buyNowQuantity,
@@ -259,14 +299,14 @@ const ProductOverview = () => {
         setShowQuantityModal(false);
     };
 
-    // Render modal overview content (simplified: no side images)
+    // Render modal overview content
     const renderModalOverview = () => {
         if (!product) return null;
         return (
             <div style={{ display: "flex", flexDirection: "row", gap: "24px" }}>
                 <div>
                     <img
-                        src={`http://localhost:8000/storage/${currentMainImage}`}
+                        src={`${baseUrl}/storage/${currentMainImage}`}
                         alt={product.product_name}
                         style={{
                             width: "300px",
@@ -349,7 +389,7 @@ const ProductOverview = () => {
                             bodyStyle={{ padding: 0 }}
                         >
                             <Image
-                                src={`http://localhost:8000/storage/${currentMainImage}`}
+                                src={`${baseUrl}/storage/${currentMainImage}`}
                                 alt={product.product_name}
                                 preview={false}
                                 style={{
@@ -386,7 +426,7 @@ const ProductOverview = () => {
                                         bodyStyle={{ padding: 0 }}
                                     >
                                         <Image
-                                            src={`http://localhost:8000/storage/${product.side_image_1}`}
+                                            src={`${baseUrl}/storage/${product.side_image_1}`}
                                             alt="Side 1"
                                             preview={false}
                                             onMouseEnter={() =>
@@ -413,7 +453,7 @@ const ProductOverview = () => {
                                         bodyStyle={{ padding: 0 }}
                                     >
                                         <Image
-                                            src={`http://localhost:8000/storage/${product.side_image_2}`}
+                                            src={`${baseUrl}/storage/${product.side_image_2}`}
                                             alt="Side 2"
                                             preview={false}
                                             onMouseEnter={() =>
@@ -440,7 +480,7 @@ const ProductOverview = () => {
                                         bodyStyle={{ padding: 0 }}
                                     >
                                         <Image
-                                            src={`http://localhost:8000/storage/${product.side_image_3}`}
+                                            src={`${baseUrl}/storage/${product.side_image_3}`}
                                             alt="Side 3"
                                             preview={false}
                                             onMouseEnter={() =>
@@ -647,6 +687,162 @@ const ProductOverview = () => {
                                 BUY NOW
                             </Button>
                         </Space>
+                    </Col>
+                </Row>
+
+                {/* Details and Comments Tabs */}
+                <Row justify="center" style={{ marginTop: "20px" }}>
+                    <Col xs={24} md={24}>
+                        <Card>
+                            <Tabs defaultActiveKey="1" type="card" size="large">
+                                <TabPane tab="Details" key="1">
+                                    <Card>
+                                        <Paragraph>
+                                            {product.description}
+                                        </Paragraph>
+                                    </Card>
+                                </TabPane>
+                                <TabPane tab="Comments" key="2">
+                                    <Card>
+                                        {isLoggedIn ? (
+                                            <div
+                                                style={{ marginBottom: "15px" }}
+                                            >
+                                                <div
+                                                    style={{
+                                                        marginBottom: "10px",
+                                                    }}
+                                                >
+                                                    <label
+                                                        style={{
+                                                            marginRight: "10px",
+                                                        }}
+                                                    >
+                                                        Rate this product:
+                                                    </label>
+                                                    <Rate
+                                                        value={reviewRating}
+                                                        onChange={(value) =>
+                                                            setReviewRating(
+                                                                value
+                                                            )
+                                                        }
+                                                    />
+                                                </div>
+                                                <TextArea
+                                                    placeholder="Write a comment..."
+                                                    value={reviewText}
+                                                    onChange={(e) =>
+                                                        setReviewText(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    rows={3}
+                                                    style={{ marginTop: "5px" }}
+                                                />
+                                                <Button
+                                                    type="primary"
+                                                    onClick={handleSubmitReview}
+                                                    style={{
+                                                        marginTop: "10px",
+                                                    }}
+                                                >
+                                                    Post Review
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            <Paragraph
+                                                style={{ textAlign: "center" }}
+                                            >
+                                                Please{" "}
+                                                <Link to="/login">log in</Link>{" "}
+                                                to leave a review.
+                                            </Paragraph>
+                                        )}
+                                        {reviews.length > 0 ? (
+                                            reviews.map((review) => {
+                                                // Handle profile_image: if it's a full URL, use it; otherwise, prepend baseUrl
+                                                const avatarSrc = review.user
+                                                    ?.profile?.profile_image
+                                                    ? review.user.profile.profile_image.startsWith(
+                                                          "http"
+                                                      )
+                                                        ? review.user.profile
+                                                              .profile_image
+                                                        : `${baseUrl}${review.user.profile.profile_image}`
+                                                    : null;
+                                                console.log(
+                                                    `Review ${review.id} Avatar Src:`,
+                                                    avatarSrc
+                                                ); // Debug log
+                                                return (
+                                                    <Card
+                                                        key={review.id}
+                                                        style={{
+                                                            marginBottom:
+                                                                "10px",
+                                                        }}
+                                                    >
+                                                        <div
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems:
+                                                                    "center",
+                                                                gap: "10px",
+                                                            }}
+                                                        >
+                                                            <Avatar
+                                                                src={avatarSrc}
+                                                                icon={
+                                                                    <UserOutlined />
+                                                                }
+                                                                onError={() => {
+                                                                    console.log(
+                                                                        `Failed to load image for review ${review.id}: ${avatarSrc}`
+                                                                    );
+                                                                    return true; // Fallback to icon
+                                                                }}
+                                                            />
+                                                            <div>
+                                                                <strong>
+                                                                    {review.user
+                                                                        ?.username ||
+                                                                        "Unknown User"}
+                                                                </strong>
+                                                                <div>
+                                                                    <Rate
+                                                                        disabled
+                                                                        value={
+                                                                            review.rating
+                                                                        }
+                                                                        style={{
+                                                                            fontSize:
+                                                                                "14px",
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <Paragraph
+                                                            style={{
+                                                                marginTop:
+                                                                    "5px",
+                                                            }}
+                                                        >
+                                                            {review.comment}
+                                                        </Paragraph>
+                                                    </Card>
+                                                );
+                                            })
+                                        ) : (
+                                            <Paragraph>
+                                                No comments yet.
+                                            </Paragraph>
+                                        )}
+                                    </Card>
+                                </TabPane>
+                            </Tabs>
+                        </Card>
                     </Col>
                 </Row>
             </div>
