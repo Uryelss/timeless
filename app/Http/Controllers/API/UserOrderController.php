@@ -8,6 +8,7 @@ use App\Models\OrderDetail;
 use App\Models\Shipping;
 use App\Models\Address;
 use App\Models\Inventory;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 class UserOrderController extends Controller
 {
     /**
-     * Store a new order.
+     * Store a new order and create a corresponding transaction.
      */
     public function store(Request $request)
     {
@@ -38,12 +39,18 @@ class UserOrderController extends Controller
             'total' => 'required|numeric',
             'payment_method_id' => 'required|exists:payment_methods,id',
             'shipping_method_id' => 'required|exists:shipping_methods,id',
+            'payment_option' => 'nullable|string|max:255', // Added for transaction
         ]);
 
         $user = Auth::user();
         $profile = $user->profile;
 
+        if (!$profile) {
+            return response()->json(['message' => 'Profile not found'], 400);
+        }
+
         return DB::transaction(function () use ($request, $profile) {
+            // Handle address
             if ($request->has('address_id')) {
                 $address = Address::findOrFail($request->address_id);
             } else {
@@ -64,6 +71,7 @@ class UserOrderController extends Controller
                 );
             }
 
+            // Create order
             $order = Order::create([
                 'profile_id' => $profile->id,
                 'total_amount' => $request->total,
@@ -71,6 +79,7 @@ class UserOrderController extends Controller
                 'order_date' => now(),
             ]);
 
+            // Create order details and update inventory
             foreach ($request->cart_items as $item) {
                 $inventory = Inventory::findOrFail($item['inventory_id']);
                 if ($inventory->quantity < $item['quantity']) {
@@ -93,22 +102,34 @@ class UserOrderController extends Controller
                 $inventory->save();
             }
 
+            // Create shipping
             $shipping = Shipping::create([
                 'order_id' => $order->id,
                 'payment_method_id' => $request->payment_method_id,
-                'payment_status_id' => 1,
+                'payment_status_id' => 1, // Assuming ID 1 is "Pending"
                 'address_id' => $address->id,
                 'shipping_method_id' => $request->shipping_method_id,
-                'shipping_status_id' => 1,
+                'shipping_status_id' => 1, // Assuming ID 1 is initial status
                 'shipping_total_amount' => $request->shipping_cost,
             ]);
 
             $order->update(['shipping_id' => $shipping->id]);
 
+            // Create transaction
+            $transaction = Transaction::create([
+                'profile_id' => $profile->id,
+                'order_id' => $order->id,
+                'payment_method_id' => $request->payment_method_id,
+                'payment_status_id' => 1, // "Pending" (adjust ID as needed)
+                'transaction_status' => 'Pending',
+                'payment_option' => $request->input('payment_option'),
+            ]);
+
             return response()->json([
                 'message' => 'Order created successfully',
                 'order_id' => $order->id,
                 'address_id' => $address->id,
+                'transaction_id' => $transaction->id, // Added for debugging
             ], 201);
         }, 5);
     }
@@ -127,23 +148,36 @@ class UserOrderController extends Controller
         try {
             $query = Order::where('profile_id', $user->profile->id)
                 ->with([
-                    'orderDetails.product',       // Product details (name, description, etc.)
-                    'orderDetails.inventory',     // Inventory details
-                    'shipping.shippingMethod',    // Shipping method
-                    'shipping.paymentMethod',     // Payment method
-                    'shipping.address'            // Address
+                    'orderDetails.product',
+                    'orderDetails.inventory',
+                    'shipping.shippingMethod',
+                    'shipping.paymentMethod',
+                    'shipping.address',
+                    'statusHistory'
                 ])
-                ->withTrashed()                   // Include soft-deleted orders
-                ->orderBy('order_date', 'desc');  // Latest orders first
+                ->withTrashed()
+                ->orderBy('order_date', 'desc');
 
-            // Filter by order_id if provided
             if ($request->has('order_id')) {
                 $order = $query->where('id', $request->input('order_id'))->firstOrFail();
+                $history = $order->statusHistory->pluck('timestamp', 'status');
+                $order->payment_confirmed_at = $history['processing'] ?? null;
+                $order->shipped_at = $history['shipped'] ?? null;
+                $order->delivered_at = $history['delivered'] ?? null;
+                $order->completed_at = $history['completed'] ?? null;
                 return response()->json($order);
             }
 
-            // Otherwise, return paginated results
             $orders = $query->paginate(10);
+            $orders->getCollection()->transform(function ($order) {
+                $history = $order->statusHistory->pluck('timestamp', 'status');
+                $order->payment_confirmed_at = $history['processing'] ?? null;
+                $order->shipped_at = $history['shipped'] ?? null;
+                $order->delivered_at = $history['delivered'] ?? null;
+                $order->completed_at = $history['completed'] ?? null;
+                return $order;
+            });
+
             return response()->json($orders);
         } catch (\Exception $e) {
             return response()->json([

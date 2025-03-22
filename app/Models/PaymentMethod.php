@@ -15,4 +15,9 @@ class PaymentMethod extends Model
     {
         return $this->hasMany(Shipping::class);
     }
+
+    public function options()
+    {
+        return $this->hasMany(PaymentMethodOption::class);
+    }
 }

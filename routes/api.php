@@ -13,6 +13,7 @@ use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\UserOrderController;
 use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\ForgotPasswordController;
+use App\Http\Controllers\API\TransactionController;
 
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/verify-reset-code', [ForgotPasswordController::class, 'verifyResetCode']);
@@ -31,10 +32,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/inventory-public', [InventoryController::class, 'index'])->name('inventory.public');
     Route::get('/payment-methods', fn() => App\Models\PaymentMethod::all())->name('payment.methods');
     Route::get('/shipping-methods', fn() => App\Models\ShippingMethod::all())->name('shipping.methods');
-    Route::get('/my-purchases', [OrderController::class, 'userOrders'])->name('user.orders.my_purchases'); // Updated to OrderController
+    Route::get('/my-purchases', [UserOrderController::class, 'myPurchases'])->name('user.orders.my_purchases');
     Route::get('/users/me', [UserController::class, 'getCurrentUser'])->name('users.me');
-    Route::post('/orders/{id}/confirm-receipt', [OrderController::class, 'confirmReceipt']); // New endpoint
-    Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder']); // New endpoint
+    Route::post('/orders/{id}/confirm-receipt', [OrderController::class, 'confirmReceipt']);
+    Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder']);
 });
 
 Route::middleware(['auth:api', 'check.role:user'])->group(function () {
@@ -108,5 +109,12 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::delete('/{id}', [ReviewController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/archive', [ReviewController::class, 'archive'])->name('archive');
         Route::post('/{id}/restore', [ReviewController::class, 'restore'])->name('restore');
+    });
+
+    Route::prefix('transactions')->name('transactions.')->group(function () {
+        Route::get('/', [TransactionController::class, 'index'])->name('index');
+        Route::put('/{id}', [TransactionController::class, 'update'])->name('update');
+        Route::post('/{id}/archive', [TransactionController::class, 'archive'])->name('archive');
+        Route::post('/{id}/restore', [TransactionController::class, 'restore'])->name('restore');
     });
 });

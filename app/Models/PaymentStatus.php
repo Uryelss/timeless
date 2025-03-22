@@ -15,4 +15,10 @@ class PaymentStatus extends Model
     {
         return $this->hasMany(Shipping::class);
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
 }

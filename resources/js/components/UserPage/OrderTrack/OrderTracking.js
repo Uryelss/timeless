@@ -46,12 +46,12 @@ const OrderTracking = () => {
         }
         setLoading(true);
         try {
-            const res = await axios.get(`${baseUrl}/api/my-purchases`, {
+            const res = await axios.get(`${baseUrl}/api/my-purchases?order_id=${orderId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            const orders = res.data;
-            const orderData = orders.find((order) => order.id === parseInt(orderId));
+            console.log("API Response:", res.data); // Debug the response
 
+            const orderData = res.data; // Expecting a single order object due to order_id filter
             if (!orderData) {
                 throw new Error("Order not found in response");
             }
@@ -422,4 +422,4 @@ const OrderTracking = () => {
     );
 };
 
-export default OrderTracking;   
+export default OrderTracking;
