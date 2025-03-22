@@ -187988,7 +187988,6 @@ var TransactionManagement = function TransactionManagement() {
             });
           case 4:
             response = _context.sent;
-            console.log("Fetched transactions:", response.data);
             transformedTransactions = response.data.map(function (transaction) {
               return _objectSpread(_objectSpread({}, transaction), {}, {
                 selected: false
@@ -188003,22 +188002,22 @@ var TransactionManagement = function TransactionManagement() {
             if (transformedTransactions.length === 0) {
               antd__WEBPACK_IMPORTED_MODULE_8__["default"].info("No transactions found.");
             }
-            _context.next = 16;
+            _context.next = 15;
             break;
-          case 12:
-            _context.prev = 12;
+          case 11:
+            _context.prev = 11;
             _context.t0 = _context["catch"](1);
             console.error("Error fetching transactions:", ((_error$response = _context.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context.t0);
             antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to fetch transactions: " + (((_error$response2 = _context.t0.response) === null || _error$response2 === void 0 || (_error$response2 = _error$response2.data) === null || _error$response2 === void 0 ? void 0 : _error$response2.message) || _context.t0.message));
-          case 16:
-            _context.prev = 16;
+          case 15:
+            _context.prev = 15;
             setLoading(false);
-            return _context.finish(16);
-          case 19:
+            return _context.finish(15);
+          case 18:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[1, 12, 16, 19]]);
+      }, _callee, null, [[1, 11, 15, 18]]);
     }));
     return function fetchTransactions() {
       return _ref.apply(this, arguments);
@@ -188157,7 +188156,7 @@ var TransactionManagement = function TransactionManagement() {
   };
   var handleUpdate = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(values) {
-      var _error$response3;
+      var _error$response3, _error$response4;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
@@ -188179,7 +188178,7 @@ var TransactionManagement = function TransactionManagement() {
             _context2.prev = 9;
             _context2.t0 = _context2["catch"](0);
             console.error("Error updating transaction:", ((_error$response3 = _context2.t0.response) === null || _error$response3 === void 0 ? void 0 : _error$response3.data) || _context2.t0);
-            antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update transaction");
+            antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update transaction: " + (((_error$response4 = _context2.t0.response) === null || _error$response4 === void 0 || (_error$response4 = _error$response4.data) === null || _error$response4 === void 0 ? void 0 : _error$response4.message) || _context2.t0.message));
           case 13:
           case "end":
             return _context2.stop();
@@ -188248,12 +188247,12 @@ var TransactionManagement = function TransactionManagement() {
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
           type: "link",
           onClick: function onClick() {
-            var _record$payment_metho, _record$payment_statu;
+            var _record$payment_metho, _record$payment_statu, _record$transaction_s;
             setEditingTransaction(record);
             form.setFieldsValue({
               payment_method_id: ((_record$payment_metho = record.payment_method) === null || _record$payment_metho === void 0 ? void 0 : _record$payment_metho.id) || null,
               payment_status_id: ((_record$payment_statu = record.payment_status) === null || _record$payment_statu === void 0 ? void 0 : _record$payment_statu.id) || null,
-              transaction_status: record.transaction_status,
+              transaction_status_id: ((_record$transaction_s = record.transaction_status) === null || _record$transaction_s === void 0 ? void 0 : _record$transaction_s.id) || null,
               payment_option: record.payment_option
             });
             setEditModalVisible(true);
@@ -188291,8 +188290,11 @@ var TransactionManagement = function TransactionManagement() {
     }
   }, {
     title: "Transaction Status",
-    dataIndex: "transaction_status",
-    key: "transaction_status"
+    key: "transactionStatus",
+    render: function render(_, record) {
+      var _record$transaction_s2;
+      return ((_record$transaction_s2 = record.transaction_status) === null || _record$transaction_s2 === void 0 ? void 0 : _record$transaction_s2.name) || "N/A";
+    }
   }, {
     title: "Payment Option",
     dataIndex: "payment_option",
@@ -188326,14 +188328,14 @@ var TransactionManagement = function TransactionManagement() {
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
   var filteredTransactions = transactions.filter(function (t) {
-    var _t$profile, _t$payment_method, _t$payment_status;
+    var _t$profile, _t$payment_method, _t$payment_status, _t$transaction_status;
     var lowerSearch = searchText.toLowerCase();
-    return t.id.toString().includes(lowerSearch) || (((_t$profile = t.profile) === null || _t$profile === void 0 ? void 0 : _t$profile.customer_name) || "").toLowerCase().includes(lowerSearch) || (((_t$payment_method = t.payment_method) === null || _t$payment_method === void 0 ? void 0 : _t$payment_method.name) || "").toLowerCase().includes(lowerSearch) || (((_t$payment_status = t.payment_status) === null || _t$payment_status === void 0 ? void 0 : _t$payment_status.name) || "").toLowerCase().includes(lowerSearch) || (t.transaction_status || "").toLowerCase().includes(lowerSearch) || (t.payment_option || "").toLowerCase().includes(lowerSearch);
+    return t.id.toString().includes(lowerSearch) || (((_t$profile = t.profile) === null || _t$profile === void 0 ? void 0 : _t$profile.customer_name) || "").toLowerCase().includes(lowerSearch) || (((_t$payment_method = t.payment_method) === null || _t$payment_method === void 0 ? void 0 : _t$payment_method.name) || "").toLowerCase().includes(lowerSearch) || (((_t$payment_status = t.payment_status) === null || _t$payment_status === void 0 ? void 0 : _t$payment_status.name) || "").toLowerCase().includes(lowerSearch) || (((_t$transaction_status = t.transaction_status) === null || _t$transaction_status === void 0 ? void 0 : _t$transaction_status.name) || "").toLowerCase().includes(lowerSearch) || (t.payment_option || "").toLowerCase().includes(lowerSearch);
   });
   var filteredArchivedTransactions = archivedTransactions.filter(function (t) {
-    var _t$profile2, _t$payment_method2, _t$payment_status2;
+    var _t$profile2, _t$payment_method2, _t$payment_status2, _t$transaction_status2;
     var lowerSearch = searchText.toLowerCase();
-    return t.id.toString().includes(lowerSearch) || (((_t$profile2 = t.profile) === null || _t$profile2 === void 0 ? void 0 : _t$profile2.customer_name) || "").toLowerCase().includes(lowerSearch) || (((_t$payment_method2 = t.payment_method) === null || _t$payment_method2 === void 0 ? void 0 : _t$payment_method2.name) || "").toLowerCase().includes(lowerSearch) || (((_t$payment_status2 = t.payment_status) === null || _t$payment_status2 === void 0 ? void 0 : _t$payment_status2.name) || "").toLowerCase().includes(lowerSearch) || (t.transaction_status || "").toLowerCase().includes(lowerSearch) || (t.payment_option || "").toLowerCase().includes(lowerSearch);
+    return t.id.toString().includes(lowerSearch) || (((_t$profile2 = t.profile) === null || _t$profile2 === void 0 ? void 0 : _t$profile2.customer_name) || "").toLowerCase().includes(lowerSearch) || (((_t$payment_method2 = t.payment_method) === null || _t$payment_method2 === void 0 ? void 0 : _t$payment_method2.name) || "").toLowerCase().includes(lowerSearch) || (((_t$payment_status2 = t.payment_status) === null || _t$payment_status2 === void 0 ? void 0 : _t$payment_status2.name) || "").toLowerCase().includes(lowerSearch) || (((_t$transaction_status2 = t.transaction_status) === null || _t$transaction_status2 === void 0 ? void 0 : _t$transaction_status2.name) || "").toLowerCase().includes(lowerSearch) || (t.payment_option || "").toLowerCase().includes(lowerSearch);
   });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
@@ -188499,25 +188501,25 @@ var TransactionManagement = function TransactionManagement() {
               children: "Pending"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
               value: 2,
-              children: "Completed"
+              children: "Returned"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
               value: 3,
-              children: "Failed"
+              children: "Paid"
             })]
           })
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
           label: "Transaction Status",
-          name: "transaction_status",
+          name: "transaction_status_id",
           rules: [{
             required: true,
             message: "Please select transaction status"
           }],
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-              value: "Completed",
+              value: 1,
               children: "Completed"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-              value: "Cancelled",
+              value: 2,
               children: "Cancelled"
             })]
           })

@@ -39,7 +39,7 @@ class UserController extends Controller
             'password' => Hash::make($validatedData['password']),
             'role_id'  => $validatedData['role_id'],
             'status'   => $validatedData['status'],
-Flooded
+
         ]);
 
         return response()->json($user, 201);

@@ -10,12 +10,12 @@ class Transaction extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'profile_id',
-        'order_id',
         'payment_method_id',
         'payment_status_id',
-        'transaction_status',
-        'payment_option'
+        'transaction_status_id',
+        'payment_option',
+        'order_id',
+        'profile_id'
     ];
 
     public function profile()
@@ -35,6 +35,11 @@ class Transaction extends Model
 
     public function paymentStatus()
     {
-        return $this->belongsTo(PaymentStatus::class, 'payment_status_id');
+        return $this->belongsTo(PaymentStatus::class);
+    }
+
+    public function transactionStatus()
+    {
+        return $this->belongsTo(TransactionStatus::class, 'transaction_status_id');
     }
 }

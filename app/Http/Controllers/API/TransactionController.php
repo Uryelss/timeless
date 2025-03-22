@@ -13,7 +13,7 @@ class TransactionController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Transaction::with(['profile', 'order', 'paymentMethod', 'paymentStatus']);
+            $query = Transaction::with(['profile', 'order', 'paymentMethod', 'paymentStatus', 'transactionStatus']);
             if ($request->query('archived')) {
                 $query->onlyTrashed();
             } else {
@@ -32,17 +32,17 @@ class TransactionController extends Controller
         try {
             $transaction = Transaction::findOrFail($id);
             $data = $request->validate([
-                'payment_method_id'  => 'sometimes|required|exists:payment_methods,id',
-                'payment_status_id'  => 'sometimes|required|exists:payment_statuses,id',
-                'transaction_status' => 'sometimes|required|string',
-                'payment_option'     => 'nullable|string|max:255'
+                'payment_method_id' => 'sometimes|required|exists:payment_methods,id',
+                'payment_status_id' => 'sometimes|required|exists:payment_statuses,id',
+                'transaction_status_id' => 'sometimes|required|exists:transaction_statuses,id',
+                'payment_option' => 'nullable|string|max:255'
             ]);
             $transaction->update($data);
 
-            // Sync order status if payment is completed for Digital Wallet or Credit Card
+            // Sync order status if payment is Paid for Digital Wallet or Credit Card
             if (
                 in_array($transaction->payment_method_id, [2, 3]) && // Credit Card (2), Digital Wallet (3)
-                isset($data['payment_status_id']) && $data['payment_status_id'] === 2 // Completed
+                isset($data['payment_status_id']) && $data['payment_status_id'] == 3 // Paid
             ) {
                 $order = Order::find($transaction->order_id);
                 if ($order && $order->order_status !== 'processing') {
@@ -50,7 +50,7 @@ class TransactionController extends Controller
                 }
             }
 
-            return response()->json($transaction->fresh(['paymentMethod', 'paymentStatus']));
+            return response()->json($transaction->fresh(['paymentMethod', 'paymentStatus', 'transactionStatus']));
         } catch (\Exception $e) {
             Log::error("Transaction update failed: " . $e->getMessage());
             return response()->json(['message' => 'Failed to update transaction', 'error' => $e->getMessage()], 500);

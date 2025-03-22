@@ -33,9 +33,11 @@ const TransactionManagement = () => {
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [selectAllActive, setSelectAllActive] = useState(false);
-    const [selectedActiveTransactions, setSelectedActiveTransactions] = useState([]);
+    const [selectedActiveTransactions, setSelectedActiveTransactions] =
+        useState([]);
     const [selectAllArchived, setSelectAllArchived] = useState(false);
-    const [selectedArchivedTransactions, setSelectedArchivedTransactions] = useState([]);
+    const [selectedArchivedTransactions, setSelectedArchivedTransactions] =
+        useState([]);
     const [form] = Form.useForm();
     const token = localStorage.getItem("token");
     const API_URL = "http://localhost:8000/api/transactions";
@@ -46,19 +48,30 @@ const TransactionManagement = () => {
             const response = await axios.get(API_URL, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            console.log("Fetched transactions:", response.data);
-            const transformedTransactions = response.data.map((transaction) => ({
-                ...transaction,
-                selected: false,
-            }));
-            setTransactions(transformedTransactions.filter((t) => !t.deleted_at));
-            setArchivedTransactions(transformedTransactions.filter((t) => t.deleted_at));
+            const transformedTransactions = response.data.map(
+                (transaction) => ({
+                    ...transaction,
+                    selected: false,
+                })
+            );
+            setTransactions(
+                transformedTransactions.filter((t) => !t.deleted_at)
+            );
+            setArchivedTransactions(
+                transformedTransactions.filter((t) => t.deleted_at)
+            );
             if (transformedTransactions.length === 0) {
                 message.info("No transactions found.");
             }
         } catch (error) {
-            console.error("Error fetching transactions:", error.response?.data || error);
-            message.error("Failed to fetch transactions: " + (error.response?.data?.message || error.message));
+            console.error(
+                "Error fetching transactions:",
+                error.response?.data || error
+            );
+            message.error(
+                "Failed to fetch transactions: " +
+                    (error.response?.data?.message || error.message)
+            );
         } finally {
             setLoading(false);
         }
@@ -73,21 +86,30 @@ const TransactionManagement = () => {
             t.id === transactionId ? { ...t, selected: !t.selected } : t
         );
         setTransactions(updatedTransactions);
-        setSelectedActiveTransactions(updatedTransactions.filter((t) => t.selected).map((t) => t.id));
+        setSelectedActiveTransactions(
+            updatedTransactions.filter((t) => t.selected).map((t) => t.id)
+        );
         setSelectAllActive(updatedTransactions.every((t) => t.selected));
     };
 
     const handleSelectAllActiveChange = (e) => {
         const checked = e.target.checked;
         setSelectAllActive(checked);
-        const updatedTransactions = transactions.map((t) => ({ ...t, selected: checked }));
+        const updatedTransactions = transactions.map((t) => ({
+            ...t,
+            selected: checked,
+        }));
         setTransactions(updatedTransactions);
-        setSelectedActiveTransactions(checked ? updatedTransactions.map((t) => t.id) : []);
+        setSelectedActiveTransactions(
+            checked ? updatedTransactions.map((t) => t.id) : []
+        );
     };
 
     const handleArchiveAll = () => {
         if (selectedActiveTransactions.length === 0) {
-            message.warning("Please select at least one transaction to archive");
+            message.warning(
+                "Please select at least one transaction to archive"
+            );
             return;
         }
         Modal.confirm({
@@ -95,18 +117,26 @@ const TransactionManagement = () => {
             onOk: () => {
                 Promise.all(
                     selectedActiveTransactions.map((id) =>
-                        axios.post(`${API_URL}/${id}/archive`, {}, {
-                            headers: { Authorization: `Bearer ${token}` },
-                        })
+                        axios.post(
+                            `${API_URL}/${id}/archive`,
+                            {},
+                            {
+                                headers: { Authorization: `Bearer ${token}` },
+                            }
+                        )
                     )
                 )
                     .then(() => {
-                        message.success("Selected transactions archived successfully");
+                        message.success(
+                            "Selected transactions archived successfully"
+                        );
                         fetchTransactions();
                         setSelectedActiveTransactions([]);
                         setSelectAllActive(false);
                     })
-                    .catch(() => message.error("Failed to archive some transactions"));
+                    .catch(() =>
+                        message.error("Failed to archive some transactions")
+                    );
             },
             okButtonProps: { style: { width: "80px" } },
             cancelButtonProps: { style: { width: "80px" } },
@@ -118,21 +148,30 @@ const TransactionManagement = () => {
             t.id === transactionId ? { ...t, selected: !t.selected } : t
         );
         setArchivedTransactions(updatedArchived);
-        setSelectedArchivedTransactions(updatedArchived.filter((t) => t.selected).map((t) => t.id));
+        setSelectedArchivedTransactions(
+            updatedArchived.filter((t) => t.selected).map((t) => t.id)
+        );
         setSelectAllArchived(updatedArchived.every((t) => t.selected));
     };
 
     const handleSelectAllArchivedChange = (e) => {
         const checked = e.target.checked;
         setSelectAllArchived(checked);
-        const updatedArchived = archivedTransactions.map((t) => ({ ...t, selected: checked }));
+        const updatedArchived = archivedTransactions.map((t) => ({
+            ...t,
+            selected: checked,
+        }));
         setArchivedTransactions(updatedArchived);
-        setSelectedArchivedTransactions(checked ? updatedArchived.map((t) => t.id) : []);
+        setSelectedArchivedTransactions(
+            checked ? updatedArchived.map((t) => t.id) : []
+        );
     };
 
     const handleRestoreAll = () => {
         if (selectedArchivedTransactions.length === 0) {
-            message.warning("Please select at least one transaction to restore");
+            message.warning(
+                "Please select at least one transaction to restore"
+            );
             return;
         }
         Modal.confirm({
@@ -140,18 +179,26 @@ const TransactionManagement = () => {
             onOk: () => {
                 Promise.all(
                     selectedArchivedTransactions.map((id) =>
-                        axios.post(`${API_URL}/${id}/restore`, {}, {
-                            headers: { Authorization: `Bearer ${token}` },
-                        })
+                        axios.post(
+                            `${API_URL}/${id}/restore`,
+                            {},
+                            {
+                                headers: { Authorization: `Bearer ${token}` },
+                            }
+                        )
                     )
                 )
                     .then(() => {
-                        message.success("Selected transactions restored successfully");
+                        message.success(
+                            "Selected transactions restored successfully"
+                        );
                         fetchTransactions();
                         setSelectedArchivedTransactions([]);
                         setSelectAllArchived(false);
                     })
-                    .catch(() => message.error("Failed to restore some transactions"));
+                    .catch(() =>
+                        message.error("Failed to restore some transactions")
+                    );
             },
             okButtonProps: { style: { width: "80px" } },
             cancelButtonProps: { style: { width: "80px" } },
@@ -163,13 +210,21 @@ const TransactionManagement = () => {
             await axios.put(`${API_URL}/${editingTransaction.id}`, values, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            message.success("Transaction updated successfully. Order status may have been updated to 'processing'.");
+            message.success(
+                "Transaction updated successfully. Order status may have been updated to 'processing'."
+            );
             setEditModalVisible(false);
             setEditingTransaction(null);
             fetchTransactions();
         } catch (error) {
-            console.error("Error updating transaction:", error.response?.data || error);
-            message.error("Failed to update transaction");
+            console.error(
+                "Error updating transaction:",
+                error.response?.data || error
+            );
+            message.error(
+                "Failed to update transaction: " +
+                    (error.response?.data?.message || error.message)
+            );
         }
     };
 
@@ -178,14 +233,20 @@ const TransactionManagement = () => {
             title: "Are you sure you want to archive this transaction?",
             onOk: () => {
                 axios
-                    .post(`${API_URL}/${record.id}/archive`, {}, {
-                        headers: { Authorization: `Bearer ${token}` },
-                    })
+                    .post(
+                        `${API_URL}/${record.id}/archive`,
+                        {},
+                        {
+                            headers: { Authorization: `Bearer ${token}` },
+                        }
+                    )
                     .then(() => {
                         message.success("Transaction archived successfully");
                         fetchTransactions();
                     })
-                    .catch(() => message.error("Failed to archive transaction"));
+                    .catch(() =>
+                        message.error("Failed to archive transaction")
+                    );
             },
             okButtonProps: { style: { width: "80px" } },
             cancelButtonProps: { style: { width: "80px" } },
@@ -194,9 +255,13 @@ const TransactionManagement = () => {
 
     const handleRestore = (id) => {
         axios
-            .post(`${API_URL}/${id}/restore`, {}, {
-                headers: { Authorization: `Bearer ${token}` },
-            })
+            .post(
+                `${API_URL}/${id}/restore`,
+                {},
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            )
             .then(() => {
                 message.success("Transaction restored successfully");
                 fetchTransactions();
@@ -217,16 +282,22 @@ const TransactionManagement = () => {
                     <Button type="link" onClick={() => handleArchive(record)}>
                         <FolderOpenOutlined />
                     </Button>
-                    <Button type="link" onClick={() => {
-                        setEditingTransaction(record);
-                        form.setFieldsValue({
-                            payment_method_id: record.payment_method?.id || null,
-                            payment_status_id: record.payment_status?.id || null,
-                            transaction_status: record.transaction_status,
-                            payment_option: record.payment_option,
-                        });
-                        setEditModalVisible(true);
-                    }}>
+                    <Button
+                        type="link"
+                        onClick={() => {
+                            setEditingTransaction(record);
+                            form.setFieldsValue({
+                                payment_method_id:
+                                    record.payment_method?.id || null,
+                                payment_status_id:
+                                    record.payment_status?.id || null,
+                                transaction_status_id:
+                                    record.transaction_status?.id || null,
+                                payment_option: record.payment_option,
+                            });
+                            setEditModalVisible(true);
+                        }}
+                    >
                         <EditOutlined />
                     </Button>
                 </Space>
@@ -240,9 +311,12 @@ const TransactionManagement = () => {
         {
             title: "Total Amount",
             key: "totalAmount",
-            render: (_, record) => record.order
-                ? `₱${parseFloat(record.order.total_amount).toLocaleString()}`
-                : "N/A",
+            render: (_, record) =>
+                record.order
+                    ? `₱${parseFloat(
+                          record.order.total_amount
+                      ).toLocaleString()}`
+                    : "N/A",
         },
         {
             title: "Payment Method",
@@ -256,8 +330,8 @@ const TransactionManagement = () => {
         },
         {
             title: "Transaction Status",
-            dataIndex: "transaction_status",
-            key: "transaction_status",
+            key: "transactionStatus",
+            render: (_, record) => record.transaction_status?.name || "N/A",
         },
         {
             title: "Payment Option",
@@ -277,7 +351,10 @@ const TransactionManagement = () => {
                         checked={record.selected}
                         onChange={() => handleArchivedCheckboxChange(record.id)}
                     />
-                    <Button type="link" onClick={() => handleRestore(record.id)}>
+                    <Button
+                        type="link"
+                        onClick={() => handleRestore(record.id)}
+                    >
                         <UndoOutlined style={{ fontSize: "18px" }} />
                     </Button>
                 </Space>
@@ -290,10 +367,18 @@ const TransactionManagement = () => {
         const lowerSearch = searchText.toLowerCase();
         return (
             t.id.toString().includes(lowerSearch) ||
-            (t.profile?.customer_name || "").toLowerCase().includes(lowerSearch) ||
-            (t.payment_method?.name || "").toLowerCase().includes(lowerSearch) ||
-            (t.payment_status?.name || "").toLowerCase().includes(lowerSearch) ||
-            (t.transaction_status || "").toLowerCase().includes(lowerSearch) ||
+            (t.profile?.customer_name || "")
+                .toLowerCase()
+                .includes(lowerSearch) ||
+            (t.payment_method?.name || "")
+                .toLowerCase()
+                .includes(lowerSearch) ||
+            (t.payment_status?.name || "")
+                .toLowerCase()
+                .includes(lowerSearch) ||
+            (t.transaction_status?.name || "")
+                .toLowerCase()
+                .includes(lowerSearch) ||
             (t.payment_option || "").toLowerCase().includes(lowerSearch)
         );
     });
@@ -302,10 +387,18 @@ const TransactionManagement = () => {
         const lowerSearch = searchText.toLowerCase();
         return (
             t.id.toString().includes(lowerSearch) ||
-            (t.profile?.customer_name || "").toLowerCase().includes(lowerSearch) ||
-            (t.payment_method?.name || "").toLowerCase().includes(lowerSearch) ||
-            (t.payment_status?.name || "").toLowerCase().includes(lowerSearch) ||
-            (t.transaction_status || "").toLowerCase().includes(lowerSearch) ||
+            (t.profile?.customer_name || "")
+                .toLowerCase()
+                .includes(lowerSearch) ||
+            (t.payment_method?.name || "")
+                .toLowerCase()
+                .includes(lowerSearch) ||
+            (t.payment_status?.name || "")
+                .toLowerCase()
+                .includes(lowerSearch) ||
+            (t.transaction_status?.name || "")
+                .toLowerCase()
+                .includes(lowerSearch) ||
             (t.payment_option || "").toLowerCase().includes(lowerSearch)
         );
     });
@@ -320,7 +413,11 @@ const TransactionManagement = () => {
                     TRANSACTION MANAGEMENT
                 </Header>
                 <Content style={{ padding: 24, background: "#fff" }}>
-                    <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+                    <Row
+                        justify="space-between"
+                        align="middle"
+                        style={{ marginBottom: 16 }}
+                    >
                         <Space>
                             <Search
                                 placeholder="Search transactions by ID, customer, method, status, or option"
@@ -328,17 +425,27 @@ const TransactionManagement = () => {
                                 onChange={(e) => setSearchText(e.target.value)}
                                 style={{ width: 300 }}
                             />
-                            <Checkbox checked={selectAllActive} onChange={handleSelectAllActiveChange}>
+                            <Checkbox
+                                checked={selectAllActive}
+                                onChange={handleSelectAllActiveChange}
+                            >
                                 Select All
                             </Checkbox>
-                            {(selectAllActive || selectedActiveTransactions.length > 0) && (
+                            {(selectAllActive ||
+                                selectedActiveTransactions.length > 0) && (
                                 <Button type="link" onClick={handleArchiveAll}>
-                                    <FolderOpenOutlined style={{ fontSize: "18px" }} />
-                                    {selectedActiveTransactions.length > 0 && ` (${selectedActiveTransactions.length})`}
+                                    <FolderOpenOutlined
+                                        style={{ fontSize: "18px" }}
+                                    />
+                                    {selectedActiveTransactions.length > 0 &&
+                                        ` (${selectedActiveTransactions.length})`}
                                 </Button>
                             )}
                         </Space>
-                        <Button type="default" onClick={() => setOpenArchiveModal(true)}>
+                        <Button
+                            type="default"
+                            onClick={() => setOpenArchiveModal(true)}
+                        >
                             Archived Transactions
                         </Button>
                     </Row>
@@ -359,7 +466,13 @@ const TransactionManagement = () => {
                 width={1200}
                 footer={[]}
             >
-                <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: 16,
+                    }}
+                >
                     <Checkbox
                         checked={selectAllArchived}
                         onChange={handleSelectAllArchivedChange}
@@ -367,11 +480,13 @@ const TransactionManagement = () => {
                     >
                         Select All
                     </Checkbox>
-                    {(selectAllArchived || selectedArchivedTransactions.length > 0) && (
+                    {(selectAllArchived ||
+                        selectedArchivedTransactions.length > 0) && (
                         <Button type="link" onClick={handleRestoreAll}>
                             <UndoOutlined style={{ fontSize: "18px" }} />
                             Restore
-                            {selectedArchivedTransactions.length > 0 && ` (${selectedArchivedTransactions.length})`}
+                            {selectedArchivedTransactions.length > 0 &&
+                                ` (${selectedArchivedTransactions.length})`}
                         </Button>
                     )}
                 </div>
@@ -391,10 +506,19 @@ const TransactionManagement = () => {
                     setEditingTransaction(null);
                 }}
                 footer={[
-                    <Button key="cancel" onClick={() => setEditModalVisible(false)} style={{ width: "131px" }}>
+                    <Button
+                        key="cancel"
+                        onClick={() => setEditModalVisible(false)}
+                        style={{ width: "131px" }}
+                    >
                         Cancel
                     </Button>,
-                    <Button key="submit" type="primary" onClick={() => form.submit()} style={{ width: "131px" }}>
+                    <Button
+                        key="submit"
+                        type="primary"
+                        onClick={() => form.submit()}
+                        style={{ width: "131px" }}
+                    >
                         Update Transaction
                     </Button>,
                 ]}
@@ -403,7 +527,12 @@ const TransactionManagement = () => {
                     <Form.Item
                         label="Payment Method"
                         name="payment_method_id"
-                        rules={[{ required: true, message: "Please select payment method" }]}
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please select payment method",
+                            },
+                        ]}
                     >
                         <Select>
                             <Option value={1}>Cash on Delivery</Option>
@@ -414,25 +543,38 @@ const TransactionManagement = () => {
                     <Form.Item
                         label="Payment Status"
                         name="payment_status_id"
-                        rules={[{ required: true, message: "Please select payment status" }]}
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please select payment status",
+                            },
+                        ]}
                     >
                         <Select>
                             <Option value={1}>Pending</Option>
-                            <Option value={2}>Completed</Option>
-                            <Option value={3}>Failed</Option>
+                            <Option value={2}>Returned</Option>
+                            <Option value={3}>Paid</Option>
                         </Select>
                     </Form.Item>
                     <Form.Item
                         label="Transaction Status"
-                        name="transaction_status"
-                        rules={[{ required: true, message: "Please select transaction status" }]}
+                        name="transaction_status_id"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please select transaction status",
+                            },
+                        ]}
                     >
                         <Select>
-                            <Option value="Completed">Completed</Option>
-                            <Option value="Cancelled">Cancelled</Option>
+                            <Option value={1}>Completed</Option>
+                            <Option value={2}>Cancelled</Option>
                         </Select>
                     </Form.Item>
-                    <Form.Item label="Payment Option (if applicable)" name="payment_option">
+                    <Form.Item
+                        label="Payment Option (if applicable)"
+                        name="payment_option"
+                    >
                         <Input placeholder="e.g., G-Cash, PayMaya, Master Visa Card" />
                     </Form.Item>
                 </Form>
