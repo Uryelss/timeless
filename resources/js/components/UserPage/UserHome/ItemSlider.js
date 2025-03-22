@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay } from "swiper/modules";
-import BrandSlider from "../UserHome/BrandSlider"; // Fixed import path if necessary
+import { Autoplay } from "swiper/modules"; // Removed Navigation import
+import BrandSlider from "../UserHome/BrandSlider";
 import "swiper/css";
-import "swiper/css/navigation";
 import "swiper/css/autoplay";
+
 const ItemSlider = () => {
     const mensWatchImages = [
         "Slider1.png",
@@ -40,10 +40,9 @@ const ItemSlider = () => {
                     <h2 className="slider-title">Men's Watches</h2>
                 </Link>
                 <Swiper
-                    modules={[Navigation, Autoplay]}
+                    modules={[Autoplay]} // Removed Navigation module
                     spaceBetween={20}
                     slidesPerView={4}
-                    navigation
                     autoplay={{ delay: 2000, disableOnInteraction: false }}
                     loop={true}
                     speed={100}
@@ -62,21 +61,15 @@ const ItemSlider = () => {
                 </Swiper>
             </div>
 
-            {/* Centered BrandSlider */}
-            <div className="brand-slider-container">
-                <BrandSlider />
-            </div>
-
             {/* Women's Watches Slider */}
             <div className="item-slider">
                 <Link to="/user-collection" className="slider-title-link">
                     <h2 className="slider-title">Women's Watches</h2>
                 </Link>
                 <Swiper
-                    modules={[Navigation, Autoplay]}
+                    modules={[Autoplay]} // Removed Navigation module
                     spaceBetween={20}
                     slidesPerView={4}
-                    navigation
                     autoplay={{ delay: 2000, disableOnInteraction: false }}
                     loop={true}
                     speed={800}
@@ -95,6 +88,12 @@ const ItemSlider = () => {
                 </Swiper>
             </div>
 
+            {/* BrandSlider Section */}
+            <div className="brand-slider-section">
+                <h2 className="brand-slider-title">Featured Brands</h2>
+                <BrandSlider />
+            </div>
+
             {/* Large Category Slider with Hover Effect */}
             <div className="large-item-slider">
                 <h2 className="slider-title">Explore Our Collections</h2>
@@ -102,7 +101,7 @@ const ItemSlider = () => {
                     modules={[Autoplay]}
                     spaceBetween={30}
                     slidesPerView={1}
-                    autoplay={{ delay: 2500, disableOnInteraction: false }} // Main collection autoplay
+                    autoplay={{ delay: 2500, disableOnInteraction: false }}
                     loop={true}
                     speed={1000}
                 >
@@ -119,11 +118,11 @@ const ItemSlider = () => {
                                     }
                                 >
                                     <Swiper
-                                        modules={[]} // Removed Autoplay
+                                        modules={[]}
                                         spaceBetween={20}
                                         slidesPerView={
                                             hoveredCategory === category ? 3 : 1
-                                        } // Show 3 slides on hover, 1 normally
+                                        }
                                         loop={true}
                                         speed={800}
                                     >

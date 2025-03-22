@@ -1,0 +1,146 @@
+/* UserHome.scss */
+.user-home {
+    background-color: #121516; /* Dark background for the entire page */
+    min-height: 100vh; /* Ensure the page takes up full viewport height */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure Header has no margin at the top since it's sticky */
+.user-home .header {
+    margin: 0; /* No margin for the header */
+}
+
+/* Hero Section */
+.user-home .hero-section {
+    margin: 0 0 60px 0; /* Margin only at the bottom to separate from ItemSlider */
+}
+
+/* ItemSlider Section */
+.user-home .item-slider-section {
+    margin: 0 auto 60px auto; /* Centered with bottom margin */
+}
+
+/* BrandSlider Section */
+.user-home .brand-slider-section {
+    margin: 0 auto 60px auto; /* Centered with bottom margin */
+    padding: 30px 0;
+    background-color: #1A1E1F; /* Slightly lighter background for contrast */
+    border-top: 1px solid #2A3032; /* Subtle divider line */
+    border-bottom: 1px solid #2A3032;
+    border-radius: 10px;
+    text-align: center;
+
+    .brand-slider-title {
+        font-size: 28px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #E5E5E5; /* Off-white color for consistency */
+        letter-spacing: 1.5px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        margin-bottom: 20px;
+    }
+}
+
+/* Footer Section */
+.user-home .footer {
+    margin-top: 60px; /* Margin at the top to separate from BrandSlider */
+    padding: 40px 0;
+    background-color: #1A1E1F; /* Match the dark theme */
+    border-top: 1px solid #2A3032;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .user-home .hero-section {
+        margin-bottom: 50px;
+    }
+
+    .user-home .item-slider-section {
+        margin-bottom: 50px;
+    }
+
+    .user-home .brand-slider-section {
+        margin-bottom: 50px;
+    }
+
+    .user-home .brand-slider-title {
+        font-size: 24px;
+    }
+
+    .user-home .footer {
+        margin-top: 50px;
+    }
+}
+
+@media (max-width: 992px) {
+    .user-home .hero-section {
+        margin-bottom: 40px;
+    }
+
+    .user-home .item-slider-section {
+        margin-bottom: 40px;
+    }
+
+    .user-home .brand-slider-section {
+        margin-bottom: 40px;
+        padding: 25px 0;
+    }
+
+    .user-home .brand-slider-title {
+        font-size: 22px;
+    }
+
+    .user-home .footer {
+        margin-top: 40px;
+        padding: 30px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .user-home .hero-section {
+        margin-bottom: 30px;
+    }
+
+    .user-home .item-slider-section {
+        margin-bottom: 30px;
+    }
+
+    .user-home .brand-slider-section {
+        margin-bottom: 30px;
+        padding: 20px 0;
+    }
+
+    .user-home .brand-slider-title {
+        font-size: 20px;
+    }
+
+    .user-home .footer {
+        margin-top: 30px;
+        padding: 20px 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .user-home .hero-section {
+        margin-bottom: 20px;
+    }
+
+    .user-home .item-slider-section {
+        margin-bottom: 20px;
+    }
+
+    .user-home .brand-slider-section {
+        margin-bottom: 20px;
+        padding: 15px 0;
+    }
+
+    .user-home .brand-slider-title {
+        font-size: 18px;
+    }
+
+    .user-home .footer {
+        margin-top: 20px;
+        padding: 15px 0;
+    }
+}

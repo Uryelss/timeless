@@ -5,39 +5,28 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
+use App\Models\Order;
 use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
-    /**
-     * List all transactions with related profile, order, payment method, and payment status details.
-     */
     public function index(Request $request)
     {
         try {
             $query = Transaction::with(['profile', 'order', 'paymentMethod', 'paymentStatus']);
-
-            // Optionally include archived transactions
             if ($request->query('archived')) {
                 $query->onlyTrashed();
             } else {
-                $query->withTrashed(); // Include both active and soft-deleted by default
+                $query->withTrashed();
             }
-
             $transactions = $query->get();
             return response()->json($transactions);
         } catch (\Exception $e) {
             Log::error("Failed to fetch transactions: " . $e->getMessage());
-            return response()->json([
-                'message' => 'Failed to fetch transactions',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['message' => 'Failed to fetch transactions', 'error' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Update a transaction (except total_amount since it comes from the order)
-     */
     public function update(Request $request, $id)
     {
         try {
@@ -49,19 +38,25 @@ class TransactionController extends Controller
                 'payment_option'     => 'nullable|string|max:255'
             ]);
             $transaction->update($data);
+
+            // Sync order status if payment is completed for Digital Wallet or Credit Card
+            if (
+                in_array($transaction->payment_method_id, [2, 3]) && // Credit Card (2), Digital Wallet (3)
+                isset($data['payment_status_id']) && $data['payment_status_id'] === 2 // Completed
+            ) {
+                $order = Order::find($transaction->order_id);
+                if ($order && $order->order_status !== 'processing') {
+                    $order->updateStatus('processing', 'Payment confirmed via Transaction Management');
+                }
+            }
+
             return response()->json($transaction->fresh(['paymentMethod', 'paymentStatus']));
         } catch (\Exception $e) {
             Log::error("Transaction update failed: " . $e->getMessage());
-            return response()->json([
-                'message' => 'Failed to update transaction',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['message' => 'Failed to update transaction', 'error' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Archive (soft delete) a transaction
-     */
     public function archive($id)
     {
         try {
@@ -70,16 +65,10 @@ class TransactionController extends Controller
             return response()->json(['message' => 'Transaction archived successfully']);
         } catch (\Exception $e) {
             Log::error("Transaction archive failed: " . $e->getMessage());
-            return response()->json([
-                'message' => 'Failed to archive transaction',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['message' => 'Failed to archive transaction', 'error' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Restore an archived transaction
-     */
     public function restore($id)
     {
         try {
@@ -88,10 +77,7 @@ class TransactionController extends Controller
             return response()->json(['message' => 'Transaction restored successfully']);
         } catch (\Exception $e) {
             Log::error("Transaction restore failed: " . $e->getMessage());
-            return response()->json([
-                'message' => 'Failed to restore transaction',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['message' => 'Failed to restore transaction', 'error' => $e->getMessage()], 500);
         }
     }
 }

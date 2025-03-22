@@ -42,15 +42,13 @@ const OrderManagement = () => {
     const [selectedActiveOrders, setSelectedActiveOrders] = useState([]);
     const [selectAllArchived, setSelectAllArchived] = useState(false);
     const [selectedArchivedOrders, setSelectedArchivedOrders] = useState([]);
-
     const API_URL = "http://localhost:8000/api/orders";
+    const token = localStorage.getItem("token");
 
     const fetchOrders = () => {
         axios
             .get(API_URL, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             })
             .then((res) => {
                 console.log("API Response:", res.data);
@@ -84,9 +82,15 @@ const OrderManagement = () => {
 
     useEffect(() => {
         fetchOrders();
+        const interval = setInterval(fetchOrders, 30000); // Poll every 30 seconds
+        return () => clearInterval(interval);
     }, []);
 
-    // Handlers for active orders
+    const handleRefresh = () => {
+        fetchOrders();
+        message.info("Orders refreshed");
+    };
+
     const handleActiveCheckboxChange = (orderId) => {
         const updatedOrders = orders.map((order) =>
             order.id === orderId ? { ...order, selected: !order.selected } : order
@@ -115,7 +119,7 @@ const OrderManagement = () => {
                 Promise.all(
                     selectedActiveOrders.map((id) =>
                         axios.post(`${API_URL}/${id}/archive`, {}, {
-                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                            headers: { Authorization: `Bearer ${token}` },
                         })
                     )
                 )
@@ -132,7 +136,6 @@ const OrderManagement = () => {
         });
     };
 
-    // Handlers for archived orders
     const handleArchivedCheckboxChange = (orderId) => {
         const updatedArchived = archivedOrders.map((order) =>
             order.id === orderId ? { ...order, selected: !order.selected } : order
@@ -161,7 +164,7 @@ const OrderManagement = () => {
                 Promise.all(
                     selectedArchivedOrders.map((id) =>
                         axios.post(`${API_URL}/${id}/restore`, {}, {
-                            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                            headers: { Authorization: `Bearer ${token}` },
                         })
                     )
                 )
@@ -271,7 +274,7 @@ const OrderManagement = () => {
             onOk: () => {
                 axios
                     .post(`${API_URL}/${record.id}/archive`, {}, {
-                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                        headers: { Authorization: `Bearer ${token}` },
                     })
                     .then(() => {
                         message.success("Order archived successfully");
@@ -290,7 +293,7 @@ const OrderManagement = () => {
     const handleRestore = (id) => {
         axios
             .post(`${API_URL}/${id}/restore`, {}, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                headers: { Authorization: `Bearer ${token}` },
             })
             .then(() => {
                 message.success("Order restored successfully");
@@ -306,12 +309,8 @@ const OrderManagement = () => {
         axios
             .put(
                 `${API_URL}/${selectedOrder.id}`,
-                {
-                    order_status: selectedOrder.order_status,
-                },
-                {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-                }
+                { order_status: selectedOrder.order_status },
+                { headers: { Authorization: `Bearer ${token}` } }
             )
             .then((response) => {
                 message.success("Order updated successfully");
@@ -524,9 +523,14 @@ const OrderManagement = () => {
                                 </Button>
                             )}
                         </div>
-                        <Button type="default" onClick={() => setOpenArchiveModal(true)}>
-                            Archived Orders
-                        </Button>
+                        <Space>
+                            <Button type="default" onClick={handleRefresh}>
+                                Refresh Orders
+                            </Button>
+                            <Button type="default" onClick={() => setOpenArchiveModal(true)}>
+                                Archived Orders
+                            </Button>
+                        </Space>
                     </div>
                     <Table columns={mainColumns} dataSource={filteredOrders} rowKey="id" scroll={{ x: 1200 }} />
                 </Content>

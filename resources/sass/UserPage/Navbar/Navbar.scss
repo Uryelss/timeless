@@ -3,11 +3,11 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
-    background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: #1F2526; /* Changed to dark gray for a premium look */
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3); /* Slightly darker shadow for depth */
     position: relative;
-    min-height: 70px; // Added minimum height for consistency
-    transition: all 0.3s ease; // Smooth transitions
+    min-height: 70px;
+    transition: all 0.3s ease;
 
     .logo {
         display: flex;
@@ -17,7 +17,7 @@
             margin-top: 20px;
             width: 100px;
             height: 100px;
-            object-fit: contain; // Added for better image scaling
+            object-fit: contain;
         }
     }
 
@@ -25,14 +25,15 @@
         display: none;
         background: none;
         border: none;
-        color: #000;
-        font-size: 24px; // Slightly larger for better touch target
+        color: #FFFFFF; /* Changed to white for contrast on dark background */
+        font-size: 24px;
         padding: 8px;
         cursor: pointer;
         transition: transform 0.2s ease;
 
         &:hover {
             transform: scale(1.1);
+            color: #1890ff; /* Teal accent on hover */
         }
 
         &:focus {
@@ -47,12 +48,11 @@
         transition: all 0.3s ease;
 
         .ant-menu-item {
-            color: #000;
+            color: #FFFFFF; /* Changed to white for readability */
             font-weight: 500;
             padding: 0 15px;
             transition: color 0.2s ease;
 
-            // Ensure no underline by default
             &::after {
                 border-bottom: none !important;
                 transform: scaleX(0);
@@ -60,7 +60,7 @@
             }
 
             &:hover {
-                color: #1890ff;
+                color: #1890ff; /* Teal accent on hover */
                 &::after {
                     transform: scaleX(1);
                     border-bottom: 2px solid #1890ff !important;
@@ -68,7 +68,6 @@
             }
         }
 
-        // Remove default Ant Design selected styles
         .ant-menu-item-selected {
             color: #1890ff;
             &::after {
@@ -77,13 +76,13 @@
             }
         }
 
-        // Specific styling for Categories item when not active
         .ant-menu-item:not(.ant-menu-item-selected) {
             &::after {
                 border-bottom: none !important;
             }
         }
     }
+
     .header-icons {
         display: flex;
         align-items: center;
@@ -95,12 +94,12 @@
 
             .icon {
                 font-size: 18px;
-                color: #000;
+                color: #FFFFFF; /* Changed to white for contrast */
                 transition: color 0.2s ease;
             }
 
             &:hover .icon {
-                color: #1890ff;
+                color: #1890ff; /* Teal accent on hover */
             }
         }
 
@@ -111,14 +110,14 @@
             cursor: pointer;
 
             .username {
-                color: #000;
+                color: #FFFFFF; /* Changed to white for readability */
                 font-weight: 500;
                 white-space: nowrap;
             }
         }
     }
 
-    // Responsive Styles
+    /* Responsive Styles */
     @media (max-width: 1024px) {
         padding: 0 15px;
 
@@ -146,15 +145,15 @@
 
         .nav-menu {
             display: none;
-            position: fixed; // Changed to fixed for better mobile behavior
-            top: 70px; // Match header height
+            position: fixed;
+            top: 70px;
             left: 0;
             width: 100%;
-            height: calc(100vh - 70px); // Full screen height minus header
-            background-color: #fff;
+            height: calc(100vh - 70px);
+            background-color: #1F2526; /* Match the navbar color for consistency */
             flex-direction: column;
             z-index: 1000;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Updated shadow */
             opacity: 0;
             transform: translateY(-20px);
             pointer-events: none;
@@ -169,9 +168,10 @@
             .ant-menu-item {
                 text-align: center;
                 margin: 0 !important;
-                padding: 15px 0 !important; // Increased padding for touch targets
-                border-bottom: 1px solid #f0f0f0;
+                padding: 15px 0 !important;
+                border-bottom: 1px solid #2A3032; /* Slightly lighter border for contrast */
                 font-size: 16px;
+                color: #FFFFFF; /* Ensure white text in mobile menu */
             }
         }
 
@@ -203,25 +203,25 @@
 }
 
 .white-dropdown {
-    background-color: #fff;
-    border: 1px solid #f0f0f0;
+    background-color: #1F2526; /* Match the navbar color for consistency */
+    border: 1px solid #2A3032; /* Slightly lighter border for contrast */
     border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3); /* Updated shadow */
 
     .ant-menu-item {
-        color: #000;
+        color: #FFFFFF; /* White text for readability */
         padding: 8px 16px;
 
         &:hover {
             background-color: transparent;
-            color: #1890ff; // Change color on hover instead
+            color: #1890ff;
         }
 
         &.ant-menu-item-selected {
             background-color: transparent;
             color: #1890ff;
             &::after {
-                border-bottom: none !important; // Prevent underline in dropdown
+                border-bottom: none !important;
             }
         }
     }
