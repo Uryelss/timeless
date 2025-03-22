@@ -24,7 +24,10 @@ const { Option } = Select;
 const CheckoutPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { cartItems, subtotal } = location.state || { cartItems: [], subtotal: 0 };
+    const { cartItems, subtotal } = location.state || {
+        cartItems: [],
+        subtotal: 0,
+    };
 
     const [form] = Form.useForm();
     const [cardForm] = Form.useForm();
@@ -44,6 +47,7 @@ const CheckoutPage = () => {
     const API_URL = "http://localhost:8000/api";
     const token = localStorage.getItem("token");
 
+    // Fetch Initial Data
     useEffect(() => {
         const fetchData = async () => {
             if (!token) {
@@ -53,11 +57,19 @@ const CheckoutPage = () => {
             }
             setLoading(true);
             try {
-                const [paymentRes, shippingRes, profileRes] = await Promise.all([
-                    axios.get(`${API_URL}/payment-methods`, { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get(`${API_URL}/shipping-methods`, { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get(`${API_URL}/profile`, { headers: { Authorization: `Bearer ${token}` } }),
-                ]);
+                const [paymentRes, shippingRes, profileRes] = await Promise.all(
+                    [
+                        axios.get(`${API_URL}/payment-methods`, {
+                            headers: { Authorization: `Bearer ${token}` },
+                        }),
+                        axios.get(`${API_URL}/shipping-methods`, {
+                            headers: { Authorization: `Bearer ${token}` },
+                        }),
+                        axios.get(`${API_URL}/profile`, {
+                            headers: { Authorization: `Bearer ${token}` },
+                        }),
+                    ]
+                );
                 setPaymentMethods(paymentRes.data);
                 setShippingMethods(shippingRes.data);
                 const addr = profileRes.data.addresses || [];
@@ -78,6 +90,7 @@ const CheckoutPage = () => {
         }
     }, [cartItems, navigate, token]);
 
+    // Set Default Address
     useEffect(() => {
         if (addresses.length > 0) {
             const def = addresses.find((addr) => addr.is_default);
@@ -97,19 +110,24 @@ const CheckoutPage = () => {
         }
     }, [addresses, form]);
 
+    // Update Shipping Cost
     useEffect(() => {
-        const selectedMethod = shippingMethods.find((m) => m.id === shippingMethod);
+        const selectedMethod = shippingMethods.find(
+            (m) => m.id === shippingMethod
+        );
         setShippingCost(selectedMethod ? parseFloat(selectedMethod.cost) : 0);
     }, [shippingMethod, shippingMethods]);
 
     const total = subtotal + shippingCost;
 
+    // Handle Credit Card Submission
     const handleCardSubmit = (values) => {
         console.log("Credit card details submitted:", values);
         message.success("Credit/Debit Card added successfully!");
         setCardModalVisible(false);
     };
 
+    // Trigger Order Completion
     const handleCompleteOrder = async () => {
         if (!selectedAddressId) {
             try {
@@ -123,6 +141,7 @@ const CheckoutPage = () => {
         }
     };
 
+    // Submit Order
     const onFinish = async (values) => {
         if (!paymentMethod) {
             message.warning("Please select a payment method!");
@@ -178,69 +197,94 @@ const CheckoutPage = () => {
             shipping_method_id: shippingMethod,
             payment_option:
                 paymentMethod &&
-                paymentMethods.find((m) => m.id === paymentMethod)?.name.toLowerCase().includes("digital wallet")
+                paymentMethods
+                    .find((m) => m.id === paymentMethod)
+                    ?.name.toLowerCase()
+                    .includes("digital wallet")
                     ? digitalWalletOption
                     : paymentMethod === 2
-                    ? "Master Visa Card" // Assuming ID 2 is Credit Card
+                    ? "Master Visa Card"
                     : null,
         };
 
         try {
-            const response = await axios.post(`${API_URL}/orders/create`, orderData, {
-                headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-            });
+            const response = await axios.post(
+                `${API_URL}/orders/create`,
+                orderData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
             if (response.status === 201) {
-                message.success("Order placed successfully!");
+                const orderId = response.data.order_id;
                 localStorage.removeItem("cart");
                 window.dispatchEvent(new Event("cartUpdated"));
-                const { order_id, address_id } = response.data;
-
-                if (!useDefault && !selectedAddressId && saveInfo) {
-                    await axios.put(
-                        `${API_URL}/addresses/${address_id}/set-default`,
-                        {},
-                        { headers: { Authorization: `Bearer ${token}` } }
-                    );
-                    message.info("Default address updated for future orders.");
-                }
-
-                if (paymentMethod === 2) { // Credit Card
-                    navigate("/payment", { state: { orderId: order_id, total, payment_option: "Master Visa Card" } });
-                } else if (paymentMethod === 3) { // Digital Wallet
-                    navigate("/payment", { state: { orderId: order_id, total, payment_option: digitalWalletOption } });
-                } else { // Cash on Delivery
-                    navigate("/order-confirmation", { state: { orderId: order_id } });
-                }
+                // Redirect to order tracking page immediately
+                navigate(`/order-tracking/${orderId}`, {
+                    state: { showSuccess: true }, // Pass state to show notification on tracking page
+                });
             }
         } catch (error) {
-            console.error("Order submission error:", error.response?.data || error);
-            message.error(error.response?.data?.message || "Failed to place order.");
+            console.error(
+                "Order submission error:",
+                error.response?.data || error
+            );
+            message.error(
+                error.response?.data?.message || "Failed to place order."
+            );
         } finally {
             setLoading(false);
         }
     };
 
-    const selectedPaymentMethod = paymentMethods.find((m) => m.id === paymentMethod);
-    const isCreditCard = selectedPaymentMethod && selectedPaymentMethod.name.toLowerCase().includes("credit");
-    const isDigitalWallet = selectedPaymentMethod && selectedPaymentMethod.name.toLowerCase().includes("digital wallet");
+    const selectedPaymentMethod = paymentMethods.find(
+        (m) => m.id === paymentMethod
+    );
+    const isCreditCard =
+        selectedPaymentMethod &&
+        selectedPaymentMethod.name.toLowerCase().includes("credit");
+    const isDigitalWallet =
+        selectedPaymentMethod &&
+        selectedPaymentMethod.name.toLowerCase().includes("digital wallet");
 
     return (
         <div>
             <Navbar />
-            <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
-                <h1 style={{ textAlign: "center", marginBottom: "20px" }}>CHECKOUT</h1>
-                {loading && <Spin tip="Loading..." style={{ display: "block", textAlign: "center" }} />}
+            <div
+                style={{
+                    padding: "20px",
+                    maxWidth: "1200px",
+                    margin: "0 auto",
+                }}
+            >
+                <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
+                    CHECKOUT
+                </h1>
+                {loading && (
+                    <Spin
+                        tip="Loading..."
+                        style={{ display: "block", textAlign: "center" }}
+                    />
+                )}
                 <Row gutter={16}>
                     <Col xs={24} md={16}>
-                        <Card title="ADDRESS DETAILS" style={{ marginBottom: "20px" }}>
+                        <Card
+                            title="ADDRESS DETAILS"
+                            style={{ marginBottom: "20px" }}
+                        >
                             {addresses.length > 0 && (
                                 <Select
                                     style={{ width: "100%", marginBottom: 16 }}
                                     placeholder="Select an existing address"
                                     onChange={(value) => {
                                         setSelectedAddressId(value);
-                                        const selected = addresses.find((addr) => addr.id === value);
+                                        const selected = addresses.find(
+                                            (addr) => addr.id === value
+                                        );
                                         if (selected) {
                                             setDefaultAddress(selected);
                                             form.setFieldsValue({
@@ -248,7 +292,8 @@ const CheckoutPage = () => {
                                                 barangay: selected.barangay,
                                                 province: selected.state,
                                                 city: selected.city,
-                                                postalCode: selected.postal_code,
+                                                postalCode:
+                                                    selected.postal_code,
                                                 country: selected.country,
                                                 phone: selected.phone,
                                             });
@@ -270,35 +315,116 @@ const CheckoutPage = () => {
                                 onFinish={onFinish}
                                 initialValues={{ country: "Philippines" }}
                             >
-                                <Form.Item label="Country/Region" name="country" rules={[{ required: true, message: "Please select your country!" }]}>
-                                    <Select><Option value="Philippines">Philippines</Option></Select>
+                                <Form.Item
+                                    label="Country/Region"
+                                    name="country"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please select your country!",
+                                        },
+                                    ]}
+                                >
+                                    <Select>
+                                        <Option value="Philippines">
+                                            Philippines
+                                        </Option>
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="Street Address" name="streetAddress" rules={[{ required: true, message: "Please enter your street address!" }]}>
+                                <Form.Item
+                                    label="Street Address"
+                                    name="streetAddress"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your street address!",
+                                        },
+                                    ]}
+                                >
                                     <Input />
                                 </Form.Item>
-                                <Form.Item label="Barangay" name="barangay" rules={[{ required: true, message: "Please enter your barangay!" }]}>
+                                <Form.Item
+                                    label="Barangay"
+                                    name="barangay"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your barangay!",
+                                        },
+                                    ]}
+                                >
                                     <Input />
                                 </Form.Item>
-                                <Form.Item label="Province" name="province" rules={[{ required: true, message: "Please enter your province!" }]}>
+                                <Form.Item
+                                    label="Province"
+                                    name="province"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your province!",
+                                        },
+                                    ]}
+                                >
                                     <Input />
                                 </Form.Item>
-                                <Form.Item label="City" name="city" rules={[{ required: true, message: "Please enter your city!" }]}>
+                                <Form.Item
+                                    label="City"
+                                    name="city"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Please enter your city!",
+                                        },
+                                    ]}
+                                >
                                     <Input />
                                 </Form.Item>
-                                <Form.Item label="Postal Code" name="postalCode" rules={[{ required: true, message: "Please enter your postal code!" }]}>
+                                <Form.Item
+                                    label="Postal Code"
+                                    name="postalCode"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your postal code!",
+                                        },
+                                    ]}
+                                >
                                     <Input />
                                 </Form.Item>
-                                <Form.Item label="Phone" name="phone" rules={[{ required: true, message: "Please enter your phone number!" }]}>
+                                <Form.Item
+                                    label="Phone"
+                                    name="phone"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Please enter your phone number!",
+                                        },
+                                    ]}
+                                >
                                     <Input />
                                 </Form.Item>
                                 <Form.Item>
-                                    <Checkbox checked={saveInfo} onChange={(e) => setSaveInfo(e.target.checked)}>
+                                    <Checkbox
+                                        checked={saveInfo}
+                                        onChange={(e) =>
+                                            setSaveInfo(e.target.checked)
+                                        }
+                                    >
                                         Save this information for next time
                                     </Checkbox>
                                 </Form.Item>
                             </Form>
                         </Card>
-                        <Card title="PAYMENT METHOD" style={{ marginBottom: "20px" }}>
+                        <Card
+                            title="PAYMENT METHOD"
+                            style={{ marginBottom: "20px" }}
+                        >
                             <Radio.Group
                                 onChange={(e) => {
                                     setPaymentMethod(e.target.value);
@@ -307,14 +433,18 @@ const CheckoutPage = () => {
                                 value={paymentMethod}
                             >
                                 {paymentMethods.map((method) => (
-                                    <Radio key={method.id} value={method.id}>{method.name}</Radio>
+                                    <Radio key={method.id} value={method.id}>
+                                        {method.name}
+                                    </Radio>
                                 ))}
                             </Radio.Group>
                             {isDigitalWallet && (
                                 <Select
                                     placeholder="Select Digital Wallet Option"
                                     style={{ width: 250, marginTop: 16 }}
-                                    onChange={(value) => setDigitalWalletOption(value)}
+                                    onChange={(value) =>
+                                        setDigitalWalletOption(value)
+                                    }
                                     value={digitalWalletOption}
                                 >
                                     <Option value="G-Cash">G-Cash</Option>
@@ -332,18 +462,34 @@ const CheckoutPage = () => {
                                 </Button>
                             )}
                         </Card>
-                        <Card title="SHIPPING METHOD" style={{ marginBottom: "20px" }}>
-                            <Radio.Group onChange={(e) => setShippingMethod(e.target.value)} value={shippingMethod}>
+                        <Card
+                            title="SHIPPING METHOD"
+                            style={{ marginBottom: "20px" }}
+                        >
+                            <Radio.Group
+                                onChange={(e) =>
+                                    setShippingMethod(e.target.value)
+                                }
+                                value={shippingMethod}
+                            >
                                 {shippingMethods.map((method) => (
                                     <Radio key={method.id} value={method.id}>
-                                        {method.name} - ₱{parseFloat(method.cost).toLocaleString()}
+                                        {method.name} - ₱
+                                        {parseFloat(
+                                            method.cost
+                                        ).toLocaleString()}
                                     </Radio>
                                 ))}
                             </Radio.Group>
                         </Card>
                         <Button
                             type="primary"
-                            style={{ backgroundColor: "#00A65A", borderColor: "#00A65A", width: "100%", height: "40px" }}
+                            style={{
+                                backgroundColor: "#00A65A",
+                                borderColor: "#00A65A",
+                                width: "100%",
+                                height: "40px",
+                            }}
                             onClick={handleCompleteOrder}
                             loading={loading}
                         >
@@ -353,24 +499,58 @@ const CheckoutPage = () => {
                     <Col xs={24} md={8}>
                         <Card title="ORDER SUMMARY">
                             {cartItems.map((item) => (
-                                <div key={item.id} style={{ display: "flex", marginBottom: "20px", alignItems: "center" }}>
+                                <div
+                                    key={item.id}
+                                    style={{
+                                        display: "flex",
+                                        marginBottom: "20px",
+                                        alignItems: "center",
+                                    }}
+                                >
                                     <Image
                                         src={item.image}
                                         alt={item.productName}
-                                        style={{ width: "80px", marginRight: "10px" }}
+                                        style={{
+                                            width: "80px",
+                                            marginRight: "10px",
+                                        }}
                                         preview={false}
                                     />
                                     <div>
-                                        <p style={{ margin: 0 }}>{item.productName}</p>
-                                        <p style={{ margin: 0, fontSize: "12px" }}>{item.size}</p>
-                                        <p style={{ margin: 0 }}>Quantity: {item.quantity}</p>
-                                        <p style={{ margin: 0 }}>Total: ₱{(item.price * item.quantity).toLocaleString()}</p>
+                                        <p style={{ margin: 0 }}>
+                                            {item.productName}
+                                        </p>
+                                        <p
+                                            style={{
+                                                margin: 0,
+                                                fontSize: "12px",
+                                            }}
+                                        >
+                                            {item.size}
+                                        </p>
+                                        <p style={{ margin: 0 }}>
+                                            Quantity: {item.quantity}
+                                        </p>
+                                        <p style={{ margin: 0 }}>
+                                            Total: ₱
+                                            {(
+                                                item.price * item.quantity
+                                            ).toLocaleString()}
+                                        </p>
                                     </div>
                                 </div>
                             ))}
-                            <div style={{ borderTop: "1px solid #e8e8e8", paddingTop: "10px", textAlign: "right" }}>
+                            <div
+                                style={{
+                                    borderTop: "1px solid #e8e8e8",
+                                    paddingTop: "10px",
+                                    textAlign: "right",
+                                }}
+                            >
                                 <p>Subtotal: ₱{subtotal.toLocaleString()}</p>
-                                <p>Shipping: ₱{shippingCost.toLocaleString()}</p>
+                                <p>
+                                    Shipping: ₱{shippingCost.toLocaleString()}
+                                </p>
                                 <h3>Total: ₱{total.toLocaleString()}</h3>
                             </div>
                         </Card>
@@ -383,33 +563,93 @@ const CheckoutPage = () => {
                 onCancel={() => setCardModalVisible(false)}
                 footer={null}
             >
-                <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-                    <LockOutlined style={{ fontSize: "24px", color: "#52c41a", marginRight: 8 }} />
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: 16,
+                    }}
+                >
+                    <LockOutlined
+                        style={{
+                            fontSize: "24px",
+                            color: "#52c41a",
+                            marginRight: 8,
+                        }}
+                    />
                     <span>
-                        Your card details are protected. We are partnered with TimelessPay to ensure that your credit card details are kept safe and secure.
+                        Your card details are protected. We are partnered with
+                        TimelessPay to ensure that your credit card details are
+                        kept safe and secure.
                     </span>
                 </div>
-                <Form form={cardForm} layout="vertical" onFinish={handleCardSubmit}>
-                    <Form.Item label="Card Number" name="cardNumber" rules={[{ required: true, message: "Please enter your card number" }]}>
+                <Form
+                    form={cardForm}
+                    layout="vertical"
+                    onFinish={handleCardSubmit}
+                >
+                    <Form.Item
+                        label="Card Number"
+                        name="cardNumber"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please enter your card number",
+                            },
+                        ]}
+                    >
                         <Input placeholder="Card Number" />
                     </Form.Item>
                     <Row gutter={16}>
                         <Col span={12}>
-                            <Form.Item label="Expiry Date (MM/YY)" name="expiryDate" rules={[{ required: true, message: "Please enter expiry date" }]}>
+                            <Form.Item
+                                label="Expiry Date (MM/YY)"
+                                name="expiryDate"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please enter expiry date",
+                                    },
+                                ]}
+                            >
                                 <Input placeholder="MM/YY" />
                             </Form.Item>
                         </Col>
                         <Col span={12}>
-                            <Form.Item label="CVV" name="cvv" rules={[{ required: true, message: "Please enter CVV" }]}>
+                            <Form.Item
+                                label="CVV"
+                                name="cvv"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please enter CVV",
+                                    },
+                                ]}
+                            >
                                 <Input placeholder="CVV" />
                             </Form.Item>
                         </Col>
                     </Row>
-                    <Form.Item label="Name on Card" name="cardName" rules={[{ required: true, message: "Please enter name on card" }]}>
+                    <Form.Item
+                        label="Name on Card"
+                        name="cardName"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please enter name on card",
+                            },
+                        ]}
+                    >
                         <Input placeholder="Name on card" />
                     </Form.Item>
                     <Form.Item>
-                        <Button type="primary" htmlType="submit" style={{ width: "100%" }}>Submit</Button>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            style={{ width: "100%" }}
+                        >
+                            Submit
+                        </Button>
                     </Form.Item>
                 </Form>
             </Modal>

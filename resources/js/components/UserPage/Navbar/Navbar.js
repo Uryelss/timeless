@@ -30,7 +30,6 @@ const Header = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
 
-    // Fetch profile when token is available
     useEffect(() => {
         if (token) {
             axios
@@ -46,7 +45,6 @@ const Header = () => {
         }
     }, [token]);
 
-    // Listen for profile updates
     useEffect(() => {
         const handleProfileUpdated = (e) => {
             setProfile(e.detail);
@@ -59,7 +57,6 @@ const Header = () => {
         };
     }, []);
 
-    // Listen for cart updates and update badge count
     useEffect(() => {
         const updateCartCount = () => {
             const storedCart = localStorage.getItem("cart");
@@ -82,14 +79,12 @@ const Header = () => {
         };
     }, []);
 
-    // Fetch orders when token is available
     useEffect(() => {
         if (token) {
             fetchOrders();
         }
     }, [token]);
 
-    // Function to fetch orders from API
     const fetchOrders = async () => {
         try {
             const response = await axios.get(
@@ -98,12 +93,9 @@ const Header = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-            console.log("Fetched orders from my-purchases:", response.data);
             const orderData = response.data.data || response.data;
             const allOrders = Array.isArray(orderData) ? orderData : [];
             setOrders(allOrders);
-
-            // Filter out completed orders for notification count
             const activeOrders = allOrders.filter(
                 (order) => order.order_status.toLowerCase() !== "completed"
             );
@@ -118,17 +110,10 @@ const Header = () => {
         }
     };
 
-    // Listen for order-related events
     useEffect(() => {
-        const handleOrderPlaced = (e) => {
-            console.log("Order placed event triggered:", e.detail);
-            const order = e.detail;
-            const productName =
-                order?.order_details?.[0]?.product?.product_name ||
-                "Unknown Product";
+        const handleOrderPlaced = () => {
             notification.success({
-                message: "Order Placed",
-                description: `You've ordered ${productName}`,
+                message: "Order Placed Successfully",
                 placement: "topRight",
                 duration: 3,
             });
@@ -136,16 +121,11 @@ const Header = () => {
         };
 
         const handleOrderStatusUpdate = (e) => {
-            console.log("Order status update event triggered:", e.detail);
             const order = e.detail;
-            const productName =
-                order?.order_details?.[0]?.product?.product_name ||
-                "Unknown Product";
-
             if (order.order_status.toLowerCase() === "shipped") {
                 notification.info({
                     message: "Order Shipped",
-                    description: `Admin has shipped your product: ${productName}`,
+                    description: "Your order has been shipped.",
                     placement: "topRight",
                     duration: 3,
                 });
@@ -183,67 +163,33 @@ const Header = () => {
     const notificationsMenu = (
         <Menu className="white-dropdown" style={{ width: 350 }}>
             {orders.length > 0 ? (
-                orders.slice(0, 3).map((order) => {
-                    const product = order.order_details?.[0]?.product || {};
-                    console.log("Rendering order:", order);
-                    return (
-                        <Menu.Item
-                            key={order.id}
-                            onClick={() =>
-                                navigate(`/order-tracking/${order.id}`)
-                            }
-                            style={{
-                                height: "auto",
-                                padding: "10px",
-                                cursor: "pointer",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <img
-                                    src={
-                                        product.main_image
-                                            ? `http://localhost:8000/storage/${product.main_image}`
-                                            : "/images/default-product.png"
-                                    }
-                                    alt={product.product_name || "Product"}
-                                    style={{
-                                        width: 50,
-                                        height: 50,
-                                        objectFit: "cover",
-                                        marginRight: 10,
-                                        borderRadius: 4,
-                                    }}
-                                    onError={(e) => {
-                                        e.target.src =
-                                            "/images/default-product.png";
-                                    }}
-                                />
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ fontWeight: "bold" }}>
-                                        {product.product_name ||
-                                            "Unnamed Product"}
-                                    </div>
-                                    <div
-                                        style={{
-                                            fontSize: "12px",
-                                            color: "#888",
-                                        }}
-                                    >
-                                        {order.order_status} -{" "}
-                                        {new Date(
-                                            order.order_date
-                                        ).toLocaleString()}
-                                    </div>
+                orders.slice(0, 3).map((order) => (
+                    <Menu.Item
+                        key={order.id}
+                        onClick={() => navigate(`/order-tracking/${order.id}`)}
+                        style={{
+                            height: "auto",
+                            padding: "10px",
+                            cursor: "pointer",
+                        }}
+                    >
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <div style={{ flex: 1 }}>
+                                <div style={{ fontWeight: "bold" }}>
+                                    Order #{order.id}
+                                </div>
+                                <div
+                                    style={{ fontSize: "12px", color: "#888" }}
+                                >
+                                    {order.order_status} -{" "}
+                                    {new Date(
+                                        order.order_date
+                                    ).toLocaleString()}
                                 </div>
                             </div>
-                        </Menu.Item>
-                    );
-                })
+                        </div>
+                    </Menu.Item>
+                ))
             ) : (
                 <Menu.Item key="no-notif">No new notifications</Menu.Item>
             )}
@@ -295,10 +241,9 @@ const Header = () => {
         setIsMobileMenuVisible(!isMobileMenuVisible);
     };
 
-    // Prevent any selection behavior on click or double-click
     const handleMenuClick = (e) => {
-        e.domEvent.preventDefault(); // Prevent default behavior
-        handleNavigation(e.item.props.path); // Navigate without highlighting
+        e.domEvent.preventDefault();
+        handleNavigation(e.item.props.path);
     };
 
     return (
@@ -313,8 +258,8 @@ const Header = () => {
                 theme="light"
                 mode="horizontal"
                 className={`nav-menu ${isMobileMenuVisible ? "visible" : ""}`}
-                selectedKeys={[]} // Explicitly empty to prevent highlighting
-                onClick={handleMenuClick} // Custom click handler
+                selectedKeys={[]}
+                onClick={handleMenuClick}
             >
                 <Menu.Item key="home" path="/user-home">
                     Home

@@ -197,12 +197,13 @@ const ProductOverview = () => {
         (inv) => normalizeSize(inv.size) === normalizeSize(selectedSize || "")
     );
 
-    // Function to add product to cart
-    const handleAddToCart = (quantity = 1) => {
+    // Function to add product to cart (Updated from second code)
+    const handleAddToCart = () => {
         if (!selectedSize) {
             message.warning("Please select a size.");
             return;
         }
+
         const selectedInventory = inventoryRecords.find(
             (inv) => normalizeSize(inv.size) === normalizeSize(selectedSize)
         );
@@ -212,6 +213,7 @@ const ProductOverview = () => {
             );
             return;
         }
+
         const cartItem = {
             id: product.id,
             inventory_id: selectedInventory.id,
@@ -219,26 +221,28 @@ const ProductOverview = () => {
             image: `${baseUrl}/storage/${product.main_image}`,
             size: selectedSize,
             price: product.price,
-            quantity,
-            total: product.price * quantity,
+            quantity: 1,
+            total: product.price,
         };
+
         const storedCart = localStorage.getItem("cart");
         let cart = storedCart ? JSON.parse(storedCart) : [];
         const existingItemIndex = cart.findIndex(
             (item) => item.id === cartItem.id && item.size === cartItem.size
         );
         if (existingItemIndex > -1) {
-            cart[existingItemIndex].quantity += quantity;
+            cart[existingItemIndex].quantity += 1;
             cart[existingItemIndex].total =
                 cart[existingItemIndex].price *
                 cart[existingItemIndex].quantity;
         } else {
             cart.push(cartItem);
         }
+
         localStorage.setItem("cart", JSON.stringify(cart));
         window.dispatchEvent(new Event("cartUpdated"));
         message.success(
-            `Successfully added ${product.product_name} (${selectedSize}) x ${quantity} to your cart!`
+            `Successfully added ${product.product_name} (${selectedSize}) to your cart!`
         );
     };
 
@@ -375,7 +379,7 @@ const ProductOverview = () => {
         <div>
             <Navbar style={{ width: "100%" }} />
             <div style={{ marginTop: "90px" }}>
-                <Row gutter={16} justify="center">
+                <Row gutter={16} align="middle" justify="center">
                     <Col xs={24} md={12}>
                         <Card
                             style={{

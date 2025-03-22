@@ -190010,6 +190010,8 @@ var CheckoutPage = function CheckoutPage() {
     setDigitalWalletOption = _useState24[1];
   var API_URL = "http://localhost:8000/api";
   var token = localStorage.getItem("token");
+
+  // Fetch Initial Data
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var fetchData = /*#__PURE__*/function () {
       var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -190078,6 +190080,8 @@ var CheckoutPage = function CheckoutPage() {
       navigate("/user-cart");
     }
   }, [cartItems, navigate, token]);
+
+  // Set Default Address
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (addresses.length > 0) {
       var def = addresses.find(function (addr) {
@@ -190098,6 +190102,8 @@ var CheckoutPage = function CheckoutPage() {
       }
     }
   }, [addresses, form]);
+
+  // Update Shipping Cost
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var selectedMethod = shippingMethods.find(function (m) {
       return m.id === shippingMethod;
@@ -190105,11 +190111,15 @@ var CheckoutPage = function CheckoutPage() {
     setShippingCost(selectedMethod ? parseFloat(selectedMethod.cost) : 0);
   }, [shippingMethod, shippingMethods]);
   var total = subtotal + shippingCost;
+
+  // Handle Credit Card Submission
   var handleCardSubmit = function handleCardSubmit(values) {
     console.log("Credit card details submitted:", values);
     antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Credit/Debit Card added successfully!");
     setCardModalVisible(false);
   };
+
+  // Trigger Order Completion
   var handleCompleteOrder = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
       var values;
@@ -190147,10 +190157,12 @@ var CheckoutPage = function CheckoutPage() {
       return _ref3.apply(this, arguments);
     };
   }();
+
+  // Submit Order
   var onFinish = /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(values) {
       var _paymentMethods$find;
-      var formValues, useDefault, orderData, response, _response$data, order_id, address_id, _error$response, _error$response2;
+      var formValues, useDefault, orderData, response, orderId, _error$response, _error$response2;
       return _regeneratorRuntime().wrap(function _callee3$(_context3) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
@@ -190207,8 +190219,7 @@ var CheckoutPage = function CheckoutPage() {
               shipping_method_id: shippingMethod,
               payment_option: paymentMethod && (_paymentMethods$find = paymentMethods.find(function (m) {
                 return m.id === paymentMethod;
-              })) !== null && _paymentMethods$find !== void 0 && _paymentMethods$find.name.toLowerCase().includes("digital wallet") ? digitalWalletOption : paymentMethod === 2 ? "Master Visa Card" // Assuming ID 2 is Credit Card
-              : null
+              })) !== null && _paymentMethods$find !== void 0 && _paymentMethods$find.name.toLowerCase().includes("digital wallet") ? digitalWalletOption : paymentMethod === 2 ? "Master Visa Card" : null
             });
             _context3.prev = 14;
             _context3.next = 17;
@@ -190220,70 +190231,33 @@ var CheckoutPage = function CheckoutPage() {
             });
           case 17:
             response = _context3.sent;
-            if (!(response.status === 201)) {
-              _context3.next = 28;
-              break;
-            }
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Order placed successfully!");
-            localStorage.removeItem("cart");
-            window.dispatchEvent(new Event("cartUpdated"));
-            _response$data = response.data, order_id = _response$data.order_id, address_id = _response$data.address_id;
-            if (!(!useDefault && !selectedAddressId && saveInfo)) {
-              _context3.next = 27;
-              break;
-            }
-            _context3.next = 26;
-            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("".concat(API_URL, "/addresses/").concat(address_id, "/set-default"), {}, {
-              headers: {
-                Authorization: "Bearer ".concat(token)
-              }
-            });
-          case 26:
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].info("Default address updated for future orders.");
-          case 27:
-            if (paymentMethod === 2) {
-              // Credit Card
-              navigate("/payment", {
+            if (response.status === 201) {
+              orderId = response.data.order_id;
+              localStorage.removeItem("cart");
+              window.dispatchEvent(new Event("cartUpdated"));
+              // Redirect to order tracking page immediately
+              navigate("/order-tracking/".concat(orderId), {
                 state: {
-                  orderId: order_id,
-                  total: total,
-                  payment_option: "Master Visa Card"
-                }
-              });
-            } else if (paymentMethod === 3) {
-              // Digital Wallet
-              navigate("/payment", {
-                state: {
-                  orderId: order_id,
-                  total: total,
-                  payment_option: digitalWalletOption
-                }
-              });
-            } else {
-              // Cash on Delivery
-              navigate("/order-confirmation", {
-                state: {
-                  orderId: order_id
-                }
+                  showSuccess: true
+                } // Pass state to show notification on tracking page
               });
             }
-          case 28:
-            _context3.next = 34;
+            _context3.next = 25;
             break;
-          case 30:
-            _context3.prev = 30;
+          case 21:
+            _context3.prev = 21;
             _context3.t0 = _context3["catch"](14);
             console.error("Order submission error:", ((_error$response = _context3.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context3.t0);
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].error(((_error$response2 = _context3.t0.response) === null || _error$response2 === void 0 || (_error$response2 = _error$response2.data) === null || _error$response2 === void 0 ? void 0 : _error$response2.message) || "Failed to place order.");
-          case 34:
-            _context3.prev = 34;
+          case 25:
+            _context3.prev = 25;
             setLoading(false);
-            return _context3.finish(34);
-          case 37:
+            return _context3.finish(25);
+          case 28:
           case "end":
             return _context3.stop();
         }
-      }, _callee3, null, [[14, 30, 34, 37]]);
+      }, _callee3, null, [[14, 21, 25, 28]]);
     }));
     return function onFinish(_x) {
       return _ref4.apply(this, arguments);
@@ -191427,8 +191401,6 @@ var Header = function Header() {
     setNotificationCount = _useState12[1];
   var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useNavigate)();
   var token = localStorage.getItem("token");
-
-  // Fetch profile when token is available
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (token) {
       axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/profile", {
@@ -191442,8 +191414,6 @@ var Header = function Header() {
       });
     }
   }, [token]);
-
-  // Listen for profile updates
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var handleProfileUpdated = function handleProfileUpdated(e) {
       setProfile(e.detail);
@@ -191456,8 +191426,6 @@ var Header = function Header() {
       window.removeEventListener("profileUpdated", handleProfileUpdated);
     };
   }, []);
-
-  // Listen for cart updates and update badge count
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var updateCartCount = function updateCartCount() {
       var storedCart = localStorage.getItem("cart");
@@ -191478,15 +191446,11 @@ var Header = function Header() {
       window.removeEventListener("cartUpdated", updateCartCount);
     };
   }, []);
-
-  // Fetch orders when token is available
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (token) {
       fetchOrders();
     }
   }, [token]);
-
-  // Function to fetch orders from API
   var fetchOrders = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var response, orderData, allOrders, activeOrders, _err$response;
@@ -191502,59 +191466,46 @@ var Header = function Header() {
             });
           case 3:
             response = _context.sent;
-            console.log("Fetched orders from my-purchases:", response.data);
             orderData = response.data.data || response.data;
             allOrders = Array.isArray(orderData) ? orderData : [];
             setOrders(allOrders);
-
-            // Filter out completed orders for notification count
             activeOrders = allOrders.filter(function (order) {
               return order.order_status.toLowerCase() !== "completed";
             });
             setNotificationCount(activeOrders.length);
-            _context.next = 17;
+            _context.next = 16;
             break;
-          case 12:
-            _context.prev = 12;
+          case 11:
+            _context.prev = 11;
             _context.t0 = _context["catch"](0);
             console.error("Error fetching orders:", ((_err$response = _context.t0.response) === null || _err$response === void 0 ? void 0 : _err$response.data) || _context.t0.message);
             setOrders([]);
             setNotificationCount(0);
-          case 17:
+          case 16:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[0, 12]]);
+      }, _callee, null, [[0, 11]]);
     }));
     return function fetchOrders() {
       return _ref.apply(this, arguments);
     };
   }();
-
-  // Listen for order-related events
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    var handleOrderPlaced = function handleOrderPlaced(e) {
-      var _order$order_details;
-      console.log("Order placed event triggered:", e.detail);
-      var order = e.detail;
-      var productName = (order === null || order === void 0 || (_order$order_details = order.order_details) === null || _order$order_details === void 0 || (_order$order_details = _order$order_details[0]) === null || _order$order_details === void 0 || (_order$order_details = _order$order_details.product) === null || _order$order_details === void 0 ? void 0 : _order$order_details.product_name) || "Unknown Product";
+    var handleOrderPlaced = function handleOrderPlaced() {
       antd__WEBPACK_IMPORTED_MODULE_5__["default"].success({
-        message: "Order Placed",
-        description: "You've ordered ".concat(productName),
+        message: "Order Placed Successfully",
         placement: "topRight",
         duration: 3
       });
       fetchOrders();
     };
     var handleOrderStatusUpdate = function handleOrderStatusUpdate(e) {
-      var _order$order_details2;
-      console.log("Order status update event triggered:", e.detail);
       var order = e.detail;
-      var productName = (order === null || order === void 0 || (_order$order_details2 = order.order_details) === null || _order$order_details2 === void 0 || (_order$order_details2 = _order$order_details2[0]) === null || _order$order_details2 === void 0 || (_order$order_details2 = _order$order_details2.product) === null || _order$order_details2 === void 0 ? void 0 : _order$order_details2.product_name) || "Unknown Product";
       if (order.order_status.toLowerCase() === "shipped") {
         antd__WEBPACK_IMPORTED_MODULE_5__["default"].info({
           message: "Order Shipped",
-          description: "Admin has shipped your product: ".concat(productName),
+          description: "Your order has been shipped.",
           placement: "topRight",
           duration: 3
         });
@@ -191586,9 +191537,6 @@ var Header = function Header() {
       width: 350
     },
     children: [orders.length > 0 ? orders.slice(0, 3).map(function (order) {
-      var _order$order_details3;
-      var product = ((_order$order_details3 = order.order_details) === null || _order$order_details3 === void 0 || (_order$order_details3 = _order$order_details3[0]) === null || _order$order_details3 === void 0 ? void 0 : _order$order_details3.product) || {};
-      console.log("Rendering order:", order);
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
         onClick: function onClick() {
           return navigate("/order-tracking/".concat(order.id));
@@ -191598,33 +191546,20 @@ var Header = function Header() {
           padding: "10px",
           cursor: "pointer"
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
           style: {
             display: "flex",
             alignItems: "center"
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-            src: product.main_image ? "http://localhost:8000/storage/".concat(product.main_image) : "/images/default-product.png",
-            alt: product.product_name || "Product",
-            style: {
-              width: 50,
-              height: 50,
-              objectFit: "cover",
-              marginRight: 10,
-              borderRadius: 4
-            },
-            onError: function onError(e) {
-              e.target.src = "/images/default-product.png";
-            }
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
             style: {
               flex: 1
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
               style: {
                 fontWeight: "bold"
               },
-              children: product.product_name || "Unnamed Product"
+              children: ["Order #", order.id]
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
               style: {
                 fontSize: "12px",
@@ -191632,7 +191567,7 @@ var Header = function Header() {
               },
               children: [order.order_status, " -", " ", new Date(order.order_date).toLocaleString()]
             })]
-          })]
+          })
         })
       }, order.id);
     }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
@@ -191699,11 +191634,9 @@ var Header = function Header() {
   var toggleMobileMenu = function toggleMobileMenu() {
     setIsMobileMenuVisible(!isMobileMenuVisible);
   };
-
-  // Prevent any selection behavior on click or double-click
   var handleMenuClick = function handleMenuClick(e) {
-    e.domEvent.preventDefault(); // Prevent default behavior
-    handleNavigation(e.item.props.path); // Navigate without highlighting
+    e.domEvent.preventDefault();
+    handleNavigation(e.item.props.path);
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(AntHeader, {
     className: "header",
@@ -191721,10 +191654,8 @@ var Header = function Header() {
       theme: "light",
       mode: "horizontal",
       className: "nav-menu ".concat(isMobileMenuVisible ? "visible" : ""),
-      selectedKeys: [] // Explicitly empty to prevent highlighting
-      ,
-      onClick: handleMenuClick // Custom click handler
-      ,
+      selectedKeys: [],
+      onClick: handleMenuClick,
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
         path: "/user-home",
         children: "Home"
@@ -192592,9 +192523,8 @@ var ProductOverview = function ProductOverview() {
     return normalizeSize(inv.size) === normalizeSize(selectedSize || "");
   });
 
-  // Function to add product to cart
+  // Function to add product to cart (Updated from second code)
   var handleAddToCart = function handleAddToCart() {
-    var quantity = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
     if (!selectedSize) {
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select a size.");
       return;
@@ -192613,8 +192543,8 @@ var ProductOverview = function ProductOverview() {
       image: "".concat(baseUrl, "/storage/").concat(product.main_image),
       size: selectedSize,
       price: product.price,
-      quantity: quantity,
-      total: product.price * quantity
+      quantity: 1,
+      total: product.price
     };
     var storedCart = localStorage.getItem("cart");
     var cart = storedCart ? JSON.parse(storedCart) : [];
@@ -192622,14 +192552,14 @@ var ProductOverview = function ProductOverview() {
       return item.id === cartItem.id && item.size === cartItem.size;
     });
     if (existingItemIndex > -1) {
-      cart[existingItemIndex].quantity += quantity;
+      cart[existingItemIndex].quantity += 1;
       cart[existingItemIndex].total = cart[existingItemIndex].price * cart[existingItemIndex].quantity;
     } else {
       cart.push(cartItem);
     }
     localStorage.setItem("cart", JSON.stringify(cart));
     window.dispatchEvent(new Event("cartUpdated"));
-    antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Successfully added ".concat(product.product_name, " (").concat(selectedSize, ") x ").concat(quantity, " to your cart!"));
+    antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Successfully added ".concat(product.product_name, " (").concat(selectedSize, ") to your cart!"));
   };
 
   // BUY NOW handler: open quantity modal
@@ -192784,6 +192714,7 @@ var ProductOverview = function ProductOverview() {
       },
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
         gutter: 16,
+        align: "middle",
         justify: "center",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
           xs: 24,

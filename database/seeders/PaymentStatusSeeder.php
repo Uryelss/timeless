@@ -10,7 +10,7 @@ class PaymentStatusSeeder extends Seeder
     public function run()
     {
         PaymentStatus::create(['name' => 'Pending']);
-        PaymentStatus::create(['name' => 'Completed']);
-        PaymentStatus::create(['name' => 'Failed']);
+        PaymentStatus::create(['name' => 'Returned']);
+        PaymentStatus::create(['name' => 'Paid']);
     }
 }
