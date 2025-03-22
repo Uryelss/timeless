@@ -18,7 +18,6 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
-
     // Admin endpoint: List active products or archived ones if requested via query param.
     public function index(Request $request)
     {
@@ -43,15 +42,13 @@ class ProductController extends Controller
             'price'              => 'required|numeric',
             'quantity'           => 'required|integer',
             'description'        => 'required|string',
-            'sizes'              => 'required', // Expected JSON string, e.g.: 
-            // '[{"size": "22mm", "quantity":3}, {"size": "24mm", "quantity":4}]'
+            'sizes'              => 'required',
             'main_image'         => 'required|file|image',
             'side_image_1'       => 'nullable|file|image',
             'side_image_2'       => 'nullable|file|image',
             'side_image_3'       => 'nullable|file|image',
         ]);
 
-        // Handle file uploads
         if ($request->hasFile('main_image')) {
             $validatedData['main_image'] = $request->file('main_image')->store('products', 'public');
         }
@@ -61,23 +58,17 @@ class ProductController extends Controller
             }
         }
 
-        // Create the product.
         $product = Product::create($validatedData);
 
-        // Retrieve sizes. With the cast on the model, $product->sizes should already be an array.
         $sizes = $product->sizes;
         if (is_string($sizes)) {
             $sizes = json_decode($sizes, true);
         }
 
-        // Create an inventory record for each size.
         if (is_array($sizes)) {
             foreach ($sizes as $detail) {
                 if (is_array($detail) && isset($detail['size']) && isset($detail['quantity'])) {
-                    // Ensure the 'size' value is a string.
-                    $sizeValue = is_array($detail['size'])
-                        ? implode(", ", $detail['size'])
-                        : $detail['size'];
+                    $sizeValue = is_array($detail['size']) ? implode(", ", $detail['size']) : $detail['size'];
                     \App\Models\Inventory::create([
                         'product_id'   => $product->id,
                         'size'         => $sizeValue,
@@ -86,7 +77,6 @@ class ProductController extends Controller
                         'stock_status' => $detail['quantity'] == 0 ? 'Out of Stock' : 'In Stock',
                     ]);
                 } elseif (is_string($detail)) {
-                    // Fallback for older records stored as plain strings.
                     \App\Models\Inventory::create([
                         'product_id'   => $product->id,
                         'size'         => $detail,
@@ -101,13 +91,11 @@ class ProductController extends Controller
         return response()->json($product, 201);
     }
 
-
     // Update an existing product
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
 
-        // Use "sometimes|required" to allow missing fields on update.
         $validatedData = $request->validate([
             'product_name'       => 'sometimes|required|string',
             'brand_id'           => 'sometimes|required|integer',

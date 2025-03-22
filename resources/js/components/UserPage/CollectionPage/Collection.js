@@ -13,6 +13,7 @@ import {
 } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import Navbar from "../Navbar/Navbar";
+import Footer from "../UserHome/Footer";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import BrandSlider from "../UserHome/BrandSlider";
@@ -210,7 +211,6 @@ const Collection = () => {
     const filteredProducts = getFilteredProducts();
     const displayFilters = getDisplayFilters();
 
-    // Function to add item to cart with selected size
     const handleDirectAddToCart = (product, size) => {
         if (!isLoggedIn) {
             message.info("Please log in to add to cart");
@@ -247,7 +247,6 @@ const Collection = () => {
         );
     };
 
-    // Render size options as buttons in the modal
     const renderSizeOptions = (product) => {
         let sizesArr = [];
         if (typeof product.sizes === "string") {
@@ -280,7 +279,6 @@ const Collection = () => {
         ));
     };
 
-    // Handler for modal Add-to-Cart button
     const handleModalAddToCart = () => {
         if (!modalSelectedSize) {
             message.warning("Please select a size.");
@@ -291,7 +289,6 @@ const Collection = () => {
         setModalProduct(null);
     };
 
-    // Render the modal overview content
     const renderModalOverview = () => {
         if (!modalProduct) return null;
         return (
@@ -417,275 +414,279 @@ const Collection = () => {
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
     return (
-        <Layout style={{ minHeight: "100vh" }} key={filterKey}>
-            <Navbar />
-            <div style={{ margin: "24px" }}>
-                <BrandSlider />
-            </div>
-            <Layout style={{ marginTop: "24px" }}>
-                <Sider
-                    width={250}
-                    style={{
-                        background: "#fff",
-                        padding: "16px",
-                        marginRight: "32px",
-                        marginLeft: "24px",
-                    }}
-                >
-                    <div
-                        style={{
-                            marginBottom: "16px",
-                            fontSize: "18px",
-                            fontWeight: "bold",
-                        }}
-                    >
-                        FILTER
+        <div className="collection-page"> {/* Add className for SCSS scoping */}
+            <Layout style={{ minHeight: "100vh" }} key={filterKey}>
+                <Navbar />
+                <div className="main-content">
+                    <div style={{ margin: "24px" }}>
+                        <BrandSlider />
                     </div>
-                    {displayFilters.length > 0 && (
-                        <div style={{ marginBottom: "16px", color: "#1890ff" }}>
-                            {displayFilters.join(" > ")}
-                        </div>
-                    )}
-                    <div>
-                        <div style={{ marginBottom: "16px" }}>
-                            <h3>BRAND</h3>
-                            <div className="horizontal-checkboxes">
-                                {filterOptions.brand.map((brand) => (
-                                    <Checkbox
-                                        key={brand}
-                                        onChange={() =>
-                                            handleFilterChange("brand", brand)
-                                        }
-                                        checked={filters.brand.includes(brand)}
-                                    >
-                                        {brand}
-                                    </Checkbox>
-                                ))}
-                            </div>
-                        </div>
-                        <div style={{ marginBottom: "16px" }}>
-                            <h3>GENDER</h3>
-                            <div className="horizontal-checkboxes">
-                                {filterOptions.gender.map((gender) => (
-                                    <Checkbox
-                                        key={gender}
-                                        onChange={() =>
-                                            handleFilterChange("gender", gender)
-                                        }
-                                        checked={filters.gender.includes(
-                                            gender
-                                        )}
-                                    >
-                                        {gender}
-                                    </Checkbox>
-                                ))}
-                            </div>
-                        </div>
-                        <div style={{ marginBottom: "16px" }}>
-                            <h3>MOVEMENT</h3>
-                            <div className="horizontal-checkboxes">
-                                {filterOptions.movement.map((movement) => (
-                                    <Checkbox
-                                        key={movement}
-                                        onChange={() =>
-                                            handleFilterChange(
-                                                "movement",
-                                                movement
-                                            )
-                                        }
-                                        checked={filters.movement.includes(
-                                            movement
-                                        )}
-                                    >
-                                        {movement}
-                                    </Checkbox>
-                                ))}
-                            </div>
-                        </div>
-                        <div style={{ marginBottom: "16px" }}>
-                            <h3>STRAP MATERIAL</h3>
-                            <div className="horizontal-checkboxes">
-                                {filterOptions.strapMaterial.map((material) => (
-                                    <Checkbox
-                                        key={material.id}
-                                        onChange={() =>
-                                            handleFilterChange(
-                                                "strapMaterial",
-                                                material.id
-                                            )
-                                        }
-                                        checked={filters.strapMaterial.includes(
-                                            material.id
-                                        )}
-                                    >
-                                        {material.name}
-                                    </Checkbox>
-                                ))}
-                            </div>
-                        </div>
-                        <Button
-                            type="default"
+                    <Layout style={{ marginTop: "24px" }}>
+                        <Sider
+                            width={250}
                             style={{
-                                width: "100%",
                                 background: "#fff",
-                                borderColor: "#d9d9d9",
-                            }}
-                            onClick={clearFilters}
-                        >
-                            Clear Filter
-                        </Button>
-                    </div>
-                </Sider>
-
-                <Layout style={{ padding: "0 24px 24px" }}>
-                    <Content style={{ padding: 24, background: "#fff" }}>
-                        <Space
-                            style={{
-                                marginBottom: "16px",
-                                width: "100%",
-                                justifyContent: "space-between",
+                                padding: "16px",
+                                marginRight: "32px",
+                                marginLeft: "24px",
                             }}
                         >
-                            <Search
-                                placeholder="Search collections..."
-                                onSearch={(value) => setSearchTerm(value)}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{ width: 300 }}
-                            />
-                            <Select
-                                defaultValue="default"
-                                style={{ width: 150 }}
-                                onChange={setSortBy}
+                            <div
+                                style={{
+                                    marginBottom: "16px",
+                                    fontSize: "18px",
+                                    fontWeight: "bold",
+                                }}
                             >
-                                <Option value="default">Sort By</Option>
-                                <Option value="priceAsc">
-                                    Price: Low to High
-                                </Option>
-                                <Option value="priceDesc">
-                                    Price: High to Low
-                                </Option>
-                            </Select>
-                        </Space>
-                        <div
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns:
-                                    "repeat(auto-fill, minmax(250px, 1fr))",
-                                gap: "16px",
-                            }}
-                        >
-                            {filteredProducts.map((product) => (
-                                <Link
-                                    key={product.id}
-                                    to={`/product/${product.id}`}
-                                    style={{ textDecoration: "none" }}
-                                >
-                                    <Card
-                                        hoverable
-                                        cover={
-                                            <img
-                                                alt={product.product_name}
-                                                src={
-                                                    product.main_image
-                                                        ? `http://localhost:8000/storage/${product.main_image}`
-                                                        : "/placeholder.jpg"
+                                FILTER
+                            </div>
+                            {displayFilters.length > 0 && (
+                                <div style={{ marginBottom: "16px", color: "#1890ff" }}>
+                                    {displayFilters.join(" > ")}
+                                </div>
+                            )}
+                            <div>
+                                <div style={{ marginBottom: "16px" }}>
+                                    <h3>BRAND</h3>
+                                    <div className="horizontal-checkboxes">
+                                        {filterOptions.brand.map((brand) => (
+                                            <Checkbox
+                                                key={brand}
+                                                onChange={() =>
+                                                    handleFilterChange("brand", brand)
                                                 }
-                                                style={{
-                                                    width: "250px",
-                                                    height: "250px",
-                                                    objectFit: "cover",
-                                                    borderRadius: "8px 8px 0 0",
-                                                }}
-                                            />
-                                        }
-                                        style={{ width: 250 }}
+                                                checked={filters.brand.includes(brand)}
+                                            >
+                                                {brand}
+                                            </Checkbox>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div style={{ marginBottom: "16px" }}>
+                                    <h3>GENDER</h3>
+                                    <div className="horizontal-checkboxes">
+                                        {filterOptions.gender.map((gender) => (
+                                            <Checkbox
+                                                key={gender}
+                                                onChange={() =>
+                                                    handleFilterChange("gender", gender)
+                                                }
+                                                checked={filters.gender.includes(
+                                                    gender
+                                                )}
+                                            >
+                                                {gender}
+                                            </Checkbox>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div style={{ marginBottom: "16px" }}>
+                                    <h3>MOVEMENT</h3>
+                                    <div className="horizontal-checkboxes">
+                                        {filterOptions.movement.map((movement) => (
+                                            <Checkbox
+                                                key={movement}
+                                                onChange={() =>
+                                                    handleFilterChange(
+                                                        "movement",
+                                                        movement
+                                                    )
+                                                }
+                                                checked={filters.movement.includes(
+                                                    movement
+                                                )}
+                                            >
+                                                {movement}
+                                            </Checkbox>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div style={{ marginBottom: "16px" }}>
+                                    <h3>STRAP MATERIAL</h3>
+                                    <div className="horizontal-checkboxes">
+                                        {filterOptions.strapMaterial.map((material) => (
+                                            <Checkbox
+                                                key={material.id}
+                                                onChange={() =>
+                                                    handleFilterChange(
+                                                        "strapMaterial",
+                                                        material.id
+                                                    )
+                                                }
+                                                checked={filters.strapMaterial.includes(
+                                                    material.id
+                                                )}
+                                            >
+                                                {material.name}
+                                            </Checkbox>
+                                        ))}
+                                    </div>
+                                </div>
+                                <Button
+                                    type="default"
+                                    style={{
+                                        width: "100%",
+                                        background: "#fff",
+                                        borderColor: "#d9d9d9",
+                                    }}
+                                    onClick={clearFilters}
+                                >
+                                    Clear Filter
+                                </Button>
+                            </div>
+                        </Sider>
+
+                        <Layout style={{ padding: "0 24px 24px" }}>
+                            <Content style={{ padding: 24, background: "#fff" }}>
+                                <Space
+                                    style={{
+                                        marginBottom: "16px",
+                                        width: "100%",
+                                        justifyContent: "space-between",
+                                    }}
+                                >
+                                    <Search
+                                        placeholder="Search collections..."
+                                        onSearch={(value) => setSearchTerm(value)}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        style={{ width: 300 }}
+                                    />
+                                    <Select
+                                        defaultValue="default"
+                                        style={{ width: 150 }}
+                                        onChange={setSortBy}
                                     >
-                                        <Card.Meta
-                                            title={product.product_name}
-                                            description={
-                                                <div>
-                                                    <p>
-                                                        Price: {product.price}
-                                                    </p>
-                                                    <div
+                                        <Option value="default">Sort By</Option>
+                                        <Option value="priceAsc">
+                                            Price: Low to High
+                                        </Option>
+                                        <Option value="priceDesc">
+                                            Price: High to Low
+                                        </Option>
+                                    </Select>
+                                </Space>
+                                <div
+                                    style={{
+                                        display: "grid",
+                                        gridTemplateColumns:
+                                            "repeat(auto-fill, minmax(250px, 1fr))",
+                                        gap: "16px",
+                                    }}
+                                >
+                                    {filteredProducts.map((product) => (
+                                        <Link
+                                            key={product.id}
+                                            to={`/product/${product.id}`}
+                                            style={{ textDecoration: "none" }}
+                                        >
+                                            <Card
+                                                hoverable
+                                                cover={
+                                                    <img
+                                                        alt={product.product_name}
+                                                        src={
+                                                            product.main_image
+                                                                ? `http://localhost:8000/storage/${product.main_image}`
+                                                                : "/placeholder.jpg"
+                                                        }
                                                         style={{
-                                                            display: "flex",
-                                                            alignItems:
-                                                                "center",
+                                                            width: "250px",
+                                                            height: "250px",
+                                                            objectFit: "cover",
+                                                            borderRadius: "8px 8px 0 0",
                                                         }}
-                                                    >
-                                                        <Rate
-                                                            disabled
-                                                            value={
-                                                                product.average_rating ||
-                                                                0
-                                                            }
-                                                            allowHalf
-                                                            style={{
-                                                                fontSize:
-                                                                    "14px",
-                                                                marginRight:
-                                                                    "8px",
-                                                            }}
-                                                        />
-                                                        <span>
-                                                            {product.average_rating ||
-                                                                0}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            }
-                                        />
-                                        {/* Cart Icon Button */}
-                                        <Button
-                                            type="link"
-                                            icon={
-                                                <ShoppingCartOutlined
-                                                    style={{ fontSize: "28px" }}
+                                                    />
+                                                }
+                                                style={{ width: 250 }}
+                                            >
+                                                <Card.Meta
+                                                    title={product.product_name}
+                                                    description={
+                                                        <div>
+                                                            <p>
+                                                                Price: {product.price}
+                                                            </p>
+                                                            <div
+                                                                style={{
+                                                                    display: "flex",
+                                                                    alignItems:
+                                                                        "center",
+                                                                }}
+                                                            >
+                                                                <Rate
+                                                                    disabled
+                                                                    value={
+                                                                        product.average_rating ||
+                                                                        0
+                                                                    }
+                                                                    allowHalf
+                                                                    style={{
+                                                                        fontSize:
+                                                                            "14px",
+                                                                        marginRight:
+                                                                            "8px",
+                                                                    }}
+                                                                />
+                                                                <span>
+                                                                    {product.average_rating ||
+                                                                        0}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    }
                                                 />
-                                            }
-                                            disabled={!isLoggedIn}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                setModalProduct(product);
-                                                setModalCurrentMainImage(
-                                                    product.main_image
-                                                );
-                                                setModalSelectedSize(null);
-                                                setShowAddToCartModal(true);
-                                            }}
-                                            style={{
-                                                padding: 0,
-                                                marginTop: "8px",
-                                                display: "block",
-                                                textAlign: "center",
-                                            }}
-                                        />
-                                    </Card>
-                                </Link>
-                            ))}
-                        </div>
-                    </Content>
-                </Layout>
+                                                <Button
+                                                    type="link"
+                                                    icon={
+                                                        <ShoppingCartOutlined
+                                                            style={{ fontSize: "28px" }}
+                                                        />
+                                                    }
+                                                    disabled={!isLoggedIn}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        setModalProduct(product);
+                                                        setModalCurrentMainImage(
+                                                            product.main_image
+                                                        );
+                                                        setModalSelectedSize(null);
+                                                        setShowAddToCartModal(true);
+                                                    }}
+                                                    style={{
+                                                        padding: 0,
+                                                        marginTop: "8px",
+                                                        display: "block",
+                                                        textAlign: "center",
+                                                    }}
+                                                />
+                                            </Card>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </Content>
+                        </Layout>
+                    </Layout>
+                </div>
+                <Footer />
+                <Modal
+                    title={
+                        modalProduct
+                            ? modalProduct.product_name
+                            : "Product Overview"
+                    }
+                    visible={showAddToCartModal}
+                    onCancel={() => {
+                        setShowAddToCartModal(false);
+                        setModalProduct(null);
+                    }}
+                    footer={null}
+                    width={700}
+                >
+                    {modalProduct && renderModalOverview()}
+                </Modal>
             </Layout>
-            <Modal
-                title={
-                    modalProduct
-                        ? modalProduct.product_name
-                        : "Product Overview"
-                }
-                visible={showAddToCartModal}
-                onCancel={() => {
-                    setShowAddToCartModal(false);
-                    setModalProduct(null);
-                }}
-                footer={null}
-                width={700}
-            >
-                {modalProduct && renderModalOverview()}
-            </Modal>
-        </Layout>
+        </div>
     );
 };
 

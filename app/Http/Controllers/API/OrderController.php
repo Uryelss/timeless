@@ -193,4 +193,37 @@ class OrderController extends Controller
         $order->updateStatus('cancelled', $request->input('reason'));
         return $this->show($id);
     }
+
+    public function count()
+    {
+        try {
+            $count = Order::count() ?? 0;
+            return response()->json(['count' => (int) $count]);
+        } catch (\Exception $e) {
+            Log::error("Error in OrderController::count: " . $e->getMessage());
+            return response()->json(['count' => 0, 'error' => 'Failed to fetch total orders'], 500);
+        }
+    }
+
+    public function shippedCount()
+    {
+        try {
+            $count = Order::where('order_status', 'shipped')->count() ?? 0;
+            return response()->json(['count' => (int) $count]);
+        } catch (\Exception $e) {
+            Log::error("Error in OrderController::shippedCount: " . $e->getMessage());
+            return response()->json(['count' => 0, 'error' => 'Failed to fetch shipped orders'], 500);
+        }
+    }
+
+    public function completedCount()
+    {
+        try {
+            $count = Order::where('order_status', 'completed')->count() ?? 0;
+            return response()->json(['count' => (int) $count]);
+        } catch (\Exception $e) {
+            Log::error("Error in OrderController::completedCount: " . $e->getMessage());
+            return response()->json(['count' => 0, 'error' => 'Failed to fetch completed orders'], 500);
+        }
+    }
 }

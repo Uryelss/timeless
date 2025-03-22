@@ -1,5 +1,6 @@
 <?php
 
+// routes/api.php (Updated with /orders/completed/count)
 use App\Http\Controllers\AccessController;
 use App\Http\Controllers\API\SubCategoryController;
 use App\Http\Controllers\API\ProductController;
@@ -54,6 +55,11 @@ Route::middleware(['auth:api', 'check.role:user'])->group(function () {
 Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('/admin-dashboard', fn() => response()->json(['message' => 'Welcome to the Admin Dashboard']))
         ->name('admin.dashboard');
+
+    Route::get('/users/count', [UserController::class, 'count'])->name('users.count');
+    Route::get('/orders/completed/count', [OrderController::class, 'completedCount'])->name('orders.completed.count');
+    Route::get('/orders/count', [OrderController::class, 'count'])->name('orders.count');
+    Route::get('/orders/shipped/count', [OrderController::class, 'shippedCount'])->name('orders.shipped.count');
 
     Route::prefix('sub-categories')->name('subcategories.')->group(function () {
         Route::get('/', [SubCategoryController::class, 'index'])->name('index');
@@ -118,3 +124,4 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::post('/{id}/restore', [TransactionController::class, 'restore'])->name('restore');
     });
 });
+

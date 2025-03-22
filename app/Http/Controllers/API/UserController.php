@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    // List active users or archived if query param is set.
+    // List active users or archived if query param is set
     public function index(Request $request)
     {
         if ($request->query('archived')) {
@@ -21,8 +21,6 @@ class UserController extends Controller
         }
         return response()->json($users);
     }
-
-
 
     // Store a new user
     public function store(Request $request)
@@ -41,6 +39,7 @@ class UserController extends Controller
             'password' => Hash::make($validatedData['password']),
             'role_id'  => $validatedData['role_id'],
             'status'   => $validatedData['status'],
+Flooded
         ]);
 
         return response()->json($user, 201);
@@ -59,11 +58,9 @@ class UserController extends Controller
             'status'    => 'sometimes|required|string',
         ]);
 
-        // If a password is provided, hash it.
         if (!empty($validatedData['password'])) {
             $validatedData['password'] = Hash::make($validatedData['password']);
         } else {
-            // Remove password if not provided.
             unset($validatedData['password']);
         }
 
@@ -75,12 +72,10 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-        // Set status to inactive before archiving
         $user->update(['status' => 'inactive']);
         $user->delete();
         return response()->json(['message' => 'User archived successfully and set to inactive']);
     }
-
 
     // Restore a soft-deleted user
     public function restore($id)
@@ -89,6 +84,7 @@ class UserController extends Controller
         $user->restore();
         return response()->json(['message' => 'User restored successfully']);
     }
+
     // Fetch the authenticated user's details
     public function getCurrentUser(Request $request)
     {
@@ -108,6 +104,18 @@ class UserController extends Controller
                 'line' => $e->getLine(),
             ]);
             return response()->json(['message' => 'Server error', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // Count total users
+    public function count()
+    {
+        try {
+            $count = User::count() ?? 0;
+            return response()->json(['count' => (int) $count]);
+        } catch (\Exception $e) {
+            Log::error("Error in UserController::count: " . $e->getMessage());
+            return response()->json(['count' => 0, 'error' => 'Failed to fetch user count'], 500);
         }
     }
 }
