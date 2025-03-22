@@ -355,7 +355,11 @@ const ReviewsManagement = () => {
                 <img
                     src={image || "https://via.placeholder.com/50"}
                     alt="Product"
-                    style={{ width: "60px", borderRadius: 5, height: "70px" }}
+                    style={{
+                        width: "60px",
+                        height: "70px",
+                        onjectFit: "cover",
+                    }}
                 />
             ),
         },
@@ -575,15 +579,7 @@ const ReviewsManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1000}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                        style={{ width: "131px" }}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
             >
                 <div
                     style={{

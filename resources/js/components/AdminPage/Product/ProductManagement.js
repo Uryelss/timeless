@@ -126,20 +126,46 @@ const ProductManagement = () => {
         setSelectedActiveProducts(
             updatedProducts.filter((p) => p.selected).map((p) => p.id)
         );
-        const allSelected = updatedProducts.every((p) => p.selected);
-        setSelectAllActive(allSelected);
+        const filtered = updatedProducts.filter((product) => {
+            const lower = searchText.toLowerCase();
+            return (
+                product.product_name.toLowerCase().includes(lower) ||
+                brands
+                    .find((b) => b.id === product.brand_id)
+                    ?.name.toLowerCase()
+                    .includes(lower) ||
+                categories
+                    .find((c) => c.id === product.category_id)
+                    ?.name.toLowerCase()
+                    .includes(lower)
+            );
+        });
+        setSelectAllActive(filtered.every((p) => p.selected));
     };
 
     const handleSelectAllActiveChange = (e) => {
         const checked = e.target.checked;
         setSelectAllActive(checked);
-        const updatedProducts = products.map((product) => ({
-            ...product,
-            selected: checked,
-        }));
+        const updatedProducts = products.map((product) => {
+            const lower = searchText.toLowerCase();
+            const matchesSearch =
+                product.product_name.toLowerCase().includes(lower) ||
+                brands
+                    .find((b) => b.id === product.brand_id)
+                    ?.name.toLowerCase()
+                    .includes(lower) ||
+                categories
+                    .find((c) => c.id === product.category_id)
+                    ?.name.toLowerCase()
+                    .includes(lower);
+            return {
+                ...product,
+                selected: checked && matchesSearch,
+            };
+        });
         setProducts(updatedProducts);
         setSelectedActiveProducts(
-            checked ? updatedProducts.map((p) => p.id) : []
+            updatedProducts.filter((p) => p.selected).map((p) => p.id)
         );
     };
 
@@ -642,7 +668,18 @@ const ProductManagement = () => {
                             <Search
                                 placeholder="Search products..."
                                 allowClear
-                                onChange={(e) => setSearchText(e.target.value)}
+                                onChange={(e) => {
+                                    setSearchText(e.target.value);
+                                    setSelectAllActive(false); // Reset Select All when search changes
+                                    setSelectedActiveProducts([]); // Reset selected products when search changes
+                                    const updatedProducts = products.map(
+                                        (product) => ({
+                                            ...product,
+                                            selected: false,
+                                        })
+                                    );
+                                    setProducts(updatedProducts);
+                                }}
                                 style={{ width: 200, marginRight: 8 }}
                             />
                             <Checkbox
@@ -661,6 +698,7 @@ const ProductManagement = () => {
                                     <FolderOpenOutlined
                                         style={{ fontSize: "18px" }}
                                     />
+                                    Archive
                                     {selectedActiveProducts.length > 0 &&
                                         ` (${selectedActiveProducts.length})`}
                                 </Button>
@@ -1002,7 +1040,15 @@ const ProductManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1200}
-                footer={[]}
+                footer={[
+                    <Button
+                        key="close"
+                        onClick={() => setOpenArchiveModal(false)}
+                        style={{ width: "131px" }}
+                    >
+                        Close
+                    </Button>,
+                ]}
             >
                 <div
                     style={{

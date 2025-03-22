@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom"; // Unchanged import
+import { useLocation, useNavigate } from "react-router-dom";
 import {
     Form,
     Input,
@@ -21,7 +21,7 @@ const { Option } = Select;
 
 const CheckoutPage = () => {
     const location = useLocation();
-    const navigate = useNavigate(); // Unchanged usage
+    const navigate = useNavigate();
     const { cartItems, subtotal } = location.state || {
         cartItems: [],
         subtotal: 0,
@@ -209,7 +209,6 @@ const CheckoutPage = () => {
                     handleAddressNotDefault();
                 }
 
-                // Navigate to the specified path "/order-tracking/:orderId"
                 navigate(`/order-tracking/${order_id}`);
             }
         } catch (error) {
@@ -227,6 +226,12 @@ const CheckoutPage = () => {
 
     const handleAddressNotDefault = () => {
         console.log("Order used a non-default address. Not updating default.");
+    };
+
+    // New Cancel Handler
+    const handleCancelCheckout = () => {
+        message.info("Checkout cancelled.");
+        navigate("/user-collection");
     };
 
     return (
@@ -436,19 +441,40 @@ const CheckoutPage = () => {
                                 ))}
                             </Radio.Group>
                         </Card>
-                        <Button
-                            type="primary"
+                        <div
                             style={{
-                                backgroundColor: "#00A65A",
-                                borderColor: "#00A65A",
-                                width: "100%",
-                                height: "40px",
+                                display: "flex",
+                                gap: "10px",
+                                flexDirection: "column",
                             }}
-                            onClick={handleCompleteOrder}
-                            loading={loading}
                         >
-                            COMPLETE ORDER
-                        </Button>
+                            <Button
+                                type="primary"
+                                style={{
+                                    backgroundColor: "#00A65A",
+                                    borderColor: "#00A65A",
+                                    width: "100%",
+                                    height: "40px",
+                                }}
+                                onClick={handleCompleteOrder}
+                                loading={loading}
+                            >
+                                COMPLETE ORDER
+                            </Button>
+                            <Button
+                                style={{
+                                    width: "100%",
+                                    height: "40px",
+                                    backgroundColor: "black",
+                                    color: "white",
+                                    border: "none",
+                                }}
+                                onClick={handleCancelCheckout}
+                                disabled={loading}
+                            >
+                                CANCEL
+                            </Button>
+                        </div>
                     </Col>
                     <Col xs={24} md={8}>
                         <Card title="ORDER SUMMARY">
