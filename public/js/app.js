@@ -187967,6 +187967,10 @@ var TransactionManagement = function TransactionManagement() {
     _useState22 = _slicedToArray(_useState21, 2),
     selectedArchivedTransactions = _useState22[0],
     setSelectedArchivedTransactions = _useState22[1];
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState24 = _slicedToArray(_useState23, 2),
+    transactionStatuses = _useState24[0],
+    setTransactionStatuses = _useState24[1];
   var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_6__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
@@ -188023,9 +188027,47 @@ var TransactionManagement = function TransactionManagement() {
       return _ref.apply(this, arguments);
     };
   }();
+  var fetchTransactionStatuses = /*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+      var response, _error$response3;
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.prev = 0;
+            _context2.next = 3;
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("http://localhost:8000/api/transaction-statuses", {
+              headers: {
+                Authorization: "Bearer ".concat(token)
+              }
+            });
+          case 3:
+            response = _context2.sent;
+            setTransactionStatuses(response.data);
+            _context2.next = 11;
+            break;
+          case 7:
+            _context2.prev = 7;
+            _context2.t0 = _context2["catch"](0);
+            console.error("Error fetching transaction statuses:", ((_error$response3 = _context2.t0.response) === null || _error$response3 === void 0 ? void 0 : _error$response3.data) || _context2.t0);
+            antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to fetch transaction statuses");
+          case 11:
+          case "end":
+            return _context2.stop();
+        }
+      }, _callee2, null, [[0, 7]]);
+    }));
+    return function fetchTransactionStatuses() {
+      return _ref2.apply(this, arguments);
+    };
+  }();
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    fetchTransactions();
-  }, []);
+    if (token) {
+      fetchTransactions();
+      fetchTransactionStatuses();
+    } else {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("No authentication token found. Please log in.");
+    }
+  }, [token]);
   var handleActiveCheckboxChange = function handleActiveCheckboxChange(transactionId) {
     var updatedTransactions = transactions.map(function (t) {
       return t.id === transactionId ? _objectSpread(_objectSpread({}, t), {}, {
@@ -188155,13 +188197,13 @@ var TransactionManagement = function TransactionManagement() {
     });
   };
   var handleUpdate = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(values) {
-      var _error$response3, _error$response4;
-      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
+    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(values) {
+      var _error$response4, _error$response5;
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
           case 0:
-            _context2.prev = 0;
-            _context2.next = 3;
+            _context3.prev = 0;
+            _context3.next = 3;
             return axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("".concat(API_URL, "/").concat(editingTransaction.id), values, {
               headers: {
                 Authorization: "Bearer ".concat(token)
@@ -188172,21 +188214,21 @@ var TransactionManagement = function TransactionManagement() {
             setEditModalVisible(false);
             setEditingTransaction(null);
             fetchTransactions();
-            _context2.next = 13;
+            _context3.next = 13;
             break;
           case 9:
-            _context2.prev = 9;
-            _context2.t0 = _context2["catch"](0);
-            console.error("Error updating transaction:", ((_error$response3 = _context2.t0.response) === null || _error$response3 === void 0 ? void 0 : _error$response3.data) || _context2.t0);
-            antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update transaction: " + (((_error$response4 = _context2.t0.response) === null || _error$response4 === void 0 || (_error$response4 = _error$response4.data) === null || _error$response4 === void 0 ? void 0 : _error$response4.message) || _context2.t0.message));
+            _context3.prev = 9;
+            _context3.t0 = _context3["catch"](0);
+            console.error("Error updating transaction:", ((_error$response4 = _context3.t0.response) === null || _error$response4 === void 0 ? void 0 : _error$response4.data) || _context3.t0);
+            antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update transaction: " + (((_error$response5 = _context3.t0.response) === null || _error$response5 === void 0 || (_error$response5 = _error$response5.data) === null || _error$response5 === void 0 ? void 0 : _error$response5.message) || _context3.t0.message));
           case 13:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
-      }, _callee2, null, [[0, 9]]);
+      }, _callee3, null, [[0, 9]]);
     }));
     return function handleUpdate(_x) {
-      return _ref2.apply(this, arguments);
+      return _ref3.apply(this, arguments);
     };
   }();
   var handleArchive = function handleArchive(record) {
@@ -188514,14 +188556,13 @@ var TransactionManagement = function TransactionManagement() {
             required: true,
             message: "Please select transaction status"
           }],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-              value: 1,
-              children: "Completed"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-              value: 2,
-              children: "Cancelled"
-            })]
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            children: transactionStatuses.map(function (status) {
+              return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+                value: status.id,
+                children: status.name
+              }, status.id);
+            })
           })
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
           label: "Payment Option (if applicable)",

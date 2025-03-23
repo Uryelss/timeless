@@ -1,6 +1,5 @@
 <?php
 
-// routes/api.php (Updated with /orders/completed/count)
 use App\Http\Controllers\AccessController;
 use App\Http\Controllers\API\SubCategoryController;
 use App\Http\Controllers\API\ProductController;
@@ -15,6 +14,9 @@ use App\Http\Controllers\API\UserOrderController;
 use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\ForgotPasswordController;
 use App\Http\Controllers\API\TransactionController;
+use App\Http\Controllers\API\TransactionStatusController;
+use App\Http\Controllers\API\PaymentMethodController;
+use App\Http\Controllers\API\PaymentStatusController;
 
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/verify-reset-code', [ForgotPasswordController::class, 'verifyResetCode']);
@@ -31,8 +33,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/reviews/{product_id}', [ReviewController::class, 'index'])->name('reviews.index');
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::get('/inventory-public', [InventoryController::class, 'index'])->name('inventory.public');
-    Route::get('/payment-methods', fn() => App\Models\PaymentMethod::all())->name('payment.methods');
-    Route::get('/shipping-methods', fn() => App\Models\ShippingMethod::all())->name('shipping.methods');
     Route::get('/my-purchases', [UserOrderController::class, 'myPurchases'])->name('user.orders.my_purchases');
     Route::get('/users/me', [UserController::class, 'getCurrentUser'])->name('users.me');
     Route::post('/orders/{id}/confirm-receipt', [OrderController::class, 'confirmReceipt']);
@@ -123,5 +123,8 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::post('/{id}/archive', [TransactionController::class, 'archive'])->name('archive');
         Route::post('/{id}/restore', [TransactionController::class, 'restore'])->name('restore');
     });
-});
 
+    Route::get('/transaction-statuses', [TransactionStatusController::class, 'index'])->name('transaction-statuses.index');
+    Route::get('/payment-methods', [PaymentMethodController::class, 'index'])->name('payment-methods.index');
+    Route::get('/payment-statuses', [PaymentStatusController::class, 'index'])->name('payment-statuses.index');
+});
