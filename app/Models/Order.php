@@ -9,7 +9,17 @@ class Order extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['profile_id', 'total_amount', 'order_status', 'order_date', 'shipping_id'];
+    protected $fillable = [
+        'profile_id',
+        'total_amount',
+        'order_status',
+        'order_date',
+        'shipping_id',
+        'payment_confirmed_at',
+        'shipped_at',
+        'delivered_at',
+        // 'cancelled_at', // Uncomment if added in the migration
+    ];
 
     public function profile()
     {
