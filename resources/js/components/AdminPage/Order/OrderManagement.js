@@ -9,6 +9,13 @@ import {
     Input,
     message,
     Checkbox,
+    Row,
+    Col,
+    Image,
+    Typography,
+    Avatar,
+    Descriptions,
+    Form,
 } from "antd";
 import {
     EditOutlined,
@@ -21,6 +28,7 @@ import axios from "axios";
 
 const { Header, Content, Sider } = Layout;
 const { Option } = Select;
+const { Title, Text } = Typography;
 const { Search } = Input;
 
 const OrderManagement = () => {
@@ -36,21 +44,23 @@ const OrderManagement = () => {
     const [selectAllArchived, setSelectAllArchived] = useState(false);
     const [selectedArchivedOrders, setSelectedArchivedOrders] = useState([]);
 
+    const [form] = Form.useForm();
     const API_URL = "http://localhost:8000/api/orders";
+    const token = localStorage.getItem("token");
 
+    // Fetch orders from the backend
     const fetchOrders = () => {
         axios
             .get(API_URL, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             })
             .then((res) => {
+                console.log("API Response:", res.data); // Debug
                 const transformed = res.data.map((order) => ({
                     ...order,
                     order_date: order.order_date || order.created_at,
                     shipping: order.shipping || {},
-                    selected: false,
+                    selected: false, // Initialize selected state
                 }));
                 setOrders(transformed.filter((order) => !order.deleted_at));
                 setArchivedOrders(
@@ -67,6 +77,7 @@ const OrderManagement = () => {
         fetchOrders();
     }, []);
 
+    // Handlers for active orders
     const handleActiveCheckboxChange = (orderId) => {
         const updated = orders.map((order) =>
             order.id === orderId
@@ -97,20 +108,14 @@ const OrderManagement = () => {
             return;
         }
         Modal.confirm({
-            title: `Archive ${selectedActiveOrders.length} selected order(s)?`,
+            title: `Are you sure you want to archive ${selectedActiveOrders.length} selected order(s)?`,
             onOk: () => {
                 Promise.all(
                     selectedActiveOrders.map((id) =>
                         axios.post(
                             `${API_URL}/${id}/archive`,
                             {},
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${localStorage.getItem(
-                                        "token"
-                                    )}`,
-                                },
-                            }
+                            { headers: { Authorization: `Bearer ${token}` } }
                         )
                     )
                 )
@@ -126,9 +131,12 @@ const OrderManagement = () => {
                         message.error("Failed to archive some orders")
                     );
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
+    // Handlers for archived orders
     const handleArchivedCheckboxChange = (orderId) => {
         const updated = archivedOrders.map((order) =>
             order.id === orderId
@@ -159,20 +167,14 @@ const OrderManagement = () => {
             return;
         }
         Modal.confirm({
-            title: `Restore ${selectedArchivedOrders.length} selected order(s)?`,
+            title: `Are you sure you want to restore ${selectedArchivedOrders.length} selected order(s)?`,
             onOk: () => {
                 Promise.all(
                     selectedArchivedOrders.map((id) =>
                         axios.post(
                             `${API_URL}/${id}/restore`,
                             {},
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${localStorage.getItem(
-                                        "token"
-                                    )}`,
-                                },
-                            }
+                            { headers: { Authorization: `Bearer ${token}` } }
                         )
                     )
                 )
@@ -188,9 +190,12 @@ const OrderManagement = () => {
                         message.error("Failed to restore some orders")
                     );
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
+    // Define table columns for active orders
     const mainColumns = [
         {
             title: "Actions",
@@ -204,6 +209,10 @@ const OrderManagement = () => {
                     <EditOutlined
                         onClick={() => {
                             setSelectedOrder(record);
+                            // Pre-fill the edit form with current order status
+                            form.setFieldsValue({
+                                order_status: record.order_status,
+                            });
                             setOpenEditModal(true);
                         }}
                     />
@@ -242,6 +251,12 @@ const OrderManagement = () => {
             render: (record) => record.shipping?.shipping_status?.name || "N/A",
         },
         {
+            title: "Order Status",
+            dataIndex: "order_status",
+            key: "order_status",
+            render: (status) => status || "N/A",
+        },
+        {
             title: "Total Amount",
             dataIndex: "total_amount",
             key: "total_amount",
@@ -256,6 +271,7 @@ const OrderManagement = () => {
         },
     ];
 
+    // Define table columns for archived orders
     const archiveColumns = [
         {
             title: "Actions",
@@ -278,66 +294,67 @@ const OrderManagement = () => {
         ...mainColumns.slice(1),
     ];
 
+    // Archive a single order
     const handleArchive = (record) => {
         Modal.confirm({
-            title: "Archive this order?",
+            title: "Are you sure you want to archive this order?",
             onOk: () => {
                 axios
                     .post(
                         `${API_URL}/${record.id}/archive`,
                         {},
-                        {
-                            headers: {
-                                Authorization: `Bearer ${localStorage.getItem(
-                                    "token"
-                                )}`,
-                            },
-                        }
+                        { headers: { Authorization: `Bearer ${token}` } }
                     )
                     .then(() => {
                         message.success("Order archived successfully");
                         fetchOrders();
                     })
-                    .catch(() => message.error("Failed to archive order"));
+                    .catch((err) => {
+                        message.error("Failed to archive order");
+                        console.error(err);
+                    });
             },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
         });
     };
 
+    // Restore a single order
     const handleRestore = (id) => {
         axios
             .post(
                 `${API_URL}/${id}/restore`,
                 {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem(
-                            "token"
-                        )}`,
-                    },
-                }
+                { headers: { Authorization: `Bearer ${token}` } }
             )
             .then(() => {
                 message.success("Order restored successfully");
                 fetchOrders();
             })
-            .catch(() => message.error("Failed to restore order"));
+            .catch((err) => {
+                message.error("Failed to restore order");
+                console.error(err);
+            });
     };
 
+    // Update order: send updated order_status and shipping info.
+    // Tracking number is auto‑generated by the backend if needed.
     const handleUpdate = () => {
-        // Send only the shipping status; tracking number is generated automatically by backend.
-        const payload = {
-            shipping: {
-                shipping_status_id:
-                    selectedOrder.shipping?.shipping_status_id || 1,
-            },
-        };
         axios
-            .put(`${API_URL}/${selectedOrder.id}`, payload, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+            .put(
+                `${API_URL}/${selectedOrder.id}`,
+                {
+                    order_status: selectedOrder.order_status,
+                    shipping: {
+                        tracking_number:
+                            selectedOrder.shipping?.tracking_number || null,
+                        shipping_status_id:
+                            selectedOrder.shipping?.shipping_status_id || 1,
+                    },
                 },
-            })
-            .then((response) => {
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            .then(() => {
                 message.success("Order updated successfully");
                 setOpenEditModal(false);
                 fetchOrders();
@@ -347,13 +364,131 @@ const OrderManagement = () => {
                     "Failed to update order: " +
                         (err.response?.data?.message || "Unknown error")
                 );
+                console.error(err);
             });
     };
 
+    // When clicking the eye icon, open the view modal with full order details.
     const handleView = (record) => {
         setSelectedOrder(record);
         setOpenViewModal(true);
     };
+
+    // Render full order details (including user avatar and product images).
+    const renderOrderDetails = () => {
+        if (!selectedOrder) return null;
+        const items =
+            selectedOrder.order_details || selectedOrder.orderDetails || [];
+        const { shipping, profile } = selectedOrder;
+        const subtotal = items.reduce(
+            (sum, detail) => sum + detail.quantity * detail.price,
+            0
+        );
+        const deliveryCharge = shipping?.shipping_total_amount || 0;
+        const totalAmount =
+            selectedOrder.total_amount || subtotal + deliveryCharge;
+        return (
+            <div style={{ padding: "16px" }}>
+                <Title level={4} style={{ marginBottom: "16px" }}>
+                    Order Summary
+                </Title>
+                <p>Order Date: {selectedOrder.order_date || "N/A"}</p>
+                <p>
+                    Subtotal: ₱{subtotal.toLocaleString()} | Delivery: ₱
+                    {deliveryCharge.toLocaleString()} | Total: ₱
+                    {totalAmount.toLocaleString()}
+                </p>
+                <Title level={4} style={{ margin: "24px 0 16px" }}>
+                    Customer Details
+                </Title>
+                <Row align="middle" gutter={[16, 16]}>
+                    <Col>
+                        <Avatar
+                            src={
+                                profile?.profile_image ||
+                                "https://via.placeholder.com/50"
+                            }
+                            size={50}
+                        />
+                    </Col>
+                    <Col>
+                        <Text>
+                            {profile?.first_name || ""}{" "}
+                            {profile?.last_name || ""} <br />
+                            {profile?.user?.email || "N/A"}
+                        </Text>
+                    </Col>
+                </Row>
+                <Title level={4} style={{ margin: "24px 0 16px" }}>
+                    Shipping Information
+                </Title>
+                <p>
+                    Shipping Status: {shipping?.shipping_status?.name || "N/A"}{" "}
+                    <br />
+                    Tracking Number:{" "}
+                    {shipping?.tracking_number || "Not Available"} <br />
+                    Payment Method: {shipping?.payment_method?.name ||
+                        "N/A"}{" "}
+                    <br />
+                    Shipping Method: {shipping?.shipping_method?.name || "N/A"}
+                </p>
+                <Title level={4} style={{ margin: "24px 0 16px" }}>
+                    Items
+                </Title>
+                {items.length > 0 ? (
+                    <ul>
+                        {items.map((detail) => (
+                            <li key={detail.id} style={{ marginBottom: "8px" }}>
+                                <Image
+                                    src={
+                                        detail.product?.main_image
+                                            ? `http://localhost:8000/storage/${detail.product.main_image}`
+                                            : "https://via.placeholder.com/50"
+                                    }
+                                    width={50}
+                                    style={{ marginRight: "8px" }}
+                                    preview={false}
+                                />
+                                {detail.product?.product_name || "Unknown"} –
+                                Quantity: {detail.quantity} – Price: ₱
+                                {parseFloat(detail.price).toLocaleString()}
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No items</p>
+                )}
+            </div>
+        );
+    };
+
+    const filteredOrders = orders.filter((order) => {
+        const lowerSearch = searchText.toLowerCase();
+        return (
+            order.id.toString().includes(lowerSearch) ||
+            (order.profile &&
+                `${order.profile.first_name || ""} ${
+                    order.profile.last_name || ""
+                }`
+                    .toLowerCase()
+                    .includes(lowerSearch)) ||
+            (order.order_status?.toLowerCase() || "").includes(lowerSearch)
+        );
+    });
+
+    const filteredArchivedOrders = archivedOrders.filter((order) => {
+        const lowerSearch = searchText.toLowerCase();
+        return (
+            order.id.toString().includes(lowerSearch) ||
+            (order.profile &&
+                `${order.profile.first_name || ""} ${
+                    order.profile.last_name || ""
+                }`
+                    .toLowerCase()
+                    .includes(lowerSearch)) ||
+            (order.order_status?.toLowerCase() || "").includes(lowerSearch)
+        );
+    });
 
     return (
         <Layout>
@@ -376,7 +511,7 @@ const OrderManagement = () => {
                             placeholder="Search orders by ID, customer, or status"
                             allowClear
                             onChange={(e) => setSearchText(e.target.value)}
-                            style={{ width: 300 }}
+                            style={{ width: 300, marginRight: 16 }}
                         />
                         <Button
                             type="default"
@@ -387,22 +522,7 @@ const OrderManagement = () => {
                     </div>
                     <Table
                         columns={mainColumns}
-                        dataSource={orders.filter(
-                            (order) =>
-                                order.id
-                                    .toString()
-                                    .includes(searchText.toLowerCase()) ||
-                                (order.profile &&
-                                    `${order.profile.first_name || ""} ${
-                                        order.profile.last_name || ""
-                                    }`
-                                        .toLowerCase()
-                                        .includes(searchText.toLowerCase())) ||
-                                (
-                                    order.shipping?.shipping_status?.name?.toLowerCase() ||
-                                    ""
-                                ).includes(searchText.toLowerCase())
-                        )}
+                        dataSource={filteredOrders}
                         rowKey="id"
                         scroll={{ x: 1200 }}
                     />
@@ -417,7 +537,7 @@ const OrderManagement = () => {
             >
                 <Table
                     columns={archiveColumns}
-                    dataSource={archivedOrders}
+                    dataSource={filteredArchivedOrders}
                     rowKey="id"
                     scroll={{ x: 1200 }}
                 />
@@ -470,7 +590,7 @@ const OrderManagement = () => {
                             <Option value={5}>Cancelled</Option>
                             <Option value={6}>Completed</Option>
                         </Select>
-                        {/* Tracking number input removed to enforce auto-generation */}
+                        {/* Tracking number input is removed to enforce auto‑generation on backend */}
                     </div>
                 )}
             </Modal>
@@ -493,7 +613,7 @@ const OrderManagement = () => {
                 ]}
                 width={800}
             >
-                {/* Render order details as needed */}
+                {renderOrderDetails()}
             </Modal>
         </Layout>
     );

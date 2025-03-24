@@ -184513,19 +184513,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/select/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EyeOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/typography/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/row/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/col/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EyeOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
@@ -184553,9 +184559,11 @@ var Header = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Header,
   Content = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Content,
   Sider = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Sider;
 var Option = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Option;
-var Search = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Search;
+var Title = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Title,
+  Text = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Text;
+var Search = antd__WEBPACK_IMPORTED_MODULE_6__["default"].Search;
 var OrderManagement = function OrderManagement() {
-  var _selectedOrder$shippi2;
+  var _selectedOrder$shippi3;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
     orders = _useState2[0],
@@ -184600,18 +184608,25 @@ var OrderManagement = function OrderManagement() {
     _useState22 = _slicedToArray(_useState21, 2),
     selectedArchivedOrders = _useState22[0],
     setSelectedArchivedOrders = _useState22[1];
+  var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_7__["default"].useForm(),
+    _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
+    form = _Form$useForm2[0];
   var API_URL = "http://localhost:8000/api/orders";
+  var token = localStorage.getItem("token");
+
+  // Fetch orders from the backend
   var fetchOrders = function fetchOrders() {
-    axios__WEBPACK_IMPORTED_MODULE_6__["default"].get(API_URL, {
+    axios__WEBPACK_IMPORTED_MODULE_8__["default"].get(API_URL, {
       headers: {
-        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+        Authorization: "Bearer ".concat(token)
       }
     }).then(function (res) {
+      console.log("API Response:", res.data); // Debug
       var transformed = res.data.map(function (order) {
         return _objectSpread(_objectSpread({}, order), {}, {
           order_date: order.order_date || order.created_at,
           shipping: order.shipping || {},
-          selected: false
+          selected: false // Initialize selected state
         });
       });
       setOrders(transformed.filter(function (order) {
@@ -184622,13 +184637,15 @@ var OrderManagement = function OrderManagement() {
       }));
     })["catch"](function (err) {
       var _err$response;
-      antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error fetching orders");
+      antd__WEBPACK_IMPORTED_MODULE_9__["default"].error("Error fetching orders");
       console.error(((_err$response = err.response) === null || _err$response === void 0 ? void 0 : _err$response.data) || err);
     });
   };
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchOrders();
   }, []);
+
+  // Handlers for active orders
   var handleActiveCheckboxChange = function handleActiveCheckboxChange(orderId) {
     var updated = orders.map(function (order) {
       return order.id === orderId ? _objectSpread(_objectSpread({}, order), {}, {
@@ -184660,29 +184677,41 @@ var OrderManagement = function OrderManagement() {
   };
   var handleArchiveAll = function handleArchiveAll() {
     if (selectedActiveOrders.length === 0) {
-      antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select at least one order to archive");
+      antd__WEBPACK_IMPORTED_MODULE_9__["default"].warning("Please select at least one order to archive");
       return;
     }
-    antd__WEBPACK_IMPORTED_MODULE_8__["default"].confirm({
-      title: "Archive ".concat(selectedActiveOrders.length, " selected order(s)?"),
+    antd__WEBPACK_IMPORTED_MODULE_10__["default"].confirm({
+      title: "Are you sure you want to archive ".concat(selectedActiveOrders.length, " selected order(s)?"),
       onOk: function onOk() {
         Promise.all(selectedActiveOrders.map(function (id) {
-          return axios__WEBPACK_IMPORTED_MODULE_6__["default"].post("".concat(API_URL, "/").concat(id, "/archive"), {}, {
+          return axios__WEBPACK_IMPORTED_MODULE_8__["default"].post("".concat(API_URL, "/").concat(id, "/archive"), {}, {
             headers: {
-              Authorization: "Bearer ".concat(localStorage.getItem("token"))
+              Authorization: "Bearer ".concat(token)
             }
           });
         })).then(function () {
-          antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Selected orders archived successfully");
+          antd__WEBPACK_IMPORTED_MODULE_9__["default"].success("Selected orders archived successfully");
           fetchOrders();
           setSelectedActiveOrders([]);
           setSelectAllActive(false);
         })["catch"](function () {
-          return antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive some orders");
+          return antd__WEBPACK_IMPORTED_MODULE_9__["default"].error("Failed to archive some orders");
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
       }
     });
   };
+
+  // Handlers for archived orders
   var handleArchivedCheckboxChange = function handleArchivedCheckboxChange(orderId) {
     var updated = archivedOrders.map(function (order) {
       return order.id === orderId ? _objectSpread(_objectSpread({}, order), {}, {
@@ -184714,49 +184743,65 @@ var OrderManagement = function OrderManagement() {
   };
   var handleRestoreAll = function handleRestoreAll() {
     if (selectedArchivedOrders.length === 0) {
-      antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select at least one order to restore");
+      antd__WEBPACK_IMPORTED_MODULE_9__["default"].warning("Please select at least one order to restore");
       return;
     }
-    antd__WEBPACK_IMPORTED_MODULE_8__["default"].confirm({
-      title: "Restore ".concat(selectedArchivedOrders.length, " selected order(s)?"),
+    antd__WEBPACK_IMPORTED_MODULE_10__["default"].confirm({
+      title: "Are you sure you want to restore ".concat(selectedArchivedOrders.length, " selected order(s)?"),
       onOk: function onOk() {
         Promise.all(selectedArchivedOrders.map(function (id) {
-          return axios__WEBPACK_IMPORTED_MODULE_6__["default"].post("".concat(API_URL, "/").concat(id, "/restore"), {}, {
+          return axios__WEBPACK_IMPORTED_MODULE_8__["default"].post("".concat(API_URL, "/").concat(id, "/restore"), {}, {
             headers: {
-              Authorization: "Bearer ".concat(localStorage.getItem("token"))
+              Authorization: "Bearer ".concat(token)
             }
           });
         })).then(function () {
-          antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Selected orders restored successfully");
+          antd__WEBPACK_IMPORTED_MODULE_9__["default"].success("Selected orders restored successfully");
           fetchOrders();
           setSelectedArchivedOrders([]);
           setSelectAllArchived(false);
         })["catch"](function () {
-          return antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to restore some orders");
+          return antd__WEBPACK_IMPORTED_MODULE_9__["default"].error("Failed to restore some orders");
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
       }
     });
   };
+
+  // Define table columns for active orders
   var mainColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
           checked: record.selected,
           onChange: function onChange() {
             return handleActiveCheckboxChange(record.id);
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
           onClick: function onClick() {
             setSelectedOrder(record);
+            // Pre-fill the edit form with current order status
+            form.setFieldsValue({
+              order_status: record.order_status
+            });
             setOpenEditModal(true);
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
           onClick: function onClick() {
             return handleArchive(record);
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
           onClick: function onClick() {
             return handleView(record);
           }
@@ -184791,6 +184836,13 @@ var OrderManagement = function OrderManagement() {
       return ((_record$shipping = record.shipping) === null || _record$shipping === void 0 || (_record$shipping = _record$shipping.shipping_status) === null || _record$shipping === void 0 ? void 0 : _record$shipping.name) || "N/A";
     }
   }, {
+    title: "Order Status",
+    dataIndex: "order_status",
+    key: "order_status",
+    render: function render(status) {
+      return status || "N/A";
+    }
+  }, {
     title: "Total Amount",
     dataIndex: "total_amount",
     key: "total_amount",
@@ -184805,22 +184857,24 @@ var OrderManagement = function OrderManagement() {
       return date || "N/A";
     }
   }];
+
+  // Define table columns for archived orders
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
           checked: record.selected,
           onChange: function onChange() {
             return handleArchivedCheckboxChange(record.id);
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
           type: "link",
           onClick: function onClick() {
             return handleRestore(record.id);
           },
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {
             style: {
               fontSize: "18px"
             }
@@ -184829,60 +184883,174 @@ var OrderManagement = function OrderManagement() {
       });
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
+
+  // Archive a single order
   var handleArchive = function handleArchive(record) {
-    antd__WEBPACK_IMPORTED_MODULE_8__["default"].confirm({
-      title: "Archive this order?",
+    antd__WEBPACK_IMPORTED_MODULE_10__["default"].confirm({
+      title: "Are you sure you want to archive this order?",
       onOk: function onOk() {
-        axios__WEBPACK_IMPORTED_MODULE_6__["default"].post("".concat(API_URL, "/").concat(record.id, "/archive"), {}, {
+        axios__WEBPACK_IMPORTED_MODULE_8__["default"].post("".concat(API_URL, "/").concat(record.id, "/archive"), {}, {
           headers: {
-            Authorization: "Bearer ".concat(localStorage.getItem("token"))
+            Authorization: "Bearer ".concat(token)
           }
         }).then(function () {
-          antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Order archived successfully");
+          antd__WEBPACK_IMPORTED_MODULE_9__["default"].success("Order archived successfully");
           fetchOrders();
-        })["catch"](function () {
-          return antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive order");
+        })["catch"](function (err) {
+          antd__WEBPACK_IMPORTED_MODULE_9__["default"].error("Failed to archive order");
+          console.error(err);
         });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
       }
     });
   };
+
+  // Restore a single order
   var handleRestore = function handleRestore(id) {
-    axios__WEBPACK_IMPORTED_MODULE_6__["default"].post("".concat(API_URL, "/").concat(id, "/restore"), {}, {
+    axios__WEBPACK_IMPORTED_MODULE_8__["default"].post("".concat(API_URL, "/").concat(id, "/restore"), {}, {
       headers: {
-        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+        Authorization: "Bearer ".concat(token)
       }
     }).then(function () {
-      antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Order restored successfully");
+      antd__WEBPACK_IMPORTED_MODULE_9__["default"].success("Order restored successfully");
       fetchOrders();
-    })["catch"](function () {
-      return antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to restore order");
+    })["catch"](function (err) {
+      antd__WEBPACK_IMPORTED_MODULE_9__["default"].error("Failed to restore order");
+      console.error(err);
     });
   };
+
+  // Update order: send updated order_status and shipping info.
+  // Tracking number is auto‑generated by the backend if needed.
   var handleUpdate = function handleUpdate() {
-    var _selectedOrder$shippi;
-    // Send only the shipping status; tracking number is generated automatically by backend.
-    var payload = {
+    var _selectedOrder$shippi, _selectedOrder$shippi2;
+    axios__WEBPACK_IMPORTED_MODULE_8__["default"].put("".concat(API_URL, "/").concat(selectedOrder.id), {
+      order_status: selectedOrder.order_status,
       shipping: {
-        shipping_status_id: ((_selectedOrder$shippi = selectedOrder.shipping) === null || _selectedOrder$shippi === void 0 ? void 0 : _selectedOrder$shippi.shipping_status_id) || 1
+        tracking_number: ((_selectedOrder$shippi = selectedOrder.shipping) === null || _selectedOrder$shippi === void 0 ? void 0 : _selectedOrder$shippi.tracking_number) || null,
+        shipping_status_id: ((_selectedOrder$shippi2 = selectedOrder.shipping) === null || _selectedOrder$shippi2 === void 0 ? void 0 : _selectedOrder$shippi2.shipping_status_id) || 1
       }
-    };
-    axios__WEBPACK_IMPORTED_MODULE_6__["default"].put("".concat(API_URL, "/").concat(selectedOrder.id), payload, {
+    }, {
       headers: {
-        Authorization: "Bearer ".concat(localStorage.getItem("token"))
+        Authorization: "Bearer ".concat(token)
       }
-    }).then(function (response) {
-      antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Order updated successfully");
+    }).then(function () {
+      antd__WEBPACK_IMPORTED_MODULE_9__["default"].success("Order updated successfully");
       setOpenEditModal(false);
       fetchOrders();
     })["catch"](function (err) {
       var _err$response2;
-      antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to update order: " + (((_err$response2 = err.response) === null || _err$response2 === void 0 || (_err$response2 = _err$response2.data) === null || _err$response2 === void 0 ? void 0 : _err$response2.message) || "Unknown error"));
+      antd__WEBPACK_IMPORTED_MODULE_9__["default"].error("Failed to update order: " + (((_err$response2 = err.response) === null || _err$response2 === void 0 || (_err$response2 = _err$response2.data) === null || _err$response2 === void 0 ? void 0 : _err$response2.message) || "Unknown error"));
+      console.error(err);
     });
   };
+
+  // When clicking the eye icon, open the view modal with full order details.
   var handleView = function handleView(record) {
     setSelectedOrder(record);
     setOpenViewModal(true);
   };
+
+  // Render full order details (including user avatar and product images).
+  var renderOrderDetails = function renderOrderDetails() {
+    var _profile$user, _shipping$shipping_st, _shipping$payment_met, _shipping$shipping_me;
+    if (!selectedOrder) return null;
+    var items = selectedOrder.order_details || selectedOrder.orderDetails || [];
+    var shipping = selectedOrder.shipping,
+      profile = selectedOrder.profile;
+    var subtotal = items.reduce(function (sum, detail) {
+      return sum + detail.quantity * detail.price;
+    }, 0);
+    var deliveryCharge = (shipping === null || shipping === void 0 ? void 0 : shipping.shipping_total_amount) || 0;
+    var totalAmount = selectedOrder.total_amount || subtotal + deliveryCharge;
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      style: {
+        padding: "16px"
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
+        level: 4,
+        style: {
+          marginBottom: "16px"
+        },
+        children: "Order Summary"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+        children: ["Order Date: ", selectedOrder.order_date || "N/A"]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+        children: ["Subtotal: \u20B1", subtotal.toLocaleString(), " | Delivery: \u20B1", deliveryCharge.toLocaleString(), " | Total: \u20B1", totalAmount.toLocaleString()]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
+        level: 4,
+        style: {
+          margin: "24px 0 16px"
+        },
+        children: "Customer Details"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
+        align: "middle",
+        gutter: [16, 16],
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+            src: (profile === null || profile === void 0 ? void 0 : profile.profile_image) || "https://via.placeholder.com/50",
+            size: 50
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
+            children: [(profile === null || profile === void 0 ? void 0 : profile.first_name) || "", " ", (profile === null || profile === void 0 ? void 0 : profile.last_name) || "", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), (profile === null || profile === void 0 || (_profile$user = profile.user) === null || _profile$user === void 0 ? void 0 : _profile$user.email) || "N/A"]
+          })
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
+        level: 4,
+        style: {
+          margin: "24px 0 16px"
+        },
+        children: "Shipping Information"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+        children: ["Shipping Status: ", (shipping === null || shipping === void 0 || (_shipping$shipping_st = shipping.shipping_status) === null || _shipping$shipping_st === void 0 ? void 0 : _shipping$shipping_st.name) || "N/A", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), "Tracking Number:", " ", (shipping === null || shipping === void 0 ? void 0 : shipping.tracking_number) || "Not Available", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), "Payment Method: ", (shipping === null || shipping === void 0 || (_shipping$payment_met = shipping.payment_method) === null || _shipping$payment_met === void 0 ? void 0 : _shipping$payment_met.name) || "N/A", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), "Shipping Method: ", (shipping === null || shipping === void 0 || (_shipping$shipping_me = shipping.shipping_method) === null || _shipping$shipping_me === void 0 ? void 0 : _shipping$shipping_me.name) || "N/A"]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
+        level: 4,
+        style: {
+          margin: "24px 0 16px"
+        },
+        children: "Items"
+      }), items.length > 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("ul", {
+        children: items.map(function (detail) {
+          var _detail$product2, _detail$product3;
+          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("li", {
+            style: {
+              marginBottom: "8px"
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_21__["default"], {
+              src: (_detail$product2 = detail.product) !== null && _detail$product2 !== void 0 && _detail$product2.main_image ? "http://localhost:8000/storage/".concat(detail.product.main_image) : "https://via.placeholder.com/50",
+              width: 50,
+              style: {
+                marginRight: "8px"
+              },
+              preview: false
+            }), ((_detail$product3 = detail.product) === null || _detail$product3 === void 0 ? void 0 : _detail$product3.product_name) || "Unknown", " \u2013 Quantity: ", detail.quantity, " \u2013 Price: \u20B1", parseFloat(detail.price).toLocaleString()]
+          }, detail.id);
+        })
+      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+        children: "No items"
+      })]
+    });
+  };
+  var filteredOrders = orders.filter(function (order) {
+    var _order$order_status;
+    var lowerSearch = searchText.toLowerCase();
+    return order.id.toString().includes(lowerSearch) || order.profile && "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").toLowerCase().includes(lowerSearch) || (((_order$order_status = order.order_status) === null || _order$order_status === void 0 ? void 0 : _order$order_status.toLowerCase()) || "").includes(lowerSearch);
+  });
+  var filteredArchivedOrders = archivedOrders.filter(function (order) {
+    var _order$order_status2;
+    var lowerSearch = searchText.toLowerCase();
+    return order.id.toString().includes(lowerSearch) || order.profile && "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").toLowerCase().includes(lowerSearch) || (((_order$order_status2 = order.order_status) === null || _order$order_status2 === void 0 ? void 0 : _order$order_status2.toLowerCase()) || "").includes(lowerSearch);
+  });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
       width: 256,
@@ -184915,28 +185083,26 @@ var OrderManagement = function OrderManagement() {
               return setSearchText(e.target.value);
             },
             style: {
-              width: 300
+              width: 300,
+              marginRight: 16
             }
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
             type: "default",
             onClick: function onClick() {
               return setOpenArchiveModal(true);
             },
             children: "Archived Orders"
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"], {
           columns: mainColumns,
-          dataSource: orders.filter(function (order) {
-            var _order$shipping;
-            return order.id.toString().includes(searchText.toLowerCase()) || order.profile && "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").toLowerCase().includes(searchText.toLowerCase()) || (((_order$shipping = order.shipping) === null || _order$shipping === void 0 || (_order$shipping = _order$shipping.shipping_status) === null || _order$shipping === void 0 || (_order$shipping = _order$shipping.name) === null || _order$shipping === void 0 ? void 0 : _order$shipping.toLowerCase()) || "").includes(searchText.toLowerCase());
-          }),
+          dataSource: filteredOrders,
           rowKey: "id",
           scroll: {
             x: 1200
           }
         })]
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
       title: "Archived Orders",
       open: openArchiveModal,
       onCancel: function onCancel() {
@@ -184944,22 +185110,22 @@ var OrderManagement = function OrderManagement() {
       },
       width: 1200,
       footer: [],
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"], {
         columns: archiveColumns,
-        dataSource: archivedOrders,
+        dataSource: filteredArchivedOrders,
         rowKey: "id",
         scroll: {
           x: 1200
         }
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
       title: "Edit Order",
       open: openEditModal,
       onCancel: function onCancel() {
         return setOpenEditModal(false);
       },
       onOk: handleUpdate,
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
         onClick: function onClick() {
           return setOpenEditModal(false);
         },
@@ -184967,7 +185133,7 @@ var OrderManagement = function OrderManagement() {
           width: "131px"
         },
         children: "Cancel"
-      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
         type: "primary",
         onClick: handleUpdate,
         style: {
@@ -184979,7 +185145,7 @@ var OrderManagement = function OrderManagement() {
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
           children: ["Order ID: ", selectedOrder.id]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
-          value: ((_selectedOrder$shippi2 = selectedOrder.shipping) === null || _selectedOrder$shippi2 === void 0 ? void 0 : _selectedOrder$shippi2.shipping_status_id) || 1,
+          value: ((_selectedOrder$shippi3 = selectedOrder.shipping) === null || _selectedOrder$shippi3 === void 0 ? void 0 : _selectedOrder$shippi3.shipping_status_id) || 1,
           onChange: function onChange(value) {
             return setSelectedOrder(_objectSpread(_objectSpread({}, selectedOrder), {}, {
               shipping: _objectSpread(_objectSpread({}, selectedOrder.shipping), {}, {
@@ -185012,13 +185178,13 @@ var OrderManagement = function OrderManagement() {
           })]
         })]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
       title: "Order #".concat((selectedOrder === null || selectedOrder === void 0 ? void 0 : selectedOrder.id) || "", " Details"),
       open: openViewModal,
       onCancel: function onCancel() {
         return setOpenViewModal(false);
       },
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
         onClick: function onClick() {
           return setOpenViewModal(false);
         },
@@ -185029,7 +185195,8 @@ var OrderManagement = function OrderManagement() {
         },
         children: "Close"
       }, "close")],
-      width: 800
+      width: 800,
+      children: renderOrderDetails()
     })]
   });
 };
