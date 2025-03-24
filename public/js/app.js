@@ -185343,7 +185343,7 @@ var Title = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Title,
   Text = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Text;
 var Search = antd__WEBPACK_IMPORTED_MODULE_6__["default"].Search;
 var OrderManagement = function OrderManagement() {
-  var _selectedOrder$shippi;
+  var _selectedOrder$shippi3, _selectedOrder$shippi4;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
     orders = _useState2[0],
@@ -185395,12 +185395,11 @@ var OrderManagement = function OrderManagement() {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      console.log("API Response:", res.data); // Debug
       var transformedOrders = res.data.map(function (order) {
         return _objectSpread(_objectSpread({}, order), {}, {
           order_date: order.order_date || order.created_at,
           shipping: order.shipping || {},
-          selected: false // Initialize selected state
+          selected: false
         });
       });
       setOrders(transformedOrders.filter(function (order) {
@@ -185418,8 +185417,6 @@ var OrderManagement = function OrderManagement() {
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchOrders();
   }, []);
-
-  // Handlers for active orders
   var handleActiveCheckboxChange = function handleActiveCheckboxChange(orderId) {
     var updatedOrders = orders.map(function (order) {
       return order.id === orderId ? _objectSpread(_objectSpread({}, order), {}, {
@@ -185432,10 +185429,9 @@ var OrderManagement = function OrderManagement() {
     }).map(function (o) {
       return o.id;
     }));
-    var allSelected = updatedOrders.every(function (o) {
+    setSelectAllActive(updatedOrders.every(function (o) {
       return o.selected;
-    });
-    setSelectAllActive(allSelected);
+    }));
   };
   var handleSelectAllActiveChange = function handleSelectAllActiveChange(e) {
     var checked = e.target.checked;
@@ -185469,24 +185465,12 @@ var OrderManagement = function OrderManagement() {
           fetchOrders();
           setSelectedActiveOrders([]);
           setSelectAllActive(false);
-        })["catch"](function (err) {
+        })["catch"](function () {
           return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive some orders");
         });
-      },
-      okButtonProps: {
-        style: {
-          width: "80px"
-        }
-      },
-      cancelButtonProps: {
-        style: {
-          width: "80px"
-        }
       }
     });
   };
-
-  // Handlers for archived orders
   var handleArchivedCheckboxChange = function handleArchivedCheckboxChange(orderId) {
     var updatedArchived = archivedOrders.map(function (order) {
       return order.id === orderId ? _objectSpread(_objectSpread({}, order), {}, {
@@ -185499,10 +185483,9 @@ var OrderManagement = function OrderManagement() {
     }).map(function (o) {
       return o.id;
     }));
-    var allSelected = updatedArchived.every(function (o) {
+    setSelectAllArchived(updatedArchived.every(function (o) {
       return o.selected;
-    });
-    setSelectAllArchived(allSelected);
+    }));
   };
   var handleSelectAllArchivedChange = function handleSelectAllArchivedChange(e) {
     var checked = e.target.checked;
@@ -185536,19 +185519,9 @@ var OrderManagement = function OrderManagement() {
           fetchOrders();
           setSelectedArchivedOrders([]);
           setSelectAllArchived(false);
-        })["catch"](function (err) {
+        })["catch"](function () {
           return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore some orders");
         });
-      },
-      okButtonProps: {
-        style: {
-          width: "80px"
-        }
-      },
-      cancelButtonProps: {
-        style: {
-          width: "80px"
-        }
       }
     });
   };
@@ -185605,11 +185578,11 @@ var OrderManagement = function OrderManagement() {
       return ((_record$shipping = record.shipping) === null || _record$shipping === void 0 || (_record$shipping = _record$shipping.shipping_method) === null || _record$shipping === void 0 ? void 0 : _record$shipping.name) || "N/A";
     }
   }, {
-    title: "Order Status",
-    dataIndex: "order_status",
-    key: "order_status",
-    render: function render(status) {
-      return status || "N/A";
+    title: "Shipping Status",
+    key: "shipping_status",
+    render: function render(record) {
+      var _record$shipping2;
+      return ((_record$shipping2 = record.shipping) === null || _record$shipping2 === void 0 || (_record$shipping2 = _record$shipping2.shipping_status) === null || _record$shipping2 === void 0 ? void 0 : _record$shipping2.name) || "N/A";
     }
   }, {
     title: "Total Amount",
@@ -185665,20 +185638,9 @@ var OrderManagement = function OrderManagement() {
         }).then(function () {
           antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Order archived successfully");
           fetchOrders();
-        })["catch"](function (err) {
-          antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive order");
-          console.error(err);
+        })["catch"](function () {
+          return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive order");
         });
-      },
-      okButtonProps: {
-        style: {
-          width: "80px"
-        }
-      },
-      cancelButtonProps: {
-        style: {
-          width: "80px"
-        }
       }
     });
   };
@@ -185690,29 +185652,32 @@ var OrderManagement = function OrderManagement() {
     }).then(function () {
       antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Order restored successfully");
       fetchOrders();
-    })["catch"](function (err) {
-      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore order");
-      console.error(err);
+    })["catch"](function () {
+      return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore order");
     });
   };
   var handleUpdate = function handleUpdate() {
-    axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("".concat(API_URL, "/").concat(selectedOrder.id), {
-      order_status: selectedOrder.order_status,
+    var _selectedOrder$shippi, _selectedOrder$shippi2;
+    var payload = {
       shipping: {
-        tracking_number: selectedOrder.shipping.tracking_number || null,
-        shipping_status_id: selectedOrder.shipping.shipping_status_id || 1
+        shipping_status_id: ((_selectedOrder$shippi = selectedOrder.shipping) === null || _selectedOrder$shippi === void 0 ? void 0 : _selectedOrder$shippi.shipping_status_id) || 1,
+        tracking_number: ((_selectedOrder$shippi2 = selectedOrder.shipping) === null || _selectedOrder$shippi2 === void 0 ? void 0 : _selectedOrder$shippi2.tracking_number) || null
       }
-    }, {
+    };
+    console.log("Sending update payload:", payload);
+    axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("".concat(API_URL, "/").concat(selectedOrder.id), payload, {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
-    }).then(function () {
+    }).then(function (response) {
+      console.log("Update response:", response.data);
       antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Order updated successfully");
       setOpenEditModal(false);
       fetchOrders();
     })["catch"](function (err) {
-      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update order");
-      console.error(err);
+      var _err$response2, _err$response3;
+      console.error("Update error:", ((_err$response2 = err.response) === null || _err$response2 === void 0 ? void 0 : _err$response2.data) || err);
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update order: " + (((_err$response3 = err.response) === null || _err$response3 === void 0 || (_err$response3 = _err$response3.data) === null || _err$response3 === void 0 ? void 0 : _err$response3.message) || "Unknown error"));
     });
   };
   var handleView = function handleView(record) {
@@ -185853,14 +185818,14 @@ var OrderManagement = function OrderManagement() {
     });
   };
   var filteredOrders = orders.filter(function (order) {
-    var _order$order_status;
+    var _order$shipping;
     var lowerSearch = searchText.toLowerCase();
-    return order.id.toString().includes(lowerSearch) || order.profile && "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").toLowerCase().includes(lowerSearch) || ((_order$order_status = order.order_status) === null || _order$order_status === void 0 ? void 0 : _order$order_status.toLowerCase().includes(lowerSearch));
+    return order.id.toString().includes(lowerSearch) || order.profile && "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").toLowerCase().includes(lowerSearch) || ((_order$shipping = order.shipping) === null || _order$shipping === void 0 || (_order$shipping = _order$shipping.shipping_status) === null || _order$shipping === void 0 || (_order$shipping = _order$shipping.name) === null || _order$shipping === void 0 ? void 0 : _order$shipping.toLowerCase().includes(lowerSearch));
   });
   var filteredArchivedOrders = archivedOrders.filter(function (order) {
-    var _order$order_status2;
+    var _order$shipping2;
     var lowerSearch = searchText.toLowerCase();
-    return order.id.toString().includes(lowerSearch) || order.profile && "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").toLowerCase().includes(lowerSearch) || ((_order$order_status2 = order.order_status) === null || _order$order_status2 === void 0 ? void 0 : _order$order_status2.toLowerCase().includes(lowerSearch));
+    return order.id.toString().includes(lowerSearch) || order.profile && "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").toLowerCase().includes(lowerSearch) || ((_order$shipping2 = order.shipping) === null || _order$shipping2 === void 0 || (_order$shipping2 = _order$shipping2.shipping_status) === null || _order$shipping2 === void 0 || (_order$shipping2 = _order$shipping2.name) === null || _order$shipping2 === void 0 ? void 0 : _order$shipping2.toLowerCase().includes(lowerSearch));
   });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
@@ -185919,19 +185884,12 @@ var OrderManagement = function OrderManagement() {
                 }
               }), selectedActiveOrders.length > 0 && " (".concat(selectedActiveOrders.length, ")")]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-            style: {
-              display: "flex",
-              gap: 8,
-              alignItems: "center"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+            type: "default",
+            onClick: function onClick() {
+              return setOpenArchiveModal(true);
             },
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
-              type: "default",
-              onClick: function onClick() {
-                return setOpenArchiveModal(true);
-              },
-              children: "Archived Orders"
-            })
+            children: "Archived Orders"
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
           columns: mainColumns,
@@ -186010,10 +185968,12 @@ var OrderManagement = function OrderManagement() {
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
           children: ["Order ID: ", selectedOrder.id]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
-          value: selectedOrder.order_status,
+          value: ((_selectedOrder$shippi3 = selectedOrder.shipping) === null || _selectedOrder$shippi3 === void 0 ? void 0 : _selectedOrder$shippi3.shipping_status_id) || 1,
           onChange: function onChange(value) {
             return setSelectedOrder(_objectSpread(_objectSpread({}, selectedOrder), {}, {
-              order_status: value
+              shipping: _objectSpread(_objectSpread({}, selectedOrder.shipping), {}, {
+                shipping_status_id: value
+              })
             }));
           },
           style: {
@@ -186021,20 +185981,23 @@ var OrderManagement = function OrderManagement() {
             marginBottom: 16
           },
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-            value: "pending",
-            children: "Pending"
+            value: 1,
+            children: "Order Placed"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-            value: "completed",
-            children: "Completed"
+            value: 2,
+            children: "Payment Confirmed"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-            value: "cancelled",
+            value: 3,
+            children: "Shipped"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+            value: 4,
+            children: "Delivered"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
+            value: 5,
             children: "Cancelled"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
-            value: "processing",
-            children: "Processing"
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
-          value: ((_selectedOrder$shippi = selectedOrder.shipping) === null || _selectedOrder$shippi === void 0 ? void 0 : _selectedOrder$shippi.tracking_number) || "",
+          value: ((_selectedOrder$shippi4 = selectedOrder.shipping) === null || _selectedOrder$shippi4 === void 0 ? void 0 : _selectedOrder$shippi4.tracking_number) || "",
           onChange: function onChange(e) {
             return setSelectedOrder(_objectSpread(_objectSpread({}, selectedOrder), {}, {
               shipping: _objectSpread(_objectSpread({}, selectedOrder.shipping), {}, {
@@ -190897,7 +190860,7 @@ var Content = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Content;
 var Text = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Text,
   Title = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Title;
 var OrderTracking = function OrderTracking() {
-  var _order$order_details, _order$order_status2, _order$order_status3, _order$shipping, _order$shipping2, _order$shipping3, _order$shipping4;
+  var _order$order_details, _order$shipping2, _order$shipping3, _order$shipping4, _order$shipping5, _order$shipping6, _order$shipping7, _order$shipping8;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState2 = _slicedToArray(_useState, 2),
     order = _useState2[0],
@@ -190971,7 +190934,8 @@ var OrderTracking = function OrderTracking() {
               payment_confirmed_at: orderData.payment_confirmed_at || null,
               shipped_at: orderData.shipped_at || null,
               delivered_at: orderData.delivered_at || null,
-              completed_at: orderData.completed_at || null
+              completed_at: orderData.completed_at || null,
+              updated_at: orderData.updated_at || null
             });
             setOrder(transformedOrder);
             _context.next = 20;
@@ -190997,50 +190961,47 @@ var OrderTracking = function OrderTracking() {
   }();
   var fetchUsername = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      var res, _error$response3, _error$response4, _error$response5;
+      var res, _error$response3, _error$response4;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             if (token) {
-              _context2.next = 5;
+              _context2.next = 4;
               break;
             }
-            console.log("No token found in localStorage");
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Please log in to view your username.");
             navigate("/login");
             return _context2.abrupt("return");
-          case 5:
-            _context2.prev = 5;
-            console.log("Fetching username with token:", token);
-            _context2.next = 9;
+          case 4:
+            _context2.prev = 4;
+            _context2.next = 7;
             return axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(baseUrl, "/api/users/me"), {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
-          case 9:
+          case 7:
             res = _context2.sent;
-            console.log("Username response:", res.data);
             setUsername(res.data.username);
-            _context2.next = 19;
+            _context2.next = 16;
             break;
-          case 14:
-            _context2.prev = 14;
-            _context2.t0 = _context2["catch"](5);
+          case 11:
+            _context2.prev = 11;
+            _context2.t0 = _context2["catch"](4);
             console.error("Error fetching username:", ((_error$response3 = _context2.t0.response) === null || _error$response3 === void 0 ? void 0 : _error$response3.data) || _context2.t0);
             if (((_error$response4 = _context2.t0.response) === null || _error$response4 === void 0 ? void 0 : _error$response4.status) === 401) {
               antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Session expired. Please log in again.");
               localStorage.removeItem("token");
               navigate("/login");
-            } else if (((_error$response5 = _context2.t0.response) === null || _error$response5 === void 0 ? void 0 : _error$response5.status) === 500) {
-              antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Server error fetching username. Please try again later.");
+            } else {
+              antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Server error fetching username.");
             }
             setUsername("N/A");
-          case 19:
+          case 16:
           case "end":
             return _context2.stop();
         }
-      }, _callee2, null, [[5, 14]]);
+      }, _callee2, null, [[4, 11]]);
     }));
     return function fetchUsername() {
       return _ref2.apply(this, arguments);
@@ -191057,7 +191018,7 @@ var OrderTracking = function OrderTracking() {
   };
   var handleConfirmReceipt = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-      var _error$response6, _error$response7;
+      var _error$response5;
       return _regeneratorRuntime().wrap(function _callee3$(_context3) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
@@ -191072,22 +191033,21 @@ var OrderTracking = function OrderTracking() {
           case 4:
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Order receipt confirmed successfully");
             fetchOrderDetails();
-            _context3.next = 12;
+            _context3.next = 11;
             break;
           case 8:
             _context3.prev = 8;
             _context3.t0 = _context3["catch"](1);
-            console.error("Error confirming receipt:", ((_error$response6 = _context3.t0.response) === null || _error$response6 === void 0 ? void 0 : _error$response6.data) || _context3.t0);
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Failed to confirm receipt: " + (((_error$response7 = _context3.t0.response) === null || _error$response7 === void 0 || (_error$response7 = _error$response7.data) === null || _error$response7 === void 0 ? void 0 : _error$response7.error) || "Unknown error"));
-          case 12:
-            _context3.prev = 12;
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Failed to confirm receipt: " + (((_error$response5 = _context3.t0.response) === null || _error$response5 === void 0 || (_error$response5 = _error$response5.data) === null || _error$response5 === void 0 ? void 0 : _error$response5.error) || "Unknown error"));
+          case 11:
+            _context3.prev = 11;
             setIsConfirmReceiptLoading(false);
-            return _context3.finish(12);
-          case 15:
+            return _context3.finish(11);
+          case 14:
           case "end":
             return _context3.stop();
         }
-      }, _callee3, null, [[1, 8, 12, 15]]);
+      }, _callee3, null, [[1, 8, 11, 14]]);
     }));
     return function handleConfirmReceipt() {
       return _ref3.apply(this, arguments);
@@ -191098,7 +191058,7 @@ var OrderTracking = function OrderTracking() {
   };
   var handleCancelOrder = /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-      var _error$response8, _error$response9;
+      var _error$response6;
       return _regeneratorRuntime().wrap(function _callee4$(_context4) {
         while (1) switch (_context4.prev = _context4.next) {
           case 0:
@@ -191124,33 +191084,32 @@ var OrderTracking = function OrderTracking() {
             setIsCancelModalVisible(false);
             setCancelReason("");
             fetchOrderDetails();
-            _context4.next = 17;
+            _context4.next = 16;
             break;
           case 13:
             _context4.prev = 13;
             _context4.t0 = _context4["catch"](4);
-            console.error("Error cancelling order:", ((_error$response8 = _context4.t0.response) === null || _error$response8 === void 0 ? void 0 : _error$response8.data) || _context4.t0);
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Failed to cancel order: " + (((_error$response9 = _context4.t0.response) === null || _error$response9 === void 0 || (_error$response9 = _error$response9.data) === null || _error$response9 === void 0 ? void 0 : _error$response9.error) || "Unknown error"));
-          case 17:
-            _context4.prev = 17;
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Failed to cancel order: " + (((_error$response6 = _context4.t0.response) === null || _error$response6 === void 0 || (_error$response6 = _error$response6.data) === null || _error$response6 === void 0 ? void 0 : _error$response6.error) || "Unknown error"));
+          case 16:
+            _context4.prev = 16;
             setIsCancelLoading(false);
-            return _context4.finish(17);
-          case 20:
+            return _context4.finish(16);
+          case 19:
           case "end":
             return _context4.stop();
         }
-      }, _callee4, null, [[4, 13, 17, 20]]);
+      }, _callee4, null, [[4, 13, 16, 19]]);
     }));
     return function handleCancelOrder() {
       return _ref4.apply(this, arguments);
     };
   }();
   var getTimelineItems = function getTimelineItems(order) {
-    var _order$order_status;
-    var status = (order === null || order === void 0 || (_order$order_status = order.order_status) === null || _order$order_status === void 0 ? void 0 : _order$order_status.toLowerCase()) || "pending";
+    var _order$shipping;
+    var shippingStatusId = (order === null || order === void 0 || (_order$shipping = order.shipping) === null || _order$shipping === void 0 ? void 0 : _order$shipping.shipping_status_id) || 1;
     var timestamps = {
       placed: (order === null || order === void 0 ? void 0 : order.created_at) || null,
-      paymentConfirmed: (order === null || order === void 0 ? void 0 : order.payment_confirmed_at) || null,
+      paymentConfirmed: (order === null || order === void 0 ? void 0 : order.payment_confirmed_at) || (order === null || order === void 0 ? void 0 : order.updated_at) || null,
       shipped: (order === null || order === void 0 ? void 0 : order.shipped_at) || null,
       delivered: (order === null || order === void 0 ? void 0 : order.delivered_at) || null,
       completed: (order === null || order === void 0 ? void 0 : order.completed_at) || null
@@ -191162,32 +191121,33 @@ var OrderTracking = function OrderTracking() {
       var date = new Date(timestamp);
       return "".concat((date.getMonth() + 1).toString().padStart(2, "0"), "/").concat(date.getDate().toString().padStart(2, "0"), "/").concat(date.getFullYear(), " ").concat(date.getHours(), ":").concat(date.getMinutes().toString().padStart(2, "0"));
     };
-    var statusOrder = ["pending", "processing", "shipped", "delivered", "completed"];
-    var currentStatusIndex = statusOrder.indexOf(status);
+    var statusOrder = [1, 2, 3, 4]; // Order Placed, Payment Confirmed, Shipped, Delivered
+    var currentStatusIndex = statusOrder.indexOf(shippingStatusId);
     return [{
       label: "Order Placed",
       timestamp: formatTimestamp(timestamps.placed),
-      completed: currentStatusIndex >= 0,
+      completed: shippingStatusId >= 1,
       icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {})
     }, {
       label: "Payment Confirmed",
       timestamp: formatTimestamp(timestamps.paymentConfirmed),
-      completed: currentStatusIndex >= 1,
+      completed: shippingStatusId >= 2,
       icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {})
     }, {
       label: "Shipped",
       timestamp: formatTimestamp(timestamps.shipped),
-      completed: currentStatusIndex >= 2,
+      completed: shippingStatusId >= 3,
       icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {})
     }, {
       label: "Delivered",
       timestamp: formatTimestamp(timestamps.delivered),
-      completed: currentStatusIndex >= 3,
+      completed: shippingStatusId >= 4,
       icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {})
     }, {
       label: "Completed",
       timestamp: formatTimestamp(timestamps.completed),
-      completed: currentStatusIndex >= 4,
+      completed: shippingStatusId === 4 && order.completed_at,
+      // Only completed if delivered and confirmed
       icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {})
     }];
   };
@@ -191263,14 +191223,14 @@ var OrderTracking = function OrderTracking() {
                 className: "primary-btn",
                 onClick: handleTrackOrder,
                 children: "Track Order"
-              }), ["pending", "processing", "shipped"].includes((_order$order_status2 = order.order_status) === null || _order$order_status2 === void 0 ? void 0 : _order$order_status2.toLowerCase()) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+              }), [1, 2, 3].includes(order === null || order === void 0 || (_order$shipping2 = order.shipping) === null || _order$shipping2 === void 0 ? void 0 : _order$shipping2.shipping_status_id) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
                 className: "danger-btn",
                 icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {}),
                 onClick: function onClick() {
                   return setIsCancelModalVisible(true);
                 },
                 children: "Cancel Order"
-              }), ((_order$order_status3 = order.order_status) === null || _order$order_status3 === void 0 ? void 0 : _order$order_status3.toLowerCase()) === "delivered" && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+              }), (order === null || order === void 0 || (_order$shipping3 = order.shipping) === null || _order$shipping3 === void 0 ? void 0 : _order$shipping3.shipping_status_id) === 4 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
                 className: "primary-btn",
                 onClick: handleConfirmReceipt,
                 loading: isConfirmReceiptLoading,
@@ -191286,9 +191246,9 @@ var OrderTracking = function OrderTracking() {
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 className: "order-summary",
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
-                  children: ["Order Date:", " ", formatDate(order.order_date)]
+                  children: ["Order Date: ", formatDate(order.order_date)]
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
-                  children: ["Status:", " ", order.order_status || "N/A"]
+                  children: ["Status: ", ((_order$shipping4 = order.shipping) === null || _order$shipping4 === void 0 || (_order$shipping4 = _order$shipping4.shipping_status) === null || _order$shipping4 === void 0 ? void 0 : _order$shipping4.name) || "N/A"]
                 })]
               }), order.order_details.map(function (detail) {
                 var _detail$product, _detail$product2, _detail$product3;
@@ -191306,7 +191266,7 @@ var OrderTracking = function OrderTracking() {
                       strong: true,
                       children: ((_detail$product3 = detail.product) === null || _detail$product3 === void 0 ? void 0 : _detail$product3.product_name) || "Unknown Product"
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
-                      children: ["Quantity:", " ", detail.quantity]
+                      children: ["Quantity: ", detail.quantity]
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                       children: ["Subtotal: \u20B1", detail.price ? (detail.price * detail.quantity).toLocaleString() : "N/A"]
                     })]
@@ -191331,16 +191291,16 @@ var OrderTracking = function OrderTracking() {
                 children: ["Username: ", username || "N/A"]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                 block: true,
-                children: ["Address:", " ", formatAddress((_order$shipping = order.shipping) === null || _order$shipping === void 0 ? void 0 : _order$shipping.address) || "Not Available"]
+                children: ["Address: ", formatAddress((_order$shipping5 = order.shipping) === null || _order$shipping5 === void 0 ? void 0 : _order$shipping5.address) || "Not Available"]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                 block: true,
-                children: ["Phone:", " ", ((_order$shipping2 = order.shipping) === null || _order$shipping2 === void 0 || (_order$shipping2 = _order$shipping2.address) === null || _order$shipping2 === void 0 ? void 0 : _order$shipping2.phone) || "Not Available"]
+                children: ["Phone: ", ((_order$shipping6 = order.shipping) === null || _order$shipping6 === void 0 || (_order$shipping6 = _order$shipping6.address) === null || _order$shipping6 === void 0 ? void 0 : _order$shipping6.phone) || "Not Available"]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                 block: true,
-                children: ["Tracking Number:", " ", ((_order$shipping3 = order.shipping) === null || _order$shipping3 === void 0 ? void 0 : _order$shipping3.tracking_number) || "Not Available"]
+                children: ["Tracking Number: ", ((_order$shipping7 = order.shipping) === null || _order$shipping7 === void 0 ? void 0 : _order$shipping7.tracking_number) || "Not Available"]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                 block: true,
-                children: ["Shipping Method:", " ", ((_order$shipping4 = order.shipping) === null || _order$shipping4 === void 0 || (_order$shipping4 = _order$shipping4.shipping_method) === null || _order$shipping4 === void 0 ? void 0 : _order$shipping4.name) || "N/A"]
+                children: ["Shipping Method: ", ((_order$shipping8 = order.shipping) === null || _order$shipping8 === void 0 || (_order$shipping8 = _order$shipping8.shipping_method) === null || _order$shipping8 === void 0 ? void 0 : _order$shipping8.name) || "N/A"]
               })]
             })]
           })]

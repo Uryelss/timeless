@@ -16,8 +16,9 @@ class OrderController extends Controller
             'shipping.shippingMethod',
             'shipping.paymentMethod',
             'shipping.address',
+            'shipping.shippingStatus',
             'orderDetails.product',
-        ]); // Removed 'orderStatus'
+        ]);
 
         if ($request->query('archived')) {
             $query->onlyTrashed();
@@ -36,8 +37,9 @@ class OrderController extends Controller
             'shipping.shippingMethod',
             'shipping.paymentMethod',
             'shipping.address',
+            'shipping.shippingStatus',
             'orderDetails.product',
-        ]) // Removed 'orderStatus'
+        ])
             ->withTrashed()
             ->findOrFail($id);
 
@@ -47,42 +49,56 @@ class OrderController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $order = Order::withTrashed()->findOrFail($id);
+            // Load the order with its shipping relationship
+            $order = Order::with('shipping')->withTrashed()->findOrFail($id);
+            Log::info('Update Request Data:', $request->all());
 
             $request->validate([
-                'order_status' => 'sometimes|in:pending,processing,shipped,delivered,cancelled', // Define valid statuses
                 'shipping.shipping_status_id' => 'sometimes|exists:shipping_statuses,id',
+                'shipping.tracking_number' => 'sometimes|string|nullable',
             ]);
 
-            // Update order_status as a string
-            $order->order_status = $request->input('order_status', $order->order_status);
+            $shippingData = [
+                'shipping_status_id' => $request->input('shipping.shipping_status_id', 1),
+                'tracking_number' => $request->input('shipping.tracking_number', null),
+                'order_id' => $order->id,
+                'payment_method_id' => 1,
+                'payment_status_id' => 1,
+                'address_id' => $order->profile->address_id ?? 1,
+                'shipping_method_id' => 1,
+                'shipping_total_amount' => 0,
+            ];
 
-            // Check if shipping exists; create it if not
             if (!$order->shipping) {
-                $order->shipping()->create([
-                    'order_id' => $order->id,
-                    'payment_method_id' => 1,
-                    'payment_status_id' => 1,
-                    'address_id' => $order->profile->address_id ?? 1,
-                    'shipping_method_id' => 1,
-                    'shipping_status_id' => $request->input('shipping.shipping_status_id', 1),
-                    'shipping_total_amount' => 0,
+                Log::info("Creating new shipping record for order {$id}");
+                $order->shipping()->create($shippingData);
+            } else {
+                Log::info("Updating existing shipping record for order {$id}");
+                $order->shipping->update([
+                    'shipping_status_id' => $shippingData['shipping_status_id'],
+                    'tracking_number' => $shippingData['tracking_number'],
                 ]);
             }
 
-            // Automatically generate tracking number when order_status is "shipped"
-            if ($order->order_status === 'shipped' && !$order->shipping->tracking_number) {
-                $date = now()->format('Ymd');
-                $random = strtoupper(substr(uniqid(), -5));
-                $trackingNumber = "TRK-{$date}-{$random}";
-                $order->shipping->tracking_number = $trackingNumber;
-                $order->shipping->save();
-            }
-
-            // Update shipping status ID if provided
-            if ($request->has('shipping.shipping_status_id')) {
-                $order->shipping->shipping_status_id = $request->input('shipping.shipping_status_id');
-                $order->shipping->save();
+            switch ($request->input('shipping.shipping_status_id')) {
+                case 2:
+                    $order->payment_confirmed_at = $order->payment_confirmed_at ?? now();
+                    break;
+                case 3:
+                    $order->shipped_at = $order->shipped_at ?? now();
+                    if (!$order->shipping->tracking_number) {
+                        $date = now()->format('Ymd');
+                        $random = strtoupper(substr(uniqid(), -5));
+                        $order->shipping->tracking_number = "TRK-{$date}-{$random}";
+                        $order->shipping->save();
+                    }
+                    break;
+                case 4:
+                    $order->delivered_at = $order->delivered_at ?? now();
+                    break;
+                case 5:
+                    $order->order_status = 'cancelled';
+                    break;
             }
 
             $order->save();
@@ -92,12 +108,13 @@ class OrderController extends Controller
                 'shipping.shippingMethod',
                 'shipping.paymentMethod',
                 'shipping.address',
+                'shipping.shippingStatus',
                 'orderDetails.product',
-            ]); // Removed 'orderStatus'
+            ]);
 
             return response()->json(['message' => 'Order updated successfully', 'order' => $order]);
         } catch (\Exception $e) {
-            Log::error("Order update failed: " . $e->getMessage());
+            Log::error("Order update failed for order {$id}: " . $e->getMessage() . "\nStack trace: " . $e->getTraceAsString());
             return response()->json(['message' => 'Failed to update order', 'error' => $e->getMessage()], 500);
         }
     }
@@ -124,24 +141,13 @@ class OrderController extends Controller
             'shipping.shippingMethod',
             'shipping.paymentMethod',
             'shipping.address',
+            'shipping.shippingStatus',
             'orderDetails.product',
-        ]) // Removed 'orderStatus'
+        ])
             ->where('user_id', $user->id)
             ->whereNull('deleted_at')
             ->get();
 
         return response()->json($orders);
-    }
-
-    // Replace getOrderStatuses with a hardcoded list since there's no table
-    public function getOrderStatuses()
-    {
-        try {
-            $statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled']; // Adjust as needed
-            return response()->json($statuses);
-        } catch (\Exception $e) {
-            Log::error("Failed to fetch order statuses: " . $e->getMessage());
-            return response()->json(['error' => 'Failed to fetch order statuses'], 500);
-        }
     }
 }
