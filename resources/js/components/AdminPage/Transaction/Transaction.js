@@ -36,8 +36,10 @@ const TransactionManagement = () => {
             const response = await axios.get(`${API_URL}/transactions`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setTransactions(response.data);
+            // Ensure the API loads the new relationship: paymentOption.
+            setTransactions(response.data.data || response.data);
         } catch (error) {
+            console.error("Error fetching transactions:", error);
             message.error("Failed to fetch transactions");
         } finally {
             setLoading(false);
@@ -138,6 +140,7 @@ const TransactionManagement = () => {
             key: "payment_option",
             render: (text) => text || "-",
         },
+
         {
             title: "Actions",
             key: "actions",
@@ -170,7 +173,7 @@ const TransactionManagement = () => {
                                     ? record.payment_status.id
                                     : null,
                                 transaction_status: record.transaction_status,
-                                payment_option: record.payment_option,
+                                // We don’t allow editing payment option manually.
                             });
                             setEditModalVisible(true);
                         }}
@@ -246,7 +249,7 @@ const TransactionManagement = () => {
                     >
                         <Select>
                             <Option value="1">Pending</Option>
-                            <Option value="2">Completed</Option>
+                            <Option value="2">Paid</Option>
                             <Option value="3">Failed</Option>
                         </Select>
                     </Form.Item>
@@ -261,15 +264,10 @@ const TransactionManagement = () => {
                         ]}
                     >
                         <Select>
+                            <Option value="Pending">Pending</Option>
                             <Option value="Completed">Completed</Option>
                             <Option value="Cancelled">Cancelled</Option>
                         </Select>
-                    </Form.Item>
-                    <Form.Item
-                        label="Payment Option (if applicable)"
-                        name="payment_option"
-                    >
-                        <Input placeholder="e.g., G-Cash, PayMaya, Master Visa Card" />
                     </Form.Item>
                     <Form.Item>
                         <Button

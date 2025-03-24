@@ -110,13 +110,15 @@ class UserOrderController extends Controller
 
             // Create a transaction record for this order.
             Transaction::create([
-                'profile_id'        => $profile->id, // Use the profile id here.
+                'profile_id'        => $profile->id,
                 'order_id'          => $order->id,
                 'payment_method_id' => $request->payment_method_id,
-                'payment_status_id' => 1, // Assuming '1' represents a pending payment status.
+                'payment_status_id' => 1, // pending
                 'transaction_status' => 'pending',
                 'payment_option'    => $request->payment_option ?? null,
             ]);
+
+
 
             return response()->json([
                 'message' => 'Order created successfully',
@@ -140,22 +142,20 @@ class UserOrderController extends Controller
         try {
             $query = Order::where('profile_id', $user->profile->id)
                 ->with([
-                    'orderDetails.product',       // Product details (name, description, etc.)
-                    'orderDetails.inventory',     // Inventory details
-                    'shipping.shippingMethod',    // Shipping method
-                    'shipping.paymentMethod',     // Payment method
-                    'shipping.address'            // Address
+                    'orderDetails.product',
+                    'orderDetails.inventory',
+                    'shipping.shippingMethod',
+                    'shipping.paymentMethod',
+                    'shipping.address'
                 ])
-                ->withTrashed()                   // Include soft-deleted orders
-                ->orderBy('order_date', 'desc');  // Latest orders first
+                ->withTrashed()
+                ->orderBy('order_date', 'desc');
 
-            // Filter by order_id if provided
             if ($request->has('order_id')) {
                 $order = $query->where('id', $request->input('order_id'))->firstOrFail();
                 return response()->json($order);
             }
 
-            // Otherwise, return paginated results
             $orders = $query->paginate(10);
             return response()->json($orders);
         } catch (\Exception $e) {
