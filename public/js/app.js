@@ -187805,10 +187805,24 @@ var CartPage = function CartPage() {
                 antd__WEBPACK_IMPORTED_MODULE_5__["default"].warning("Product ".concat(item.productName, " is no longer available."));
                 return null;
               }
+              // Validate size if sizes are provided by the API
+              var sizesArr = product.sizes || [];
+              if (typeof product.sizes === "string") {
+                try {
+                  sizesArr = JSON.parse(product.sizes);
+                } catch (e) {
+                  sizesArr = [];
+                }
+              }
+              var validSize = sizesArr.some(function (s) {
+                return (s.size || s) === item.size;
+              });
+              if (!validSize) {
+                antd__WEBPACK_IMPORTED_MODULE_5__["default"].warning("Size ".concat(item.size, " for ").concat(item.productName, " is no longer available."));
+                return null;
+              }
               return _objectSpread(_objectSpread({}, item), {}, {
                 id: product.id,
-                inventory_id: item.inventory_id,
-                // Preserve from cart
                 price: product.price,
                 total: product.price * item.quantity,
                 image: "http://localhost:8000/storage/".concat(product.main_image)
@@ -187931,7 +187945,7 @@ var CartPage = function CartPage() {
     },
     getCheckboxProps: function getCheckboxProps(record) {
       return {
-        name: "".concat(record.id, "-").concat(record.size) // Unique key per product and size
+        name: "".concat(record.id, "-").concat(record.size)
       };
     }
   };
@@ -187943,7 +187957,6 @@ var CartPage = function CartPage() {
       antd__WEBPACK_IMPORTED_MODULE_5__["default"].warning("Please select at least one item to checkout!");
       return;
     }
-    // Filter cart items based on selected row keys
     var selectedItems = cartItems.filter(function (item) {
       return selectedRowKeys.includes("".concat(item.id, "-").concat(item.size));
     });
@@ -187951,7 +187964,7 @@ var CartPage = function CartPage() {
       return sum + item.total;
     }, 0);
     var invalidItems = selectedItems.some(function (item) {
-      return !item.id || !item.inventory_id;
+      return !item.id;
     });
     if (invalidItems) {
       antd__WEBPACK_IMPORTED_MODULE_5__["default"].error("Some selected items are invalid. Please refresh or re-add items.");
@@ -187975,8 +187988,7 @@ var CartPage = function CartPage() {
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
         rowKey: function rowKey(record) {
           return "".concat(record.id, "-").concat(record.size);
-        } // Unique key per product and size
-        ,
+        },
         rowSelection: rowSelection,
         columns: columns,
         dataSource: cartItems,
@@ -188933,7 +188945,6 @@ var Collection = function Collection() {
   var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_7__.useNavigate)();
   var fetchProducts = function fetchProducts() {
     axios__WEBPACK_IMPORTED_MODULE_8__["default"].get(PRODUCTS_API).then(function (res) {
-      console.log("Fetched Products Data:", JSON.stringify(res.data, null, 2));
       setProducts(res.data);
     })["catch"](function (err) {
       antd__WEBPACK_IMPORTED_MODULE_9__["default"].error("Error fetching products");
@@ -189062,11 +189073,28 @@ var Collection = function Collection() {
   };
   var filteredProducts = getFilteredProducts();
   var displayFilters = getDisplayFilters();
-
-  // Function to add item to cart with selected size
   var handleDirectAddToCart = function handleDirectAddToCart(product, size) {
     if (!isLoggedIn) {
       antd__WEBPACK_IMPORTED_MODULE_9__["default"].info("Please log in to add to cart");
+      return;
+    }
+
+    // Validate size
+    var sizesArr = [];
+    if (typeof product.sizes === "string") {
+      try {
+        sizesArr = JSON.parse(product.sizes);
+      } catch (e) {
+        sizesArr = [];
+      }
+    } else {
+      sizesArr = product.sizes || [];
+    }
+    var validSize = sizesArr.some(function (s) {
+      return (s.size || s) === size;
+    });
+    if (!validSize) {
+      antd__WEBPACK_IMPORTED_MODULE_9__["default"].error("Size ".concat(size, " is not available for ").concat(product.product_name, "."));
       return;
     }
     var cartItem = {
@@ -189093,8 +189121,6 @@ var Collection = function Collection() {
     window.dispatchEvent(new Event("cartUpdated"));
     antd__WEBPACK_IMPORTED_MODULE_9__["default"].success("Successfully added ".concat(product.product_name, " (").concat(size, ") to your cart!"));
   };
-
-  // Render size options as buttons in the modal
   var renderSizeOptions = function renderSizeOptions(product) {
     var sizesArr = [];
     if (typeof product.sizes === "string") {
@@ -189130,8 +189156,6 @@ var Collection = function Collection() {
       }, index);
     });
   };
-
-  // Handler for modal Add-to-Cart button
   var handleModalAddToCart = function handleModalAddToCart() {
     if (!modalSelectedSize) {
       antd__WEBPACK_IMPORTED_MODULE_9__["default"].warning("Please select a size.");
@@ -189141,8 +189165,6 @@ var Collection = function Collection() {
     setShowAddToCartModal(false);
     setModalProduct(null);
   };
-
-  // Render the modal overview content
   var renderModalOverview = function renderModalOverview() {
     if (!modalProduct) return null;
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
@@ -189525,21 +189547,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/menu/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/dropdown/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/badge/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/MenuOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/BellOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingCartOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UserOutlined.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/menu/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/dropdown/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/badge/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/MenuOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/BellOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingCartOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UserOutlined.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -189556,11 +189579,12 @@ function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" !=
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
+ // Added import
 
 
 
 
-var AntHeader = antd__WEBPACK_IMPORTED_MODULE_2__["default"].Header;
+var AntHeader = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Header;
 var Header = function Header() {
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState2 = _slicedToArray(_useState, 2),
@@ -189589,27 +189613,31 @@ var Header = function Header() {
   var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState14 = _slicedToArray(_useState13, 2),
     readNotifications = _useState14[0],
-    setReadNotifications = _useState14[1]; // New state to track read notifications
-
-  var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useNavigate)();
+    setReadNotifications = _useState14[1];
+  var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_4__.useNavigate)();
   var token = localStorage.getItem("token");
-
-  // Fetch profile when token is available
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var storedReadNotifications = localStorage.getItem("readNotifications");
+    if (storedReadNotifications) {
+      setReadNotifications(JSON.parse(storedReadNotifications));
+    }
+  }, []);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    localStorage.setItem("readNotifications", JSON.stringify(readNotifications));
+  }, [readNotifications]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (token) {
-      axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/profile", {
+      axios__WEBPACK_IMPORTED_MODULE_5__["default"].get("http://localhost:8000/api/profile", {
         headers: {
           Authorization: "Bearer ".concat(token)
         }
       }).then(function (res) {
-        setProfile(res.data);
+        return setProfile(res.data);
       })["catch"](function (err) {
-        console.error("Error fetching profile:", err);
+        return console.error("Error fetching profile:", err);
       });
     }
   }, [token]);
-
-  // Listen for profile updates
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var handleProfileUpdated = function handleProfileUpdated(e) {
       setProfile(e.detail);
@@ -189619,11 +189647,9 @@ var Header = function Header() {
     };
     window.addEventListener("profileUpdated", handleProfileUpdated);
     return function () {
-      window.removeEventListener("profileUpdated", handleProfileUpdated);
+      return window.removeEventListener("profileUpdated", handleProfileUpdated);
     };
   }, []);
-
-  // Listen for cart updates and update badge count
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var updateCartCount = function updateCartCount() {
       var storedCart = localStorage.getItem("cart");
@@ -189641,18 +189667,14 @@ var Header = function Header() {
     updateCartCount();
     window.addEventListener("cartUpdated", updateCartCount);
     return function () {
-      window.removeEventListener("cartUpdated", updateCartCount);
+      return window.removeEventListener("cartUpdated", updateCartCount);
     };
   }, []);
-
-  // Fetch orders when token is available
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (token) {
       fetchOrders();
     }
-  }, [token]);
-
-  // Function to fetch orders from API
+  }, [token, readNotifications]);
   var fetchOrders = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var response, orderData, allOrders, placedOrders, _err$response;
@@ -189661,7 +189683,7 @@ var Header = function Header() {
           case 0:
             _context.prev = 0;
             _context.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/my-purchases", {
+            return axios__WEBPACK_IMPORTED_MODULE_5__["default"].get("http://localhost:8000/api/my-purchases", {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
@@ -189671,8 +189693,6 @@ var Header = function Header() {
             orderData = response.data.data || response.data;
             allOrders = Array.isArray(orderData) ? orderData : [];
             setOrders(allOrders);
-
-            // Only count "Order Placed" (pending) notifications that are unread
             placedOrders = allOrders.filter(function (order) {
               return order.order_status.toLowerCase() === "pending" && !readNotifications.includes(order.id);
             });
@@ -189695,15 +189715,12 @@ var Header = function Header() {
       return _ref.apply(this, arguments);
     };
   }();
-
-  // Listen for order-related events
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    var handleOrderPlaced = function handleOrderPlaced(e) {
-      var order = e.detail;
-      fetchOrders(); // Refresh orders to include the new one
+    var handleOrderPlaced = function handleOrderPlaced() {
+      return fetchOrders();
     };
-    var handleOrderStatusUpdate = function handleOrderStatusUpdate(e) {
-      fetchOrders(); // Refresh orders on status update
+    var handleOrderStatusUpdate = function handleOrderStatusUpdate() {
+      return fetchOrders();
     };
     window.addEventListener("orderPlaced", handleOrderPlaced);
     window.addEventListener("orderStatusUpdated", handleOrderStatusUpdate);
@@ -189712,80 +189729,78 @@ var Header = function Header() {
       window.removeEventListener("orderStatusUpdated", handleOrderStatusUpdate);
     };
   }, []);
-
-  // Mark notification as read and navigate to tracking page
   var markAsReadAndNavigate = function markAsReadAndNavigate(orderId) {
     if (!readNotifications.includes(orderId)) {
-      setReadNotifications(function (prev) {
-        return [].concat(_toConsumableArray(prev), [orderId]);
+      (0,react_dom__WEBPACK_IMPORTED_MODULE_1__.flushSync)(function () {
+        // Added flushSync
+        setReadNotifications(function (prev) {
+          return [].concat(_toConsumableArray(prev), [orderId]);
+        });
+        setNotificationCount(function (prev) {
+          return Math.max(0, prev - 1);
+        });
       });
-      setNotificationCount(function (prev) {
-        return Math.max(0, prev - 1);
-      }); // Decrease count, ensure it doesn't go below 0
     }
     navigate("/order-tracking/".concat(orderId));
   };
-  var avatarSrc = profile && profile.profile_image ? "".concat(profile.profile_image, "?").concat(new Date().getTime()) : "/images/default-avatar.png";
+  var avatarSrc = profile !== null && profile !== void 0 && profile.profile_image ? "".concat(profile.profile_image, "?").concat(new Date().getTime()) : "/images/default-avatar.png";
   var username = profile ? profile.username : "Guest";
-  var categoriesMenu = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+  var categoriesMenu = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
     className: "white-dropdown",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
       children: "Luxury Watches"
-    }, "luxury-watches"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+    }, "luxury-watches"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
       children: "Fashion Watches"
-    }, "fashion-watches"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+    }, "fashion-watches"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
       children: "Smart Watches"
     }, "smart-watches")]
   });
-  var notificationsMenu = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+  var notificationsMenu = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
     className: "white-dropdown",
     style: {
       width: 350
     },
-    children: [orders.length > 0 ? orders.filter(function (order) {
-      return order.order_status.toLowerCase() === "pending";
-    }) // Only show "Order Placed" (pending status)
-    .slice(0, 3) // Limit to 3 notifications
-    .map(function (order) {
+    children: [orders.filter(function (order) {
+      return order.order_status.toLowerCase() === "pending" && !readNotifications.includes(order.id);
+    }).slice(0, 3).map(function (order) {
       var _order$order_details;
       var product = ((_order$order_details = order.order_details) === null || _order$order_details === void 0 || (_order$order_details = _order$order_details[0]) === null || _order$order_details === void 0 ? void 0 : _order$order_details.product) || {};
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
         onClick: function onClick() {
           return markAsReadAndNavigate(order.id);
-        } // Mark as read and navigate
-        ,
+        },
         style: {
           height: "auto",
           padding: "10px",
           cursor: "pointer"
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           style: {
             display: "flex",
             alignItems: "center"
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_6__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_7__["default"], {
             style: {
               fontSize: "20px",
               marginRight: "10px"
             }
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             style: {
               flex: 1
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
               style: {
                 fontWeight: "bold"
               },
               children: "Order Placed"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
               style: {
                 fontSize: "12px",
                 color: "#888"
               },
               children: ["Your order (", order.id, ") was submitted. Thanks for Shopping with Timeless!"]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
             src: product.main_image ? "http://localhost:8000/storage/".concat(product.main_image) : "/images/default-product.png",
             alt: product.product_name || "Product",
             style: {
@@ -189795,14 +189810,16 @@ var Header = function Header() {
               borderRadius: 4
             },
             onError: function onError(e) {
-              e.target.src = "/images/default-product.png";
+              return e.target.src = "/images/default-product.png";
             }
           })]
         })
       }, order.id);
-    }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+    }), orders.filter(function (order) {
+      return order.order_status.toLowerCase() === "pending" && !readNotifications.includes(order.id);
+    }).length === 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
       children: "No new notifications"
-    }, "no-notif"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+    }, "no-notif"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
       style: {
         textAlign: "center"
       },
@@ -189819,7 +189836,7 @@ var Header = function Header() {
           case 0:
             _context2.prev = 0;
             _context2.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].post("http://localhost:8000/api/logout", {}, {
+            return axios__WEBPACK_IMPORTED_MODULE_5__["default"].post("http://localhost:8000/api/logout", {}, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
@@ -189833,8 +189850,9 @@ var Header = function Header() {
             console.error("API logout error:", _context2.t0);
           case 8:
             localStorage.removeItem("token");
+            localStorage.removeItem("readNotifications");
             window.location.replace("/login");
-          case 10:
+          case 11:
           case "end":
             return _context2.stop();
         }
@@ -189845,72 +189863,72 @@ var Header = function Header() {
     };
   }();
   var handleProfileClick = function handleProfileClick() {
-    navigate("/user-profile");
+    return navigate("/user-profile");
   };
-  var handleNavigation = function handleNavigation(path) {
-    navigate(path);
-    setIsMobileMenuVisible(false);
-  };
-  var userMenu = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+  var userMenu = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
     className: "white-dropdown",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
       onClick: handleProfileClick,
       children: "Profile"
-    }, "profile"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+    }, "profile"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
       onClick: handleLogout,
       children: "Logout"
     }, "logout")]
   });
   var toggleMobileMenu = function toggleMobileMenu() {
-    setIsMobileMenuVisible(!isMobileMenuVisible);
+    return setIsMobileMenuVisible(!isMobileMenuVisible);
+  };
+  var handleNavigation = function handleNavigation(path) {
+    navigate(path);
+    setIsMobileMenuVisible(false);
   };
   var handleMenuClick = function handleMenuClick(e) {
     e.domEvent.preventDefault();
     handleNavigation(e.item.props.path);
   };
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(AntHeader, {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(AntHeader, {
     className: "header",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
       className: "logo",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
         src: "/images/logo.png",
         alt: "Logo"
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
       className: "mobile-menu-button",
       onClick: toggleMobileMenu,
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {})
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {})
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
       theme: "light",
       mode: "horizontal",
       className: "nav-menu ".concat(isMobileMenuVisible ? "visible" : ""),
       selectedKeys: [],
       onClick: handleMenuClick,
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
         path: "/user-home",
         children: "Home"
-      }, "home"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+      }, "home"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
         path: "/aboutus",
         children: "About Us"
-      }, "about"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+      }, "about"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
         path: "/user-collection",
         children: "Collection"
-      }, "collection"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      }, "collection"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
         overlay: categoriesMenu,
         placement: "bottomLeft",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
           children: "Categories"
         }, "categories")
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
       className: "header-icons",
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
         overlay: notificationsMenu,
         trigger: ["click"],
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
           count: notificationCount,
           className: "icon-badge",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
             style: {
               fontSize: "24px",
               cursor: "pointer"
@@ -189918,10 +189936,10 @@ var Header = function Header() {
             className: "icon"
           })
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
         count: cartCount,
         className: "icon-badge",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
           style: {
             fontSize: "24px",
             cursor: "pointer"
@@ -189931,17 +189949,17 @@ var Header = function Header() {
             return navigate("/user-cart");
           }
         })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
         overlay: userMenu,
         trigger: ["click"],
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           className: "user-avatar",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
             src: avatarSrc,
             size: 40,
             shape: "circle",
-            icon: !avatarSrc && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {})
-          }, avatarKey), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("span", {
+            icon: !avatarSrc && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {})
+          }, avatarKey), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
             className: "username",
             children: username
           })]

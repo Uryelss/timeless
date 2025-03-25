@@ -45,10 +45,28 @@ const CartPage = () => {
                         );
                         return null;
                     }
+                    // Validate size if sizes are provided by the API
+                    let sizesArr = product.sizes || [];
+                    if (typeof product.sizes === "string") {
+                        try {
+                            sizesArr = JSON.parse(product.sizes);
+                        } catch (e) {
+                            sizesArr = [];
+                        }
+                    }
+                    const validSize = sizesArr.some(
+                        (s) => (s.size || s) === item.size
+                    );
+                    if (!validSize) {
+                        message.warning(
+                            `Size ${item.size} for ${item.productName} is no longer available.`
+                        );
+                        return null;
+                    }
+
                     return {
                         ...item,
                         id: product.id,
-                        inventory_id: item.inventory_id, // Preserve from cart
                         price: product.price,
                         total: product.price * item.quantity,
                         image: `http://localhost:8000/storage/${product.main_image}`,
@@ -174,7 +192,7 @@ const CartPage = () => {
         selectedRowKeys,
         onChange: (selectedKeys) => setSelectedRowKeys(selectedKeys),
         getCheckboxProps: (record) => ({
-            name: `${record.id}-${record.size}`, // Unique key per product and size
+            name: `${record.id}-${record.size}`,
         }),
     };
 
@@ -185,7 +203,6 @@ const CartPage = () => {
             message.warning("Please select at least one item to checkout!");
             return;
         }
-        // Filter cart items based on selected row keys
         const selectedItems = cartItems.filter((item) =>
             selectedRowKeys.includes(`${item.id}-${item.size}`)
         );
@@ -194,9 +211,7 @@ const CartPage = () => {
             0
         );
 
-        const invalidItems = selectedItems.some(
-            (item) => !item.id || !item.inventory_id
-        );
+        const invalidItems = selectedItems.some((item) => !item.id);
         if (invalidItems) {
             message.error(
                 "Some selected items are invalid. Please refresh or re-add items."
@@ -214,7 +229,7 @@ const CartPage = () => {
             <div style={{ padding: "20px" }}>
                 <Title level={2}>Cart</Title>
                 <Table
-                    rowKey={(record) => `${record.id}-${record.size}`} // Unique key per product and size
+                    rowKey={(record) => `${record.id}-${record.size}`}
                     rowSelection={rowSelection}
                     columns={columns}
                     dataSource={cartItems}

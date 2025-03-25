@@ -1,14 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import {
-    Layout,
-    Menu,
-    Dropdown,
-    Badge,
-    Avatar,
-    Button,
-    notification,
-} from "antd";
+import { flushSync } from "react-dom"; // Added import
+import { Layout, Menu, Dropdown, Badge, Avatar, Button } from "antd";
 import {
     ShoppingCartOutlined,
     BellOutlined,
@@ -27,41 +20,47 @@ const Header = () => {
     const [cartCount, setCartCount] = useState(0);
     const [orders, setOrders] = useState([]);
     const [notificationCount, setNotificationCount] = useState(0);
-    const [readNotifications, setReadNotifications] = useState([]); // New state to track read notifications
+    const [readNotifications, setReadNotifications] = useState([]);
 
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
 
-    // Fetch profile when token is available
+    useEffect(() => {
+        const storedReadNotifications =
+            localStorage.getItem("readNotifications");
+        if (storedReadNotifications) {
+            setReadNotifications(JSON.parse(storedReadNotifications));
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem(
+            "readNotifications",
+            JSON.stringify(readNotifications)
+        );
+    }, [readNotifications]);
+
     useEffect(() => {
         if (token) {
             axios
                 .get("http://localhost:8000/api/profile", {
                     headers: { Authorization: `Bearer ${token}` },
                 })
-                .then((res) => {
-                    setProfile(res.data);
-                })
-                .catch((err) => {
-                    console.error("Error fetching profile:", err);
-                });
+                .then((res) => setProfile(res.data))
+                .catch((err) => console.error("Error fetching profile:", err));
         }
     }, [token]);
 
-    // Listen for profile updates
     useEffect(() => {
         const handleProfileUpdated = (e) => {
             setProfile(e.detail);
             setAvatarKey((prev) => prev + 1);
         };
-
         window.addEventListener("profileUpdated", handleProfileUpdated);
-        return () => {
+        return () =>
             window.removeEventListener("profileUpdated", handleProfileUpdated);
-        };
     }, []);
 
-    // Listen for cart updates and update badge count
     useEffect(() => {
         const updateCartCount = () => {
             const storedCart = localStorage.getItem("cart");
@@ -76,22 +75,17 @@ const Header = () => {
                 setCartCount(0);
             }
         };
-
         updateCartCount();
         window.addEventListener("cartUpdated", updateCartCount);
-        return () => {
-            window.removeEventListener("cartUpdated", updateCartCount);
-        };
+        return () => window.removeEventListener("cartUpdated", updateCartCount);
     }, []);
 
-    // Fetch orders when token is available
     useEffect(() => {
         if (token) {
             fetchOrders();
         }
-    }, [token]);
+    }, [token, readNotifications]);
 
-    // Function to fetch orders from API
     const fetchOrders = async () => {
         try {
             const response = await axios.get(
@@ -103,8 +97,6 @@ const Header = () => {
             const orderData = response.data.data || response.data;
             const allOrders = Array.isArray(orderData) ? orderData : [];
             setOrders(allOrders);
-
-            // Only count "Order Placed" (pending) notifications that are unread
             const placedOrders = allOrders.filter(
                 (order) =>
                     order.order_status.toLowerCase() === "pending" &&
@@ -121,20 +113,11 @@ const Header = () => {
         }
     };
 
-    // Listen for order-related events
     useEffect(() => {
-        const handleOrderPlaced = (e) => {
-            const order = e.detail;
-            fetchOrders(); // Refresh orders to include the new one
-        };
-
-        const handleOrderStatusUpdate = (e) => {
-            fetchOrders(); // Refresh orders on status update
-        };
-
+        const handleOrderPlaced = () => fetchOrders();
+        const handleOrderStatusUpdate = () => fetchOrders();
         window.addEventListener("orderPlaced", handleOrderPlaced);
         window.addEventListener("orderStatusUpdated", handleOrderStatusUpdate);
-
         return () => {
             window.removeEventListener("orderPlaced", handleOrderPlaced);
             window.removeEventListener(
@@ -144,20 +127,20 @@ const Header = () => {
         };
     }, []);
 
-    // Mark notification as read and navigate to tracking page
     const markAsReadAndNavigate = (orderId) => {
         if (!readNotifications.includes(orderId)) {
-            setReadNotifications((prev) => [...prev, orderId]);
-            setNotificationCount((prev) => Math.max(0, prev - 1)); // Decrease count, ensure it doesn't go below 0
+            flushSync(() => {
+                // Added flushSync
+                setReadNotifications((prev) => [...prev, orderId]);
+                setNotificationCount((prev) => Math.max(0, prev - 1));
+            });
         }
         navigate(`/order-tracking/${orderId}`);
     };
 
-    const avatarSrc =
-        profile && profile.profile_image
-            ? `${profile.profile_image}?${new Date().getTime()}`
-            : "/images/default-avatar.png";
-
+    const avatarSrc = profile?.profile_image
+        ? `${profile.profile_image}?${new Date().getTime()}`
+        : "/images/default-avatar.png";
     const username = profile ? profile.username : "Guest";
 
     const categoriesMenu = (
@@ -170,75 +153,78 @@ const Header = () => {
 
     const notificationsMenu = (
         <Menu className="white-dropdown" style={{ width: 350 }}>
-            {orders.length > 0 ? (
-                orders
-                    .filter(
-                        (order) =>
-                            order.order_status.toLowerCase() === "pending"
-                    ) // Only show "Order Placed" (pending status)
-                    .slice(0, 3) // Limit to 3 notifications
-                    .map((order) => {
-                        const product = order.order_details?.[0]?.product || {};
-                        return (
-                            <Menu.Item
-                                key={order.id}
-                                onClick={() => markAsReadAndNavigate(order.id)} // Mark as read and navigate
+            {orders
+                .filter(
+                    (order) =>
+                        order.order_status.toLowerCase() === "pending" &&
+                        !readNotifications.includes(order.id)
+                )
+                .slice(0, 3)
+                .map((order) => {
+                    const product = order.order_details?.[0]?.product || {};
+                    return (
+                        <Menu.Item
+                            key={order.id}
+                            onClick={() => markAsReadAndNavigate(order.id)}
+                            style={{
+                                height: "auto",
+                                padding: "10px",
+                                cursor: "pointer",
+                            }}
+                        >
+                            <div
                                 style={{
-                                    height: "auto",
-                                    padding: "10px",
-                                    cursor: "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
                                 }}
                             >
-                                <div
+                                <ShoppingOutlined
                                     style={{
-                                        display: "flex",
-                                        alignItems: "center",
+                                        fontSize: "20px",
+                                        marginRight: "10px",
                                     }}
-                                >
-                                    <ShoppingOutlined
-                                        style={{
-                                            fontSize: "20px",
-                                            marginRight: "10px",
-                                        }}
-                                    />
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontWeight: "bold" }}>
-                                            Order Placed
-                                        </div>
-                                        <div
-                                            style={{
-                                                fontSize: "12px",
-                                                color: "#888",
-                                            }}
-                                        >
-                                            Your order ({order.id}) was
-                                            submitted. Thanks for Shopping with
-                                            Timeless!
-                                        </div>
+                                />
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: "bold" }}>
+                                        Order Placed
                                     </div>
-                                    <img
-                                        src={
-                                            product.main_image
-                                                ? `http://localhost:8000/storage/${product.main_image}`
-                                                : "/images/default-product.png"
-                                        }
-                                        alt={product.product_name || "Product"}
+                                    <div
                                         style={{
-                                            width: 50,
-                                            height: 50,
-                                            objectFit: "cover",
-                                            borderRadius: 4,
+                                            fontSize: "12px",
+                                            color: "#888",
                                         }}
-                                        onError={(e) => {
-                                            e.target.src =
-                                                "/images/default-product.png";
-                                        }}
-                                    />
+                                    >
+                                        Your order ({order.id}) was submitted.
+                                        Thanks for Shopping with Timeless!
+                                    </div>
                                 </div>
-                            </Menu.Item>
-                        );
-                    })
-            ) : (
+                                <img
+                                    src={
+                                        product.main_image
+                                            ? `http://localhost:8000/storage/${product.main_image}`
+                                            : "/images/default-product.png"
+                                    }
+                                    alt={product.product_name || "Product"}
+                                    style={{
+                                        width: 50,
+                                        height: 50,
+                                        objectFit: "cover",
+                                        borderRadius: 4,
+                                    }}
+                                    onError={(e) =>
+                                        (e.target.src =
+                                            "/images/default-product.png")
+                                    }
+                                />
+                            </div>
+                        </Menu.Item>
+                    );
+                })}
+            {orders.filter(
+                (order) =>
+                    order.order_status.toLowerCase() === "pending" &&
+                    !readNotifications.includes(order.id)
+            ).length === 0 && (
                 <Menu.Item key="no-notif">No new notifications</Menu.Item>
             )}
             <Menu.Item
@@ -262,17 +248,11 @@ const Header = () => {
             console.error("API logout error:", err);
         }
         localStorage.removeItem("token");
+        localStorage.removeItem("readNotifications");
         window.location.replace("/login");
     };
 
-    const handleProfileClick = () => {
-        navigate("/user-profile");
-    };
-
-    const handleNavigation = (path) => {
-        navigate(path);
-        setIsMobileMenuVisible(false);
-    };
+    const handleProfileClick = () => navigate("/user-profile");
 
     const userMenu = (
         <Menu className="white-dropdown">
@@ -285,8 +265,11 @@ const Header = () => {
         </Menu>
     );
 
-    const toggleMobileMenu = () => {
-        setIsMobileMenuVisible(!isMobileMenuVisible);
+    const toggleMobileMenu = () => setIsMobileMenuVisible(!isMobileMenuVisible);
+
+    const handleNavigation = (path) => {
+        navigate(path);
+        setIsMobileMenuVisible(false);
     };
 
     const handleMenuClick = (e) => {

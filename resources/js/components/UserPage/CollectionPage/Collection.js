@@ -52,10 +52,6 @@ const Collection = () => {
         axios
             .get(PRODUCTS_API)
             .then((res) => {
-                console.log(
-                    "Fetched Products Data:",
-                    JSON.stringify(res.data, null, 2)
-                );
                 setProducts(res.data);
             })
             .catch((err) => {
@@ -210,12 +206,31 @@ const Collection = () => {
     const filteredProducts = getFilteredProducts();
     const displayFilters = getDisplayFilters();
 
-    // Function to add item to cart with selected size
     const handleDirectAddToCart = (product, size) => {
         if (!isLoggedIn) {
             message.info("Please log in to add to cart");
             return;
         }
+
+        // Validate size
+        let sizesArr = [];
+        if (typeof product.sizes === "string") {
+            try {
+                sizesArr = JSON.parse(product.sizes);
+            } catch (e) {
+                sizesArr = [];
+            }
+        } else {
+            sizesArr = product.sizes || [];
+        }
+        const validSize = sizesArr.some((s) => (s.size || s) === size);
+        if (!validSize) {
+            message.error(
+                `Size ${size} is not available for ${product.product_name}.`
+            );
+            return;
+        }
+
         const cartItem = {
             id: product.id,
             productName: product.product_name,
@@ -227,6 +242,7 @@ const Collection = () => {
             quantity: 1,
             total: product.price,
         };
+
         const storedCart = localStorage.getItem("cart");
         let cart = storedCart ? JSON.parse(storedCart) : [];
         const existingItemIndex = cart.findIndex(
@@ -247,7 +263,6 @@ const Collection = () => {
         );
     };
 
-    // Render size options as buttons in the modal
     const renderSizeOptions = (product) => {
         let sizesArr = [];
         if (typeof product.sizes === "string") {
@@ -280,7 +295,6 @@ const Collection = () => {
         ));
     };
 
-    // Handler for modal Add-to-Cart button
     const handleModalAddToCart = () => {
         if (!modalSelectedSize) {
             message.warning("Please select a size.");
@@ -291,7 +305,6 @@ const Collection = () => {
         setModalProduct(null);
     };
 
-    // Render the modal overview content
     const renderModalOverview = () => {
         if (!modalProduct) return null;
         return (
@@ -636,7 +649,6 @@ const Collection = () => {
                                                 </div>
                                             }
                                         />
-                                        {/* Cart Icon Button */}
                                         <Button
                                             type="link"
                                             icon={
