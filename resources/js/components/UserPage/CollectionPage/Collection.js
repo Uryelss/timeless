@@ -375,12 +375,22 @@ const Collection = () => {
                 <div>
                     <h3>{modalProduct.product_name}</h3>
                     <p>Price: {modalProduct.price}</p>
-                    <div style={{ display: "flex", alignItems: "center" }}>
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            color: "black",
+                        }}
+                    >
                         <Rate
                             disabled
                             value={modalProduct.average_rating || 0}
                             allowHalf
-                            style={{ fontSize: "14px", marginRight: "8px" }}
+                            style={{
+                                fontSize: "14px",
+                                marginRight: "8px",
+                                color: "yellow",
+                            }}
                         />
                         <span>{modalProduct.average_rating || 0}</span>
                     </div>
@@ -390,8 +400,10 @@ const Collection = () => {
                     <div
                         style={{
                             display: "flex",
-                            flexWrap: "wrap",
+                            flexWrap: "nowrap",
+                            flexDirection: "row",
                             gap: "8px",
+                            width: "100px",
                         }}
                     >
                         {renderSizeOptions(modalProduct)}
@@ -400,7 +412,7 @@ const Collection = () => {
                 <Button
                     type="primary"
                     onClick={handleModalAddToCart}
-                    style={{ width: "100%" }}
+                    style={{ width: "100%", height: "40px" }}
                 >
                     Add to Cart
                 </Button>
@@ -414,7 +426,9 @@ const Collection = () => {
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
     return (
-        <div className="collection-page"> {/* Add className for SCSS scoping */}
+        <div className="collection-page">
+            {" "}
+            {/* Add className for SCSS scoping */}
             <Layout style={{ minHeight: "100vh" }} key={filterKey}>
                 <Navbar />
                 <div className="main-content">
@@ -441,7 +455,12 @@ const Collection = () => {
                                 FILTER
                             </div>
                             {displayFilters.length > 0 && (
-                                <div style={{ marginBottom: "16px", color: "#1890ff" }}>
+                                <div
+                                    style={{
+                                        marginBottom: "16px",
+                                        color: "#1890ff",
+                                    }}
+                                >
                                     {displayFilters.join(" > ")}
                                 </div>
                             )}
@@ -453,9 +472,14 @@ const Collection = () => {
                                             <Checkbox
                                                 key={brand}
                                                 onChange={() =>
-                                                    handleFilterChange("brand", brand)
+                                                    handleFilterChange(
+                                                        "brand",
+                                                        brand
+                                                    )
                                                 }
-                                                checked={filters.brand.includes(brand)}
+                                                checked={filters.brand.includes(
+                                                    brand
+                                                )}
                                             >
                                                 {brand}
                                             </Checkbox>
@@ -469,7 +493,10 @@ const Collection = () => {
                                             <Checkbox
                                                 key={gender}
                                                 onChange={() =>
-                                                    handleFilterChange("gender", gender)
+                                                    handleFilterChange(
+                                                        "gender",
+                                                        gender
+                                                    )
                                                 }
                                                 checked={filters.gender.includes(
                                                     gender
@@ -483,43 +510,47 @@ const Collection = () => {
                                 <div style={{ marginBottom: "16px" }}>
                                     <h3>MOVEMENT</h3>
                                     <div className="horizontal-checkboxes">
-                                        {filterOptions.movement.map((movement) => (
-                                            <Checkbox
-                                                key={movement}
-                                                onChange={() =>
-                                                    handleFilterChange(
-                                                        "movement",
+                                        {filterOptions.movement.map(
+                                            (movement) => (
+                                                <Checkbox
+                                                    key={movement}
+                                                    onChange={() =>
+                                                        handleFilterChange(
+                                                            "movement",
+                                                            movement
+                                                        )
+                                                    }
+                                                    checked={filters.movement.includes(
                                                         movement
-                                                    )
-                                                }
-                                                checked={filters.movement.includes(
-                                                    movement
-                                                )}
-                                            >
-                                                {movement}
-                                            </Checkbox>
-                                        ))}
+                                                    )}
+                                                >
+                                                    {movement}
+                                                </Checkbox>
+                                            )
+                                        )}
                                     </div>
                                 </div>
                                 <div style={{ marginBottom: "16px" }}>
                                     <h3>STRAP MATERIAL</h3>
                                     <div className="horizontal-checkboxes">
-                                        {filterOptions.strapMaterial.map((material) => (
-                                            <Checkbox
-                                                key={material.id}
-                                                onChange={() =>
-                                                    handleFilterChange(
-                                                        "strapMaterial",
+                                        {filterOptions.strapMaterial.map(
+                                            (material) => (
+                                                <Checkbox
+                                                    key={material.id}
+                                                    onChange={() =>
+                                                        handleFilterChange(
+                                                            "strapMaterial",
+                                                            material.id
+                                                        )
+                                                    }
+                                                    checked={filters.strapMaterial.includes(
                                                         material.id
-                                                    )
-                                                }
-                                                checked={filters.strapMaterial.includes(
-                                                    material.id
-                                                )}
-                                            >
-                                                {material.name}
-                                            </Checkbox>
-                                        ))}
+                                                    )}
+                                                >
+                                                    {material.name}
+                                                </Checkbox>
+                                            )
+                                        )}
                                     </div>
                                 </div>
                                 <Button
@@ -537,7 +568,9 @@ const Collection = () => {
                         </Sider>
 
                         <Layout style={{ padding: "0 24px 24px" }}>
-                            <Content style={{ padding: 24, background: "#fff" }}>
+                            <Content
+                                style={{ padding: 24, background: "#fff" }}
+                            >
                                 <Space
                                     style={{
                                         marginBottom: "16px",
@@ -547,8 +580,12 @@ const Collection = () => {
                                 >
                                     <Search
                                         placeholder="Search collections..."
-                                        onSearch={(value) => setSearchTerm(value)}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        onSearch={(value) =>
+                                            setSearchTerm(value)
+                                        }
+                                        onChange={(e) =>
+                                            setSearchTerm(e.target.value)
+                                        }
                                         style={{ width: 300 }}
                                     />
                                     <Select
@@ -583,7 +620,9 @@ const Collection = () => {
                                                 hoverable
                                                 cover={
                                                     <img
-                                                        alt={product.product_name}
+                                                        alt={
+                                                            product.product_name
+                                                        }
                                                         src={
                                                             product.main_image
                                                                 ? `http://localhost:8000/storage/${product.main_image}`
@@ -593,7 +632,8 @@ const Collection = () => {
                                                             width: "250px",
                                                             height: "250px",
                                                             objectFit: "cover",
-                                                            borderRadius: "8px 8px 0 0",
+                                                            borderRadius:
+                                                                "8px 8px 0 0",
                                                         }}
                                                     />
                                                 }
@@ -604,11 +644,13 @@ const Collection = () => {
                                                     description={
                                                         <div>
                                                             <p>
-                                                                Price: {product.price}
+                                                                Price:{" "}
+                                                                {product.price}
                                                             </p>
                                                             <div
                                                                 style={{
-                                                                    display: "flex",
+                                                                    display:
+                                                                        "flex",
                                                                     alignItems:
                                                                         "center",
                                                                 }}
@@ -639,19 +681,28 @@ const Collection = () => {
                                                     type="link"
                                                     icon={
                                                         <ShoppingCartOutlined
-                                                            style={{ fontSize: "28px" }}
+                                                            style={{
+                                                                fontSize:
+                                                                    "28px",
+                                                            }}
                                                         />
                                                     }
                                                     disabled={!isLoggedIn}
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
-                                                        setModalProduct(product);
+                                                        setModalProduct(
+                                                            product
+                                                        );
                                                         setModalCurrentMainImage(
                                                             product.main_image
                                                         );
-                                                        setModalSelectedSize(null);
-                                                        setShowAddToCartModal(true);
+                                                        setModalSelectedSize(
+                                                            null
+                                                        );
+                                                        setShowAddToCartModal(
+                                                            true
+                                                        );
                                                     }}
                                                     style={{
                                                         padding: 0,

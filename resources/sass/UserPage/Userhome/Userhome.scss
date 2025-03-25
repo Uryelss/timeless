@@ -2,6 +2,7 @@
 .user-home {
     background-color: #121516; /* Dark background for the entire page */
     min-height: 100vh; /* Ensure the page takes up full viewport height */
+    min-width: 100%;
     display: flex;
     flex-direction: column;
 }
@@ -18,16 +19,16 @@
 
 /* ItemSlider Section */
 .user-home .item-slider-section {
-    margin: 0 auto 60px auto; /* Centered with bottom margin */
+    width: 100%;
+    background-color: #121516;
 }
 
 /* BrandSlider Section */
 .user-home .brand-slider-section {
-    margin: 0 auto 60px auto; /* Centered with bottom margin */
     padding: 30px 0;
-    background-color: #1A1E1F; /* Slightly lighter background for contrast */
-    border-top: 1px solid #2A3032; /* Subtle divider line */
-    border-bottom: 1px solid #2A3032;
+    background-color: #1a1e1f; /* Slightly lighter background for contrast */
+    border-top: 1px solid #2a3032; /* Subtle divider line */
+    border-bottom: 1px solid #2a3032;
     border-radius: 10px;
     text-align: center;
 
@@ -35,7 +36,7 @@
         font-size: 28px;
         font-weight: 700;
         text-transform: uppercase;
-        color: #E5E5E5; /* Off-white color for consistency */
+        color: #e5e5e5; /* Off-white color for consistency */
         letter-spacing: 1.5px;
         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         margin-bottom: 20px;
@@ -46,8 +47,8 @@
 .user-home .footer {
     margin-top: 60px; /* Margin at the top to separate from BrandSlider */
     padding: 40px 0;
-    background-color: #1A1E1F; /* Match the dark theme */
-    border-top: 1px solid #2A3032;
+    background-color: #1a1e1f; /* Match the dark theme */
+    border-top: 1px solid #2a3032;
 }
 
 /* Responsive Adjustments */

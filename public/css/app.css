@@ -12034,310 +12034,6 @@ textarea.form-control-lg {
   margin-right: 8px;
 }
 
-/* Product Management Page Styling */
-/* Layout and Structure */
-.ant-layout {
-  background-color: #f0f2f5; /* Light gray background for the entire page */
-  min-height: 100vh; /* Ensure full height */
-}
-
-/* Sidebar */
-.ant-layout-sider {
-  background: #001529; /* Dark blue sidebar (Ant Design default) */
-  min-height: 100vh; /* Matches inline style */
-}
-
-/* Header */
-.ant-layout-header {
-  background: #fff; /* Matches inline style */
-  padding: 0 24px; /* Matches inline style */
-  font-size: 18px; /* Matches inline style */
-  font-weight: bold; /* Matches inline style */
-  border-bottom: 1px solid #e8e8e8; /* Subtle divider */
-  display: flex;
-  align-items: center;
-  color: #333; /* Dark gray for text */
-}
-
-/* Content Area */
-.ant-layout-content {
-  padding: 24px; /* Matches inline style */
-  background: #fff; /* Matches inline style */
-  margin: 0;
-  min-height: calc(100vh - 64px); /* Adjust for header height */
-}
-
-/* Search and Action Buttons */
-.ant-layout-content .ant-space {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px; /* Matches inline style */
-}
-
-.ant-layout-content .ant-input {
-  background-color: #fff;
-  color: #333;
-  border-color: #d9d9d9;
-  border-radius: 4px;
-  padding: 8px 12px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-.ant-layout-content .ant-input:hover, .ant-layout-content .ant-input:focus {
-  border-color: #1890ff;
-  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
-}
-
-.ant-layout-content .ant-checkbox-wrapper {
-  color: #333;
-  font-size: 14px;
-  margin-right: 16px;
-}
-.ant-layout-content .ant-checkbox-wrapper .ant-checkbox-inner {
-  background-color: #fff;
-  border-color: #d9d9d9;
-  width: 16px;
-  height: 16px;
-}
-.ant-layout-content .ant-checkbox-wrapper .ant-checkbox-checked .ant-checkbox-inner {
-  background-color: #1890ff;
-  border-color: #1890ff;
-}
-
-.ant-layout-content .ant-btn.ant-btn-default {
-  background: #fff;
-  border-color: #d9d9d9;
-  color: #333;
-  border-radius: 4px;
-  padding: 8px 12px;
-  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-  width: 131px; /* Matches inline style */
-  margin-right: 8px; /* Matches inline style */
-}
-.ant-layout-content .ant-btn.ant-btn-default:hover, .ant-layout-content .ant-btn.ant-btn-default:focus {
-  background: #1890ff;
-  border-color: #1890ff;
-  color: #fff;
-}
-.ant-layout-content .ant-btn.ant-btn-default .anticon {
-  font-size: 16px;
-}
-.ant-layout-content .ant-btn.ant-btn-primary {
-  background: #1890ff;
-  border-color: #1890ff;
-  color: #fff;
-  border-radius: 4px;
-  padding: 8px 12px;
-  transition: background 0.3s ease;
-  width: 131px; /* Matches inline style */
-  margin-right: 8px; /* Matches inline style */
-  margin-top: 5px; /* Matches inline style */
-}
-.ant-layout-content .ant-btn.ant-btn-primary:hover, .ant-layout-content .ant-btn.ant-btn-primary:focus {
-  background: #40a9ff;
-  border-color: #40a9ff;
-}
-.ant-layout-content .ant-btn.ant-btn-primary .anticon {
-  font-size: 16px;
-}
-.ant-layout-content .ant-btn.ant-btn-link {
-  color: #1890ff;
-  transition: color 0.3s ease;
-}
-.ant-layout-content .ant-btn.ant-btn-link:hover {
-  color: #40a9ff;
-}
-.ant-layout-content .ant-btn.ant-btn-link .anticon {
-  font-size: 18px; /* Matches inline style */
-}
-
-/* Table Styling */
-.ant-table .ant-table-thead > tr > th {
-  background: #fafafa;
-  color: #333;
-  font-weight: 600;
-  border-bottom: 1px solid #e8e8e8;
-  padding: 12px 16px;
-}
-.ant-table .ant-table-tbody > tr > td {
-  border-bottom: 1px solid #e8e8e8;
-  padding: 12px 16px;
-  color: #666;
-}
-.ant-table .ant-table-tbody > tr:hover > td {
-  background: #f5f5f5;
-}
-.ant-table .anticon {
-  font-size: 16px; /* Matches inline style for Edit and Delete icons */
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-.ant-table .anticon.anticon-edit {
-  color: #1890ff;
-}
-.ant-table .anticon.anticon-edit:hover {
-  color: #40a9ff;
-}
-.ant-table .anticon.anticon-delete {
-  color: #ff4d4f;
-}
-.ant-table .anticon.anticon-delete:hover {
-  color: #ff7875;
-}
-.ant-table .anticon.anticon-undo {
-  font-size: 18px; /* Matches inline style */
-}
-.ant-table img {
-  width: 60px; /* Matches inline style */
-  height: 70px; /* Matches inline style */
-  -o-object-fit: cover;
-     object-fit: cover;
-  border-radius: 4px;
-}
-
-/* Modal Styling */
-.ant-modal.ant-modal-centered .ant-modal-content {
-  background-color: #fff;
-  border-radius: 8px;
-  color: #333;
-}
-.ant-modal.ant-modal-centered .ant-modal-header {
-  background-color: #fff;
-  border-bottom: 1px solid #d9d9d9;
-  border-radius: 8px 8px 0 0;
-}
-.ant-modal.ant-modal-centered .ant-modal-header .ant-modal-title {
-  color: #333;
-  font-weight: 700;
-}
-.ant-modal.ant-modal-centered .ant-modal-body {
-  padding: 24px;
-}
-.ant-modal.ant-modal-centered .ant-modal-footer {
-  border-top: 1px solid #d9d9d9;
-  padding: 16px;
-  display: flex;
-  justify-content: flex-end;
-}
-.ant-modal.ant-modal-centered .ant-modal-footer .ant-btn.ant-btn-default {
-  background: #fff;
-  border-color: #d9d9d9;
-  color: #333;
-  border-radius: 4px;
-  padding: 8px 12px;
-  margin-right: 8px; /* Matches inline style */
-  width: 90px; /* Matches inline style */
-}
-.ant-modal.ant-modal-centered .ant-modal-footer .ant-btn.ant-btn-default:hover, .ant-modal.ant-modal-centered .ant-modal-footer .ant-btn.ant-btn-default:focus {
-  background: #f5f5f5;
-  border-color: #d9d9d9;
-}
-.ant-modal.ant-modal-centered .ant-modal-footer .ant-btn.ant-btn-primary {
-  background: #1890ff;
-  border-color: #1890ff;
-  color: #fff;
-  border-radius: 4px;
-  padding: 8px 12px;
-  transition: background 0.3s ease;
-}
-.ant-modal.ant-modal-centered .ant-modal-footer .ant-btn.ant-btn-primary:hover, .ant-modal.ant-modal-centered .ant-modal-footer .ant-btn.ant-btn-primary:focus {
-  background: #40a9ff;
-  border-color: #40a9ff;
-}
-.ant-modal.ant-modal-centered .ant-modal-close-x {
-  color: #666;
-}
-.ant-modal.ant-modal-centered .ant-modal-close-x:hover {
-  color: #1890ff;
-}
-
-/* Form Styling in Add/Edit Modal */
-.ant-form .ant-form-item-label > label {
-  color: #333;
-  font-weight: 500;
-}
-.ant-form .ant-input,
-.ant-form .ant-input-number,
-.ant-form .ant-select-selector,
-.ant-form .ant-input-textarea {
-  background-color: #fff;
-  color: #333;
-  border-color: #d9d9d9;
-  border-radius: 4px;
-  padding: 8px 12px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-.ant-form .ant-input:hover, .ant-form .ant-input:focus,
-.ant-form .ant-input-number:hover,
-.ant-form .ant-input-number:focus,
-.ant-form .ant-select-selector:hover,
-.ant-form .ant-select-selector:focus,
-.ant-form .ant-input-textarea:hover,
-.ant-form .ant-input-textarea:focus {
-  border-color: #1890ff;
-  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
-}
-.ant-form .ant-select-arrow {
-  color: #666;
-}
-.ant-form .ant-btn-dashed {
-  border-color: #d9d9d9;
-  color: #333;
-  border-radius: 4px;
-  padding: 8px 12px;
-  transition: border-color 0.3s ease, color 0.3s ease;
-}
-.ant-form .ant-btn-dashed:hover, .ant-form .ant-btn-dashed:focus {
-  border-color: #1890ff;
-  color: #1890ff;
-}
-.ant-form .ant-btn-link {
-  color: #ff4d4f;
-}
-.ant-form .ant-btn-link:hover {
-  color: #ff7875;
-}
-
-/* Upload Styling */
-.ant-upload .ant-btn {
-  background: #fff;
-  border-color: #d9d9d9;
-  color: #333;
-  border-radius: 4px;
-  padding: 8px 12px;
-  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-}
-.ant-upload .ant-btn:hover, .ant-upload .ant-btn:focus {
-  background: #1890ff;
-  border-color: #1890ff;
-  color: #fff;
-}
-.ant-upload .ant-btn .anticon {
-  font-size: 16px;
-}
-
-.ant-form-item img {
-  width: 150px; /* Matches inline style for main image */
-  height: auto;
-  border-radius: 4px;
-  margin-top: 8px; /* Matches inline style */
-}
-
-.ant-form-item .ant-col-8 img {
-  width: 100px; /* Matches inline style for side images */
-  height: auto;
-  border-radius: 4px;
-  margin-top: 8px; /* Matches inline style */
-}
-
-/* Archived Products Modal */
-.ant-modal[title="Archived Products"] .ant-checkbox-wrapper {
-  margin-right: 16px; /* Matches inline style */
-}
-.ant-modal[title="Archived Products"] .ant-btn-link {
-  margin-right: 8px; /* Matches inline style */
-}
-
 /* Centering the form */
 .auth-container {
   display: flex;
@@ -12995,7 +12691,7 @@ h3, .h3 {
   width: 90%;
   margin: 40px auto 60px;
   text-align: center;
-  background-color: #1A1E1F;
+  background-color: #1a1e1f;
   padding: 20px 0;
   border-radius: 10px;
 }
@@ -13008,7 +12704,7 @@ h3, .h3 {
   font-weight: 700;
   text-transform: uppercase;
   margin-bottom: 20px;
-  color: #E5E5E5;
+  color: #e5e5e5;
   letter-spacing: 1.5px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
@@ -13029,7 +12725,7 @@ h3, .h3 {
      object-fit: contain;
   border-radius: 10px;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  background-color: #2A3032;
+  background-color: #2a3032;
   padding: 10px;
 }
 .item-slider .swiper-slide:hover .slider-image {
@@ -13042,8 +12738,8 @@ h3, .h3 {
   margin: 60px 0;
   padding: 30px 0;
   background-color: #121516;
-  border-top: 1px solid #2A3032;
-  border-bottom: 1px solid #2A3032;
+  border-top: 1px solid #2a3032;
+  border-bottom: 1px solid #2a3032;
   border-radius: 10px;
   text-align: center;
 }
@@ -13051,7 +12747,7 @@ h3, .h3 {
   font-size: 28px;
   font-weight: 700;
   text-transform: uppercase;
-  color: #E5E5E5;
+  color: #e5e5e5;
   letter-spacing: 1.5px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   margin-bottom: 20px;
@@ -13070,7 +12766,7 @@ h3, .h3 {
   font-weight: 700;
   text-transform: uppercase;
   margin-bottom: 20px;
-  color: #E5E5E5; /* Off-white for contrast on dark background */
+  color: #e5e5e5; /* Off-white for contrast on dark background */
   letter-spacing: 1.5px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Reintroduce shadow for depth */
 }
@@ -13089,7 +12785,7 @@ h3, .h3 {
      object-fit: cover;
   border-radius: 10px;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  background-color: #2A3032; /* Match the background of other slider images */
+  background-color: #2a3032; /* Match the background of other slider images */
 }
 .large-item-slider .large-slide:hover .large-slider-image {
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4); /* Darker shadow for dark background */
@@ -13100,7 +12796,7 @@ h3, .h3 {
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(90deg, rgba(24, 144, 255, 0.8), rgba(0, 0, 0, 0.6));
-  color: #FFFFFF;
+  color: #ffffff;
   padding: 12px 24px;
   font-size: 24px;
   font-weight: 600;
@@ -13618,6 +13314,7 @@ h3, .h3 {
 .user-home {
   background-color: #121516; /* Dark background for the entire page */
   min-height: 100vh; /* Ensure the page takes up full viewport height */
+  min-width: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -13634,16 +13331,16 @@ h3, .h3 {
 
 /* ItemSlider Section */
 .user-home .item-slider-section {
-  margin: 0 auto 60px auto; /* Centered with bottom margin */
+  width: 100%;
+  background-color: #121516;
 }
 
 /* BrandSlider Section */
 .user-home .brand-slider-section {
-  margin: 0 auto 60px auto; /* Centered with bottom margin */
   padding: 30px 0;
-  background-color: #1A1E1F; /* Slightly lighter background for contrast */
-  border-top: 1px solid #2A3032; /* Subtle divider line */
-  border-bottom: 1px solid #2A3032;
+  background-color: #1a1e1f; /* Slightly lighter background for contrast */
+  border-top: 1px solid #2a3032; /* Subtle divider line */
+  border-bottom: 1px solid #2a3032;
   border-radius: 10px;
   text-align: center;
 }
@@ -13651,7 +13348,7 @@ h3, .h3 {
   font-size: 28px;
   font-weight: 700;
   text-transform: uppercase;
-  color: #E5E5E5; /* Off-white color for consistency */
+  color: #e5e5e5; /* Off-white color for consistency */
   letter-spacing: 1.5px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   margin-bottom: 20px;
@@ -13661,8 +13358,8 @@ h3, .h3 {
 .user-home .footer {
   margin-top: 60px; /* Margin at the top to separate from BrandSlider */
   padding: 40px 0;
-  background-color: #1A1E1F; /* Match the dark theme */
-  border-top: 1px solid #2A3032;
+  background-color: #1a1e1f; /* Match the dark theme */
+  border-top: 1px solid #2a3032;
 }
 
 /* Responsive Adjustments */

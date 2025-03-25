@@ -25,21 +25,18 @@ const { Header, Content, Sider } = Layout;
 const { TabPane } = Tabs;
 
 const SubCategoryManagement = () => {
-    // Active tab (values: brand, categories, gender, movement, strap_materials, sizes)
     const [activeTab, setActiveTab] = useState("brand");
-    // Modal states
     const [openAddModal, setOpenAddModal] = useState(false);
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
     const [form] = Form.useForm();
-    // Bulk selection and search state
-    const [selectAll, setSelectAll] = useState(false);
+    const [selectAllActive, setSelectAllActive] = useState(false);
+    const [selectAllArchived, setSelectAllArchived] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    // Data state for active and archived records
     const [data, setData] = useState([]);
     const [archivedData, setArchivedData] = useState([]);
-    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectedActiveItems, setSelectedActiveItems] = useState([]);
+    const [selectedArchivedItems, setSelectedArchivedItems] = useState([]);
 
-    // Fetch active sub-categories for the current active tab
     const fetchData = () => {
         axios
             .get(`http://localhost:8000/api/sub-categories?type=${activeTab}`, {
@@ -48,7 +45,6 @@ const SubCategoryManagement = () => {
                 },
             })
             .then((res) => {
-                // Ensure each record has a unique "key" for Ant Design table and initialize selected state
                 setData(
                     res.data.map((item) => ({
                         ...item,
@@ -63,7 +59,6 @@ const SubCategoryManagement = () => {
             });
     };
 
-    // Fetch archived sub-categories for the current active tab
     const fetchArchivedData = () => {
         axios
             .get(
@@ -81,6 +76,7 @@ const SubCategoryManagement = () => {
                     res.data.map((item) => ({
                         ...item,
                         key: item.id.toString(),
+                        selected: false,
                     }))
                 );
             })
@@ -97,50 +93,82 @@ const SubCategoryManagement = () => {
         }
     }, [activeTab, openArchiveModal]);
 
-    // Checkbox handling for individual items
-    const handleCheckboxChange = (itemId) => {
+    // Handlers for active items
+    const handleActiveCheckboxChange = (itemId) => {
         const updatedData = data.map((item) =>
             item.id === itemId ? { ...item, selected: !item.selected } : item
         );
         setData(updatedData);
-        setSelectedItems(
+        setSelectedActiveItems(
             updatedData.filter((i) => i.selected).map((i) => i.id)
         );
-        const allSelected = updatedData.every((i) => i.selected);
-        setSelectAll(allSelected);
+        setSelectAllActive(updatedData.every((i) => i.selected));
     };
 
-    // Select All checkbox handling
-    const handleSelectAllChange = (e) => {
+    const handleSelectAllActiveChange = (e) => {
         const checked = e.target.checked;
-        setSelectAll(checked);
+        setSelectAllActive(checked);
         const updatedData = data.map((item) => ({
             ...item,
             selected: checked,
         }));
         setData(updatedData);
-        setSelectedItems(checked ? updatedData.map((i) => i.id) : []);
+        setSelectedActiveItems(checked ? updatedData.map((i) => i.id) : []);
     };
 
-    // Table columns for active items
+    // Handlers for archived items
+    const handleArchivedCheckboxChange = (itemId) => {
+        const updatedArchived = archivedData.map((item) =>
+            item.id === itemId ? { ...item, selected: !item.selected } : item
+        );
+        setArchivedData(updatedArchived);
+        setSelectedArchivedItems(
+            updatedArchived.filter((i) => i.selected).map((i) => i.id)
+        );
+        setSelectAllArchived(updatedArchived.every((i) => i.selected));
+    };
+
+    const handleSelectAllArchivedChange = (e) => {
+        const checked = e.target.checked;
+        setSelectAllArchived(checked);
+        const updatedArchived = archivedData.map((item) => ({
+            ...item,
+            selected: checked,
+        }));
+        setArchivedData(updatedArchived);
+        setSelectedArchivedItems(
+            checked ? updatedArchived.map((i) => i.id) : []
+        );
+    };
+
     const columns = [
         {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
                 <Space>
-                    <Checkbox
-                        checked={record.selected}
-                        onChange={() => handleCheckboxChange(record.id)}
-                    />
-                    <EditOutlined
-                        onClick={() => handleEdit(record)}
-                        style={{ fontSize: "16px" }}
-                    />
-                    <DeleteOutlined
-                        onClick={() => handleArchive(record)}
-                        style={{ fontSize: "16px" }}
-                    />
+                    <div
+                        style={{
+                            marginTop: "20px",
+                            display: "flex",
+                            justifyContent: "flex-start",
+                        }}
+                    >
+                        <Checkbox
+                            checked={record.selected}
+                            onChange={() =>
+                                handleActiveCheckboxChange(record.id)
+                            }
+                        />
+                        <EditOutlined
+                            onClick={() => handleEdit(record)}
+                            style={{ fontSize: "16px", marginLeft: "15px" }}
+                        />
+                        <DeleteOutlined
+                            onClick={() => handleArchive(record)}
+                            style={{ fontSize: "16px", marginLeft: "15px" }}
+                        />
+                    </div>
                 </Space>
             ),
         },
@@ -149,15 +177,23 @@ const SubCategoryManagement = () => {
         { title: "Updated At", dataIndex: "updated_at", key: "updated_at" },
     ];
 
-    // Table columns for archived items
     const archiveColumns = [
         {
             title: "Actions",
             key: "actions",
             render: (_, record) => (
-                <Button type="link" onClick={() => handleRestore(record.id)}>
-                    <UndoOutlined style={{ fontSize: "18px" }} />
-                </Button>
+                <Space>
+                    <Checkbox
+                        checked={record.selected}
+                        onChange={() => handleArchivedCheckboxChange(record.id)}
+                    />
+                    <Button
+                        type="link"
+                        onClick={() => handleRestore(record.id)}
+                    >
+                        <UndoOutlined style={{ fontSize: "18px" }} />
+                    </Button>
+                </Space>
             ),
         },
         { title: "Name", dataIndex: "name", key: "name" },
@@ -167,8 +203,10 @@ const SubCategoryManagement = () => {
 
     const handleTabChange = (key) => {
         setActiveTab(key);
-        setSelectAll(false);
-        setSelectedItems([]);
+        setSelectAllActive(false);
+        setSelectAllArchived(false);
+        setSelectedActiveItems([]);
+        setSelectedArchivedItems([]);
     };
 
     const handleEdit = (record) => {
@@ -292,15 +330,15 @@ const SubCategoryManagement = () => {
     };
 
     const handleBulkArchive = () => {
-        if (selectedItems.length === 0) {
+        if (selectedActiveItems.length === 0) {
             message.warning("Please select at least one item to archive");
             return;
         }
         Modal.confirm({
-            title: `Are you sure you want to archive ${selectedItems.length} selected item(s)?`,
+            title: `Are you sure you want to archive ${selectedActiveItems.length} selected item(s)?`,
             onOk: () => {
                 Promise.all(
-                    selectedItems.map((id) =>
+                    selectedActiveItems.map((id) =>
                         axios.delete(
                             `http://localhost:8000/api/sub-categories/${id}`,
                             {
@@ -316,11 +354,50 @@ const SubCategoryManagement = () => {
                     .then(() => {
                         message.success("Selected items archived successfully");
                         fetchData();
-                        setSelectedItems([]);
-                        setSelectAll(false);
+                        setSelectedActiveItems([]);
+                        setSelectAllActive(false);
                     })
                     .catch((err) =>
                         message.error("Failed to archive some items")
+                    );
+            },
+            okButtonProps: { style: { width: "80px" } },
+            cancelButtonProps: { style: { width: "80px" } },
+        });
+    };
+
+    const handleBulkRestore = () => {
+        if (selectedArchivedItems.length === 0) {
+            message.warning("Please select at least one item to restore");
+            return;
+        }
+        Modal.confirm({
+            title: `Are you sure you want to restore ${selectedArchivedItems.length} selected item(s)?`,
+            onOk: () => {
+                Promise.all(
+                    selectedArchivedItems.map((id) =>
+                        axios.post(
+                            `http://localhost:8000/api/sub-categories/${id}/restore`,
+                            {},
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${localStorage.getItem(
+                                        "token"
+                                    )}`,
+                                },
+                            }
+                        )
+                    )
+                )
+                    .then(() => {
+                        message.success("Selected items restored successfully");
+                        fetchArchivedData();
+                        fetchData();
+                        setSelectedArchivedItems([]);
+                        setSelectAllArchived(false);
+                    })
+                    .catch((err) =>
+                        message.error("Failed to restore some items")
                     );
             },
             okButtonProps: { style: { width: "80px" } },
@@ -353,7 +430,6 @@ const SubCategoryManagement = () => {
                         <TabPane tab="Strap Materials" key="strap_materials" />
                         <TabPane tab="Sizes" key="sizes" />
                     </Tabs>
-                    {/* Toolbar */}
                     <div
                         style={{
                             display: "flex",
@@ -368,12 +444,13 @@ const SubCategoryManagement = () => {
                                 style={{ width: 300, marginRight: 16 }}
                             />
                             <Checkbox
-                                checked={selectAll}
-                                onChange={handleSelectAllChange}
+                                checked={selectAllActive}
+                                onChange={handleSelectAllActiveChange}
                             >
                                 Select All
                             </Checkbox>
-                            {(selectAll || selectedItems.length > 0) && (
+                            {(selectAllActive ||
+                                selectedActiveItems.length > 0) && (
                                 <Button
                                     type="link"
                                     onClick={handleBulkArchive}
@@ -383,8 +460,9 @@ const SubCategoryManagement = () => {
                                     <FolderOpenOutlined
                                         style={{ fontSize: "18px" }}
                                     />
-                                    {selectedItems.length > 0 &&
-                                        ` (${selectedItems.length})`}
+                                    Archive
+                                    {selectedActiveItems.length > 0 &&
+                                        ` (${selectedActiveItems.length})`}
                                 </Button>
                             )}
                         </div>
@@ -393,6 +471,7 @@ const SubCategoryManagement = () => {
                         >
                             <Button
                                 type="default"
+                                icon={<DeleteOutlined />}
                                 onClick={() => setOpenArchiveModal(true)}
                                 style={{ marginRight: 8, width: "131px" }}
                             >
@@ -423,7 +502,6 @@ const SubCategoryManagement = () => {
                 </Content>
             </Layout>
 
-            {/* Add/Edit Modal */}
             <Modal
                 title="Sub-Category"
                 centered
@@ -440,7 +518,6 @@ const SubCategoryManagement = () => {
                 }}
             >
                 <Form form={form} layout="vertical">
-                    {/* Hidden field for editing */}
                     <Form.Item name="id" style={{ display: "none" }}>
                         <Input type="hidden" />
                     </Form.Item>
@@ -459,15 +536,42 @@ const SubCategoryManagement = () => {
                 </Form>
             </Modal>
 
-            {/* Archive Modal */}
             <Modal
                 title="Archived Sub-Categories"
                 centered
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
-                footer={[]}
                 width={1200}
+                footer={[]}
             >
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: 16,
+                    }}
+                >
+                    <Checkbox
+                        checked={selectAllArchived}
+                        onChange={handleSelectAllArchivedChange}
+                        style={{ marginRight: 16 }}
+                    >
+                        Select All
+                    </Checkbox>
+                    {(selectAllArchived ||
+                        selectedArchivedItems.length > 0) && (
+                        <Button
+                            type="link"
+                            onClick={handleBulkRestore}
+                            style={{ marginRight: 8 }}
+                        >
+                            <UndoOutlined style={{ fontSize: "18px" }} />
+                            Restore
+                            {selectedArchivedItems.length > 0 &&
+                                ` (${selectedArchivedItems.length})`}
+                        </Button>
+                    )}
+                </div>
                 <Table
                     columns={archiveColumns}
                     dataSource={archivedData.filter((item) =>

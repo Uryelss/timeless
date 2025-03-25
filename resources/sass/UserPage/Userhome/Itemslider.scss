@@ -3,7 +3,7 @@
     width: 90%;
     margin: 40px auto 60px;
     text-align: center;
-    background-color: #1A1E1F;
+    background-color: #1a1e1f;
     padding: 20px 0;
     border-radius: 10px;
 }
@@ -16,7 +16,7 @@
         font-weight: 700;
         text-transform: uppercase;
         margin-bottom: 20px;
-        color: #E5E5E5;
+        color: #e5e5e5;
         letter-spacing: 1.5px;
         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
@@ -39,7 +39,7 @@
         object-fit: contain;
         border-radius: 10px;
         transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-        background-color: #2A3032;
+        background-color: #2a3032;
         padding: 10px;
     }
 
@@ -54,8 +54,8 @@
     margin: 60px 0;
     padding: 30px 0;
     background-color: #121516;
-    border-top: 1px solid #2A3032;
-    border-bottom: 1px solid #2A3032;
+    border-top: 1px solid #2a3032;
+    border-bottom: 1px solid #2a3032;
     border-radius: 10px;
     text-align: center;
 
@@ -63,7 +63,7 @@
         font-size: 28px;
         font-weight: 700;
         text-transform: uppercase;
-        color: #E5E5E5;
+        color: #e5e5e5;
         letter-spacing: 1.5px;
         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         margin-bottom: 20px;
@@ -83,7 +83,7 @@
         font-weight: 700;
         text-transform: uppercase;
         margin-bottom: 20px;
-        color: #E5E5E5; /* Off-white for contrast on dark background */
+        color: #e5e5e5; /* Off-white for contrast on dark background */
         letter-spacing: 1.5px;
         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Reintroduce shadow for depth */
     }
@@ -104,7 +104,7 @@
         object-fit: cover;
         border-radius: 10px;
         transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-        background-color: #2A3032; /* Match the background of other slider images */
+        background-color: #2a3032; /* Match the background of other slider images */
     }
 
     .large-slide:hover .large-slider-image {
@@ -116,8 +116,12 @@
         bottom: 20px;
         left: 50%;
         transform: translateX(-50%);
-        background: linear-gradient(90deg, rgba(24, 144, 255, 0.8), rgba(0, 0, 0, 0.6));
-        color: #FFFFFF;
+        background: linear-gradient(
+            90deg,
+            rgba(24, 144, 255, 0.8),
+            rgba(0, 0, 0, 0.6)
+        );
+        color: #ffffff;
         padding: 12px 24px;
         font-size: 24px;
         font-weight: 600;
@@ -128,7 +132,11 @@
     }
 
     .large-slide:hover .category-name {
-        background: linear-gradient(90deg, rgba(24, 144, 255, 1), rgba(0, 0, 0, 0.8));
+        background: linear-gradient(
+            90deg,
+            rgba(24, 144, 255, 1),
+            rgba(0, 0, 0, 0.8)
+        );
     }
 
     .luxury-slider:hover,

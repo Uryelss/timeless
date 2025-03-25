@@ -24378,6 +24378,7 @@ function useResponsiveObserver() {
     let subUid = -1;
     let screens = {};
     return {
+      responsiveMap,
       matchHandlers: {},
       dispatch(pointMap) {
         screens = pointMap;
@@ -24399,14 +24400,6 @@ function useResponsiveObserver() {
           this.unregister();
         }
       },
-      unregister() {
-        Object.keys(responsiveMap).forEach(screen => {
-          const matchMediaQuery = responsiveMap[screen];
-          const handler = this.matchHandlers[matchMediaQuery];
-          handler === null || handler === void 0 ? void 0 : handler.mql.removeListener(handler === null || handler === void 0 ? void 0 : handler.listener);
-        });
-        subscribers.clear();
-      },
       register() {
         Object.keys(responsiveMap).forEach(screen => {
           const matchMediaQuery = responsiveMap[screen];
@@ -24427,7 +24420,14 @@ function useResponsiveObserver() {
           listener(mql);
         });
       },
-      responsiveMap
+      unregister() {
+        Object.keys(responsiveMap).forEach(screen => {
+          const matchMediaQuery = responsiveMap[screen];
+          const handler = this.matchHandlers[matchMediaQuery];
+          handler === null || handler === void 0 ? void 0 : handler.mql.removeListener(handler === null || handler === void 0 ? void 0 : handler.listener);
+        });
+        subscribers.clear();
+      }
     };
   }, [token]);
 }
@@ -30621,7 +30621,7 @@ const useSize = customSize => {
     if (typeof customSize === 'string') {
       return customSize !== null && customSize !== void 0 ? customSize : size;
     }
-    if (customSize instanceof Function) {
+    if (typeof customSize === 'function') {
       return customSize(size);
     }
     return size;
@@ -33365,6 +33365,7 @@ const InternalForm = (props, ref) => {
   const [wrapCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_9__["default"])(prefixCls, rootCls);
   const formClassName = classnames__WEBPACK_IMPORTED_MODULE_1___default()(prefixCls, `${prefixCls}-${layout}`, {
     [`${prefixCls}-hide-required-mark`]: mergedRequiredMark === false,
+    // todo: remove in next major version
     [`${prefixCls}-rtl`]: direction === 'rtl',
     [`${prefixCls}-${mergedSize}`]: mergedSize
   }, cssVarCls, rootCls, hashId, contextClassName, className, rootClassName);
@@ -34277,6 +34278,7 @@ const FormItemLabel = _ref => {
   // Required Mark
   const isOptionalMark = requiredMark === 'optional';
   const isRenderMark = typeof requiredMark === 'function';
+  const hideRequiredMark = requiredMark === false;
   if (isRenderMark) {
     labelChildren = requiredMark(labelChildren, {
       required: !!required
@@ -34287,9 +34289,16 @@ const FormItemLabel = _ref => {
       title: ""
     }, (formLocale === null || formLocale === void 0 ? void 0 : formLocale.optional) || ((_a = _locale_en_US__WEBPACK_IMPORTED_MODULE_6__["default"].Form) === null || _a === void 0 ? void 0 : _a.optional)));
   }
+  // https://github.com/ant-design/ant-design/pull/52950#discussion_r1980880316
+  let markType;
+  if (hideRequiredMark) {
+    markType = 'hidden';
+  } else if (isOptionalMark || isRenderMark) {
+    markType = 'optional';
+  }
   const labelClassName = classnames__WEBPACK_IMPORTED_MODULE_1___default()({
     [`${prefixCls}-item-required`]: required,
-    [`${prefixCls}-item-required-mark-optional`]: isOptionalMark || isRenderMark,
+    [`${prefixCls}-item-required-mark-${markType}`]: markType,
     [`${prefixCls}-item-no-colon`]: !computedColon
   });
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_grid_col__WEBPACK_IMPORTED_MODULE_7__["default"], Object.assign({}, mergedLabelCol, {
@@ -35069,7 +35078,6 @@ const genFormItemStyle = token => {
   const {
     formItemCls,
     iconCls,
-    componentCls,
     rootPrefixCls,
     antCls,
     labelRequiredMarkColor,
@@ -35131,17 +35139,20 @@ const genFormItemStyle = token => {
             fontSize: token.fontSize,
             verticalAlign: 'top'
           },
-          // Required mark
-          [`&${formItemCls}-required:not(${formItemCls}-required-mark-optional)::before`]: {
-            display: 'inline-block',
-            marginInlineEnd: token.marginXXS,
-            color: labelRequiredMarkColor,
-            fontSize: token.fontSize,
-            fontFamily: 'SimSun, sans-serif',
-            lineHeight: 1,
-            content: '"*"',
-            [`${componentCls}-hide-required-mark &`]: {
-              display: 'none'
+          [`&${formItemCls}-required`]: {
+            '&::before': {
+              display: 'inline-block',
+              marginInlineEnd: token.marginXXS,
+              color: labelRequiredMarkColor,
+              fontSize: token.fontSize,
+              fontFamily: 'SimSun, sans-serif',
+              lineHeight: 1,
+              content: '"*"'
+            },
+            [`&${formItemCls}-required-mark-hidden, &${formItemCls}-required-mark-optional`]: {
+              '&::before': {
+                display: 'none'
+              }
             }
           },
           // Optional mark
@@ -35149,7 +35160,7 @@ const genFormItemStyle = token => {
             display: 'inline-block',
             marginInlineStart: token.marginXXS,
             color: token.colorTextDescription,
-            [`${componentCls}-hide-required-mark &`]: {
+            [`&${formItemCls}-required-mark-hidden`]: {
               display: 'none'
             }
           },
@@ -36812,7 +36823,7 @@ const InputNumber = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((
         [`${prefixCls}-affix-wrapper-sm`]: mergedSize === 'small',
         [`${prefixCls}-affix-wrapper-lg`]: mergedSize === 'large',
         [`${prefixCls}-affix-wrapper-rtl`]: direction === 'rtl',
-        [`${prefixCls}-affix-wrapper-without-controls`]: controls === false
+        [`${prefixCls}-affix-wrapper-without-controls`]: controls === false || mergedDisabled
       }, hashId),
       wrapper: classnames__WEBPACK_IMPORTED_MODULE_1___default()({
         [`${wrapperClassName}-rtl`]: direction === 'rtl'
@@ -37056,7 +37067,6 @@ const genInputNumberStyles = token => {
         }), (0,_input_style__WEBPACK_IMPORTED_MODULE_2__.genPlaceholderStyle)(token.colorTextPlaceholder)), {
           '&[type="number"]::-webkit-inner-spin-button, &[type="number"]::-webkit-outer-spin-button': {
             margin: 0,
-            webkitAppearance: 'none',
             appearance: 'none'
           }
         })
@@ -38310,9 +38320,12 @@ const TextArea = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(
       className,
       style,
       styles,
-      variant: customVariant
+      variant: customVariant,
+      showCount,
+      onMouseDown,
+      onResize
     } = props,
-    rest = __rest(props, ["prefixCls", "bordered", "size", "disabled", "status", "allowClear", "classNames", "rootClassName", "className", "style", "styles", "variant"]);
+    rest = __rest(props, ["prefixCls", "bordered", "size", "disabled", "status", "allowClear", "classNames", "rootClassName", "className", "style", "styles", "variant", "showCount", "onMouseDown", "onResize"]);
   if (true) {
     const {
       deprecated
@@ -38329,17 +38342,17 @@ const TextArea = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(
     classNames: contextClassNames,
     styles: contextStyles
   } = (0,_config_provider_context__WEBPACK_IMPORTED_MODULE_4__.useComponentConfig)('textArea');
-  // ===================== Disabled =====================
+  // =================== Disabled ===================
   const disabled = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider_DisabledContext__WEBPACK_IMPORTED_MODULE_5__["default"]);
   const mergedDisabled = customDisabled !== null && customDisabled !== void 0 ? customDisabled : disabled;
-  // ===================== Status =====================
+  // ==================== Status ====================
   const {
     status: contextStatus,
     hasFeedback,
     feedbackIcon
   } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_form_context__WEBPACK_IMPORTED_MODULE_6__.FormItemInputContext);
   const mergedStatus = (0,_util_statusUtils__WEBPACK_IMPORTED_MODULE_7__.getMergedStatus)(contextStatus, customStatus);
-  // ===================== Ref =====================
+  // ===================== Ref ======================
   const innerRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef(null);
   react__WEBPACK_IMPORTED_MODULE_0__.useImperativeHandle(ref, () => {
     var _a;
@@ -38356,11 +38369,11 @@ const TextArea = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(
     };
   });
   const prefixCls = getPrefixCls('input', customizePrefixCls);
-  // ===================== Style =====================
+  // ==================== Style =====================
   const rootCls = (0,_config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_9__["default"])(prefixCls);
   const [wrapSharedCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_10__.useSharedStyle)(prefixCls, rootClassName);
   const [wrapCSSVar] = (0,_style_textarea__WEBPACK_IMPORTED_MODULE_11__["default"])(prefixCls, rootCls);
-  // ===================== Compact Item =====================
+  // ================= Compact Item =================
   const {
     compactSize,
     compactItemClassnames
@@ -38372,6 +38385,32 @@ const TextArea = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(
   });
   const [variant, enableVariantCls] = (0,_form_hooks_useVariants__WEBPACK_IMPORTED_MODULE_14__["default"])('textArea', customVariant, bordered);
   const mergedAllowClear = (0,_util_getAllowClear__WEBPACK_IMPORTED_MODULE_15__["default"])(allowClear !== null && allowClear !== void 0 ? allowClear : contextAllowClear);
+  // ==================== Resize ====================
+  // https://github.com/ant-design/ant-design/issues/51594
+  const [isMouseDown, setIsMouseDown] = react__WEBPACK_IMPORTED_MODULE_0__.useState(false);
+  // When has wrapper, resize will make as dirty for `resize: both` style
+  const [resizeDirty, setResizeDirty] = react__WEBPACK_IMPORTED_MODULE_0__.useState(false);
+  const onInternalMouseDown = e => {
+    setIsMouseDown(true);
+    onMouseDown === null || onMouseDown === void 0 ? void 0 : onMouseDown(e);
+    const onMouseUp = () => {
+      setIsMouseDown(false);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+    document.addEventListener('mouseup', onMouseUp);
+  };
+  const onInternalResize = size => {
+    var _a, _b;
+    onResize === null || onResize === void 0 ? void 0 : onResize(size);
+    // Change to dirty since this maybe from the `resize: both` style
+    if (isMouseDown && typeof getComputedStyle === 'function') {
+      const ele = (_b = (_a = innerRef.current) === null || _a === void 0 ? void 0 : _a.nativeElement) === null || _b === void 0 ? void 0 : _b.querySelector('textarea');
+      if (ele && getComputedStyle(ele).resize === 'both') {
+        setResizeDirty(true);
+      }
+    }
+  };
+  // ==================== Render ====================
   return wrapSharedCSSVar(wrapCSSVar(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(rc_textarea__WEBPACK_IMPORTED_MODULE_2__["default"], Object.assign({
     autoComplete: contextAutoComplete
   }, rest, {
@@ -38379,12 +38418,14 @@ const TextArea = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(
     styles: Object.assign(Object.assign({}, contextStyles), styles),
     disabled: mergedDisabled,
     allowClear: mergedAllowClear,
-    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(cssVarCls, rootCls, className, rootClassName, compactItemClassnames, contextClassName),
+    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(cssVarCls, rootCls, className, rootClassName, compactItemClassnames, contextClassName,
+    // Only for wrapper
+    resizeDirty && `${prefixCls}-textarea-affix-wrapper-resize-dirty`),
     classNames: Object.assign(Object.assign(Object.assign({}, classes), contextClassNames), {
       textarea: classnames__WEBPACK_IMPORTED_MODULE_1___default()({
         [`${prefixCls}-sm`]: mergedSize === 'small',
         [`${prefixCls}-lg`]: mergedSize === 'large'
-      }, hashId, classes === null || classes === void 0 ? void 0 : classes.textarea, contextClassNames.textarea),
+      }, hashId, classes === null || classes === void 0 ? void 0 : classes.textarea, contextClassNames.textarea, isMouseDown && `${prefixCls}-mouse-active`),
       variant: classnames__WEBPACK_IMPORTED_MODULE_1___default()({
         [`${prefixCls}-${variant}`]: enableVariantCls
       }, (0,_util_statusUtils__WEBPACK_IMPORTED_MODULE_7__.getStatusClassNames)(prefixCls, mergedStatus)),
@@ -38392,14 +38433,17 @@ const TextArea = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(
         [`${prefixCls}-affix-wrapper-rtl`]: direction === 'rtl',
         [`${prefixCls}-affix-wrapper-sm`]: mergedSize === 'small',
         [`${prefixCls}-affix-wrapper-lg`]: mergedSize === 'large',
-        [`${prefixCls}-textarea-show-count`]: props.showCount || ((_a = props.count) === null || _a === void 0 ? void 0 : _a.show)
+        [`${prefixCls}-textarea-show-count`]: showCount || ((_a = props.count) === null || _a === void 0 ? void 0 : _a.show)
       }, hashId)
     }),
     prefixCls: prefixCls,
     suffix: hasFeedback && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
       className: `${prefixCls}-textarea-suffix`
     }, feedbackIcon),
-    ref: innerRef
+    showCount: showCount,
+    ref: innerRef,
+    onResize: onInternalResize,
+    onMouseDown: onInternalMouseDown
   }))));
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TextArea);
@@ -38564,17 +38608,6 @@ const genBasicInputStyle = token => Object.assign(Object.assign({
   borderRadius: token.borderRadius,
   transition: `all ${token.motionDurationMid}`
 }, genPlaceholderStyle(token.colorTextPlaceholder)), {
-  // Reset height for `textarea`s
-  'textarea&': {
-    maxWidth: '100%',
-    // prevent textarea resize from coming out of its container
-    height: 'auto',
-    minHeight: token.controlHeight,
-    lineHeight: token.lineHeight,
-    verticalAlign: 'bottom',
-    transition: `all ${token.motionDurationSlow}, height 0s`,
-    resize: 'vertical'
-  },
   // Size
   '&-lg': Object.assign({}, genInputLargeStyle(token)),
   '&-sm': Object.assign({}, genInputSmallStyle(token)),
@@ -38838,7 +38871,7 @@ const genInputStyle = token => {
         }
       },
       '&[type="search"]::-webkit-search-cancel-button, &[type="search"]::-webkit-search-decoration': {
-        '-webkit-appearance': 'none'
+        appearance: 'none'
       }
     })
   };
@@ -39263,6 +39296,24 @@ const genTextAreaStyle = token => {
   } = token;
   const textareaPrefixCls = `${componentCls}-textarea`;
   return {
+    // Raw Textarea
+    [`textarea${componentCls}`]: {
+      maxWidth: '100%',
+      // prevent textarea resize from coming out of its container
+      height: 'auto',
+      minHeight: token.controlHeight,
+      lineHeight: token.lineHeight,
+      verticalAlign: 'bottom',
+      transition: `all ${token.motionDurationSlow}`,
+      resize: 'vertical',
+      [`&${componentCls}-mouse-active`]: {
+        transition: `all ${token.motionDurationSlow}, height 0s, width 0s`
+      }
+    },
+    // Wrapper for resize
+    [`${componentCls}-textarea-affix-wrapper-resize-dirty`]: {
+      width: 'auto'
+    },
     [textareaPrefixCls]: {
       position: 'relative',
       '&-show-count': {
@@ -39577,23 +39628,26 @@ const genBorderlessStyle = (token, extraStyles) => {
   };
 };
 /* ============== Filled ============== */
-const genBaseFilledStyle = (token, options) => ({
-  background: options.bg,
-  borderWidth: token.lineWidth,
-  borderStyle: token.lineType,
-  borderColor: 'transparent',
-  'input&, & input, textarea&, & textarea': {
-    color: options === null || options === void 0 ? void 0 : options.inputColor
-  },
-  '&:hover': {
-    background: options.hoverBg
-  },
-  '&:focus, &:focus-within': {
-    outline: 0,
-    borderColor: options.activeBorderColor,
-    backgroundColor: token.activeBg
-  }
-});
+const genBaseFilledStyle = (token, options) => {
+  var _a;
+  return {
+    background: options.bg,
+    borderWidth: token.lineWidth,
+    borderStyle: token.lineType,
+    borderColor: 'transparent',
+    'input&, & input, textarea&, & textarea': {
+      color: (_a = options === null || options === void 0 ? void 0 : options.inputColor) !== null && _a !== void 0 ? _a : 'unset'
+    },
+    '&:hover': {
+      background: options.hoverBg
+    },
+    '&:focus, &:focus-within': {
+      outline: 0,
+      borderColor: options.activeBorderColor,
+      backgroundColor: token.activeBg
+    }
+  };
+};
 const genFilledStatusStyle = (token, options) => ({
   [`&${token.componentCls}-status-${options.status}:not(${token.componentCls}-disabled)`]: Object.assign(Object.assign({}, genBaseFilledStyle(token, options)), {
     [`${token.componentCls}-prefix, ${token.componentCls}-suffix`]: {
@@ -45526,7 +45580,6 @@ const genNoticeStyle = token => {
       position: 'absolute',
       display: 'block',
       appearance: 'none',
-      WebkitAppearance: 'none',
       inlineSize: `calc(100% - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(borderRadiusLG)} * 2)`,
       left: {
         _skip_check_: true,
@@ -50156,7 +50209,7 @@ const getSearchInputWithoutBorderStyle = token => {
       fontFamily: 'inherit',
       '&::-webkit-search-cancel-button': {
         display: 'none',
-        '-webkit-appearance': 'none'
+        appearance: 'none'
       }
     }
   };
@@ -59184,7 +59237,7 @@ const genStickyStyle = token => {
             height: tableScrollThumbSize,
             backgroundColor: tableScrollThumbBg,
             borderRadius: stickyScrollBarBorderRadius,
-            transition: `all ${token.motionDurationSlow}, transform none`,
+            transition: `all ${token.motionDurationSlow}, transform 0s`,
             position: 'absolute',
             bottom: 0,
             '&:hover, &-active': {
@@ -62983,7 +63036,8 @@ const genBaseStyle = (prefixCls, token) => {
   };
 };
 // ============================== Merged ==============================
-const genTreeStyle = (prefixCls, token) => {
+const genTreeStyle = function (prefixCls, token) {
+  let enableDirectory = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
   const treeCls = `.${prefixCls}`;
   const treeNodeCls = `${treeCls}-treenode`;
   const treeNodePadding = token.calc(token.paddingXS).div(2).equal();
@@ -62996,7 +63050,7 @@ const genTreeStyle = (prefixCls, token) => {
   // Basic
   genBaseStyle(prefixCls, treeToken),
   // Directory
-  (0,_directory__WEBPACK_IMPORTED_MODULE_3__.genDirectoryStyle)(treeToken)];
+  enableDirectory && (0,_directory__WEBPACK_IMPORTED_MODULE_3__.genDirectoryStyle)(treeToken)].filter(Boolean);
 };
 const initComponentToken = token => {
   const {
@@ -64699,18 +64753,18 @@ const genTypographyStyle = token => {
         color: token.colorTextDescription
       },
       [`&${componentCls}-success`]: {
-        color: token.colorSuccess
+        color: token.colorSuccessText
       },
       [`&${componentCls}-warning`]: {
-        color: token.colorWarning
+        color: token.colorWarningText
       },
       [`&${componentCls}-danger`]: {
-        color: token.colorError,
+        color: token.colorErrorText,
         'a&:active, a&:focus': {
-          color: token.colorErrorActive
+          color: token.colorErrorTextActive
         },
         'a&:hover': {
-          color: token.colorErrorHover
+          color: token.colorErrorTextHover
         }
       },
       [`&${componentCls}-disabled`]: {
@@ -65217,6 +65271,7 @@ const InternalUpload = (props, ref) => {
     }
     // Prevent React18 auto batch since input[upload] trigger process at same time
     // which makes fileList closure problem
+    // eslint-disable-next-line react-dom/no-flush-sync
     (0,react_dom__WEBPACK_IMPORTED_MODULE_2__.flushSync)(() => {
       setMergedFileList(cloneList);
     });
@@ -65230,6 +65285,7 @@ const InternalUpload = (props, ref) => {
     if (!exceedMaxCount || file.status === 'removed' ||
     // We should ignore event if current file is exceed `maxCount`
     cloneList.some(f => f.uid === file.uid)) {
+      // eslint-disable-next-line react-dom/no-flush-sync
       (0,react_dom__WEBPACK_IMPORTED_MODULE_2__.flushSync)(() => {
         onChange === null || onChange === void 0 ? void 0 : onChange(changeInfo);
       });
@@ -66774,7 +66830,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ('5.24.3');
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ('5.24.5');
 
 /***/ }),
 
@@ -105993,6 +106049,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 function isImageValid(src) {
   return new Promise(function (resolve) {
+    if (!src) {
+      resolve(false);
+      return;
+    }
     var img = document.createElement('img');
     img.onerror = function () {
       return resolve(false);
@@ -183024,7 +183084,7 @@ var DashboardManagement = function DashboardManagement() {
       width: 256,
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__["default"], {})
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Header, {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Header, {
         style: {
           background: "#fff",
           padding: "0 24px",
@@ -183032,22 +183092,23 @@ var DashboardManagement = function DashboardManagement() {
           justifyContent: "space-between",
           alignItems: "center"
         },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
-          children: "DASHBOARD MANAGEMENT"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+        children: "DASHBOARD MANAGEMENT"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Content, {
+        style: {
+          padding: 24,
+          background: "#fff"
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
           icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_7__["default"], {}),
           onClick: fetchDashboardData,
           loading: Object.values(loading).some(function (val) {
             return val;
           }),
+          style: {
+            width: "150px"
+          },
           children: "Refresh"
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Content, {
-        style: {
-          padding: 24,
-          background: "#fff"
-        },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
           gutter: [16, 16],
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
             xs: 24,
@@ -183115,7 +183176,7 @@ var DashboardManagement = function DashboardManagement() {
               })
             })
           })]
-        })
+        })]
       })]
     })]
   });
@@ -183615,30 +183676,36 @@ var ReviewsManagement = function ReviewsManagement() {
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
-          checked: record.selected,
-          onChange: function onChange() {
-            return handleActiveCheckboxChange(record.id);
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
-          onClick: function onClick() {
-            return handleEdit(record);
-          },
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           style: {
-            fontSize: "16px",
-            cursor: "pointer"
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
-          onClick: function onClick() {
-            return handleArchive(record);
+            marginTop: "20px",
+            display: "flex",
+            justifyContent: "flex-start"
           },
-          style: {
-            fontSize: "16px",
-            cursor: "pointer",
-            color: "red"
-          }
-        })]
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+            checked: record.selected,
+            onChange: function onChange() {
+              return handleActiveCheckboxChange(record.id);
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            onClick: function onClick() {
+              return handleEdit(record);
+            },
+            style: {
+              fontSize: "16px",
+              marginLeft: "15px"
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            onClick: function onClick() {
+              return handleArchive(record);
+            },
+            style: {
+              fontSize: "16px",
+              marginLeft: "15px"
+            }
+          })]
+        })
       });
     }
   }, {
@@ -184009,12 +184076,10 @@ var Header = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Header,
   Sider = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Sider;
 var TabPane = antd__WEBPACK_IMPORTED_MODULE_4__["default"].TabPane;
 var SubCategoryManagement = function SubCategoryManagement() {
-  // Active tab (values: brand, categories, gender, movement, strap_materials, sizes)
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)("brand"),
     _useState2 = _slicedToArray(_useState, 2),
     activeTab = _useState2[0],
     setActiveTab = _useState2[1];
-  // Modal states
   var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState4 = _slicedToArray(_useState3, 2),
     openAddModal = _useState4[0],
@@ -184026,37 +184091,40 @@ var SubCategoryManagement = function SubCategoryManagement() {
   var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_5__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
-  // Bulk selection and search state
   var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState8 = _slicedToArray(_useState7, 2),
-    selectAll = _useState8[0],
-    setSelectAll = _useState8[1];
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    selectAllActive = _useState8[0],
+    setSelectAllActive = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState10 = _slicedToArray(_useState9, 2),
-    searchQuery = _useState10[0],
-    setSearchQuery = _useState10[1];
-  // Data state for active and archived records
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    selectAllArchived = _useState10[0],
+    setSelectAllArchived = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
     _useState12 = _slicedToArray(_useState11, 2),
-    data = _useState12[0],
-    setData = _useState12[1];
+    searchQuery = _useState12[0],
+    setSearchQuery = _useState12[1];
   var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState14 = _slicedToArray(_useState13, 2),
-    archivedData = _useState14[0],
-    setArchivedData = _useState14[1];
+    data = _useState14[0],
+    setData = _useState14[1];
   var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState16 = _slicedToArray(_useState15, 2),
-    selectedItems = _useState16[0],
-    setSelectedItems = _useState16[1];
-
-  // Fetch active sub-categories for the current active tab
+    archivedData = _useState16[0],
+    setArchivedData = _useState16[1];
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState18 = _slicedToArray(_useState17, 2),
+    selectedActiveItems = _useState18[0],
+    setSelectedActiveItems = _useState18[1];
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState20 = _slicedToArray(_useState19, 2),
+    selectedArchivedItems = _useState20[0],
+    setSelectedArchivedItems = _useState20[1];
   var fetchData = function fetchData() {
     axios__WEBPACK_IMPORTED_MODULE_6__["default"].get("http://localhost:8000/api/sub-categories?type=".concat(activeTab), {
       headers: {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      // Ensure each record has a unique "key" for Ant Design table and initialize selected state
       setData(res.data.map(function (item) {
         return _objectSpread(_objectSpread({}, item), {}, {
           key: item.id.toString(),
@@ -184068,8 +184136,6 @@ var SubCategoryManagement = function SubCategoryManagement() {
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Error fetching data");
     });
   };
-
-  // Fetch archived sub-categories for the current active tab
   var fetchArchivedData = function fetchArchivedData() {
     axios__WEBPACK_IMPORTED_MODULE_6__["default"].get("http://localhost:8000/api/sub-categories?type=".concat(activeTab, "&archived=1"), {
       headers: {
@@ -184078,7 +184144,8 @@ var SubCategoryManagement = function SubCategoryManagement() {
     }).then(function (res) {
       setArchivedData(res.data.map(function (item) {
         return _objectSpread(_objectSpread({}, item), {}, {
-          key: item.id.toString()
+          key: item.id.toString(),
+          selected: false
         });
       }));
     })["catch"](function (err) {
@@ -184093,66 +184160,101 @@ var SubCategoryManagement = function SubCategoryManagement() {
     }
   }, [activeTab, openArchiveModal]);
 
-  // Checkbox handling for individual items
-  var handleCheckboxChange = function handleCheckboxChange(itemId) {
+  // Handlers for active items
+  var handleActiveCheckboxChange = function handleActiveCheckboxChange(itemId) {
     var updatedData = data.map(function (item) {
       return item.id === itemId ? _objectSpread(_objectSpread({}, item), {}, {
         selected: !item.selected
       }) : item;
     });
     setData(updatedData);
-    setSelectedItems(updatedData.filter(function (i) {
+    setSelectedActiveItems(updatedData.filter(function (i) {
       return i.selected;
     }).map(function (i) {
       return i.id;
     }));
-    var allSelected = updatedData.every(function (i) {
+    setSelectAllActive(updatedData.every(function (i) {
       return i.selected;
-    });
-    setSelectAll(allSelected);
+    }));
   };
-
-  // Select All checkbox handling
-  var handleSelectAllChange = function handleSelectAllChange(e) {
+  var handleSelectAllActiveChange = function handleSelectAllActiveChange(e) {
     var checked = e.target.checked;
-    setSelectAll(checked);
+    setSelectAllActive(checked);
     var updatedData = data.map(function (item) {
       return _objectSpread(_objectSpread({}, item), {}, {
         selected: checked
       });
     });
     setData(updatedData);
-    setSelectedItems(checked ? updatedData.map(function (i) {
+    setSelectedActiveItems(checked ? updatedData.map(function (i) {
       return i.id;
     }) : []);
   };
 
-  // Table columns for active items
+  // Handlers for archived items
+  var handleArchivedCheckboxChange = function handleArchivedCheckboxChange(itemId) {
+    var updatedArchived = archivedData.map(function (item) {
+      return item.id === itemId ? _objectSpread(_objectSpread({}, item), {}, {
+        selected: !item.selected
+      }) : item;
+    });
+    setArchivedData(updatedArchived);
+    setSelectedArchivedItems(updatedArchived.filter(function (i) {
+      return i.selected;
+    }).map(function (i) {
+      return i.id;
+    }));
+    setSelectAllArchived(updatedArchived.every(function (i) {
+      return i.selected;
+    }));
+  };
+  var handleSelectAllArchivedChange = function handleSelectAllArchivedChange(e) {
+    var checked = e.target.checked;
+    setSelectAllArchived(checked);
+    var updatedArchived = archivedData.map(function (item) {
+      return _objectSpread(_objectSpread({}, item), {}, {
+        selected: checked
+      });
+    });
+    setArchivedData(updatedArchived);
+    setSelectedArchivedItems(checked ? updatedArchived.map(function (i) {
+      return i.id;
+    }) : []);
+  };
   var columns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-          checked: record.selected,
-          onChange: function onChange() {
-            return handleCheckboxChange(record.id);
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
-          onClick: function onClick() {
-            return handleEdit(record);
-          },
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           style: {
-            fontSize: "16px"
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
-          onClick: function onClick() {
-            return handleArchive(record);
+            marginTop: "20px",
+            display: "flex",
+            justifyContent: "flex-start"
           },
-          style: {
-            fontSize: "16px"
-          }
-        })]
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+            checked: record.selected,
+            onChange: function onChange() {
+              return handleActiveCheckboxChange(record.id);
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
+            onClick: function onClick() {
+              return handleEdit(record);
+            },
+            style: {
+              fontSize: "16px",
+              marginLeft: "15px"
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+            onClick: function onClick() {
+              return handleArchive(record);
+            },
+            style: {
+              fontSize: "16px",
+              marginLeft: "15px"
+            }
+          })]
+        })
       });
     }
   }, {
@@ -184168,22 +184270,27 @@ var SubCategoryManagement = function SubCategoryManagement() {
     dataIndex: "updated_at",
     key: "updated_at"
   }];
-
-  // Table columns for archived items
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-        type: "link",
-        onClick: function onClick() {
-          return handleRestore(record.id);
-        },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
-          style: {
-            fontSize: "18px"
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+          checked: record.selected,
+          onChange: function onChange() {
+            return handleArchivedCheckboxChange(record.id);
           }
-        })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+          type: "link",
+          onClick: function onClick() {
+            return handleRestore(record.id);
+          },
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            style: {
+              fontSize: "18px"
+            }
+          })
+        })]
       });
     }
   }, {
@@ -184201,8 +184308,10 @@ var SubCategoryManagement = function SubCategoryManagement() {
   }];
   var handleTabChange = function handleTabChange(key) {
     setActiveTab(key);
-    setSelectAll(false);
-    setSelectedItems([]);
+    setSelectAllActive(false);
+    setSelectAllArchived(false);
+    setSelectedActiveItems([]);
+    setSelectedArchivedItems([]);
   };
   var handleEdit = function handleEdit(record) {
     form.setFieldsValue(record);
@@ -184293,14 +184402,14 @@ var SubCategoryManagement = function SubCategoryManagement() {
     });
   };
   var handleBulkArchive = function handleBulkArchive() {
-    if (selectedItems.length === 0) {
+    if (selectedActiveItems.length === 0) {
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select at least one item to archive");
       return;
     }
     antd__WEBPACK_IMPORTED_MODULE_14__["default"].confirm({
-      title: "Are you sure you want to archive ".concat(selectedItems.length, " selected item(s)?"),
+      title: "Are you sure you want to archive ".concat(selectedActiveItems.length, " selected item(s)?"),
       onOk: function onOk() {
-        Promise.all(selectedItems.map(function (id) {
+        Promise.all(selectedActiveItems.map(function (id) {
           return axios__WEBPACK_IMPORTED_MODULE_6__["default"]["delete"]("http://localhost:8000/api/sub-categories/".concat(id), {
             headers: {
               Authorization: "Bearer ".concat(localStorage.getItem("token"))
@@ -184309,10 +184418,46 @@ var SubCategoryManagement = function SubCategoryManagement() {
         })).then(function () {
           antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Selected items archived successfully");
           fetchData();
-          setSelectedItems([]);
-          setSelectAll(false);
+          setSelectedActiveItems([]);
+          setSelectAllActive(false);
         })["catch"](function (err) {
           return antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive some items");
+        });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
+  var handleBulkRestore = function handleBulkRestore() {
+    if (selectedArchivedItems.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select at least one item to restore");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_14__["default"].confirm({
+      title: "Are you sure you want to restore ".concat(selectedArchivedItems.length, " selected item(s)?"),
+      onOk: function onOk() {
+        Promise.all(selectedArchivedItems.map(function (id) {
+          return axios__WEBPACK_IMPORTED_MODULE_6__["default"].post("http://localhost:8000/api/sub-categories/".concat(id, "/restore"), {}, {
+            headers: {
+              Authorization: "Bearer ".concat(localStorage.getItem("token"))
+            }
+          });
+        })).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Selected items restored successfully");
+          fetchArchivedData();
+          fetchData();
+          setSelectedArchivedItems([]);
+          setSelectAllArchived(false);
+        })["catch"](function (err) {
+          return antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to restore some items");
         });
       },
       okButtonProps: {
@@ -184385,10 +184530,10 @@ var SubCategoryManagement = function SubCategoryManagement() {
                 marginRight: 16
               }
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-              checked: selectAll,
-              onChange: handleSelectAllChange,
+              checked: selectAllActive,
+              onChange: handleSelectAllActiveChange,
               children: "Select All"
-            }), (selectAll || selectedItems.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            }), (selectAllActive || selectedActiveItems.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
               type: "link",
               onClick: handleBulkArchive,
               style: {
@@ -184399,7 +184544,7 @@ var SubCategoryManagement = function SubCategoryManagement() {
                 style: {
                   fontSize: "18px"
                 }
-              }), selectedItems.length > 0 && " (".concat(selectedItems.length, ")")]
+              }), "Archive", selectedActiveItems.length > 0 && " (".concat(selectedActiveItems.length, ")")]
             })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             style: {
@@ -184408,6 +184553,7 @@ var SubCategoryManagement = function SubCategoryManagement() {
             },
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
               type: "default",
+              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {}),
               onClick: function onClick() {
                 return setOpenArchiveModal(true);
               },
@@ -184478,22 +184624,47 @@ var SubCategoryManagement = function SubCategoryManagement() {
           })
         })]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
       title: "Archived Sub-Categories",
       centered: true,
       open: openArchiveModal,
       onCancel: function onCancel() {
         return setOpenArchiveModal(false);
       },
-      footer: [],
       width: 1200,
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
+      footer: [],
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          marginBottom: 16
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+          checked: selectAllArchived,
+          onChange: handleSelectAllArchivedChange,
+          style: {
+            marginRight: 16
+          },
+          children: "Select All"
+        }), (selectAllArchived || selectedArchivedItems.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+          type: "link",
+          onClick: handleBulkRestore,
+          style: {
+            marginRight: 8
+          },
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            style: {
+              fontSize: "18px"
+            }
+          }), "Restore", selectedArchivedItems.length > 0 && " (".concat(selectedArchivedItems.length, ")")]
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
         columns: archiveColumns,
         dataSource: archivedData.filter(function (item) {
           return item.name.toLowerCase().includes(searchQuery.toLowerCase());
         }),
         pagination: false
-      })
+      })]
     })]
   });
 };
@@ -184967,27 +185138,36 @@ var CustomerManagement = function CustomerManagement() {
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-          checked: record.selected,
-          onChange: function onChange() {
-            return handleActiveCheckboxChange(record.id);
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
-          onClick: function onClick() {
-            return handleEdit(record);
-          },
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           style: {
-            fontSize: "16px"
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
-          onClick: function onClick() {
-            return handleArchive(record);
+            marginTop: "20px",
+            display: "flex",
+            justifyContent: "flex-start"
           },
-          style: {
-            fontSize: "16px"
-          }
-        })]
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+            checked: record.selected,
+            onChange: function onChange() {
+              return handleActiveCheckboxChange(record.id);
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+            onClick: function onClick() {
+              return handleEdit(record);
+            },
+            style: {
+              fontSize: "16px",
+              marginLeft: "15px"
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            onClick: function onClick() {
+              return handleArchive(record);
+            },
+            style: {
+              fontSize: "16px",
+              marginLeft: "15px"
+            }
+          })]
+        })
       });
     }
   }, {
@@ -185172,13 +185352,13 @@ var CustomerManagement = function CustomerManagement() {
           padding: 24,
           background: "#fff"
         },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
           style: {
             display: "flex",
             justifyContent: "space-between",
             marginBottom: 16
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             style: {
               display: "flex",
               alignItems: "center"
@@ -185211,18 +185391,18 @@ var CustomerManagement = function CustomerManagement() {
                 }
               }), selectedActiveCustomers.length > 0 && " (".concat(selectedActiveCustomers.length, ")")]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-            type: "default",
-            icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
-            onClick: function onClick() {
-              return setOpenArchiveModal(true);
-            },
-            style: {
-              marginRight: 8,
-              width: "131px"
-            },
-            children: "Archived View"
-          })]
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+          type: "default",
+          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
+          onClick: function onClick() {
+            return setOpenArchiveModal(true);
+          },
+          style: {
+            marginRight: 8,
+            width: "131px"
+          },
+          children: "Archived View"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
           columns: mainColumns,
           dataSource: filteredCustomers,
@@ -185536,27 +185716,36 @@ var InventoryManagement = function InventoryManagement() {
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-          checked: record.selected,
-          onChange: function onChange() {
-            return handleCheckboxChange(record.id);
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
-          onClick: function onClick() {
-            return handleEdit(record);
-          },
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           style: {
-            fontSize: "16px"
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
-          onClick: function onClick() {
-            return handleArchive(record);
+            marginTop: "20px",
+            display: "flex",
+            justifyContent: "flex-start"
           },
-          style: {
-            fontSize: "16px"
-          }
-        })]
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+            checked: record.selected,
+            onChange: function onChange() {
+              return handleCheckboxChange(record.id);
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {
+            onClick: function onClick() {
+              return handleEdit(record);
+            },
+            style: {
+              fontSize: "16px",
+              marginLeft: "15px"
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+            onClick: function onClick() {
+              return handleArchive(record);
+            },
+            style: {
+              fontSize: "16px",
+              marginLeft: "15px"
+            }
+          })]
+        })
       });
     }
   }, {
@@ -186199,25 +186388,44 @@ var OrderManagement = function OrderManagement() {
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
-          checked: record.selected,
-          onChange: function onChange() {
-            return handleActiveCheckboxChange(record.id);
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
-          onClick: function onClick() {
-            return handleEdit(record);
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
-          onClick: function onClick() {
-            return handleArchive(record);
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
-          onClick: function onClick() {
-            return handleView(record);
-          }
-        })]
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          style: {
+            marginTop: "20px",
+            display: "flex",
+            justifyContent: "flex-start"
+          },
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+            checked: record.selected,
+            onChange: function onChange() {
+              return handleActiveCheckboxChange(record.id);
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            onClick: function onClick() {
+              return handleEdit(record);
+            },
+            style: {
+              fonstSize: "16px",
+              marginLeft: "15px"
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            onClick: function onClick() {
+              return handleArchive(record);
+            },
+            style: {
+              fonstSize: "16px",
+              marginLeft: "15px"
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
+            onClick: function onClick() {
+              return handleView(record);
+            },
+            style: {
+              fonstSize: "16px",
+              marginLeft: "15px"
+            }
+          })]
+        })
       });
     }
   }, {
@@ -187115,27 +187323,36 @@ var ProductManagement = function ProductManagement() {
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
-          checked: record.selected,
-          onChange: function onChange() {
-            return handleActiveCheckboxChange(record.id);
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
-          onClick: function onClick() {
-            return handleEdit(record);
-          },
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           style: {
-            fontSize: "16px"
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
-          onClick: function onClick() {
-            return handleArchive(record);
+            marginTop: "20px",
+            display: "flex",
+            justifyContent: "flex-start"
           },
-          style: {
-            fontSize: "16px"
-          }
-        })]
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+            checked: record.selected,
+            onChange: function onChange() {
+              return handleActiveCheckboxChange(record.id);
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            onClick: function onClick() {
+              return handleEdit(record);
+            },
+            style: {
+              fontSize: "16px",
+              marginLeft: "15px"
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            onClick: function onClick() {
+              return handleArchive(record);
+            },
+            style: {
+              fontSize: "16px",
+              marginLeft: "15px"
+            }
+          })]
+        })
       });
     }
   }, {
@@ -187883,12 +188100,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/row/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
@@ -188233,33 +188449,44 @@ var TransactionManagement = function TransactionManagement() {
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
-          checked: record.selected,
-          onChange: function onChange() {
-            return handleActiveCheckboxChange(record.id);
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-          type: "link",
-          onClick: function onClick() {
-            return handleArchive(record);
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          style: {
+            marginTop: "20px",
+            display: "flex",
+            justifyContent: "flex-start"
           },
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-          type: "link",
-          onClick: function onClick() {
-            var _record$payment_metho, _record$payment_statu;
-            setEditingTransaction(record);
-            form.setFieldsValue({
-              payment_method_id: ((_record$payment_metho = record.payment_method) === null || _record$payment_metho === void 0 ? void 0 : _record$payment_metho.id) || null,
-              payment_status_id: ((_record$payment_statu = record.payment_status) === null || _record$payment_statu === void 0 ? void 0 : _record$payment_statu.id) || null,
-              transaction_status: record.transaction_status,
-              payment_option: record.payment_option
-            });
-            setEditModalVisible(true);
-          },
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {})
-        })]
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+            checked: record.selected,
+            onChange: function onChange() {
+              return handleActiveCheckboxChange(record.id);
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            onClick: function onClick() {
+              var _record$payment_metho, _record$payment_statu;
+              setEditingTransaction(record);
+              form.setFieldsValue({
+                payment_method_id: ((_record$payment_metho = record.payment_method) === null || _record$payment_metho === void 0 ? void 0 : _record$payment_metho.id) || null,
+                payment_status_id: ((_record$payment_statu = record.payment_status) === null || _record$payment_statu === void 0 ? void 0 : _record$payment_statu.id) || null,
+                transaction_status: record.transaction_status,
+                payment_option: record.payment_option
+              });
+              setEditModalVisible(true);
+            },
+            style: {
+              fontSize: "16px",
+              marginLeft: "15px"
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            onClick: function onClick() {
+              return handleArchive(record);
+            },
+            style: {
+              fontSize: "16px",
+              marginLeft: "15px"
+            }
+          })]
+        })
       });
     }
   }, {
@@ -188311,16 +188538,13 @@ var TransactionManagement = function TransactionManagement() {
           onChange: function onChange() {
             return handleArchivedCheckboxChange(record.id);
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-          type: "link",
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
           onClick: function onClick() {
             return handleRestore(record.id);
           },
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
-            style: {
-              fontSize: "18px"
-            }
-          })
+          style: {
+            fontSize: "16px"
+          }
         })]
       });
     }
@@ -188346,7 +188570,9 @@ var TransactionManagement = function TransactionManagement() {
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Header, {
         style: {
           background: "#fff",
-          padding: "0 24px"
+          padding: "0 24px",
+          fontSize: "18px",
+          fontWeight: "bold"
         },
         children: "TRANSACTION MANAGEMENT"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Content, {
@@ -188354,13 +188580,18 @@ var TransactionManagement = function TransactionManagement() {
           padding: 24,
           background: "#fff"
         },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
-          justify: "space-between",
-          align: "middle",
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           style: {
+            display: "flex",
+            justifyContent: "space-between",
             marginBottom: 16
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            style: {
+              display: "flex",
+              alignItems: "center",
+              marginBottom: 16
+            },
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Search, {
               placeholder: "Search transactions by ID, customer, method, status, or option",
               allowClear: true,
@@ -188368,29 +188599,40 @@ var TransactionManagement = function TransactionManagement() {
                 return setSearchText(e.target.value);
               },
               style: {
-                width: 300
+                width: 300,
+                marginRight: 16
               }
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
               checked: selectAllActive,
               onChange: handleSelectAllActiveChange,
+              style: {
+                marginLeft: 16
+              },
               children: "Select All"
-            }), (selectAllActive || selectedActiveTransactions.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            }), (selectAllActive || selectedActiveTransactions.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
               type: "link",
               onClick: handleArchiveAll,
+              style: {
+                marginLeft: 8
+              },
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
                 style: {
                   fontSize: "18px"
                 }
               }), selectedActiveTransactions.length > 0 && " (".concat(selectedActiveTransactions.length, ")")]
             })]
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
             type: "default",
             onClick: function onClick() {
               return setOpenArchiveModal(true);
             },
+            style: {
+              marginRight: 8,
+              width: "150px"
+            },
             children: "Archived Transactions"
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
           columns: mainColumns,
           dataSource: filteredTransactions,
           rowKey: "id",
@@ -188421,16 +188663,16 @@ var TransactionManagement = function TransactionManagement() {
             marginRight: 16
           },
           children: "Select All"
-        }), (selectAllArchived || selectedArchivedTransactions.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+        }), (selectAllArchived || selectedArchivedTransactions.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
           type: "link",
           onClick: handleRestoreAll,
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {
             style: {
               fontSize: "18px"
             }
           }), "Restore", selectedArchivedTransactions.length > 0 && " (".concat(selectedArchivedTransactions.length, ")")]
         })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
         columns: archiveColumns,
         dataSource: filteredArchivedTransactions,
         rowKey: "id",
@@ -188445,7 +188687,7 @@ var TransactionManagement = function TransactionManagement() {
         setEditModalVisible(false);
         setEditingTransaction(null);
       },
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
         onClick: function onClick() {
           return setEditModalVisible(false);
         },
@@ -188453,7 +188695,7 @@ var TransactionManagement = function TransactionManagement() {
           width: "131px"
         },
         children: "Cancel"
-      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+      }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
         type: "primary",
         onClick: function onClick() {
           return form.submit();
@@ -188714,27 +188956,40 @@ var UserManagement = function UserManagement() {
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-          checked: record.selected,
-          onChange: function onChange() {
-            return handleCheckboxChange(record.id);
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
-          onClick: function onClick() {
-            return handleEdit(record);
-          },
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           style: {
-            fontSize: "16px"
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
-          onClick: function onClick() {
-            return handleArchive(record);
+            marginTop: "20px",
+            display: "flex",
+            justifyContent: "flex-start"
           },
-          style: {
-            fontSize: "16px"
-          }
-        })]
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+            checked: record.selected,
+            onChange: function onChange() {
+              return handleCheckboxChange(record.id);
+            },
+            style: {
+              fonstSize: "16px",
+              marginLeft: "15px"
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+            onClick: function onClick() {
+              return handleEdit(record);
+            },
+            style: {
+              fonstSize: "16px",
+              marginLeft: "15px"
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            onClick: function onClick() {
+              return handleArchive(record);
+            },
+            style: {
+              fonstSize: "16px",
+              marginLeft: "15px"
+            }
+          })]
+        })
       });
     }
   }, {
@@ -191056,7 +191311,8 @@ var Collection = function Collection() {
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
           style: {
             display: "flex",
-            alignItems: "center"
+            alignItems: "center",
+            color: "black"
           },
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
             disabled: true,
@@ -191064,7 +191320,8 @@ var Collection = function Collection() {
             allowHalf: true,
             style: {
               fontSize: "14px",
-              marginRight: "8px"
+              marginRight: "8px",
+              color: "yellow"
             }
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("span", {
             children: modalProduct.average_rating || 0
@@ -191076,8 +191333,10 @@ var Collection = function Collection() {
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("div", {
           style: {
             display: "flex",
-            flexWrap: "wrap",
-            gap: "8px"
+            flexWrap: "nowrap",
+            flexDirection: "row",
+            gap: "8px",
+            width: "100px"
           },
           children: renderSizeOptions(modalProduct)
         })]
@@ -191085,7 +191344,8 @@ var Collection = function Collection() {
         type: "primary",
         onClick: handleModalAddToCart,
         style: {
-          width: "100%"
+          width: "100%",
+          height: "40px"
         },
         children: "Add to Cart"
       })]
@@ -191290,7 +191550,7 @@ var Collection = function Collection() {
                         title: product.product_name,
                         description: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("p", {
-                            children: ["Price: ", product.price]
+                            children: ["Price:", " ", product.price]
                           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
                             style: {
                               display: "flex",
@@ -192357,13 +192617,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/tabs/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/rate/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input-number/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/row/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/col/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/rate/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input-number/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/row/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/col/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
@@ -192664,6 +192924,10 @@ var ProductOverview = function ProductOverview() {
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Only ".concat(selectedInventory.quantity, " items are in stock."));
       return;
     }
+    if (buyNowQuantity < 1) {
+      antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Please select a valid quantity.");
+      return;
+    }
     var cartItem = {
       id: product.id,
       inventory_id: selectedInventory.id,
@@ -192683,84 +192947,191 @@ var ProductOverview = function ProductOverview() {
     setShowQuantityModal(false);
   };
 
-  // Render modal overview content
+  // Enhanced Buy Now Modal Content
   var renderModalOverview = function renderModalOverview() {
     if (!product) return null;
+    var selectedInventory = inventoryRecords.find(function (inv) {
+      return normalizeSize(inv.size) === normalizeSize(selectedSize || "");
+    });
+    var maxQuantity = selectedInventory ? selectedInventory.quantity : 0;
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
       style: {
+        padding: "16px",
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
         gap: "24px"
       },
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          gap: "16px",
+          borderBottom: "1px solid #f0f0f0",
+          paddingBottom: "16px",
+          marginBottom: "10px"
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
           src: "".concat(baseUrl, "/storage/").concat(currentMainImage),
           alt: product.product_name,
+          preview: false,
           style: {
-            width: "300px",
-            height: "300px",
+            width: "120px",
+            height: "120px",
             objectFit: "cover",
-            borderRadius: "8px"
+            borderRadius: "8px",
+            border: "1px solid #e8e8e8"
           }
-        })
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-        style: {
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          textAlign: "right"
-        },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
-          level: 2,
-          style: {
-            margin: 0
-          },
-          children: product.product_name
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Title, {
-          level: 3,
-          style: {
-            margin: "8px 0"
-          },
-          children: ["\u20B1", number_format(product.price)]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           style: {
-            marginBottom: "16px"
+            flex: 1
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-            disabled: true,
-            value: product.average_rating || 0,
-            allowHalf: true,
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
+            level: 4,
             style: {
-              fontSize: "18px",
-              marginRight: "8px"
-            }
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
-            style: {
-              fontSize: "18px"
+              margin: 0
             },
-            children: product.average_rating || 0
+            children: product.product_name
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Paragraph, {
+            style: {
+              margin: "4px 0",
+              color: "#888"
+            },
+            children: ["SKU: ", product.id]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            style: {
+              display: "flex",
+              alignItems: "center"
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+              disabled: true,
+              value: product.average_rating || 0,
+              allowHalf: true,
+              style: {
+                fontSize: "16px",
+                marginRight: "8px"
+              }
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+              style: {
+                fontSize: "14px"
+              },
+              children: ["(", product.average_rating || 0, ")"]
+            })]
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        style: {
+          display: "flex",
+          justifyContent: "space-between"
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
+            strong: true,
+            style: {
+              marginBottom: "8px"
+            },
+            children: "Price"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Title, {
+            level: 3,
+            style: {
+              color: "#ff4d4f",
+              margin: 0
+            },
+            children: ["\u20B1", number_format(product.price)]
+          })]
+        }), sizesDisplay && sizesDisplay.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
+            strong: true,
+            style: {
+              marginBottom: "8px"
+            },
+            children: "Selected Size"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            style: {
+              fontSize: "16px",
+              fontWeight: "bold"
+            },
+            children: [selectedSize || "Not Selected", selectedSize && selectedInventory && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+              style: {
+                color: "#888",
+                marginLeft: "8px"
+              },
+              children: ["(", selectedInventory.quantity, " in stock)"]
+            })]
+          })]
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
+          strong: true,
           style: {
-            marginBottom: "16px",
-            textAlign: "right"
+            marginBottom: "8px"
           },
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+          children: "Quantity"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          style: {
+            display: "flex",
+            alignItems: "center",
+            gap: "16px"
+          },
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
             min: 1,
-            max: selectedInventoryRecord ? selectedInventoryRecord.quantity : 1,
+            max: maxQuantity,
             value: buyNowQuantity,
             onChange: function onChange(value) {
               return setBuyNowQuantity(value);
             },
-            size: "large"
-          })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
-          type: "primary",
-          onClick: handleConfirmBuyNow,
-          size: "large",
+            size: "large",
+            style: {
+              width: "100px"
+            },
+            status: buyNowQuantity > maxQuantity ? "error" : ""
+          }), maxQuantity > 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+            style: {
+              color: "#888"
+            },
+            children: [maxQuantity, " available"]
+          }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+            style: {
+              color: "#ff4d4f"
+            },
+            children: "Out of stock"
+          })]
+        }), buyNowQuantity > maxQuantity && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Paragraph, {
+          type: "danger",
           style: {
-            width: "100%"
+            marginTop: "8px"
+          },
+          children: ["Quantity exceeds available stock (", maxQuantity, ")."]
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        style: {
+          borderTop: "1px solid #f0f0f0",
+          paddingTop: "16px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
+            strong: true,
+            children: "Total"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Title, {
+            level: 3,
+            style: {
+              margin: 0
+            },
+            children: ["\u20B1", number_format(product.price * buyNowQuantity)]
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+          type: "primary",
+          size: "large",
+          onClick: handleConfirmBuyNow,
+          disabled: !selectedSize || buyNowQuantity > maxQuantity || buyNowQuantity < 1,
+          style: {
+            backgroundColor: "#1890ff",
+            borderColor: "#1890ff",
+            width: "200px",
+            alignItems: "center",
+            justifyContent: "center"
           },
           children: "Proceed to Checkout"
         })]
@@ -192782,13 +193153,13 @@ var ProductOverview = function ProductOverview() {
       style: {
         marginTop: "90px"
       },
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         gutter: 16,
         justify: "center",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
           xs: 24,
           md: 12,
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
             style: {
               width: "600px",
               height: "600px",
@@ -192800,7 +193171,7 @@ var ProductOverview = function ProductOverview() {
             bodyStyle: {
               padding: 0
             },
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
               src: "".concat(baseUrl, "/storage/").concat(currentMainImage),
               alt: product.product_name,
               preview: false,
@@ -192811,7 +193182,7 @@ var ProductOverview = function ProductOverview() {
                 display: "block"
               }
             })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
             style: {
               width: "600px",
               margin: "20px auto",
@@ -192827,7 +193198,7 @@ var ProductOverview = function ProductOverview() {
                 display: "flex",
                 justifyContent: "center"
               },
-              children: [product.side_image_1 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+              children: [product.side_image_1 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
                 style: {
                   width: "100px",
                   height: "100px",
@@ -192836,7 +193207,7 @@ var ProductOverview = function ProductOverview() {
                 bodyStyle: {
                   padding: 0
                 },
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
                   src: "".concat(baseUrl, "/storage/").concat(product.side_image_1),
                   alt: "Side 1",
                   preview: false,
@@ -192850,7 +193221,7 @@ var ProductOverview = function ProductOverview() {
                     cursor: "pointer"
                   }
                 })
-              }), product.side_image_2 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+              }), product.side_image_2 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
                 style: {
                   width: "100px",
                   height: "100px",
@@ -192859,7 +193230,7 @@ var ProductOverview = function ProductOverview() {
                 bodyStyle: {
                   padding: 0
                 },
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
                   src: "".concat(baseUrl, "/storage/").concat(product.side_image_2),
                   alt: "Side 2",
                   preview: false,
@@ -192873,7 +193244,7 @@ var ProductOverview = function ProductOverview() {
                     cursor: "pointer"
                   }
                 })
-              }), product.side_image_3 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+              }), product.side_image_3 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
                 style: {
                   width: "100px",
                   height: "100px",
@@ -192882,7 +193253,7 @@ var ProductOverview = function ProductOverview() {
                 bodyStyle: {
                   padding: 0
                 },
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
                   src: "".concat(baseUrl, "/storage/").concat(product.side_image_3),
                   alt: "Side 3",
                   preview: false,
@@ -192899,10 +193270,10 @@ var ProductOverview = function ProductOverview() {
               })]
             })
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
           xs: 24,
           md: 12,
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
             bodyStyle: {
               padding: "24px"
             },
@@ -192922,7 +193293,7 @@ var ProductOverview = function ProductOverview() {
                   justifyContent: "center",
                   alignItems: "center"
                 },
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
                   disabled: true,
                   value: product.average_rating || 0,
                   allowHalf: true,
@@ -192957,7 +193328,7 @@ var ProductOverview = function ProductOverview() {
                       return normalizeSize(inv.size) === normalizeSize(size);
                     });
                     var isOutOfStock = inventory && inventory.quantity === 0;
-                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
                       onClick: function onClick() {
                         return !isOutOfStock && setSelectedSize(size);
                       },
@@ -193011,7 +193382,7 @@ var ProductOverview = function ProductOverview() {
               marginTop: "16px",
               justifyContent: "center"
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
               style: {
                 backgroundColor: "#28A745",
                 color: "white",
@@ -193021,7 +193392,7 @@ var ProductOverview = function ProductOverview() {
               },
               onClick: handleAddToCart,
               children: "ADD TO CART"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
               style: {
                 backgroundColor: "black",
                 color: "white",
@@ -193038,29 +193409,29 @@ var ProductOverview = function ProductOverview() {
             })]
           })]
         })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
         justify: "center",
         style: {
           marginTop: "20px"
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
           xs: 24,
           md: 24,
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
               defaultActiveKey: "1",
               type: "card",
               size: "large",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(TabPane, {
                 tab: "Details",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
                     children: product.description
                   })
                 })
               }, "1"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(TabPane, {
                 tab: "Comments",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
                   children: [isLoggedIn ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                     style: {
                       marginBottom: "15px"
@@ -193074,7 +193445,7 @@ var ProductOverview = function ProductOverview() {
                           marginRight: "10px"
                         },
                         children: "Rate this product:"
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
                         value: reviewRating,
                         onChange: function onChange(value) {
                           return setReviewRating(value);
@@ -193090,7 +193461,7 @@ var ProductOverview = function ProductOverview() {
                       style: {
                         marginTop: "5px"
                       }
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
                       type: "primary",
                       onClick: handleSubmitReview,
                       style: {
@@ -193108,10 +193479,9 @@ var ProductOverview = function ProductOverview() {
                     }), " ", "to leave a review."]
                   }), reviews.length > 0 ? reviews.map(function (review) {
                     var _review$user, _review$user2;
-                    // Handle profile_image: if it's a full URL, use it; otherwise, prepend baseUrl
                     var avatarSrc = (_review$user = review.user) !== null && _review$user !== void 0 && (_review$user = _review$user.profile) !== null && _review$user !== void 0 && _review$user.profile_image ? review.user.profile.profile_image.startsWith("http") ? review.user.profile.profile_image : "".concat(baseUrl).concat(review.user.profile.profile_image) : null;
                     console.log("Review ".concat(review.id, " Avatar Src:"), avatarSrc); // Debug log
-                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
                       style: {
                         marginBottom: "10px"
                       },
@@ -193132,7 +193502,7 @@ var ProductOverview = function ProductOverview() {
                           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
                             children: ((_review$user2 = review.user) === null || _review$user2 === void 0 ? void 0 : _review$user2.username) || "Unknown User"
                           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-                            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
                               disabled: true,
                               value: review.rating,
                               style: {
@@ -193158,14 +193528,16 @@ var ProductOverview = function ProductOverview() {
         })
       })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
-      title: product ? product.product_name : "Product Overview",
+      title: "Buy Now",
       visible: showQuantityModal,
       onCancel: function onCancel() {
         return setShowQuantityModal(false);
       },
-      onOk: handleConfirmBuyNow,
-      okText: "Proceed to Checkout",
+      footer: null,
       width: 700,
+      bodyStyle: {
+        padding: 0
+      },
       children: renderModalOverview()
     })]
   });
@@ -195229,9 +195601,12 @@ var ItemSlider = function ItemSlider() {
 /*!*********************************!*\
   !*** ./resources/sass/app.scss ***!
   \*********************************/
-/***/ (() => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-throw new Error("Module build failed (from ./node_modules/mini-css-extract-plugin/dist/loader.js):\nModuleBuildError: Module build failed (from ./node_modules/sass-loader/dist/cjs.js):\nSassError: Can't find stylesheet to import.\n   ╷\n11 │ @import \"AdminPage/Product/ProductManagement.scss\";\r\n   │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n   ╵\n  resources\\sass\\app.scss 11:9  root stylesheet\n    at processResult (C:\\ambi\\timeless\\node_modules\\webpack\\lib\\NormalModule.js:891:19)\n    at C:\\ambi\\timeless\\node_modules\\webpack\\lib\\NormalModule.js:1037:5\n    at C:\\ambi\\timeless\\node_modules\\loader-runner\\lib\\LoaderRunner.js:400:11\n    at C:\\ambi\\timeless\\node_modules\\loader-runner\\lib\\LoaderRunner.js:252:18\n    at context.callback (C:\\ambi\\timeless\\node_modules\\loader-runner\\lib\\LoaderRunner.js:124:13)\n    at C:\\ambi\\timeless\\node_modules\\sass-loader\\dist\\index.js:54:7\n    at Function.call$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:127032:16)\n    at render_closure1.call$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:108199:12)\n    at _RootZone.runBinary$3$3 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:39764:18)\n    at _FutureListener.handleError$1 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38252:21)\n    at _Future__propagateToListeners_handleError.call$0 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38595:49)\n    at Object._Future__propagateToListeners (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:5261:77)\n    at _Future._completeError$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38428:9)\n    at _AsyncAwaitCompleter.completeError$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38022:12)\n    at Object._asyncRethrow (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:5028:17)\n    at C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:28612:20\n    at _wrapJsFunctionForAsync_closure.$protected (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:5053:15)\n    at _wrapJsFunctionForAsync_closure.call$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38041:12)\n    at _awaitOnObject_closure0.call$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38035:25)\n    at _RootZone.runBinary$3$3 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:39764:18)\n    at _FutureListener.handleError$1 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38252:21)\n    at _Future__propagateToListeners_handleError.call$0 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38595:49)\n    at Object._Future__propagateToListeners (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:5261:77)\n    at _Future._completeError$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38428:9)\n    at _AsyncAwaitCompleter.completeError$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38022:12)\n    at Object._asyncRethrow (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:5028:17)\n    at C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:20689:20\n    at _wrapJsFunctionForAsync_closure.$protected (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:5053:15)\n    at _wrapJsFunctionForAsync_closure.call$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38041:12)\n    at _awaitOnObject_closure0.call$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38035:25)\n    at _RootZone.runBinary$3$3 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:39764:18)\n    at _FutureListener.handleError$1 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38252:21)\n    at _Future__propagateToListeners_handleError.call$0 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38595:49)\n    at Object._Future__propagateToListeners (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:5261:77)\n    at _Future._completeError$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38428:9)\n    at _AsyncAwaitCompleter.completeError$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38022:12)\n    at Object._asyncRethrow (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:5028:17)\n    at C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:20734:20\n    at _wrapJsFunctionForAsync_closure.$protected (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:5053:15)\n    at _wrapJsFunctionForAsync_closure.call$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38041:12)\n    at _awaitOnObject_closure0.call$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38035:25)\n    at _RootZone.runBinary$3$3 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:39764:18)\n    at _FutureListener.handleError$1 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38252:21)\n    at _Future__propagateToListeners_handleError.call$0 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38595:49)\n    at Object._Future__propagateToListeners (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:5261:77)\n    at _Future._completeError$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38428:9)\n    at _AsyncAwaitCompleter.completeError$2 (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:38022:12)\n    at Object._asyncRethrow (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:5028:17)\n    at C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:86074:24\n    at _wrapJsFunctionForAsync_closure.$protected (C:\\ambi\\timeless\\node_modules\\sass\\sass.dart.js:5053:15)");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
 
 /***/ })
 
@@ -195264,7 +195639,42 @@ throw new Error("Module build failed (from ./node_modules/mini-css-extract-plugi
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/chunk loaded */
+/******/ 	(() => {
+/******/ 		var deferred = [];
+/******/ 		__webpack_require__.O = (result, chunkIds, fn, priority) => {
+/******/ 			if(chunkIds) {
+/******/ 				priority = priority || 0;
+/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
+/******/ 				deferred[i] = [chunkIds, fn, priority];
+/******/ 				return;
+/******/ 			}
+/******/ 			var notFulfilled = Infinity;
+/******/ 			for (var i = 0; i < deferred.length; i++) {
+/******/ 				var [chunkIds, fn, priority] = deferred[i];
+/******/ 				var fulfilled = true;
+/******/ 				for (var j = 0; j < chunkIds.length; j++) {
+/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every((key) => (__webpack_require__.O[key](chunkIds[j])))) {
+/******/ 						chunkIds.splice(j--, 1);
+/******/ 					} else {
+/******/ 						fulfilled = false;
+/******/ 						if(priority < notFulfilled) notFulfilled = priority;
+/******/ 					}
+/******/ 				}
+/******/ 				if(fulfilled) {
+/******/ 					deferred.splice(i--, 1)
+/******/ 					var r = fn();
+/******/ 					if (r !== undefined) result = r;
+/******/ 				}
+/******/ 			}
+/******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
@@ -195371,6 +195781,60 @@ throw new Error("Module build failed (from ./node_modules/mini-css-extract-plugi
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	(() => {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"/js/app": 0,
+/******/ 			"css/app": 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		__webpack_require__.O.j = (chunkId) => (installedChunks[chunkId] === 0);
+/******/ 		
+/******/ 		// install a JSONP callback for chunk loading
+/******/ 		var webpackJsonpCallback = (parentChunkLoadingFunction, data) => {
+/******/ 			var [chunkIds, moreModules, runtime] = data;
+/******/ 			// add "moreModules" to the modules object,
+/******/ 			// then flag all "chunkIds" as loaded and fire callback
+/******/ 			var moduleId, chunkId, i = 0;
+/******/ 			if(chunkIds.some((id) => (installedChunks[id] !== 0))) {
+/******/ 				for(moduleId in moreModules) {
+/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 					}
+/******/ 				}
+/******/ 				if(runtime) var result = runtime(__webpack_require__);
+/******/ 			}
+/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
+/******/ 			for(;i < chunkIds.length; i++) {
+/******/ 				chunkId = chunkIds[i];
+/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 					installedChunks[chunkId][0]();
+/******/ 				}
+/******/ 				installedChunks[chunkId] = 0;
+/******/ 			}
+/******/ 			return __webpack_require__.O(result);
+/******/ 		}
+/******/ 		
+/******/ 		var chunkLoadingGlobal = self["webpackChunk"] = self["webpackChunk"] || [];
+/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
+/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/nonce */
 /******/ 	(() => {
 /******/ 		__webpack_require__.nc = undefined;
@@ -195380,9 +195844,10 @@ throw new Error("Module build failed (from ./node_modules/mini-css-extract-plugi
 /******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	__webpack_require__("./resources/js/app.js");
-/******/ 	// This entry module doesn't tell about it's top-level declarations so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__("./resources/sass/app.scss");
+/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
+/******/ 	__webpack_require__.O(undefined, ["css/app"], () => (__webpack_require__("./resources/js/app.js")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["css/app"], () => (__webpack_require__("./resources/sass/app.scss")))
+/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;

@@ -33,10 +33,30 @@ const DashboardManagement = () => {
         }
 
         const endpoints = [
-            { url: `${BASE_URL}/users/count`, setter: setUsersCount, key: "users", field: "count" },
-            { url: `${BASE_URL}/orders/completed/count`, setter: setCompletedOrders, key: "completedOrders", field: "count" }, // Updated endpoint
-            { url: `${BASE_URL}/orders/count`, setter: setTotalOrders, key: "totalOrders", field: "count" },
-            { url: `${BASE_URL}/orders/shipped/count`, setter: setOrdersShipped, key: "ordersShipped", field: "count" },
+            {
+                url: `${BASE_URL}/users/count`,
+                setter: setUsersCount,
+                key: "users",
+                field: "count",
+            },
+            {
+                url: `${BASE_URL}/orders/completed/count`,
+                setter: setCompletedOrders,
+                key: "completedOrders",
+                field: "count",
+            }, // Updated endpoint
+            {
+                url: `${BASE_URL}/orders/count`,
+                setter: setTotalOrders,
+                key: "totalOrders",
+                field: "count",
+            },
+            {
+                url: `${BASE_URL}/orders/shipped/count`,
+                setter: setOrdersShipped,
+                key: "ordersShipped",
+                field: "count",
+            },
         ];
 
         setLoading((prev) => ({
@@ -54,8 +74,15 @@ const DashboardManagement = () => {
                 });
                 setter(response.data[field] || 0);
             } catch (error) {
-                console.error(`Error fetching ${url}:`, error.response?.data || error.message);
-                message.error(`Failed to load ${key.replace(/([A-Z])/g, " $1").toLowerCase()}.`);
+                console.error(
+                    `Error fetching ${url}:`,
+                    error.response?.data || error.message
+                );
+                message.error(
+                    `Failed to load ${key
+                        .replace(/([A-Z])/g, " $1")
+                        .toLowerCase()}.`
+                );
                 setter(0);
             } finally {
                 setLoading((prev) => ({ ...prev, [key]: false }));
@@ -75,17 +102,26 @@ const DashboardManagement = () => {
                 <Sidebar />
             </Sider>
             <Layout>
-                <Header style={{ background: "#fff", padding: "0 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span>DASHBOARD MANAGEMENT</span>
+                <Header
+                    style={{
+                        background: "#fff",
+                        padding: "0 24px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    }}
+                >
+                    DASHBOARD MANAGEMENT
+                </Header>
+                <Content style={{ padding: 24, background: "#fff" }}>
                     <Button
                         icon={<ReloadOutlined />}
                         onClick={fetchDashboardData}
                         loading={Object.values(loading).some((val) => val)}
+                        style={{ width: "150px" }}
                     >
                         Refresh
                     </Button>
-                </Header>
-                <Content style={{ padding: 24, background: "#fff" }}>
                     <Row gutter={[16, 16]}>
                         <Col xs={24} sm={12} md={6}>
                             <Card>

@@ -226,18 +226,28 @@ const CustomerManagement = () => {
             key: "actions",
             render: (_, record) => (
                 <Space>
-                    <Checkbox
-                        checked={record.selected}
-                        onChange={() => handleActiveCheckboxChange(record.id)}
-                    />
-                    <EditOutlined
-                        onClick={() => handleEdit(record)}
-                        style={{ fontSize: "16px" }}
-                    />
-                    <DeleteOutlined
-                        onClick={() => handleArchive(record)}
-                        style={{ fontSize: "16px" }}
-                    />
+                    <div
+                        style={{
+                            marginTop: "20px",
+                            display: "flex",
+                            justifyContent: "flex-start",
+                        }}
+                    >
+                        <Checkbox
+                            checked={record.selected}
+                            onChange={() =>
+                                handleActiveCheckboxChange(record.id)
+                            }
+                        />
+                        <EditOutlined
+                            onClick={() => handleEdit(record)}
+                            style={{ fontSize: "16px", marginLeft: "15px" }}
+                        />
+                        <DeleteOutlined
+                            onClick={() => handleArchive(record)}
+                            style={{ fontSize: "16px", marginLeft: "15px" }}
+                        />
+                    </div>
                 </Space>
             ),
         },
@@ -493,15 +503,16 @@ const CustomerManagement = () => {
                                 </Button>
                             )}
                         </div>
-                        <Button
-                            type="default"
-                            icon={<DeleteOutlined />}
-                            onClick={() => setOpenArchiveModal(true)}
-                            style={{ marginRight: 8, width: "131px" }}
-                        >
-                            Archived View
-                        </Button>
                     </div>
+                    <Button
+                        type="default"
+                        icon={<DeleteOutlined />}
+                        onClick={() => setOpenArchiveModal(true)}
+                        style={{ marginRight: 8, width: "131px" }}
+                    >
+                        Archived View
+                    </Button>
+
                     <Table
                         columns={mainColumns}
                         dataSource={filteredCustomers}
