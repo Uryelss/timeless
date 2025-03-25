@@ -13,8 +13,16 @@ class TransactionController extends Controller
     public function index(Request $request)
     {
         try {
-            $transactions = Transaction::with(['profile', 'order', 'paymentMethod', 'paymentStatus'])
-                ->paginate(10);
+            if ($request->query('archived') == 1) {
+                // Return only soft-deleted (archived) transactions
+                $transactions = Transaction::withTrashed()
+                    ->onlyTrashed()
+                    ->with(['profile', 'order', 'paymentMethod', 'paymentStatus'])
+                    ->paginate(10);
+            } else {
+                $transactions = Transaction::with(['profile', 'order', 'paymentMethod', 'paymentStatus'])
+                    ->paginate(10);
+            }
             return response()->json($transactions);
         } catch (\Exception $e) {
             Log::error("Failed to retrieve transactions: {$e->getMessage()}");
@@ -31,20 +39,9 @@ class TransactionController extends Controller
                     'payment_method_id'  => 'sometimes|required|exists:payment_methods,id',
                     'payment_status_id'  => 'sometimes|required|exists:payment_statuses,id',
                     'transaction_status' => 'sometimes|required|string|in:Pending,Completed,Cancelled',
-                    // We now rely on payment_option_id instead of payment_option.
                 ]);
 
-                // If payment_option_id is not provided, use the default from payment_method_options.
-                if (!isset($data['payment_option_id'])) {
-                    $defaultOption = DB::table('payment_method_options')
-                        ->where('payment_method_id', $data['payment_method_id'])
-                        ->orderBy('id', 'asc')
-                        ->first();
-                    if ($defaultOption) {
-                        $data['payment_option_id'] = $defaultOption->id;
-                    }
-                }
-
+                // Update the transaction with the validated data
                 $transaction->update($data);
                 Log::info("Transaction {$id} updated by user {$request->user()->id}");
 

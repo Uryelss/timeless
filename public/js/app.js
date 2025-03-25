@@ -30892,6 +30892,786 @@ const locale = {
 
 /***/ }),
 
+/***/ "./node_modules/antd/es/descriptions/Cell.js":
+/*!***************************************************!*\
+  !*** ./node_modules/antd/es/descriptions/Cell.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _DescriptionsContext__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DescriptionsContext */ "./node_modules/antd/es/descriptions/DescriptionsContext.js");
+"use client";
+
+
+
+
+function notEmpty(val) {
+  return val !== undefined && val !== null;
+}
+const Cell = props => {
+  const {
+    itemPrefixCls,
+    component,
+    span,
+    className,
+    style,
+    labelStyle,
+    contentStyle,
+    bordered,
+    label,
+    content,
+    colon,
+    type,
+    styles
+  } = props;
+  const Component = component;
+  const descContext = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_DescriptionsContext__WEBPACK_IMPORTED_MODULE_2__["default"]);
+  const {
+    classNames: descriptionsClassNames
+  } = descContext;
+  if (bordered) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(Component, {
+      className: classnames__WEBPACK_IMPORTED_MODULE_1___default()({
+        [`${itemPrefixCls}-item-label`]: type === 'label',
+        [`${itemPrefixCls}-item-content`]: type === 'content',
+        [`${descriptionsClassNames === null || descriptionsClassNames === void 0 ? void 0 : descriptionsClassNames.label}`]: type === 'label',
+        [`${descriptionsClassNames === null || descriptionsClassNames === void 0 ? void 0 : descriptionsClassNames.content}`]: type === 'content'
+      }, className),
+      style: style,
+      colSpan: span
+    }, notEmpty(label) && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
+      style: Object.assign(Object.assign({}, labelStyle), styles === null || styles === void 0 ? void 0 : styles.label)
+    }, label), notEmpty(content) && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
+      style: Object.assign(Object.assign({}, labelStyle), styles === null || styles === void 0 ? void 0 : styles.content)
+    }, content));
+  }
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(Component, {
+    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(`${itemPrefixCls}-item`, className),
+    style: style,
+    colSpan: span
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+    className: `${itemPrefixCls}-item-container`
+  }, (label || label === 0) && (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
+    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(`${itemPrefixCls}-item-label`, descriptionsClassNames === null || descriptionsClassNames === void 0 ? void 0 : descriptionsClassNames.label, {
+      [`${itemPrefixCls}-item-no-colon`]: !colon
+    }),
+    style: Object.assign(Object.assign({}, labelStyle), styles === null || styles === void 0 ? void 0 : styles.label)
+  }, label)), (content || content === 0) && (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
+    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(`${itemPrefixCls}-item-content`, descriptionsClassNames === null || descriptionsClassNames === void 0 ? void 0 : descriptionsClassNames.content),
+    style: Object.assign(Object.assign({}, contentStyle), styles === null || styles === void 0 ? void 0 : styles.content)
+  }, content))));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Cell);
+
+/***/ }),
+
+/***/ "./node_modules/antd/es/descriptions/DescriptionsContext.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/antd/es/descriptions/DescriptionsContext.js ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+const DescriptionsContext = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createContext({});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DescriptionsContext);
+
+/***/ }),
+
+/***/ "./node_modules/antd/es/descriptions/Item.js":
+/*!***************************************************!*\
+  !*** ./node_modules/antd/es/descriptions/Item.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// JSX Structure Syntactic Sugar. Never reach the render code.
+/* istanbul ignore next */
+const DescriptionsItem = _ref => {
+  let {
+    children
+  } = _ref;
+  return children;
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DescriptionsItem);
+
+/***/ }),
+
+/***/ "./node_modules/antd/es/descriptions/Row.js":
+/*!**************************************************!*\
+  !*** ./node_modules/antd/es/descriptions/Row.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _Cell__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Cell */ "./node_modules/antd/es/descriptions/Cell.js");
+/* harmony import */ var _DescriptionsContext__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DescriptionsContext */ "./node_modules/antd/es/descriptions/DescriptionsContext.js");
+"use client";
+
+
+
+
+function renderCells(items, _ref, _ref2) {
+  let {
+    colon,
+    prefixCls,
+    bordered
+  } = _ref;
+  let {
+    component,
+    type,
+    showLabel,
+    showContent,
+    labelStyle: rootLabelStyle,
+    contentStyle: rootContentStyle,
+    styles: rootStyles
+  } = _ref2;
+  return items.map((_ref3, index) => {
+    let {
+      label,
+      children,
+      prefixCls: itemPrefixCls = prefixCls,
+      className,
+      style,
+      labelStyle,
+      contentStyle,
+      span = 1,
+      key,
+      styles
+    } = _ref3;
+    if (typeof component === 'string') {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Cell__WEBPACK_IMPORTED_MODULE_1__["default"], {
+        key: `${type}-${key || index}`,
+        className: className,
+        style: style,
+        styles: {
+          label: Object.assign(Object.assign(Object.assign(Object.assign({}, rootLabelStyle), rootStyles === null || rootStyles === void 0 ? void 0 : rootStyles.label), labelStyle), styles === null || styles === void 0 ? void 0 : styles.label),
+          content: Object.assign(Object.assign(Object.assign(Object.assign({}, rootContentStyle), rootStyles === null || rootStyles === void 0 ? void 0 : rootStyles.content), contentStyle), styles === null || styles === void 0 ? void 0 : styles.content)
+        },
+        span: span,
+        colon: colon,
+        component: component,
+        itemPrefixCls: itemPrefixCls,
+        bordered: bordered,
+        label: showLabel ? label : null,
+        content: showContent ? children : null,
+        type: type
+      });
+    }
+    return [/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Cell__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      key: `label-${key || index}`,
+      className: className,
+      style: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, rootLabelStyle), rootStyles === null || rootStyles === void 0 ? void 0 : rootStyles.label), style), labelStyle), styles === null || styles === void 0 ? void 0 : styles.label),
+      span: 1,
+      colon: colon,
+      component: component[0],
+      itemPrefixCls: itemPrefixCls,
+      bordered: bordered,
+      label: label,
+      type: "label"
+    }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Cell__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      key: `content-${key || index}`,
+      className: className,
+      style: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, rootContentStyle), rootStyles === null || rootStyles === void 0 ? void 0 : rootStyles.content), style), contentStyle), styles === null || styles === void 0 ? void 0 : styles.content),
+      span: span * 2 - 1,
+      component: component[1],
+      itemPrefixCls: itemPrefixCls,
+      bordered: bordered,
+      content: children,
+      type: "content"
+    })];
+  });
+}
+const Row = props => {
+  const descContext = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_DescriptionsContext__WEBPACK_IMPORTED_MODULE_2__["default"]);
+  const {
+    prefixCls,
+    vertical,
+    row,
+    index,
+    bordered
+  } = props;
+  if (vertical) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", {
+      key: `label-${index}`,
+      className: `${prefixCls}-row`
+    }, renderCells(row, props, Object.assign({
+      component: 'th',
+      type: 'label',
+      showLabel: true
+    }, descContext))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", {
+      key: `content-${index}`,
+      className: `${prefixCls}-row`
+    }, renderCells(row, props, Object.assign({
+      component: 'td',
+      type: 'content',
+      showContent: true
+    }, descContext))));
+  }
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tr", {
+    key: index,
+    className: `${prefixCls}-row`
+  }, renderCells(row, props, Object.assign({
+    component: bordered ? ['th', 'td'] : 'td',
+    type: 'item',
+    showLabel: true,
+    showContent: true
+  }, descContext)));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Row);
+
+/***/ }),
+
+/***/ "./node_modules/antd/es/descriptions/constant.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/antd/es/descriptions/constant.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const DEFAULT_COLUMN_MAP = {
+  xxl: 3,
+  xl: 3,
+  lg: 3,
+  md: 3,
+  sm: 2,
+  xs: 1
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DEFAULT_COLUMN_MAP);
+
+/***/ }),
+
+/***/ "./node_modules/antd/es/descriptions/hooks/useItems.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/antd/es/descriptions/hooks/useItems.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ useItems)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var rc_util_es_Children_toArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rc-util/es/Children/toArray */ "./node_modules/rc-util/es/Children/toArray.js");
+/* harmony import */ var _util_responsiveObserver__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../_util/responsiveObserver */ "./node_modules/antd/es/_util/responsiveObserver.js");
+var __rest = undefined && undefined.__rest || function (s, e) {
+  var t = {};
+  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
+  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
+  }
+  return t;
+};
+
+
+
+// Convert children into items
+const transChildren2Items = childNodes => (0,rc_util_es_Children_toArray__WEBPACK_IMPORTED_MODULE_1__["default"])(childNodes).map(node => Object.assign(Object.assign({}, node === null || node === void 0 ? void 0 : node.props), {
+  key: node.key
+}));
+function useItems(screens, items, children) {
+  const mergedItems = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() =>
+  // Take `items` first or convert `children` into items
+  items || transChildren2Items(children), [items, children]);
+  const responsiveItems = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => mergedItems.map(_a => {
+    var {
+        span
+      } = _a,
+      restItem = __rest(_a, ["span"]);
+    if (span === 'filled') {
+      return Object.assign(Object.assign({}, restItem), {
+        filled: true
+      });
+    }
+    return Object.assign(Object.assign({}, restItem), {
+      span: typeof span === 'number' ? span : (0,_util_responsiveObserver__WEBPACK_IMPORTED_MODULE_2__.matchScreen)(screens, span)
+    });
+  }), [mergedItems, screens]);
+  return responsiveItems;
+}
+
+/***/ }),
+
+/***/ "./node_modules/antd/es/descriptions/hooks/useRow.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/antd/es/descriptions/hooks/useRow.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _util_warning__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../_util/warning */ "./node_modules/antd/es/_util/warning.js");
+var __rest = undefined && undefined.__rest || function (s, e) {
+  var t = {};
+  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
+  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
+  }
+  return t;
+};
+
+
+// Calculate the sum of span in a row
+function getCalcRows(rowItems, mergedColumn) {
+  let rows = [];
+  let tmpRow = [];
+  let exceed = false;
+  let count = 0;
+  rowItems.filter(n => n).forEach(rowItem => {
+    const {
+        filled
+      } = rowItem,
+      restItem = __rest(rowItem, ["filled"]);
+    if (filled) {
+      tmpRow.push(restItem);
+      rows.push(tmpRow);
+      // reset
+      tmpRow = [];
+      count = 0;
+      return;
+    }
+    const restSpan = mergedColumn - count;
+    count += rowItem.span || 1;
+    if (count >= mergedColumn) {
+      if (count > mergedColumn) {
+        exceed = true;
+        tmpRow.push(Object.assign(Object.assign({}, restItem), {
+          span: restSpan
+        }));
+      } else {
+        tmpRow.push(restItem);
+      }
+      rows.push(tmpRow);
+      // reset
+      tmpRow = [];
+      count = 0;
+    } else {
+      tmpRow.push(restItem);
+    }
+  });
+  if (tmpRow.length > 0) {
+    rows.push(tmpRow);
+  }
+  rows = rows.map(rows => {
+    const count = rows.reduce((acc, item) => acc + (item.span || 1), 0);
+    if (count < mergedColumn) {
+      // If the span of the last element in the current row is less than the column, then add its span to the remaining columns
+      const last = rows[rows.length - 1];
+      last.span = mergedColumn - (count - (last.span || 1));
+      return rows;
+    }
+    return rows;
+  });
+  return [rows, exceed];
+}
+const useRow = (mergedColumn, items) => {
+  const [rows, exceed] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => getCalcRows(items, mergedColumn), [items, mergedColumn]);
+  if (true) {
+    const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_1__.devUseWarning)('Descriptions');
+     true ? warning(!exceed, 'usage', 'Sum of column `span` in a line not match `column` of Descriptions.') : 0;
+  }
+  return rows;
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (useRow);
+
+/***/ }),
+
+/***/ "./node_modules/antd/es/descriptions/index.js":
+/*!****************************************************!*\
+  !*** ./node_modules/antd/es/descriptions/index.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DescriptionsContext: () => (/* reexport safe */ _DescriptionsContext__WEBPACK_IMPORTED_MODULE_11__["default"]),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _util_responsiveObserver__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_util/responsiveObserver */ "./node_modules/antd/es/_util/responsiveObserver.js");
+/* harmony import */ var _util_warning__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../_util/warning */ "./node_modules/antd/es/_util/warning.js");
+/* harmony import */ var _config_provider_context__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../config-provider/context */ "./node_modules/antd/es/config-provider/context.js");
+/* harmony import */ var _config_provider_hooks_useSize__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../config-provider/hooks/useSize */ "./node_modules/antd/es/config-provider/hooks/useSize.js");
+/* harmony import */ var _grid_hooks_useBreakpoint__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../grid/hooks/useBreakpoint */ "./node_modules/antd/es/grid/hooks/useBreakpoint.js");
+/* harmony import */ var _constant__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./constant */ "./node_modules/antd/es/descriptions/constant.js");
+/* harmony import */ var _DescriptionsContext__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./DescriptionsContext */ "./node_modules/antd/es/descriptions/DescriptionsContext.js");
+/* harmony import */ var _hooks_useItems__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./hooks/useItems */ "./node_modules/antd/es/descriptions/hooks/useItems.js");
+/* harmony import */ var _hooks_useRow__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./hooks/useRow */ "./node_modules/antd/es/descriptions/hooks/useRow.js");
+/* harmony import */ var _Item__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Item */ "./node_modules/antd/es/descriptions/Item.js");
+/* harmony import */ var _Row__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Row */ "./node_modules/antd/es/descriptions/Row.js");
+/* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./style */ "./node_modules/antd/es/descriptions/style/index.js");
+"use client";
+
+var __rest = undefined && undefined.__rest || function (s, e) {
+  var t = {};
+  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
+  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
+  }
+  return t;
+};
+/* eslint-disable react/no-array-index-key */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const Descriptions = props => {
+  const {
+      prefixCls: customizePrefixCls,
+      title,
+      extra,
+      column,
+      colon = true,
+      bordered,
+      layout,
+      children,
+      className,
+      rootClassName,
+      style,
+      size: customizeSize,
+      labelStyle,
+      contentStyle,
+      styles,
+      items,
+      classNames: descriptionsClassNames
+    } = props,
+    restProps = __rest(props, ["prefixCls", "title", "extra", "column", "colon", "bordered", "layout", "children", "className", "rootClassName", "style", "size", "labelStyle", "contentStyle", "styles", "items", "classNames"]);
+  const {
+    getPrefixCls,
+    direction,
+    className: contextClassName,
+    style: contextStyle,
+    classNames: contextClassNames,
+    styles: contextStyles
+  } = (0,_config_provider_context__WEBPACK_IMPORTED_MODULE_2__.useComponentConfig)('descriptions');
+  const prefixCls = getPrefixCls('descriptions', customizePrefixCls);
+  const screens = (0,_grid_hooks_useBreakpoint__WEBPACK_IMPORTED_MODULE_3__["default"])();
+  // ============================== Warn ==============================
+  if (true) {
+    const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_4__.devUseWarning)('Descriptions');
+    [['labelStyle', 'styles={{ label: {} }}'], ['contentStyle', 'styles={{ content: {} }}']].forEach(_ref => {
+      let [deprecatedName, newName] = _ref;
+      warning.deprecated(!(deprecatedName in props), deprecatedName, newName);
+    });
+  }
+  // Column count
+  const mergedColumn = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => {
+    var _a;
+    if (typeof column === 'number') {
+      return column;
+    }
+    return (_a = (0,_util_responsiveObserver__WEBPACK_IMPORTED_MODULE_5__.matchScreen)(screens, Object.assign(Object.assign({}, _constant__WEBPACK_IMPORTED_MODULE_6__["default"]), column))) !== null && _a !== void 0 ? _a : 3;
+  }, [screens, column]);
+  // Items with responsive
+  const mergedItems = (0,_hooks_useItems__WEBPACK_IMPORTED_MODULE_7__["default"])(screens, items, children);
+  const mergedSize = (0,_config_provider_hooks_useSize__WEBPACK_IMPORTED_MODULE_8__["default"])(customizeSize);
+  const rows = (0,_hooks_useRow__WEBPACK_IMPORTED_MODULE_9__["default"])(mergedColumn, mergedItems);
+  const [wrapCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_10__["default"])(prefixCls);
+  // ======================== Render ========================
+  const contextValue = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => ({
+    labelStyle,
+    contentStyle,
+    styles: {
+      content: Object.assign(Object.assign({}, contextStyles.content), styles === null || styles === void 0 ? void 0 : styles.content),
+      label: Object.assign(Object.assign({}, contextStyles.label), styles === null || styles === void 0 ? void 0 : styles.label)
+    },
+    classNames: {
+      label: classnames__WEBPACK_IMPORTED_MODULE_1___default()(contextClassNames.label, descriptionsClassNames === null || descriptionsClassNames === void 0 ? void 0 : descriptionsClassNames.label),
+      content: classnames__WEBPACK_IMPORTED_MODULE_1___default()(contextClassNames.content, descriptionsClassNames === null || descriptionsClassNames === void 0 ? void 0 : descriptionsClassNames.content)
+    }
+  }), [labelStyle, contentStyle, styles, descriptionsClassNames, contextClassNames, contextStyles]);
+  return wrapCSSVar(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_DescriptionsContext__WEBPACK_IMPORTED_MODULE_11__["default"].Provider, {
+    value: contextValue
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", Object.assign({
+    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(prefixCls, contextClassName, contextClassNames.root, descriptionsClassNames === null || descriptionsClassNames === void 0 ? void 0 : descriptionsClassNames.root, {
+      [`${prefixCls}-${mergedSize}`]: mergedSize && mergedSize !== 'default',
+      [`${prefixCls}-bordered`]: !!bordered,
+      [`${prefixCls}-rtl`]: direction === 'rtl'
+    }, className, rootClassName, hashId, cssVarCls),
+    style: Object.assign(Object.assign(Object.assign(Object.assign({}, contextStyle), contextStyles.root), styles === null || styles === void 0 ? void 0 : styles.root), style)
+  }, restProps), (title || extra) && (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(`${prefixCls}-header`, contextClassNames.header, descriptionsClassNames === null || descriptionsClassNames === void 0 ? void 0 : descriptionsClassNames.header),
+    style: Object.assign(Object.assign({}, contextStyles.header), styles === null || styles === void 0 ? void 0 : styles.header)
+  }, title && (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(`${prefixCls}-title`, contextClassNames.title, descriptionsClassNames === null || descriptionsClassNames === void 0 ? void 0 : descriptionsClassNames.title),
+    style: Object.assign(Object.assign({}, contextStyles.title), styles === null || styles === void 0 ? void 0 : styles.title)
+  }, title)), extra && (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(`${prefixCls}-extra`, contextClassNames.extra, descriptionsClassNames === null || descriptionsClassNames === void 0 ? void 0 : descriptionsClassNames.extra),
+    style: Object.assign(Object.assign({}, contextStyles.extra), styles === null || styles === void 0 ? void 0 : styles.extra)
+  }, extra)))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
+    className: `${prefixCls}-view`
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("table", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("tbody", null, rows.map((row, index) => (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Row__WEBPACK_IMPORTED_MODULE_12__["default"], {
+    key: index,
+    index: index,
+    colon: colon,
+    prefixCls: prefixCls,
+    vertical: layout === 'vertical',
+    bordered: bordered,
+    row: row
+  })))))))));
+};
+if (true) {
+  Descriptions.displayName = 'Descriptions';
+}
+
+Descriptions.Item = _Item__WEBPACK_IMPORTED_MODULE_13__["default"];
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Descriptions);
+
+/***/ }),
+
+/***/ "./node_modules/antd/es/descriptions/style/index.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/antd/es/descriptions/style/index.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   prepareComponentToken: () => (/* binding */ prepareComponentToken)
+/* harmony export */ });
+/* harmony import */ var _ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @ant-design/cssinjs */ "./node_modules/@ant-design/cssinjs/es/index.js");
+/* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../style */ "./node_modules/antd/es/style/index.js");
+/* harmony import */ var _theme_internal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../theme/internal */ "./node_modules/antd/es/theme/util/genStyleUtils.js");
+/* harmony import */ var _theme_internal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../theme/internal */ "./node_modules/@ant-design/cssinjs-utils/es/index.js");
+
+
+
+const genBorderedStyle = token => {
+  const {
+    componentCls,
+    labelBg
+  } = token;
+  return {
+    [`&${componentCls}-bordered`]: {
+      [`> ${componentCls}-view`]: {
+        border: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.lineWidth)} ${token.lineType} ${token.colorSplit}`,
+        '> table': {
+          tableLayout: 'auto'
+        },
+        [`${componentCls}-row`]: {
+          borderBottom: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.lineWidth)} ${token.lineType} ${token.colorSplit}`,
+          '&:last-child': {
+            borderBottom: 'none'
+          },
+          [`> ${componentCls}-item-label, > ${componentCls}-item-content`]: {
+            padding: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.padding)} ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.paddingLG)}`,
+            borderInlineEnd: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.lineWidth)} ${token.lineType} ${token.colorSplit}`,
+            '&:last-child': {
+              borderInlineEnd: 'none'
+            }
+          },
+          [`> ${componentCls}-item-label`]: {
+            color: token.colorTextSecondary,
+            backgroundColor: labelBg,
+            '&::after': {
+              display: 'none'
+            }
+          }
+        }
+      },
+      [`&${componentCls}-middle`]: {
+        [`${componentCls}-row`]: {
+          [`> ${componentCls}-item-label, > ${componentCls}-item-content`]: {
+            padding: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.paddingSM)} ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.paddingLG)}`
+          }
+        }
+      },
+      [`&${componentCls}-small`]: {
+        [`${componentCls}-row`]: {
+          [`> ${componentCls}-item-label, > ${componentCls}-item-content`]: {
+            padding: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.paddingXS)} ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.padding)}`
+          }
+        }
+      }
+    }
+  };
+};
+const genDescriptionStyles = token => {
+  const {
+    componentCls,
+    extraColor,
+    itemPaddingBottom,
+    itemPaddingEnd,
+    colonMarginRight,
+    colonMarginLeft,
+    titleMarginBottom
+  } = token;
+  return {
+    [componentCls]: Object.assign(Object.assign(Object.assign({}, (0,_style__WEBPACK_IMPORTED_MODULE_1__.resetComponent)(token)), genBorderedStyle(token)), {
+      '&-rtl': {
+        direction: 'rtl'
+      },
+      [`${componentCls}-header`]: {
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: titleMarginBottom
+      },
+      [`${componentCls}-title`]: Object.assign(Object.assign({}, _style__WEBPACK_IMPORTED_MODULE_1__.textEllipsis), {
+        flex: 'auto',
+        color: token.titleColor,
+        fontWeight: token.fontWeightStrong,
+        fontSize: token.fontSizeLG,
+        lineHeight: token.lineHeightLG
+      }),
+      [`${componentCls}-extra`]: {
+        marginInlineStart: 'auto',
+        color: extraColor,
+        fontSize: token.fontSize
+      },
+      [`${componentCls}-view`]: {
+        width: '100%',
+        borderRadius: token.borderRadiusLG,
+        table: {
+          width: '100%',
+          tableLayout: 'fixed',
+          borderCollapse: 'collapse'
+        }
+      },
+      [`${componentCls}-row`]: {
+        '> th, > td': {
+          paddingBottom: itemPaddingBottom,
+          paddingInlineEnd: itemPaddingEnd
+        },
+        '> th:last-child, > td:last-child': {
+          paddingInlineEnd: 0
+        },
+        '&:last-child': {
+          borderBottom: 'none',
+          '> th, > td': {
+            paddingBottom: 0
+          }
+        }
+      },
+      [`${componentCls}-item-label`]: {
+        color: token.labelColor,
+        fontWeight: 'normal',
+        fontSize: token.fontSize,
+        lineHeight: token.lineHeight,
+        textAlign: 'start',
+        '&::after': {
+          content: '":"',
+          position: 'relative',
+          top: -0.5,
+          // magic for position
+          marginInline: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(colonMarginLeft)} ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(colonMarginRight)}`
+        },
+        [`&${componentCls}-item-no-colon::after`]: {
+          content: '""'
+        }
+      },
+      [`${componentCls}-item-no-label`]: {
+        '&::after': {
+          margin: 0,
+          content: '""'
+        }
+      },
+      [`${componentCls}-item-content`]: {
+        display: 'table-cell',
+        flex: 1,
+        color: token.contentColor,
+        fontSize: token.fontSize,
+        lineHeight: token.lineHeight,
+        wordBreak: 'break-word',
+        overflowWrap: 'break-word'
+      },
+      [`${componentCls}-item`]: {
+        paddingBottom: 0,
+        verticalAlign: 'top',
+        '&-container': {
+          display: 'flex',
+          [`${componentCls}-item-label`]: {
+            display: 'inline-flex',
+            alignItems: 'baseline'
+          },
+          [`${componentCls}-item-content`]: {
+            display: 'inline-flex',
+            alignItems: 'baseline',
+            minWidth: '1em'
+          }
+        }
+      },
+      '&-middle': {
+        [`${componentCls}-row`]: {
+          '> th, > td': {
+            paddingBottom: token.paddingSM
+          }
+        }
+      },
+      '&-small': {
+        [`${componentCls}-row`]: {
+          '> th, > td': {
+            paddingBottom: token.paddingXS
+          }
+        }
+      }
+    })
+  };
+};
+const prepareComponentToken = token => ({
+  labelBg: token.colorFillAlter,
+  labelColor: token.colorTextTertiary,
+  titleColor: token.colorText,
+  titleMarginBottom: token.fontSizeSM * token.lineHeightSM,
+  itemPaddingBottom: token.padding,
+  itemPaddingEnd: token.padding,
+  colonMarginRight: token.marginXS,
+  colonMarginLeft: token.marginXXS / 2,
+  contentColor: token.colorText,
+  extraColor: token.colorText
+});
+// ============================== Export ==============================
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_theme_internal__WEBPACK_IMPORTED_MODULE_2__.genStyleHooks)('Descriptions', token => {
+  const descriptionToken = (0,_theme_internal__WEBPACK_IMPORTED_MODULE_3__.mergeToken)(token, {});
+  return genDescriptionStyles(descriptionToken);
+}, prepareComponentToken));
+
+/***/ }),
+
 /***/ "./node_modules/antd/es/dropdown/dropdown-button.js":
 /*!**********************************************************!*\
   !*** ./node_modules/antd/es/dropdown/dropdown-button.js ***!
@@ -43880,1223 +44660,6 @@ function useModal() {
   })];
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (useModal);
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/notification/PurePanel.js":
-/*!********************************************************!*\
-  !*** ./node_modules/antd/es/notification/PurePanel.js ***!
-  \********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   PureContent: () => (/* binding */ PureContent),
-/* harmony export */   TypeIcon: () => (/* binding */ TypeIcon),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   getCloseIcon: () => (/* binding */ getCloseIcon)
-/* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _ant_design_icons_es_icons_CheckCircleFilled__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @ant-design/icons/es/icons/CheckCircleFilled */ "./node_modules/@ant-design/icons/es/icons/CheckCircleFilled.js");
-/* harmony import */ var _ant_design_icons_es_icons_CloseCircleFilled__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ant-design/icons/es/icons/CloseCircleFilled */ "./node_modules/@ant-design/icons/es/icons/CloseCircleFilled.js");
-/* harmony import */ var _ant_design_icons_es_icons_CloseOutlined__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons/es/icons/CloseOutlined */ "./node_modules/@ant-design/icons/es/icons/CloseOutlined.js");
-/* harmony import */ var _ant_design_icons_es_icons_ExclamationCircleFilled__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @ant-design/icons/es/icons/ExclamationCircleFilled */ "./node_modules/@ant-design/icons/es/icons/ExclamationCircleFilled.js");
-/* harmony import */ var _ant_design_icons_es_icons_InfoCircleFilled__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @ant-design/icons/es/icons/InfoCircleFilled */ "./node_modules/@ant-design/icons/es/icons/InfoCircleFilled.js");
-/* harmony import */ var _ant_design_icons_es_icons_LoadingOutlined__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @ant-design/icons/es/icons/LoadingOutlined */ "./node_modules/@ant-design/icons/es/icons/LoadingOutlined.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var rc_notification__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rc-notification */ "./node_modules/rc-notification/es/index.js");
-/* harmony import */ var _util_warning__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../_util/warning */ "./node_modules/antd/es/_util/warning.js");
-/* harmony import */ var _config_provider__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../config-provider */ "./node_modules/antd/es/config-provider/context.js");
-/* harmony import */ var _config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../config-provider/hooks/useCSSVarCls */ "./node_modules/antd/es/config-provider/hooks/useCSSVarCls.js");
-/* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./style */ "./node_modules/antd/es/notification/style/index.js");
-/* harmony import */ var _style_pure_panel__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./style/pure-panel */ "./node_modules/antd/es/notification/style/pure-panel.js");
-"use client";
-
-var __rest = undefined && undefined.__rest || function (s, e) {
-  var t = {};
-  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
-  }
-  return t;
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const TypeIcon = {
-  info: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_InfoCircleFilled__WEBPACK_IMPORTED_MODULE_3__["default"], null),
-  success: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_CheckCircleFilled__WEBPACK_IMPORTED_MODULE_4__["default"], null),
-  error: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_CloseCircleFilled__WEBPACK_IMPORTED_MODULE_5__["default"], null),
-  warning: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_ExclamationCircleFilled__WEBPACK_IMPORTED_MODULE_6__["default"], null),
-  loading: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_LoadingOutlined__WEBPACK_IMPORTED_MODULE_7__["default"], null)
-};
-function getCloseIcon(prefixCls, closeIcon) {
-  if (closeIcon === null || closeIcon === false) {
-    return null;
-  }
-  return closeIcon || /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_CloseOutlined__WEBPACK_IMPORTED_MODULE_8__["default"], {
-    className: `${prefixCls}-close-icon`
-  });
-}
-const typeToIcon = {
-  success: _ant_design_icons_es_icons_CheckCircleFilled__WEBPACK_IMPORTED_MODULE_4__["default"],
-  info: _ant_design_icons_es_icons_InfoCircleFilled__WEBPACK_IMPORTED_MODULE_3__["default"],
-  error: _ant_design_icons_es_icons_CloseCircleFilled__WEBPACK_IMPORTED_MODULE_5__["default"],
-  warning: _ant_design_icons_es_icons_ExclamationCircleFilled__WEBPACK_IMPORTED_MODULE_6__["default"]
-};
-const PureContent = props => {
-  const {
-    prefixCls,
-    icon,
-    type,
-    message,
-    description,
-    actions,
-    role = 'alert'
-  } = props;
-  let iconNode = null;
-  if (icon) {
-    iconNode = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
-      className: `${prefixCls}-icon`
-    }, icon);
-  } else if (type) {
-    iconNode = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(typeToIcon[type] || null, {
-      className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(`${prefixCls}-icon`, `${prefixCls}-icon-${type}`)
-    });
-  }
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()({
-      [`${prefixCls}-with-icon`]: iconNode
-    }),
-    role: role
-  }, iconNode, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-    className: `${prefixCls}-message`
-  }, message), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-    className: `${prefixCls}-description`
-  }, description), actions && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-    className: `${prefixCls}-actions`
-  }, actions));
-};
-/** @private Internal Component. Do not use in your production. */
-const PurePanel = props => {
-  const {
-      prefixCls: staticPrefixCls,
-      className,
-      icon,
-      type,
-      message,
-      description,
-      btn,
-      actions,
-      closable = true,
-      closeIcon,
-      className: notificationClassName
-    } = props,
-    restProps = __rest(props, ["prefixCls", "className", "icon", "type", "message", "description", "btn", "actions", "closable", "closeIcon", "className"]);
-  const {
-    getPrefixCls
-  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider__WEBPACK_IMPORTED_MODULE_9__.ConfigContext);
-  const mergedActions = actions !== null && actions !== void 0 ? actions : btn;
-  if (true) {
-    const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_10__.devUseWarning)('Notification');
-    warning.deprecated(!btn, 'btn', 'actions');
-  }
-  const prefixCls = staticPrefixCls || getPrefixCls('notification');
-  const noticePrefixCls = `${prefixCls}-notice`;
-  const rootCls = (0,_config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_11__["default"])(prefixCls);
-  const [wrapCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_12__["default"])(prefixCls, rootCls);
-  return wrapCSSVar(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
-    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(`${noticePrefixCls}-pure-panel`, hashId, className, cssVarCls, rootCls)
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_style_pure_panel__WEBPACK_IMPORTED_MODULE_13__["default"], {
-    prefixCls: prefixCls
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(rc_notification__WEBPACK_IMPORTED_MODULE_2__.Notice, Object.assign({}, restProps, {
-    prefixCls: prefixCls,
-    eventKey: "pure",
-    duration: null,
-    closable: closable,
-    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()({
-      notificationClassName
-    }),
-    closeIcon: getCloseIcon(prefixCls, closeIcon),
-    content: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(PureContent, {
-      prefixCls: noticePrefixCls,
-      icon: icon,
-      type: type,
-      message: message,
-      description: description,
-      actions: mergedActions
-    })
-  }))));
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PurePanel);
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/notification/index.js":
-/*!****************************************************!*\
-  !*** ./node_modules/antd/es/notification/index.js ***!
-  \****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   actDestroy: () => (/* binding */ actDestroy),
-/* harmony export */   actWrapper: () => (/* binding */ actWrapper),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _app_context__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../app/context */ "./node_modules/antd/es/app/context.js");
-/* harmony import */ var _config_provider__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../config-provider */ "./node_modules/antd/es/config-provider/context.js");
-/* harmony import */ var _config_provider__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../config-provider */ "./node_modules/antd/es/config-provider/index.js");
-/* harmony import */ var _config_provider_UnstableContext__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../config-provider/UnstableContext */ "./node_modules/antd/es/config-provider/UnstableContext.js");
-/* harmony import */ var _PurePanel__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./PurePanel */ "./node_modules/antd/es/notification/PurePanel.js");
-/* harmony import */ var _useNotification__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./useNotification */ "./node_modules/antd/es/notification/useNotification.js");
-"use client";
-
-
-
-
-
-
-
-let notification = null;
-let act = callback => callback();
-let taskQueue = [];
-let defaultGlobalConfig = {};
-function getGlobalContext() {
-  const {
-    getContainer,
-    rtl,
-    maxCount,
-    top,
-    bottom,
-    showProgress,
-    pauseOnHover
-  } = defaultGlobalConfig;
-  const mergedContainer = (getContainer === null || getContainer === void 0 ? void 0 : getContainer()) || document.body;
-  return {
-    getContainer: () => mergedContainer,
-    rtl,
-    maxCount,
-    top,
-    bottom,
-    showProgress,
-    pauseOnHover
-  };
-}
-const GlobalHolder = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((props, ref) => {
-  const {
-    notificationConfig,
-    sync
-  } = props;
-  const {
-    getPrefixCls
-  } = (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_config_provider__WEBPACK_IMPORTED_MODULE_1__.ConfigContext);
-  const prefixCls = defaultGlobalConfig.prefixCls || getPrefixCls('notification');
-  const appConfig = (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_app_context__WEBPACK_IMPORTED_MODULE_2__.AppConfigContext);
-  const [api, holder] = (0,_useNotification__WEBPACK_IMPORTED_MODULE_3__.useInternalNotification)(Object.assign(Object.assign(Object.assign({}, notificationConfig), {
-    prefixCls
-  }), appConfig.notification));
-  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(sync, []);
-  react__WEBPACK_IMPORTED_MODULE_0__.useImperativeHandle(ref, () => {
-    const instance = Object.assign({}, api);
-    Object.keys(instance).forEach(method => {
-      instance[method] = function () {
-        sync();
-        return api[method].apply(api, arguments);
-      };
-    });
-    return {
-      instance,
-      sync
-    };
-  });
-  return holder;
-});
-const GlobalHolderWrapper = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((_, ref) => {
-  const [notificationConfig, setNotificationConfig] = react__WEBPACK_IMPORTED_MODULE_0__.useState(getGlobalContext);
-  const sync = () => {
-    setNotificationConfig(getGlobalContext);
-  };
-  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(sync, []);
-  const global = (0,_config_provider__WEBPACK_IMPORTED_MODULE_4__.globalConfig)();
-  const rootPrefixCls = global.getRootPrefixCls();
-  const rootIconPrefixCls = global.getIconPrefixCls();
-  const theme = global.getTheme();
-  const dom = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(GlobalHolder, {
-    ref: ref,
-    sync: sync,
-    notificationConfig: notificationConfig
-  });
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_config_provider__WEBPACK_IMPORTED_MODULE_4__["default"], {
-    prefixCls: rootPrefixCls,
-    iconPrefixCls: rootIconPrefixCls,
-    theme: theme
-  }, global.holderRender ? global.holderRender(dom) : dom);
-});
-function flushNotice() {
-  if (!notification) {
-    const holderFragment = document.createDocumentFragment();
-    const newNotification = {
-      fragment: holderFragment
-    };
-    notification = newNotification;
-    // Delay render to avoid sync issue
-    act(() => {
-      const reactRender = (0,_config_provider_UnstableContext__WEBPACK_IMPORTED_MODULE_5__.getReactRender)();
-      reactRender(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(GlobalHolderWrapper, {
-        ref: node => {
-          const {
-            instance,
-            sync
-          } = node || {};
-          Promise.resolve().then(() => {
-            if (!newNotification.instance && instance) {
-              newNotification.instance = instance;
-              newNotification.sync = sync;
-              flushNotice();
-            }
-          });
-        }
-      }), holderFragment);
-    });
-    return;
-  }
-  // Notification not ready
-  if (!notification.instance) {
-    return;
-  }
-  // >>> Execute task
-  taskQueue.forEach(task => {
-    switch (task.type) {
-      case 'open':
-        {
-          act(() => {
-            notification.instance.open(Object.assign(Object.assign({}, defaultGlobalConfig), task.config));
-          });
-          break;
-        }
-      case 'destroy':
-        act(() => {
-          notification === null || notification === void 0 ? void 0 : notification.instance.destroy(task.key);
-        });
-        break;
-    }
-  });
-  // Clean up
-  taskQueue = [];
-}
-// ==============================================================================
-// ==                                  Export                                  ==
-// ==============================================================================
-function setNotificationGlobalConfig(config) {
-  defaultGlobalConfig = Object.assign(Object.assign({}, defaultGlobalConfig), config);
-  // Trigger sync for it
-  act(() => {
-    var _a;
-    (_a = notification === null || notification === void 0 ? void 0 : notification.sync) === null || _a === void 0 ? void 0 : _a.call(notification);
-  });
-}
-function open(config) {
-  const global = (0,_config_provider__WEBPACK_IMPORTED_MODULE_4__.globalConfig)();
-  if ( true && !global.holderRender) {
-    (0,_config_provider__WEBPACK_IMPORTED_MODULE_4__.warnContext)('notification');
-  }
-  taskQueue.push({
-    type: 'open',
-    config
-  });
-  flushNotice();
-}
-const destroy = key => {
-  taskQueue.push({
-    type: 'destroy',
-    key
-  });
-  flushNotice();
-};
-const methods = ['success', 'info', 'warning', 'error'];
-const baseStaticMethods = {
-  open,
-  destroy,
-  config: setNotificationGlobalConfig,
-  useNotification: _useNotification__WEBPACK_IMPORTED_MODULE_3__["default"],
-  _InternalPanelDoNotUseOrYouWillBeFired: _PurePanel__WEBPACK_IMPORTED_MODULE_6__["default"]
-};
-const staticMethods = baseStaticMethods;
-methods.forEach(type => {
-  staticMethods[type] = config => open(Object.assign(Object.assign({}, config), {
-    type
-  }));
-});
-// ==============================================================================
-// ==                                   Test                                   ==
-// ==============================================================================
-const noop = () => {};
-/** @internal Only Work in test env */
-// eslint-disable-next-line import/no-mutable-exports
-let actWrapper = noop;
-if (false) {}
-/** @internal Only Work in test env */
-// eslint-disable-next-line import/no-mutable-exports
-let actDestroy = noop;
-if (false) {}
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (staticMethods);
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/notification/interface.js":
-/*!********************************************************!*\
-  !*** ./node_modules/antd/es/notification/interface.js ***!
-  \********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   NotificationPlacements: () => (/* binding */ NotificationPlacements)
-/* harmony export */ });
-const NotificationPlacements = ['top', 'topLeft', 'topRight', 'bottom', 'bottomLeft', 'bottomRight'];
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/notification/style/index.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/antd/es/notification/style/index.js ***!
-  \**********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   genNoticeStyle: () => (/* binding */ genNoticeStyle),
-/* harmony export */   prepareComponentToken: () => (/* binding */ prepareComponentToken),
-/* harmony export */   prepareNotificationToken: () => (/* binding */ prepareNotificationToken)
-/* harmony export */ });
-/* harmony import */ var _ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @ant-design/cssinjs */ "./node_modules/@ant-design/cssinjs/es/index.js");
-/* harmony import */ var _util_hooks_useZIndex__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../_util/hooks/useZIndex */ "./node_modules/antd/es/_util/hooks/useZIndex.js");
-/* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../style */ "./node_modules/antd/es/style/index.js");
-/* harmony import */ var _theme_internal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../theme/internal */ "./node_modules/@ant-design/cssinjs-utils/es/index.js");
-/* harmony import */ var _theme_internal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../theme/internal */ "./node_modules/antd/es/theme/util/genStyleUtils.js");
-/* harmony import */ var _placement__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./placement */ "./node_modules/antd/es/notification/style/placement.js");
-/* harmony import */ var _stack__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./stack */ "./node_modules/antd/es/notification/style/stack.js");
-
-
-
-
-
-
-const genNoticeStyle = token => {
-  const {
-    iconCls,
-    componentCls,
-    // .ant-notification
-    boxShadow,
-    fontSizeLG,
-    notificationMarginBottom,
-    borderRadiusLG,
-    colorSuccess,
-    colorInfo,
-    colorWarning,
-    colorError,
-    colorTextHeading,
-    notificationBg,
-    notificationPadding,
-    notificationMarginEdge,
-    notificationProgressBg,
-    notificationProgressHeight,
-    fontSize,
-    lineHeight,
-    width,
-    notificationIconSize,
-    colorText
-  } = token;
-  const noticeCls = `${componentCls}-notice`;
-  return {
-    position: 'relative',
-    marginBottom: notificationMarginBottom,
-    marginInlineStart: 'auto',
-    background: notificationBg,
-    borderRadius: borderRadiusLG,
-    boxShadow,
-    [noticeCls]: {
-      padding: notificationPadding,
-      width,
-      maxWidth: `calc(100vw - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.calc(notificationMarginEdge).mul(2).equal())})`,
-      overflow: 'hidden',
-      lineHeight,
-      wordWrap: 'break-word'
-    },
-    [`${noticeCls}-message`]: {
-      marginBottom: token.marginXS,
-      color: colorTextHeading,
-      fontSize: fontSizeLG,
-      lineHeight: token.lineHeightLG
-    },
-    [`${noticeCls}-description`]: {
-      fontSize,
-      color: colorText
-    },
-    [`${noticeCls}-closable ${noticeCls}-message`]: {
-      paddingInlineEnd: token.paddingLG
-    },
-    [`${noticeCls}-with-icon ${noticeCls}-message`]: {
-      marginBottom: token.marginXS,
-      marginInlineStart: token.calc(token.marginSM).add(notificationIconSize).equal(),
-      fontSize: fontSizeLG
-    },
-    [`${noticeCls}-with-icon ${noticeCls}-description`]: {
-      marginInlineStart: token.calc(token.marginSM).add(notificationIconSize).equal(),
-      fontSize
-    },
-    // Icon & color style in different selector level
-    // https://github.com/ant-design/ant-design/issues/16503
-    // https://github.com/ant-design/ant-design/issues/15512
-    [`${noticeCls}-icon`]: {
-      position: 'absolute',
-      fontSize: notificationIconSize,
-      lineHeight: 1,
-      // icon-font
-      [`&-success${iconCls}`]: {
-        color: colorSuccess
-      },
-      [`&-info${iconCls}`]: {
-        color: colorInfo
-      },
-      [`&-warning${iconCls}`]: {
-        color: colorWarning
-      },
-      [`&-error${iconCls}`]: {
-        color: colorError
-      }
-    },
-    [`${noticeCls}-close`]: Object.assign({
-      position: 'absolute',
-      top: token.notificationPaddingVertical,
-      insetInlineEnd: token.notificationPaddingHorizontal,
-      color: token.colorIcon,
-      outline: 'none',
-      width: token.notificationCloseButtonSize,
-      height: token.notificationCloseButtonSize,
-      borderRadius: token.borderRadiusSM,
-      transition: `background-color ${token.motionDurationMid}, color ${token.motionDurationMid}`,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      '&:hover': {
-        color: token.colorIconHover,
-        backgroundColor: token.colorBgTextHover
-      },
-      '&:active': {
-        backgroundColor: token.colorBgTextActive
-      }
-    }, (0,_style__WEBPACK_IMPORTED_MODULE_1__.genFocusStyle)(token)),
-    [`${noticeCls}-progress`]: {
-      position: 'absolute',
-      display: 'block',
-      appearance: 'none',
-      WebkitAppearance: 'none',
-      inlineSize: `calc(100% - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(borderRadiusLG)} * 2)`,
-      left: {
-        _skip_check_: true,
-        value: borderRadiusLG
-      },
-      right: {
-        _skip_check_: true,
-        value: borderRadiusLG
-      },
-      bottom: 0,
-      blockSize: notificationProgressHeight,
-      border: 0,
-      '&, &::-webkit-progress-bar': {
-        borderRadius: borderRadiusLG,
-        backgroundColor: `rgba(0, 0, 0, 0.04)`
-      },
-      '&::-moz-progress-bar': {
-        background: notificationProgressBg
-      },
-      '&::-webkit-progress-value': {
-        borderRadius: borderRadiusLG,
-        background: notificationProgressBg
-      }
-    },
-    [`${noticeCls}-actions`]: {
-      float: 'right',
-      marginTop: token.marginSM
-    }
-  };
-};
-const genNotificationStyle = token => {
-  const {
-    componentCls,
-    // .ant-notification
-    notificationMarginBottom,
-    notificationMarginEdge,
-    motionDurationMid,
-    motionEaseInOut
-  } = token;
-  const noticeCls = `${componentCls}-notice`;
-  const fadeOut = new _ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.Keyframes('antNotificationFadeOut', {
-    '0%': {
-      maxHeight: token.animationMaxHeight,
-      marginBottom: notificationMarginBottom
-    },
-    '100%': {
-      maxHeight: 0,
-      marginBottom: 0,
-      paddingTop: 0,
-      paddingBottom: 0,
-      opacity: 0
-    }
-  });
-  return [
-  // ============================ Holder ============================
-  {
-    [componentCls]: Object.assign(Object.assign({}, (0,_style__WEBPACK_IMPORTED_MODULE_1__.resetComponent)(token)), {
-      position: 'fixed',
-      zIndex: token.zIndexPopup,
-      marginRight: {
-        value: notificationMarginEdge,
-        _skip_check_: true
-      },
-      [`${componentCls}-hook-holder`]: {
-        position: 'relative'
-      },
-      //  animation
-      [`${componentCls}-fade-appear-prepare`]: {
-        opacity: '0 !important'
-      },
-      [`${componentCls}-fade-enter, ${componentCls}-fade-appear`]: {
-        animationDuration: token.motionDurationMid,
-        animationTimingFunction: motionEaseInOut,
-        animationFillMode: 'both',
-        opacity: 0,
-        animationPlayState: 'paused'
-      },
-      [`${componentCls}-fade-leave`]: {
-        animationTimingFunction: motionEaseInOut,
-        animationFillMode: 'both',
-        animationDuration: motionDurationMid,
-        animationPlayState: 'paused'
-      },
-      [`${componentCls}-fade-enter${componentCls}-fade-enter-active, ${componentCls}-fade-appear${componentCls}-fade-appear-active`]: {
-        animationPlayState: 'running'
-      },
-      [`${componentCls}-fade-leave${componentCls}-fade-leave-active`]: {
-        animationName: fadeOut,
-        animationPlayState: 'running'
-      },
-      // RTL
-      '&-rtl': {
-        direction: 'rtl',
-        [`${noticeCls}-actions`]: {
-          float: 'left'
-        }
-      }
-    })
-  },
-  // ============================ Notice ============================
-  {
-    [componentCls]: {
-      [`${noticeCls}-wrapper`]: Object.assign({}, genNoticeStyle(token))
-    }
-  }];
-};
-// ============================== Export ==============================
-const prepareComponentToken = token => ({
-  zIndexPopup: token.zIndexPopupBase + _util_hooks_useZIndex__WEBPACK_IMPORTED_MODULE_2__.CONTAINER_MAX_OFFSET + 50,
-  width: 384
-});
-const prepareNotificationToken = token => {
-  const notificationPaddingVertical = token.paddingMD;
-  const notificationPaddingHorizontal = token.paddingLG;
-  const notificationToken = (0,_theme_internal__WEBPACK_IMPORTED_MODULE_3__.mergeToken)(token, {
-    notificationBg: token.colorBgElevated,
-    notificationPaddingVertical,
-    notificationPaddingHorizontal,
-    notificationIconSize: token.calc(token.fontSizeLG).mul(token.lineHeightLG).equal(),
-    notificationCloseButtonSize: token.calc(token.controlHeightLG).mul(0.55).equal(),
-    notificationMarginBottom: token.margin,
-    notificationPadding: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.paddingMD)} ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.paddingContentHorizontalLG)}`,
-    notificationMarginEdge: token.marginLG,
-    animationMaxHeight: 150,
-    notificationStackLayer: 3,
-    notificationProgressHeight: 2,
-    notificationProgressBg: `linear-gradient(90deg, ${token.colorPrimaryBorderHover}, ${token.colorPrimary})`
-  });
-  return notificationToken;
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_theme_internal__WEBPACK_IMPORTED_MODULE_4__.genStyleHooks)('Notification', token => {
-  const notificationToken = prepareNotificationToken(token);
-  return [genNotificationStyle(notificationToken), (0,_placement__WEBPACK_IMPORTED_MODULE_5__["default"])(notificationToken), (0,_stack__WEBPACK_IMPORTED_MODULE_6__["default"])(notificationToken)];
-}, prepareComponentToken));
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/notification/style/placement.js":
-/*!**************************************************************!*\
-  !*** ./node_modules/antd/es/notification/style/placement.js ***!
-  \**************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @ant-design/cssinjs */ "./node_modules/@ant-design/cssinjs/es/index.js");
-
-const genNotificationPlacementStyle = token => {
-  const {
-    componentCls,
-    notificationMarginEdge,
-    animationMaxHeight
-  } = token;
-  const noticeCls = `${componentCls}-notice`;
-  const rightFadeIn = new _ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.Keyframes('antNotificationFadeIn', {
-    '0%': {
-      transform: `translate3d(100%, 0, 0)`,
-      opacity: 0
-    },
-    '100%': {
-      transform: `translate3d(0, 0, 0)`,
-      opacity: 1
-    }
-  });
-  const topFadeIn = new _ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.Keyframes('antNotificationTopFadeIn', {
-    '0%': {
-      top: -animationMaxHeight,
-      opacity: 0
-    },
-    '100%': {
-      top: 0,
-      opacity: 1
-    }
-  });
-  const bottomFadeIn = new _ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.Keyframes('antNotificationBottomFadeIn', {
-    '0%': {
-      bottom: token.calc(animationMaxHeight).mul(-1).equal(),
-      opacity: 0
-    },
-    '100%': {
-      bottom: 0,
-      opacity: 1
-    }
-  });
-  const leftFadeIn = new _ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.Keyframes('antNotificationLeftFadeIn', {
-    '0%': {
-      transform: `translate3d(-100%, 0, 0)`,
-      opacity: 0
-    },
-    '100%': {
-      transform: `translate3d(0, 0, 0)`,
-      opacity: 1
-    }
-  });
-  return {
-    [componentCls]: {
-      [`&${componentCls}-top, &${componentCls}-bottom`]: {
-        marginInline: 0,
-        [noticeCls]: {
-          marginInline: 'auto auto'
-        }
-      },
-      [`&${componentCls}-top`]: {
-        [`${componentCls}-fade-enter${componentCls}-fade-enter-active, ${componentCls}-fade-appear${componentCls}-fade-appear-active`]: {
-          animationName: topFadeIn
-        }
-      },
-      [`&${componentCls}-bottom`]: {
-        [`${componentCls}-fade-enter${componentCls}-fade-enter-active, ${componentCls}-fade-appear${componentCls}-fade-appear-active`]: {
-          animationName: bottomFadeIn
-        }
-      },
-      [`&${componentCls}-topRight, &${componentCls}-bottomRight`]: {
-        [`${componentCls}-fade-enter${componentCls}-fade-enter-active, ${componentCls}-fade-appear${componentCls}-fade-appear-active`]: {
-          animationName: rightFadeIn
-        }
-      },
-      [`&${componentCls}-topLeft, &${componentCls}-bottomLeft`]: {
-        marginRight: {
-          value: 0,
-          _skip_check_: true
-        },
-        marginLeft: {
-          value: notificationMarginEdge,
-          _skip_check_: true
-        },
-        [noticeCls]: {
-          marginInlineEnd: 'auto',
-          marginInlineStart: 0
-        },
-        [`${componentCls}-fade-enter${componentCls}-fade-enter-active, ${componentCls}-fade-appear${componentCls}-fade-appear-active`]: {
-          animationName: leftFadeIn
-        }
-      }
-    }
-  };
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (genNotificationPlacementStyle);
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/notification/style/pure-panel.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/antd/es/notification/style/pure-panel.js ***!
-  \***************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @ant-design/cssinjs */ "./node_modules/@ant-design/cssinjs/es/index.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! . */ "./node_modules/antd/es/notification/style/index.js");
-/* harmony import */ var _theme_internal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../theme/internal */ "./node_modules/antd/es/theme/util/genStyleUtils.js");
-
-
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_theme_internal__WEBPACK_IMPORTED_MODULE_1__.genSubStyleComponent)(['Notification', 'PurePanel'], token => {
-  const noticeCls = `${token.componentCls}-notice`;
-  const notificationToken = (0,___WEBPACK_IMPORTED_MODULE_2__.prepareNotificationToken)(token);
-  return {
-    [`${noticeCls}-pure-panel`]: Object.assign(Object.assign({}, (0,___WEBPACK_IMPORTED_MODULE_2__.genNoticeStyle)(notificationToken)), {
-      width: notificationToken.width,
-      maxWidth: `calc(100vw - ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.calc(notificationToken.notificationMarginEdge).mul(2).equal())})`,
-      margin: 0
-    })
-  };
-}, ___WEBPACK_IMPORTED_MODULE_2__.prepareComponentToken));
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/notification/style/stack.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/antd/es/notification/style/stack.js ***!
-  \**********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _interface__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../interface */ "./node_modules/antd/es/notification/interface.js");
-
-const placementAlignProperty = {
-  topLeft: 'left',
-  topRight: 'right',
-  bottomLeft: 'left',
-  bottomRight: 'right',
-  top: 'left',
-  bottom: 'left'
-};
-const genPlacementStackStyle = (token, placement) => {
-  const {
-    componentCls
-  } = token;
-  return {
-    [`${componentCls}-${placement}`]: {
-      [`&${componentCls}-stack > ${componentCls}-notice-wrapper`]: {
-        [placement.startsWith('top') ? 'top' : 'bottom']: 0,
-        [placementAlignProperty[placement]]: {
-          value: 0,
-          _skip_check_: true
-        }
-      }
-    }
-  };
-};
-const genStackChildrenStyle = token => {
-  const childrenStyle = {};
-  for (let i = 1; i < token.notificationStackLayer; i++) {
-    childrenStyle[`&:nth-last-child(${i + 1})`] = {
-      overflow: 'hidden',
-      [`& > ${token.componentCls}-notice`]: {
-        opacity: 0,
-        transition: `opacity ${token.motionDurationMid}`
-      }
-    };
-  }
-  return Object.assign({
-    [`&:not(:nth-last-child(-n+${token.notificationStackLayer}))`]: {
-      opacity: 0,
-      overflow: 'hidden',
-      color: 'transparent',
-      pointerEvents: 'none'
-    }
-  }, childrenStyle);
-};
-const genStackedNoticeStyle = token => {
-  const childrenStyle = {};
-  for (let i = 1; i < token.notificationStackLayer; i++) {
-    childrenStyle[`&:nth-last-child(${i + 1})`] = {
-      background: token.colorBgBlur,
-      backdropFilter: 'blur(10px)',
-      '-webkit-backdrop-filter': 'blur(10px)'
-    };
-  }
-  return Object.assign({}, childrenStyle);
-};
-const genStackStyle = token => {
-  const {
-    componentCls
-  } = token;
-  return Object.assign({
-    [`${componentCls}-stack`]: {
-      [`& > ${componentCls}-notice-wrapper`]: Object.assign({
-        transition: `transform ${token.motionDurationSlow}, backdrop-filter 0s`,
-        willChange: 'transform, opacity',
-        position: 'absolute'
-      }, genStackChildrenStyle(token))
-    },
-    [`${componentCls}-stack:not(${componentCls}-stack-expanded)`]: {
-      [`& > ${componentCls}-notice-wrapper`]: Object.assign({}, genStackedNoticeStyle(token))
-    },
-    [`${componentCls}-stack${componentCls}-stack-expanded`]: {
-      [`& > ${componentCls}-notice-wrapper`]: {
-        '&:not(:nth-last-child(-n + 1))': {
-          opacity: 1,
-          overflow: 'unset',
-          color: 'inherit',
-          pointerEvents: 'auto',
-          [`& > ${token.componentCls}-notice`]: {
-            opacity: 1
-          }
-        },
-        '&:after': {
-          content: '""',
-          position: 'absolute',
-          height: token.margin,
-          width: '100%',
-          insetInline: 0,
-          bottom: token.calc(token.margin).mul(-1).equal(),
-          background: 'transparent',
-          pointerEvents: 'auto'
-        }
-      }
-    }
-  }, _interface__WEBPACK_IMPORTED_MODULE_0__.NotificationPlacements.map(placement => genPlacementStackStyle(token, placement)).reduce((acc, cur) => Object.assign(Object.assign({}, acc), cur), {}));
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (genStackStyle);
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/notification/useNotification.js":
-/*!**************************************************************!*\
-  !*** ./node_modules/antd/es/notification/useNotification.js ***!
-  \**************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ useNotification),
-/* harmony export */   useInternalNotification: () => (/* binding */ useInternalNotification)
-/* harmony export */ });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var rc_notification__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rc-notification */ "./node_modules/rc-notification/es/index.js");
-/* harmony import */ var _util_warning__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../_util/warning */ "./node_modules/antd/es/_util/warning.js");
-/* harmony import */ var _config_provider__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../config-provider */ "./node_modules/antd/es/config-provider/context.js");
-/* harmony import */ var _config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../config-provider/hooks/useCSSVarCls */ "./node_modules/antd/es/config-provider/hooks/useCSSVarCls.js");
-/* harmony import */ var _theme_internal__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../theme/internal */ "./node_modules/antd/es/theme/useToken.js");
-/* harmony import */ var _PurePanel__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./PurePanel */ "./node_modules/antd/es/notification/PurePanel.js");
-/* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./style */ "./node_modules/antd/es/notification/style/index.js");
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./util */ "./node_modules/antd/es/notification/util.js");
-"use client";
-
-var __rest = undefined && undefined.__rest || function (s, e) {
-  var t = {};
-  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
-  }
-  return t;
-};
-
-
-
-
-
-
-
-
-
-
-const DEFAULT_OFFSET = 24;
-const DEFAULT_DURATION = 4.5;
-const DEFAULT_PLACEMENT = 'topRight';
-const Wrapper = _ref => {
-  let {
-    children,
-    prefixCls
-  } = _ref;
-  const rootCls = (0,_config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_3__["default"])(prefixCls);
-  const [wrapCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_4__["default"])(prefixCls, rootCls);
-  return wrapCSSVar(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(rc_notification__WEBPACK_IMPORTED_MODULE_2__.NotificationProvider, {
-    classNames: {
-      list: classnames__WEBPACK_IMPORTED_MODULE_1___default()(hashId, cssVarCls, rootCls)
-    }
-  }, children));
-};
-const renderNotifications = (node, _ref2) => {
-  let {
-    prefixCls,
-    key
-  } = _ref2;
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(Wrapper, {
-    prefixCls: prefixCls,
-    key: key
-  }, node);
-};
-const Holder = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((props, ref) => {
-  const {
-    top,
-    bottom,
-    prefixCls: staticPrefixCls,
-    getContainer: staticGetContainer,
-    maxCount,
-    rtl,
-    onAllRemoved,
-    stack,
-    duration,
-    pauseOnHover = true,
-    showProgress
-  } = props;
-  const {
-    getPrefixCls,
-    getPopupContainer,
-    notification,
-    direction
-  } = (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_config_provider__WEBPACK_IMPORTED_MODULE_5__.ConfigContext);
-  const [, token] = (0,_theme_internal__WEBPACK_IMPORTED_MODULE_6__["default"])();
-  const prefixCls = staticPrefixCls || getPrefixCls('notification');
-  // =============================== Style ===============================
-  const getStyle = placement => (0,_util__WEBPACK_IMPORTED_MODULE_7__.getPlacementStyle)(placement, top !== null && top !== void 0 ? top : DEFAULT_OFFSET, bottom !== null && bottom !== void 0 ? bottom : DEFAULT_OFFSET);
-  const getClassName = () => classnames__WEBPACK_IMPORTED_MODULE_1___default()({
-    [`${prefixCls}-rtl`]: rtl !== null && rtl !== void 0 ? rtl : direction === 'rtl'
-  });
-  // ============================== Motion ===============================
-  const getNotificationMotion = () => (0,_util__WEBPACK_IMPORTED_MODULE_7__.getMotion)(prefixCls);
-  // ============================== Origin ===============================
-  const [api, holder] = (0,rc_notification__WEBPACK_IMPORTED_MODULE_2__.useNotification)({
-    prefixCls,
-    style: getStyle,
-    className: getClassName,
-    motion: getNotificationMotion,
-    closable: true,
-    closeIcon: (0,_PurePanel__WEBPACK_IMPORTED_MODULE_8__.getCloseIcon)(prefixCls),
-    duration: duration !== null && duration !== void 0 ? duration : DEFAULT_DURATION,
-    getContainer: () => (staticGetContainer === null || staticGetContainer === void 0 ? void 0 : staticGetContainer()) || (getPopupContainer === null || getPopupContainer === void 0 ? void 0 : getPopupContainer()) || document.body,
-    maxCount,
-    pauseOnHover,
-    showProgress,
-    onAllRemoved,
-    renderNotifications,
-    stack: stack === false ? false : {
-      threshold: typeof stack === 'object' ? stack === null || stack === void 0 ? void 0 : stack.threshold : undefined,
-      offset: 8,
-      gap: token.margin
-    }
-  });
-  // ================================ Ref ================================
-  react__WEBPACK_IMPORTED_MODULE_0__.useImperativeHandle(ref, () => Object.assign(Object.assign({}, api), {
-    prefixCls,
-    notification
-  }));
-  return holder;
-});
-// ==============================================================================
-// ==                                   Hook                                   ==
-// ==============================================================================
-function useInternalNotification(notificationConfig) {
-  const holderRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef(null);
-  const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_9__.devUseWarning)('Notification');
-  // ================================ API ================================
-  const wrapAPI = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => {
-    // Wrap with notification content
-    // >>> Open
-    const open = config => {
-      var _a;
-      if (!holderRef.current) {
-         true ? warning(false, 'usage', 'You are calling notice in render which will break in React 18 concurrent mode. Please trigger in effect instead.') : 0;
-        return;
-      }
-      const {
-        open: originOpen,
-        prefixCls,
-        notification
-      } = holderRef.current;
-      const noticePrefixCls = `${prefixCls}-notice`;
-      const {
-          message,
-          description,
-          icon,
-          type,
-          btn,
-          actions,
-          className,
-          style,
-          role = 'alert',
-          closeIcon,
-          closable
-        } = config,
-        restConfig = __rest(config, ["message", "description", "icon", "type", "btn", "actions", "className", "style", "role", "closeIcon", "closable"]);
-      if (true) {
-        warning.deprecated(!btn, 'btn', 'actions');
-      }
-      const mergedActions = actions !== null && actions !== void 0 ? actions : btn;
-      const realCloseIcon = (0,_PurePanel__WEBPACK_IMPORTED_MODULE_8__.getCloseIcon)(noticePrefixCls, (0,_util__WEBPACK_IMPORTED_MODULE_7__.getCloseIconConfig)(closeIcon, notificationConfig, notification));
-      return originOpen(Object.assign(Object.assign({
-        // use placement from props instead of hard-coding "topRight"
-        placement: (_a = notificationConfig === null || notificationConfig === void 0 ? void 0 : notificationConfig.placement) !== null && _a !== void 0 ? _a : DEFAULT_PLACEMENT
-      }, restConfig), {
-        content: (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_PurePanel__WEBPACK_IMPORTED_MODULE_8__.PureContent, {
-          prefixCls: noticePrefixCls,
-          icon: icon,
-          type: type,
-          message: message,
-          description: description,
-          actions: mergedActions,
-          role: role
-        })),
-        className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(type && `${noticePrefixCls}-${type}`, className, notification === null || notification === void 0 ? void 0 : notification.className),
-        style: Object.assign(Object.assign({}, notification === null || notification === void 0 ? void 0 : notification.style), style),
-        closeIcon: realCloseIcon,
-        closable: closable !== null && closable !== void 0 ? closable : !!realCloseIcon
-      }));
-    };
-    // >>> destroy
-    const destroy = key => {
-      var _a, _b;
-      if (key !== undefined) {
-        (_a = holderRef.current) === null || _a === void 0 ? void 0 : _a.close(key);
-      } else {
-        (_b = holderRef.current) === null || _b === void 0 ? void 0 : _b.destroy();
-      }
-    };
-    const clone = {
-      open,
-      destroy
-    };
-    const keys = ['success', 'info', 'warning', 'error'];
-    keys.forEach(type => {
-      clone[type] = config => open(Object.assign(Object.assign({}, config), {
-        type
-      }));
-    });
-    return clone;
-  }, []);
-  // ============================== Return ===============================
-  return [wrapAPI, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(Holder, Object.assign({
-    key: "notification-holder"
-  }, notificationConfig, {
-    ref: holderRef
-  }))];
-}
-function useNotification(notificationConfig) {
-  return useInternalNotification(notificationConfig);
-}
-
-/***/ }),
-
-/***/ "./node_modules/antd/es/notification/util.js":
-/*!***************************************************!*\
-  !*** ./node_modules/antd/es/notification/util.js ***!
-  \***************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   getCloseIconConfig: () => (/* binding */ getCloseIconConfig),
-/* harmony export */   getMotion: () => (/* binding */ getMotion),
-/* harmony export */   getPlacementStyle: () => (/* binding */ getPlacementStyle)
-/* harmony export */ });
-function getPlacementStyle(placement, top, bottom) {
-  let style;
-  switch (placement) {
-    case 'top':
-      style = {
-        left: '50%',
-        transform: 'translateX(-50%)',
-        right: 'auto',
-        top,
-        bottom: 'auto'
-      };
-      break;
-    case 'topLeft':
-      style = {
-        left: 0,
-        top,
-        bottom: 'auto'
-      };
-      break;
-    case 'topRight':
-      style = {
-        right: 0,
-        top,
-        bottom: 'auto'
-      };
-      break;
-    case 'bottom':
-      style = {
-        left: '50%',
-        transform: 'translateX(-50%)',
-        right: 'auto',
-        top: 'auto',
-        bottom
-      };
-      break;
-    case 'bottomLeft':
-      style = {
-        left: 0,
-        top: 'auto',
-        bottom
-      };
-      break;
-    default:
-      style = {
-        right: 0,
-        top: 'auto',
-        bottom
-      };
-      break;
-  }
-  return style;
-}
-function getMotion(prefixCls) {
-  return {
-    motionName: `${prefixCls}-fade`
-  };
-}
-function getCloseIconConfig(closeIcon, notificationConfig, notification) {
-  if (typeof closeIcon !== 'undefined') {
-    return closeIcon;
-  }
-  if (typeof (notificationConfig === null || notificationConfig === void 0 ? void 0 : notificationConfig.closeIcon) !== 'undefined') {
-    return notificationConfig.closeIcon;
-  }
-  return notification === null || notification === void 0 ? void 0 : notification.closeIcon;
-}
 
 /***/ }),
 
@@ -184521,11 +184084,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/row/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/col/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/row/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/col/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/descriptions/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EyeOutlined.js");
@@ -184613,20 +184177,17 @@ var OrderManagement = function OrderManagement() {
     form = _Form$useForm2[0];
   var API_URL = "http://localhost:8000/api/orders";
   var token = localStorage.getItem("token");
-
-  // Fetch orders from the backend
   var fetchOrders = function fetchOrders() {
     axios__WEBPACK_IMPORTED_MODULE_8__["default"].get(API_URL, {
       headers: {
         Authorization: "Bearer ".concat(token)
       }
     }).then(function (res) {
-      console.log("API Response:", res.data); // Debug
       var transformed = res.data.map(function (order) {
         return _objectSpread(_objectSpread({}, order), {}, {
           order_date: order.order_date || order.created_at,
           shipping: order.shipping || {},
-          selected: false // Initialize selected state
+          selected: false
         });
       });
       setOrders(transformed.filter(function (order) {
@@ -184644,8 +184205,6 @@ var OrderManagement = function OrderManagement() {
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchOrders();
   }, []);
-
-  // Handlers for active orders
   var handleActiveCheckboxChange = function handleActiveCheckboxChange(orderId) {
     var updated = orders.map(function (order) {
       return order.id === orderId ? _objectSpread(_objectSpread({}, order), {}, {
@@ -184710,8 +184269,6 @@ var OrderManagement = function OrderManagement() {
       }
     });
   };
-
-  // Handlers for archived orders
   var handleArchivedCheckboxChange = function handleArchivedCheckboxChange(orderId) {
     var updated = archivedOrders.map(function (order) {
       return order.id === orderId ? _objectSpread(_objectSpread({}, order), {}, {
@@ -184776,8 +184333,6 @@ var OrderManagement = function OrderManagement() {
       }
     });
   };
-
-  // Define table columns for active orders
   var mainColumns = [{
     title: "Actions",
     key: "actions",
@@ -184791,7 +184346,6 @@ var OrderManagement = function OrderManagement() {
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {
           onClick: function onClick() {
             setSelectedOrder(record);
-            // Pre-fill the edit form with current order status
             form.setFieldsValue({
               order_status: record.order_status
             });
@@ -184857,8 +184411,6 @@ var OrderManagement = function OrderManagement() {
       return date || "N/A";
     }
   }];
-
-  // Define table columns for archived orders
   var archiveColumns = [{
     title: "Actions",
     key: "actions",
@@ -184874,17 +184426,11 @@ var OrderManagement = function OrderManagement() {
           onClick: function onClick() {
             return handleRestore(record.id);
           },
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {
-            style: {
-              fontSize: "18px"
-            }
-          })
+          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {})
         })]
       });
     }
   }].concat(_toConsumableArray(mainColumns.slice(1)));
-
-  // Archive a single order
   var handleArchive = function handleArchive(record) {
     antd__WEBPACK_IMPORTED_MODULE_10__["default"].confirm({
       title: "Are you sure you want to archive this order?",
@@ -184913,8 +184459,6 @@ var OrderManagement = function OrderManagement() {
       }
     });
   };
-
-  // Restore a single order
   var handleRestore = function handleRestore(id) {
     axios__WEBPACK_IMPORTED_MODULE_8__["default"].post("".concat(API_URL, "/").concat(id, "/restore"), {}, {
       headers: {
@@ -184928,9 +184472,6 @@ var OrderManagement = function OrderManagement() {
       console.error(err);
     });
   };
-
-  // Update order: send updated order_status and shipping info.
-  // Tracking number is auto‑generated by the backend if needed.
   var handleUpdate = function handleUpdate() {
     var _selectedOrder$shippi, _selectedOrder$shippi2;
     axios__WEBPACK_IMPORTED_MODULE_8__["default"].put("".concat(API_URL, "/").concat(selectedOrder.id), {
@@ -184953,16 +184494,12 @@ var OrderManagement = function OrderManagement() {
       console.error(err);
     });
   };
-
-  // When clicking the eye icon, open the view modal with full order details.
   var handleView = function handleView(record) {
     setSelectedOrder(record);
     setOpenViewModal(true);
   };
-
-  // Render full order details (including user avatar and product images).
   var renderOrderDetails = function renderOrderDetails() {
-    var _profile$user, _shipping$shipping_st, _shipping$payment_met, _shipping$shipping_me;
+    var _profile$user, _shipping$address, _shipping$address2, _shipping$shipping_st, _shipping$payment_met, _shipping$shipping_me;
     if (!selectedOrder) return null;
     var items = selectedOrder.order_details || selectedOrder.orderDetails || [];
     var shipping = selectedOrder.shipping,
@@ -184976,68 +184513,134 @@ var OrderManagement = function OrderManagement() {
       style: {
         padding: "16px"
       },
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
-        level: 4,
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
+        dataSource: items,
+        columns: [{
+          title: "Item",
+          render: function render(detail) {
+            var _detail$product2, _detail$product3;
+            return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+                src: (_detail$product2 = detail.product) !== null && _detail$product2 !== void 0 && _detail$product2.main_image ? "http://localhost:8000/storage/".concat(detail.product.main_image) : "https://via.placeholder.com/50",
+                width: 40,
+                preview: false
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
+                children: ((_detail$product3 = detail.product) === null || _detail$product3 === void 0 ? void 0 : _detail$product3.product_name) || "Unknown"
+              })]
+            });
+          }
+        }, {
+          title: "Quantity",
+          dataIndex: "quantity"
+        }, {
+          title: "Price",
+          dataIndex: "price",
+          render: function render(price) {
+            return "\u20B1".concat(parseFloat(price).toLocaleString());
+          }
+        }, {
+          title: "Total",
+          render: function render(detail) {
+            return "\u20B1".concat((detail.quantity * detail.price).toLocaleString());
+          }
+        }],
+        pagination: false,
+        rowKey: "id",
+        size: "small"
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
         style: {
-          marginBottom: "16px"
+          marginTop: 16
         },
-        children: "Order Summary"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-        children: ["Order Date: ", selectedOrder.order_date || "N/A"]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-        children: ["Subtotal: \u20B1", subtotal.toLocaleString(), " | Delivery: \u20B1", deliveryCharge.toLocaleString(), " | Total: \u20B1", totalAmount.toLocaleString()]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
-        level: 4,
-        style: {
-          margin: "24px 0 16px"
-        },
-        children: "Customer Details"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
-        align: "middle",
-        gutter: [16, 16],
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
-            src: (profile === null || profile === void 0 ? void 0 : profile.profile_image) || "https://via.placeholder.com/50",
-            size: 50
-          })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
-            children: [(profile === null || profile === void 0 ? void 0 : profile.first_name) || "", " ", (profile === null || profile === void 0 ? void 0 : profile.last_name) || "", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), (profile === null || profile === void 0 || (_profile$user = profile.user) === null || _profile$user === void 0 ? void 0 : _profile$user.email) || "N/A"]
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+          gutter: [16, 16],
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_21__["default"], {
+            span: 12,
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
+              level: 5,
+              children: "Order Summary"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_22__["default"], {
+              bordered: true,
+              size: "small",
+              column: 1,
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
+                label: "Order Date",
+                children: selectedOrder.order_date || "N/A"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
+                label: "Subtotal",
+                children: ["\u20B1", subtotal.toLocaleString()]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
+                label: "Delivery",
+                children: ["\u20B1", deliveryCharge.toLocaleString()]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
+                label: "Total",
+                children: ["\u20B1", totalAmount.toLocaleString()]
+              })]
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_21__["default"], {
+            span: 12,
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
+              level: 5,
+              children: "Customer Details"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+              direction: "vertical",
+              size: "middle",
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_23__["default"], {
+                  src: (profile === null || profile === void 0 ? void 0 : profile.profile_image) || "https://via.placeholder.com/50",
+                  size: 50
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_22__["default"], {
+                  bordered: true,
+                  size: "small",
+                  column: 1,
+                  style: {
+                    width: "100%"
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
+                    label: "Name",
+                    children: [(profile === null || profile === void 0 ? void 0 : profile.first_name) || "", " ", (profile === null || profile === void 0 ? void 0 : profile.last_name) || ""]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
+                    label: "Email",
+                    children: (profile === null || profile === void 0 || (_profile$user = profile.user) === null || _profile$user === void 0 ? void 0 : _profile$user.email) || "N/A"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
+                    label: "Phone",
+                    children: (shipping === null || shipping === void 0 || (_shipping$address = shipping.address) === null || _shipping$address === void 0 ? void 0 : _shipping$address.phone) || "N/A"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
+                    label: "Address",
+                    children: (shipping === null || shipping === void 0 || (_shipping$address2 = shipping.address) === null || _shipping$address2 === void 0 ? void 0 : _shipping$address2.address) || "N/A"
+                  })]
+                })]
+              })
+            })]
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+          style: {
+            marginTop: 16
+          },
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_21__["default"], {
+            span: 24,
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
+              level: 5,
+              children: "Shipping Information"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_22__["default"], {
+              bordered: true,
+              size: "small",
+              column: 1,
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
+                label: "Shipping Status",
+                children: (shipping === null || shipping === void 0 || (_shipping$shipping_st = shipping.shipping_status) === null || _shipping$shipping_st === void 0 ? void 0 : _shipping$shipping_st.name) || "N/A"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
+                label: "Tracking Number",
+                children: (shipping === null || shipping === void 0 ? void 0 : shipping.tracking_number) || "Not Available"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
+                label: "Payment Method",
+                children: (shipping === null || shipping === void 0 || (_shipping$payment_met = shipping.payment_method) === null || _shipping$payment_met === void 0 ? void 0 : _shipping$payment_met.name) || "N/A"
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
+                label: "Shipping Method",
+                children: (shipping === null || shipping === void 0 || (_shipping$shipping_me = shipping.shipping_method) === null || _shipping$shipping_me === void 0 ? void 0 : _shipping$shipping_me.name) || "N/A"
+              })]
+            })]
           })
         })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
-        level: 4,
-        style: {
-          margin: "24px 0 16px"
-        },
-        children: "Shipping Information"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-        children: ["Shipping Status: ", (shipping === null || shipping === void 0 || (_shipping$shipping_st = shipping.shipping_status) === null || _shipping$shipping_st === void 0 ? void 0 : _shipping$shipping_st.name) || "N/A", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), "Tracking Number:", " ", (shipping === null || shipping === void 0 ? void 0 : shipping.tracking_number) || "Not Available", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), "Payment Method: ", (shipping === null || shipping === void 0 || (_shipping$payment_met = shipping.payment_method) === null || _shipping$payment_met === void 0 ? void 0 : _shipping$payment_met.name) || "N/A", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), "Shipping Method: ", (shipping === null || shipping === void 0 || (_shipping$shipping_me = shipping.shipping_method) === null || _shipping$shipping_me === void 0 ? void 0 : _shipping$shipping_me.name) || "N/A"]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
-        level: 4,
-        style: {
-          margin: "24px 0 16px"
-        },
-        children: "Items"
-      }), items.length > 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("ul", {
-        children: items.map(function (detail) {
-          var _detail$product2, _detail$product3;
-          return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("li", {
-            style: {
-              marginBottom: "8px"
-            },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_21__["default"], {
-              src: (_detail$product2 = detail.product) !== null && _detail$product2 !== void 0 && _detail$product2.main_image ? "http://localhost:8000/storage/".concat(detail.product.main_image) : "https://via.placeholder.com/50",
-              width: 50,
-              style: {
-                marginRight: "8px"
-              },
-              preview: false
-            }), ((_detail$product3 = detail.product) === null || _detail$product3 === void 0 ? void 0 : _detail$product3.product_name) || "Unknown", " \u2013 Quantity: ", detail.quantity, " \u2013 Price: \u20B1", parseFloat(detail.price).toLocaleString()]
-          }, detail.id);
-        })
-      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
-        children: "No items"
       })]
     });
   };
@@ -185076,24 +184679,44 @@ var OrderManagement = function OrderManagement() {
             justifyContent: "space-between",
             marginBottom: 16
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Search, {
-            placeholder: "Search orders by ID, customer, or status",
-            allowClear: true,
-            onChange: function onChange(e) {
-              return setSearchText(e.target.value);
-            },
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             style: {
-              width: 300,
-              marginRight: 16
-            }
+              display: "flex",
+              alignItems: "center"
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Search, {
+              placeholder: "Search orders by ID, customer, or status",
+              allowClear: true,
+              onChange: function onChange(e) {
+                return setSearchText(e.target.value);
+              },
+              style: {
+                width: 300,
+                marginRight: 16
+              }
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+              checked: selectAllActive,
+              onChange: handleSelectAllActiveChange,
+              style: {
+                marginRight: 16
+              },
+              children: "Select All"
+            }), (selectAllActive || selectedActiveOrders.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
+              type: "link",
+              onClick: handleArchiveAll,
+              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {})
+            })]
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
             type: "default",
             onClick: function onClick() {
               return setOpenArchiveModal(true);
             },
+            style: {
+              width: "131px"
+            },
             children: "Archived Orders"
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
           columns: mainColumns,
           dataSource: filteredOrders,
           rowKey: "id",
@@ -185102,22 +184725,42 @@ var OrderManagement = function OrderManagement() {
           }
         })]
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
       title: "Archived Orders",
+      centered: true,
       open: openArchiveModal,
       onCancel: function onCancel() {
         return setOpenArchiveModal(false);
       },
       width: 1200,
       footer: [],
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"], {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          marginBottom: 16
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+          checked: selectAllArchived,
+          onChange: handleSelectAllArchivedChange,
+          style: {
+            marginRight: 16
+          },
+          children: "Select All"
+        }), (selectAllArchived || selectedArchivedOrders.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
+          type: "link",
+          onClick: handleRestoreAll,
+          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {})
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
         columns: archiveColumns,
         dataSource: filteredArchivedOrders,
         rowKey: "id",
         scroll: {
           x: 1200
-        }
-      })
+        },
+        pagination: false
+      })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
       title: "Edit Order",
       open: openEditModal,
@@ -185179,23 +184822,14 @@ var OrderManagement = function OrderManagement() {
         })]
       })
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-      title: "Order #".concat((selectedOrder === null || selectedOrder === void 0 ? void 0 : selectedOrder.id) || "", " Details"),
+      title: "Order Details",
+      centered: true,
       open: openViewModal,
       onCancel: function onCancel() {
         return setOpenViewModal(false);
       },
-      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
-        onClick: function onClick() {
-          return setOpenViewModal(false);
-        },
-        style: {
-          width: "131px",
-          backgroundColor: "#f5222d",
-          color: "#fff"
-        },
-        children: "Close"
-      }, "close")],
       width: 800,
+      footer: [],
       children: renderOrderDetails()
     })]
   });
@@ -186314,20 +185948,32 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/select/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/checkbox/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/FolderOpenOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UndoOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
@@ -186346,166 +185992,411 @@ var Header = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Header,
   Content = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Content,
   Sider = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Sider;
 var Option = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Option;
+var Search = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Search;
 var TransactionManagement = function TransactionManagement() {
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
     transactions = _useState2[0],
     setTransactions = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState4 = _slicedToArray(_useState3, 2),
-    loading = _useState4[0],
-    setLoading = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    archivedTransactions = _useState4[0],
+    setArchivedTransactions = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState6 = _slicedToArray(_useState5, 2),
-    editingTransaction = _useState6[0],
-    setEditingTransaction = _useState6[1];
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    loading = _useState6[0],
+    setLoading = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState8 = _slicedToArray(_useState7, 2),
-    editModalVisible = _useState8[0],
-    setEditModalVisible = _useState8[1];
-  var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_5__["default"].useForm(),
+    editingTransaction = _useState8[0],
+    setEditingTransaction = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState10 = _slicedToArray(_useState9, 2),
+    editModalVisible = _useState10[0],
+    setEditModalVisible = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    _useState12 = _slicedToArray(_useState11, 2),
+    searchQuery = _useState12[0],
+    setSearchQuery = _useState12[1];
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState14 = _slicedToArray(_useState13, 2),
+    selectAllActive = _useState14[0],
+    setSelectAllActive = _useState14[1];
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState16 = _slicedToArray(_useState15, 2),
+    selectedActiveTransactions = _useState16[0],
+    setSelectedActiveTransactions = _useState16[1];
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState18 = _slicedToArray(_useState17, 2),
+    openArchiveModal = _useState18[0],
+    setOpenArchiveModal = _useState18[1];
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState20 = _slicedToArray(_useState19, 2),
+    selectedArchivedTransactions = _useState20[0],
+    setSelectedArchivedTransactions = _useState20[1];
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState22 = _slicedToArray(_useState21, 2),
+    selectAllArchived = _useState22[0],
+    setSelectAllArchived = _useState22[1];
+  var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_6__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
   var token = localStorage.getItem("token");
   var API_URL = "http://localhost:8000/api";
   var fetchTransactions = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      var response;
+      var response, data, updatedData;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             setLoading(true);
             _context.prev = 1;
             _context.next = 4;
-            return axios__WEBPACK_IMPORTED_MODULE_6__["default"].get("".concat(API_URL, "/transactions"), {
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(API_URL, "/transactions"), {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 4:
             response = _context.sent;
-            // Ensure the API loads the new relationship: paymentOption.
-            setTransactions(response.data.data || response.data);
-            _context.next = 12;
+            data = response.data.data || response.data; // add a "selected" field for checkbox management
+            updatedData = data.map(function (item) {
+              return _objectSpread(_objectSpread({}, item), {}, {
+                selected: false
+              });
+            });
+            setTransactions(updatedData);
+            _context.next = 14;
             break;
-          case 8:
-            _context.prev = 8;
+          case 10:
+            _context.prev = 10;
             _context.t0 = _context["catch"](1);
             console.error("Error fetching transactions:", _context.t0);
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to fetch transactions");
-          case 12:
-            _context.prev = 12;
+            antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to fetch transactions");
+          case 14:
+            _context.prev = 14;
             setLoading(false);
-            return _context.finish(12);
-          case 15:
+            return _context.finish(14);
+          case 17:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[1, 8, 12, 15]]);
+      }, _callee, null, [[1, 10, 14, 17]]);
     }));
     return function fetchTransactions() {
       return _ref.apply(this, arguments);
     };
   }();
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    fetchTransactions();
-  }, []);
-  var handleUpdate = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(values) {
+  var fetchArchivedTransactions = /*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+      var response, data, updatedData;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             _context2.prev = 0;
             _context2.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_6__["default"].put("".concat(API_URL, "/transactions/").concat(editingTransaction.id), values, {
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(API_URL, "/transactions?archived=1"), {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 3:
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Transaction updated successfully");
-            setEditModalVisible(false);
-            setEditingTransaction(null);
-            fetchTransactions();
-            _context2.next = 12;
+            response = _context2.sent;
+            data = response.data.data || response.data;
+            updatedData = data.map(function (item) {
+              return _objectSpread(_objectSpread({}, item), {}, {
+                selected: false
+              });
+            });
+            setArchivedTransactions(updatedData);
+            _context2.next = 13;
             break;
           case 9:
             _context2.prev = 9;
             _context2.t0 = _context2["catch"](0);
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to update transaction");
-          case 12:
+            console.error("Error fetching archived transactions:", _context2.t0);
+            antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to fetch archived transactions");
+          case 13:
           case "end":
             return _context2.stop();
         }
       }, _callee2, null, [[0, 9]]);
     }));
-    return function handleUpdate(_x) {
+    return function fetchArchivedTransactions() {
       return _ref2.apply(this, arguments);
     };
   }();
-  var handleArchive = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(id) {
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    fetchTransactions();
+  }, []);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    if (openArchiveModal) fetchArchivedTransactions();
+  }, [openArchiveModal]);
+  var handleUpdate = /*#__PURE__*/function () {
+    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(values) {
       return _regeneratorRuntime().wrap(function _callee3$(_context3) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
             _context3.prev = 0;
             _context3.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_6__["default"].post("".concat(API_URL, "/transactions/").concat(id, "/archive"), {}, {
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("".concat(API_URL, "/transactions/").concat(editingTransaction.id), values, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 3:
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Transaction archived successfully");
+            antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Transaction updated successfully");
+            setEditModalVisible(false);
+            setEditingTransaction(null);
             fetchTransactions();
-            _context3.next = 10;
+            _context3.next = 12;
             break;
-          case 7:
-            _context3.prev = 7;
+          case 9:
+            _context3.prev = 9;
             _context3.t0 = _context3["catch"](0);
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to archive transaction");
-          case 10:
+            antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update transaction");
+          case 12:
           case "end":
             return _context3.stop();
         }
-      }, _callee3, null, [[0, 7]]);
+      }, _callee3, null, [[0, 9]]);
     }));
-    return function handleArchive(_x2) {
+    return function handleUpdate(_x) {
       return _ref3.apply(this, arguments);
     };
   }();
-  var handleRestore = /*#__PURE__*/function () {
+  var handleArchive = /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(id) {
       return _regeneratorRuntime().wrap(function _callee4$(_context4) {
         while (1) switch (_context4.prev = _context4.next) {
           case 0:
             _context4.prev = 0;
             _context4.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_6__["default"].post("".concat(API_URL, "/transactions/").concat(id, "/restore"), {}, {
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/transactions/").concat(id, "/archive"), {}, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 3:
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Transaction restored successfully");
+            antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Transaction archived successfully");
             fetchTransactions();
             _context4.next = 10;
             break;
           case 7:
             _context4.prev = 7;
             _context4.t0 = _context4["catch"](0);
-            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to restore transaction");
+            antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive transaction");
           case 10:
           case "end":
             return _context4.stop();
         }
       }, _callee4, null, [[0, 7]]);
     }));
-    return function handleRestore(_x3) {
+    return function handleArchive(_x2) {
       return _ref4.apply(this, arguments);
     };
   }();
-  var columns = [{
+  var handleRestore = /*#__PURE__*/function () {
+    var _ref5 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(id) {
+      return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+        while (1) switch (_context5.prev = _context5.next) {
+          case 0:
+            _context5.prev = 0;
+            _context5.next = 3;
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/transactions/").concat(id, "/restore"), {}, {
+              headers: {
+                Authorization: "Bearer ".concat(token)
+              }
+            });
+          case 3:
+            antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Transaction restored successfully");
+            fetchTransactions();
+            fetchArchivedTransactions();
+            _context5.next = 11;
+            break;
+          case 8:
+            _context5.prev = 8;
+            _context5.t0 = _context5["catch"](0);
+            antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore transaction");
+          case 11:
+          case "end":
+            return _context5.stop();
+        }
+      }, _callee5, null, [[0, 8]]);
+    }));
+    return function handleRestore(_x3) {
+      return _ref5.apply(this, arguments);
+    };
+  }();
+
+  // Handlers for active transactions multi-select
+  var handleActiveCheckboxChange = function handleActiveCheckboxChange(id) {
+    var updatedTransactions = transactions.map(function (item) {
+      return item.id === id ? _objectSpread(_objectSpread({}, item), {}, {
+        selected: !item.selected
+      }) : item;
+    });
+    setTransactions(updatedTransactions);
+    var selected = updatedTransactions.filter(function (item) {
+      return item.selected;
+    }).map(function (item) {
+      return item.id;
+    });
+    setSelectedActiveTransactions(selected);
+    setSelectAllActive(updatedTransactions.every(function (item) {
+      return item.selected;
+    }));
+  };
+  var handleSelectAllActiveChange = function handleSelectAllActiveChange(e) {
+    var checked = e.target.checked;
+    setSelectAllActive(checked);
+    var updatedTransactions = transactions.map(function (item) {
+      return _objectSpread(_objectSpread({}, item), {}, {
+        selected: checked
+      });
+    });
+    setTransactions(updatedTransactions);
+    setSelectedActiveTransactions(checked ? updatedTransactions.map(function (item) {
+      return item.id;
+    }) : []);
+  };
+  var handleArchiveAll = function handleArchiveAll() {
+    if (selectedActiveTransactions.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].warning("Please select at least one transaction to archive");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
+      title: "Are you sure you want to archive ".concat(selectedActiveTransactions.length, " selected transaction(s)?"),
+      onOk: function onOk() {
+        Promise.all(selectedActiveTransactions.map(function (id) {
+          return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/transactions/").concat(id, "/archive"), {}, {
+            headers: {
+              Authorization: "Bearer ".concat(token)
+            }
+          });
+        })).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Selected transactions archived successfully");
+          fetchTransactions();
+          setSelectedActiveTransactions([]);
+          setSelectAllActive(false);
+        })["catch"](function () {
+          return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to archive some transactions");
+        });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
+
+  // Handlers for archived transactions multi-select
+  var handleArchivedCheckboxChange = function handleArchivedCheckboxChange(id) {
+    var updatedArchived = archivedTransactions.map(function (item) {
+      return item.id === id ? _objectSpread(_objectSpread({}, item), {}, {
+        selected: !item.selected
+      }) : item;
+    });
+    setArchivedTransactions(updatedArchived);
+    var selected = updatedArchived.filter(function (item) {
+      return item.selected;
+    }).map(function (item) {
+      return item.id;
+    });
+    setSelectedArchivedTransactions(selected);
+    setSelectAllArchived(updatedArchived.every(function (item) {
+      return item.selected;
+    }));
+  };
+  var handleSelectAllArchivedChange = function handleSelectAllArchivedChange(e) {
+    var checked = e.target.checked;
+    setSelectAllArchived(checked);
+    var updatedArchived = archivedTransactions.map(function (item) {
+      return _objectSpread(_objectSpread({}, item), {}, {
+        selected: checked
+      });
+    });
+    setArchivedTransactions(updatedArchived);
+    setSelectedArchivedTransactions(checked ? updatedArchived.map(function (item) {
+      return item.id;
+    }) : []);
+  };
+  var handleRestoreAll = function handleRestoreAll() {
+    if (selectedArchivedTransactions.length === 0) {
+      antd__WEBPACK_IMPORTED_MODULE_8__["default"].warning("Please select at least one transaction to restore");
+      return;
+    }
+    antd__WEBPACK_IMPORTED_MODULE_9__["default"].confirm({
+      title: "Are you sure you want to restore ".concat(selectedArchivedTransactions.length, " selected transaction(s)?"),
+      onOk: function onOk() {
+        Promise.all(selectedArchivedTransactions.map(function (id) {
+          return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/transactions/").concat(id, "/restore"), {}, {
+            headers: {
+              Authorization: "Bearer ".concat(token)
+            }
+          });
+        })).then(function () {
+          antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Selected transactions restored successfully");
+          fetchArchivedTransactions();
+          fetchTransactions();
+          setSelectedArchivedTransactions([]);
+          setSelectAllArchived(false);
+        })["catch"](function () {
+          return antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to restore some transactions");
+        });
+      },
+      okButtonProps: {
+        style: {
+          width: "80px"
+        }
+      },
+      cancelButtonProps: {
+        style: {
+          width: "80px"
+        }
+      }
+    });
+  };
+
+  // Active view: actions column contains only archive and update actions as icons.
+  var activeColumns = [{
+    title: "Actions",
+    key: "actions",
+    render: function render(_, record) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          checked: record.selected,
+          onChange: function onChange() {
+            return handleActiveCheckboxChange(record.id);
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+          type: "link",
+          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {}),
+          onClick: function onClick() {
+            return handleArchive(record.id);
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+          type: "link",
+          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {}),
+          onClick: function onClick() {
+            setEditingTransaction(record);
+            form.setFieldsValue({
+              payment_method_id: record.payment_method ? record.payment_method.id : null,
+              payment_status_id: record.payment_status ? record.payment_status.id : null,
+              transaction_status: record.transaction_status
+            });
+            setEditModalVisible(true);
+          }
+        })]
+      });
+    }
+  }, {
     title: "Customer Name",
     key: "customerName",
     render: function render(_, record) {
@@ -186540,43 +186431,37 @@ var TransactionManagement = function TransactionManagement() {
     render: function render(text) {
       return text || "-";
     }
-  }, {
+  }];
+
+  // Archived view: actions column now shows only the restore icon.
+  var archivedColumns = [{
     title: "Actions",
     key: "actions",
     render: function render(_, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          checked: record.selected,
+          onChange: function onChange() {
+            return handleArchivedCheckboxChange(record.id);
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
           type: "link",
-          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {}),
-          onClick: function onClick() {
-            return handleArchive(record.id);
-          },
-          children: "Archive"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-          type: "link",
-          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {}),
+          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {}),
           onClick: function onClick() {
             return handleRestore(record.id);
-          },
-          children: "Restore"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-          type: "link",
-          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
-          onClick: function onClick() {
-            setEditingTransaction(record);
-            form.setFieldsValue({
-              payment_method_id: record.payment_method ? record.payment_method.id : null,
-              payment_status_id: record.payment_status ? record.payment_status.id : null,
-              transaction_status: record.transaction_status
-              // We don’t allow editing payment option manually.
-            });
-            setEditModalVisible(true);
-          },
-          children: "Update"
+          }
         })]
       });
     }
-  }];
+  }].concat(_toConsumableArray(activeColumns.slice(1)));
+  var filteredTransactions = transactions.filter(function (transaction) {
+    var name = transaction.profile && transaction.profile.customer_name ? transaction.profile.customer_name : "";
+    return name.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+  var filteredArchivedTransactions = archivedTransactions.filter(function (transaction) {
+    var name = transaction.profile && transaction.profile.customer_name ? transaction.profile.customer_name : "";
+    return name.toLowerCase().includes(searchQuery.toLowerCase());
+  });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
       width: 256,
@@ -186593,19 +186478,66 @@ var TransactionManagement = function TransactionManagement() {
           fontWeight: "bold"
         },
         children: "TRANSACTION MANAGEMENT"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Content, {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Content, {
         style: {
           padding: 24,
           background: "#fff"
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
-          columns: columns,
-          dataSource: transactions,
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          style: {
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: 16
+          },
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            style: {
+              display: "flex",
+              alignItems: "center"
+            },
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Search, {
+              placeholder: "Search transactions",
+              onSearch: function onSearch(value) {
+                return setSearchQuery(value);
+              },
+              style: {
+                width: 300,
+                marginRight: 16
+              }
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+              checked: selectAllActive,
+              onChange: handleSelectAllActiveChange,
+              style: {
+                marginLeft: 16
+              },
+              children: "Select All"
+            }), (selectAllActive || selectedActiveTransactions.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+              type: "link",
+              onClick: handleArchiveAll,
+              style: {
+                marginLeft: 8
+              },
+              icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {})
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            type: "default",
+            icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {}),
+            onClick: function onClick() {
+              return setOpenArchiveModal(true);
+            },
+            style: {
+              marginRight: 8,
+              width: "131px"
+            },
+            children: "Archived View"
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
+          columns: activeColumns,
+          dataSource: filteredTransactions,
           rowKey: "id",
           loading: loading
-        })
+        })]
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
       title: "Update Transaction",
       visible: editModalVisible,
       onCancel: function onCancel() {
@@ -186613,11 +186545,11 @@ var TransactionManagement = function TransactionManagement() {
         setEditingTransaction(null);
       },
       footer: null,
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
         form: form,
         layout: "vertical",
         onFinish: handleUpdate,
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
           label: "Payment Method",
           name: "payment_method_id",
           rules: [{
@@ -186636,7 +186568,7 @@ var TransactionManagement = function TransactionManagement() {
               children: "Digital Wallet"
             })]
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
           label: "Payment Status",
           name: "payment_status_id",
           rules: [{
@@ -186655,7 +186587,7 @@ var TransactionManagement = function TransactionManagement() {
               children: "Failed"
             })]
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
           label: "Transaction Status",
           name: "transaction_status",
           rules: [{
@@ -186674,8 +186606,8 @@ var TransactionManagement = function TransactionManagement() {
               children: "Cancelled"
             })]
           })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
             type: "primary",
             htmlType: "submit",
             style: {
@@ -186685,6 +186617,45 @@ var TransactionManagement = function TransactionManagement() {
           })
         })]
       })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      title: "Archived Transactions",
+      centered: true,
+      open: openArchiveModal,
+      onCancel: function onCancel() {
+        return setOpenArchiveModal(false);
+      },
+      width: 1200,
+      footer: [],
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        style: {
+          display: "flex",
+          alignItems: "center",
+          marginBottom: 16
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          checked: selectAllArchived,
+          onChange: handleSelectAllArchivedChange,
+          style: {
+            marginRight: 16
+          },
+          children: "Select All"
+        }), (selectAllArchived || selectedArchivedTransactions.length > 0) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+          type: "link",
+          onClick: handleRestoreAll,
+          style: {
+            marginRight: 8
+          },
+          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {})
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
+        columns: archivedColumns,
+        dataSource: filteredArchivedTransactions,
+        rowKey: "id",
+        pagination: false,
+        scroll: {
+          x: 1200
+        }
+      })]
     })]
   });
 };
@@ -188097,7 +188068,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
-
+ // Assuming this is your Header.js renamed or in a Navbar folder
 
 var Option = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Option;
 var CheckoutPage = function CheckoutPage() {
@@ -188163,6 +188134,14 @@ var CheckoutPage = function CheckoutPage() {
     _useState24 = _slicedToArray(_useState23, 2),
     digitalWalletOption = _useState24[0],
     setDigitalWalletOption = _useState24[1];
+  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState26 = _slicedToArray(_useState25, 2),
+    successModalVisible = _useState26[0],
+    setSuccessModalVisible = _useState26[1];
+  var _useState27 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState28 = _slicedToArray(_useState27, 2),
+    orderId = _useState28[0],
+    setOrderId = _useState28[1];
   var API_URL = "http://localhost:8000/api";
   var token = localStorage.getItem("token");
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
@@ -188233,8 +188212,6 @@ var CheckoutPage = function CheckoutPage() {
       navigate("/user-cart");
     }
   }, [cartItems, navigate, token]);
-
-  // Auto-select and pre-fill default address if exists
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (addresses.length > 0) {
       var def = addresses.find(function (addr) {
@@ -188262,18 +188239,11 @@ var CheckoutPage = function CheckoutPage() {
     setShippingCost(selectedMethod ? parseFloat(selectedMethod.cost) : 0);
   }, [shippingMethod, shippingMethods]);
   var total = subtotal + shippingCost;
-
-  // Handle credit card form submission from the modal
   var handleCardSubmit = function handleCardSubmit(values) {
     console.log("Credit card details submitted:", values);
-    // For this example, we assume that submitting the credit card form
-    // sets the payment option to "Master Visa Card".
     antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Credit/Debit Card added successfully!");
     setCardModalVisible(false);
-    // In a real scenario, you might process the card info here.
   };
-
-  // Helper function to handle complete order submission.
   var handleCompleteOrder = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
       var values;
@@ -188369,7 +188339,6 @@ var CheckoutPage = function CheckoutPage() {
               total: total,
               payment_method_id: paymentMethod,
               shipping_method_id: shippingMethod,
-              // If Digital Wallet is chosen, include the sub-option.
               payment_option: paymentMethod && (_paymentMethods$find = paymentMethods.find(function (m) {
                 return m.id === paymentMethod;
               })) !== null && _paymentMethods$find !== void 0 && _paymentMethods$find.name.toLowerCase().includes("digital wallet") ? digitalWalletOption : null
@@ -188385,36 +188354,36 @@ var CheckoutPage = function CheckoutPage() {
           case 17:
             response = _context3.sent;
             if (!(response.status === 201)) {
-              _context3.next = 31;
+              _context3.next = 30;
               break;
             }
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Order placed successfully!");
+            _response$data = response.data, order_id = _response$data.order_id, address_id = _response$data.address_id;
+            setOrderId(order_id);
             localStorage.removeItem("cart");
             window.dispatchEvent(new Event("cartUpdated"));
-            _response$data = response.data, order_id = _response$data.order_id, address_id = _response$data.address_id;
+
+            // Dispatch orderPlaced event with order details
+            window.dispatchEvent(new CustomEvent("orderPlaced", {
+              detail: {
+                id: order_id
+              }
+            }));
             if (!(!useDefault && !selectedAddressId && saveInfo)) {
-              _context3.next = 29;
+              _context3.next = 28;
               break;
             }
-            _context3.next = 26;
+            _context3.next = 27;
             return axios__WEBPACK_IMPORTED_MODULE_7__["default"].put("".concat(API_URL, "/addresses/").concat(address_id, "/set-default"), {}, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
-          case 26:
+          case 27:
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].info("Default address updated for future orders.");
-            _context3.next = 30;
-            break;
-          case 29:
-            if (!saveInfo) {
-              // If user did not check "Save this information," you might handle that here.
-            }
-          case 30:
-            // Redirect based on payment method.
-            // Here, paymentMethod id "2" is assumed for Credit Card and "3" for Digital Wallet.
+          case 28:
+            setSuccessModalVisible(true);
             if (paymentMethod === 2) {
-              // Credit Card: direct to payment page with Master Visa Card info.
+              // Credit Card
               navigate("/payment", {
                 state: {
                   orderId: order_id,
@@ -188423,7 +188392,7 @@ var CheckoutPage = function CheckoutPage() {
                 }
               });
             } else if (paymentMethod === 3) {
-              // Digital Wallet: pass the chosen option (e.g., G-Cash or PayMaya)
+              // Digital Wallet
               navigate("/payment", {
                 state: {
                   orderId: order_id,
@@ -188431,40 +188400,37 @@ var CheckoutPage = function CheckoutPage() {
                   payment_option: digitalWalletOption
                 }
               });
-            } else {
-              navigate("/order-confirmation", {
-                state: {
-                  orderId: order_id
-                }
-              });
             }
-          case 31:
-            _context3.next = 37;
+          case 30:
+            _context3.next = 36;
             break;
-          case 33:
-            _context3.prev = 33;
+          case 32:
+            _context3.prev = 32;
             _context3.t0 = _context3["catch"](14);
             console.error("Order submission error:", ((_error$response = _context3.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context3.t0);
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].error(((_error$response2 = _context3.t0.response) === null || _error$response2 === void 0 || (_error$response2 = _error$response2.data) === null || _error$response2 === void 0 ? void 0 : _error$response2.message) || "Failed to place order.");
-          case 37:
-            _context3.prev = 37;
+          case 36:
+            _context3.prev = 36;
             setLoading(false);
-            return _context3.finish(37);
-          case 40:
+            return _context3.finish(36);
+          case 39:
           case "end":
             return _context3.stop();
         }
-      }, _callee3, null, [[14, 33, 37, 40]]);
+      }, _callee3, null, [[14, 32, 36, 39]]);
     }));
     return function onFinish(_x) {
       return _ref4.apply(this, arguments);
     };
   }();
-  var handleAddressNotDefault = function handleAddressNotDefault() {
-    console.log("Order used a non-default address. Not updating default.");
+  var handleViewTrackOrder = function handleViewTrackOrder() {
+    setSuccessModalVisible(false);
+    navigate("/order-tracking/".concat(orderId));
   };
-
-  // Determine if the selected payment method is credit/debit card or digital wallet.
+  var handleGoHome = function handleGoHome() {
+    setSuccessModalVisible(false);
+    navigate("/user-home");
+  };
   var selectedPaymentMethod = paymentMethods.find(function (m) {
     return m.id === paymentMethod;
   });
@@ -188617,7 +188583,6 @@ var CheckoutPage = function CheckoutPage() {
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"].Group, {
               onChange: function onChange(e) {
                 setPaymentMethod(e.target.value);
-                // Reset any previously selected digital wallet option
                 setDigitalWalletOption(null);
               },
               value: paymentMethod,
@@ -188832,6 +188797,21 @@ var CheckoutPage = function CheckoutPage() {
           })
         })]
       })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
+      title: "Order Submitted",
+      visible: successModalVisible,
+      footer: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+        onClick: handleGoHome,
+        children: "Home"
+      }, "home"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+        type: "primary",
+        onClick: handleViewTrackOrder,
+        children: "View Track Order"
+      }, "track")],
+      closable: false,
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+        children: ["YOUR ORDER #", orderId, " WAS SUBMITTED. THANKS FOR SHOPPING WITH TIMELESS!"]
+      })
     })]
   });
 };
@@ -189548,12 +189528,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/notification/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/menu/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/menu/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/dropdown/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/badge/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/MenuOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/BellOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingCartOutlined.js");
@@ -189561,6 +189541,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
@@ -189602,6 +189586,11 @@ var Header = function Header() {
     _useState12 = _slicedToArray(_useState11, 2),
     notificationCount = _useState12[0],
     setNotificationCount = _useState12[1];
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+    _useState14 = _slicedToArray(_useState13, 2),
+    readNotifications = _useState14[0],
+    setReadNotifications = _useState14[1]; // New state to track read notifications
+
   var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_3__.useNavigate)();
   var token = localStorage.getItem("token");
 
@@ -189666,7 +189655,7 @@ var Header = function Header() {
   // Function to fetch orders from API
   var fetchOrders = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      var response, orderData, allOrders, activeOrders, _err$response;
+      var response, orderData, allOrders, placedOrders, _err$response;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
@@ -189679,29 +189668,28 @@ var Header = function Header() {
             });
           case 3:
             response = _context.sent;
-            console.log("Fetched orders from my-purchases:", response.data);
             orderData = response.data.data || response.data;
             allOrders = Array.isArray(orderData) ? orderData : [];
             setOrders(allOrders);
 
-            // Filter out completed orders for notification count
-            activeOrders = allOrders.filter(function (order) {
-              return order.order_status.toLowerCase() !== "completed";
+            // Only count "Order Placed" (pending) notifications that are unread
+            placedOrders = allOrders.filter(function (order) {
+              return order.order_status.toLowerCase() === "pending" && !readNotifications.includes(order.id);
             });
-            setNotificationCount(activeOrders.length);
-            _context.next = 17;
+            setNotificationCount(placedOrders.length);
+            _context.next = 16;
             break;
-          case 12:
-            _context.prev = 12;
+          case 11:
+            _context.prev = 11;
             _context.t0 = _context["catch"](0);
             console.error("Error fetching orders:", ((_err$response = _context.t0.response) === null || _err$response === void 0 ? void 0 : _err$response.data) || _context.t0.message);
             setOrders([]);
             setNotificationCount(0);
-          case 17:
+          case 16:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[0, 12]]);
+      }, _callee, null, [[0, 11]]);
     }));
     return function fetchOrders() {
       return _ref.apply(this, arguments);
@@ -189711,32 +189699,11 @@ var Header = function Header() {
   // Listen for order-related events
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var handleOrderPlaced = function handleOrderPlaced(e) {
-      var _order$order_details;
-      console.log("Order placed event triggered:", e.detail);
       var order = e.detail;
-      var productName = (order === null || order === void 0 || (_order$order_details = order.order_details) === null || _order$order_details === void 0 || (_order$order_details = _order$order_details[0]) === null || _order$order_details === void 0 || (_order$order_details = _order$order_details.product) === null || _order$order_details === void 0 ? void 0 : _order$order_details.product_name) || "Unknown Product";
-      antd__WEBPACK_IMPORTED_MODULE_5__["default"].success({
-        message: "Order Placed",
-        description: "You've ordered ".concat(productName),
-        placement: "topRight",
-        duration: 3
-      });
-      fetchOrders();
+      fetchOrders(); // Refresh orders to include the new one
     };
     var handleOrderStatusUpdate = function handleOrderStatusUpdate(e) {
-      var _order$order_details2;
-      console.log("Order status update event triggered:", e.detail);
-      var order = e.detail;
-      var productName = (order === null || order === void 0 || (_order$order_details2 = order.order_details) === null || _order$order_details2 === void 0 || (_order$order_details2 = _order$order_details2[0]) === null || _order$order_details2 === void 0 || (_order$order_details2 = _order$order_details2.product) === null || _order$order_details2 === void 0 ? void 0 : _order$order_details2.product_name) || "Unknown Product";
-      if (order.order_status.toLowerCase() === "shipped") {
-        antd__WEBPACK_IMPORTED_MODULE_5__["default"].info({
-          message: "Order Shipped",
-          description: "Admin has shipped your product: ".concat(productName),
-          placement: "topRight",
-          duration: 3
-        });
-      }
-      fetchOrders();
+      fetchOrders(); // Refresh orders on status update
     };
     window.addEventListener("orderPlaced", handleOrderPlaced);
     window.addEventListener("orderStatusUpdated", handleOrderStatusUpdate);
@@ -189745,31 +189712,48 @@ var Header = function Header() {
       window.removeEventListener("orderStatusUpdated", handleOrderStatusUpdate);
     };
   }, []);
+
+  // Mark notification as read and navigate to tracking page
+  var markAsReadAndNavigate = function markAsReadAndNavigate(orderId) {
+    if (!readNotifications.includes(orderId)) {
+      setReadNotifications(function (prev) {
+        return [].concat(_toConsumableArray(prev), [orderId]);
+      });
+      setNotificationCount(function (prev) {
+        return Math.max(0, prev - 1);
+      }); // Decrease count, ensure it doesn't go below 0
+    }
+    navigate("/order-tracking/".concat(orderId));
+  };
   var avatarSrc = profile && profile.profile_image ? "".concat(profile.profile_image, "?").concat(new Date().getTime()) : "/images/default-avatar.png";
   var username = profile ? profile.username : "Guest";
-  var categoriesMenu = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+  var categoriesMenu = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
     className: "white-dropdown",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
       children: "Luxury Watches"
-    }, "luxury-watches"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+    }, "luxury-watches"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
       children: "Fashion Watches"
-    }, "fashion-watches"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+    }, "fashion-watches"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
       children: "Smart Watches"
     }, "smart-watches")]
   });
-  var notificationsMenu = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+  var notificationsMenu = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
     className: "white-dropdown",
     style: {
       width: 350
     },
-    children: [orders.length > 0 ? orders.slice(0, 3).map(function (order) {
-      var _order$order_details3;
-      var product = ((_order$order_details3 = order.order_details) === null || _order$order_details3 === void 0 || (_order$order_details3 = _order$order_details3[0]) === null || _order$order_details3 === void 0 ? void 0 : _order$order_details3.product) || {};
-      console.log("Rendering order:", order);
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+    children: [orders.length > 0 ? orders.filter(function (order) {
+      return order.order_status.toLowerCase() === "pending";
+    }) // Only show "Order Placed" (pending status)
+    .slice(0, 3) // Limit to 3 notifications
+    .map(function (order) {
+      var _order$order_details;
+      var product = ((_order$order_details = order.order_details) === null || _order$order_details === void 0 || (_order$order_details = _order$order_details[0]) === null || _order$order_details === void 0 ? void 0 : _order$order_details.product) || {};
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
         onClick: function onClick() {
-          return navigate("/order-tracking/".concat(order.id));
-        },
+          return markAsReadAndNavigate(order.id);
+        } // Mark as read and navigate
+        ,
         style: {
           height: "auto",
           padding: "10px",
@@ -189780,18 +189764,10 @@ var Header = function Header() {
             display: "flex",
             alignItems: "center"
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-            src: product.main_image ? "http://localhost:8000/storage/".concat(product.main_image) : "/images/default-product.png",
-            alt: product.product_name || "Product",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_6__["default"], {
             style: {
-              width: 50,
-              height: 50,
-              objectFit: "cover",
-              marginRight: 10,
-              borderRadius: 4
-            },
-            onError: function onError(e) {
-              e.target.src = "/images/default-product.png";
+              fontSize: "20px",
+              marginRight: "10px"
             }
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
             style: {
@@ -189801,20 +189777,32 @@ var Header = function Header() {
               style: {
                 fontWeight: "bold"
               },
-              children: product.product_name || "Unnamed Product"
+              children: "Order Placed"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
               style: {
                 fontSize: "12px",
                 color: "#888"
               },
-              children: [order.order_status, " -", " ", new Date(order.order_date).toLocaleString()]
+              children: ["Your order (", order.id, ") was submitted. Thanks for Shopping with Timeless!"]
             })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+            src: product.main_image ? "http://localhost:8000/storage/".concat(product.main_image) : "/images/default-product.png",
+            alt: product.product_name || "Product",
+            style: {
+              width: 50,
+              height: 50,
+              objectFit: "cover",
+              borderRadius: 4
+            },
+            onError: function onError(e) {
+              e.target.src = "/images/default-product.png";
+            }
           })]
         })
       }, order.id);
-    }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+    }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
       children: "No new notifications"
-    }, "no-notif"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+    }, "no-notif"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
       style: {
         textAlign: "center"
       },
@@ -189863,12 +189851,12 @@ var Header = function Header() {
     navigate(path);
     setIsMobileMenuVisible(false);
   };
-  var userMenu = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+  var userMenu = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
     className: "white-dropdown",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
       onClick: handleProfileClick,
       children: "Profile"
-    }, "profile"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+    }, "profile"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
       onClick: handleLogout,
       children: "Logout"
     }, "logout")]
@@ -189876,11 +189864,9 @@ var Header = function Header() {
   var toggleMobileMenu = function toggleMobileMenu() {
     setIsMobileMenuVisible(!isMobileMenuVisible);
   };
-
-  // Prevent any selection behavior on click or double-click
   var handleMenuClick = function handleMenuClick(e) {
-    e.domEvent.preventDefault(); // Prevent default behavior
-    handleNavigation(e.item.props.path); // Navigate without highlighting
+    e.domEvent.preventDefault();
+    handleNavigation(e.item.props.path);
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(AntHeader, {
     className: "header",
@@ -189894,27 +189880,25 @@ var Header = function Header() {
       className: "mobile-menu-button",
       onClick: toggleMobileMenu,
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {})
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
       theme: "light",
       mode: "horizontal",
       className: "nav-menu ".concat(isMobileMenuVisible ? "visible" : ""),
-      selectedKeys: [] // Explicitly empty to prevent highlighting
-      ,
-      onClick: handleMenuClick // Custom click handler
-      ,
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+      selectedKeys: [],
+      onClick: handleMenuClick,
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
         path: "/user-home",
         children: "Home"
-      }, "home"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+      }, "home"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
         path: "/aboutus",
         children: "About Us"
-      }, "about"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+      }, "about"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
         path: "/user-collection",
         children: "Collection"
       }, "collection"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
         overlay: categoriesMenu,
         placement: "bottomLeft",
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
           children: "Categories"
         }, "categories")
       })]
@@ -190028,7 +190012,7 @@ var Content = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Content;
 var Text = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Text,
   Title = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Title;
 var OrderTracking = function OrderTracking() {
-  var _order$order_details, _order$shipping2, _order$shipping3, _order$shipping4, _order$shipping5, _order$shipping6, _order$shipping7, _order$shipping8;
+  var _order$shipping2, _order$shipping3, _order$shipping4, _order$shipping5, _order$shipping6, _order$shipping7, _order$shipping8;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState2 = _slicedToArray(_useState, 2),
     order = _useState2[0],
@@ -190278,7 +190262,6 @@ var OrderTracking = function OrderTracking() {
     var timestamps = {
       placed: (order === null || order === void 0 ? void 0 : order.created_at) || null,
       paymentConfirmed: (order === null || order === void 0 ? void 0 : order.payment_confirmed_at) || null,
-      // removed fallback to updated_at
       shipped: (order === null || order === void 0 ? void 0 : order.shipped_at) || null,
       delivered: (order === null || order === void 0 ? void 0 : order.delivered_at) || null,
       completed: (order === null || order === void 0 ? void 0 : order.completed_at) || null
@@ -190334,7 +190317,6 @@ var OrderTracking = function OrderTracking() {
     var date = new Date(timestamp);
     return "".concat((date.getMonth() + 1).toString().padStart(2, "0"), "/").concat(date.getDate().toString().padStart(2, "0"), "/").concat(date.getFullYear());
   };
-  var productName = (order === null || order === void 0 || (_order$order_details = order.order_details) === null || _order$order_details === void 0 || (_order$order_details = _order$order_details[0]) === null || _order$order_details === void 0 || (_order$order_details = _order$order_details.product) === null || _order$order_details === void 0 ? void 0 : _order$order_details.product_name) || "Tracking";
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     className: "order-tracking",
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_Navbar_Navbar__WEBPACK_IMPORTED_MODULE_1__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Content, {
@@ -190349,7 +190331,7 @@ var OrderTracking = function OrderTracking() {
             children: "Back to Shipped Orders"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
             level: 2,
-            children: productName
+            children: "TRACKING ORDER"
           })]
         }), loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
           className: "loading-text",

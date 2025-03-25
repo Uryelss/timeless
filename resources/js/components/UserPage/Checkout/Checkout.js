@@ -17,7 +17,7 @@ import {
 } from "antd";
 import { LockOutlined, PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../Navbar/Navbar"; // Assuming this is your Header.js renamed or in a Navbar folder
 
 const { Option } = Select;
 
@@ -43,6 +43,8 @@ const CheckoutPage = () => {
     const [loading, setLoading] = useState(false);
     const [cardModalVisible, setCardModalVisible] = useState(false);
     const [digitalWalletOption, setDigitalWalletOption] = useState(null);
+    const [successModalVisible, setSuccessModalVisible] = useState(false);
+    const [orderId, setOrderId] = useState(null);
 
     const API_URL = "http://localhost:8000/api";
     const token = localStorage.getItem("token");
@@ -89,7 +91,6 @@ const CheckoutPage = () => {
         }
     }, [cartItems, navigate, token]);
 
-    // Auto-select and pre-fill default address if exists
     useEffect(() => {
         if (addresses.length > 0) {
             const def = addresses.find((addr) => addr.is_default);
@@ -118,24 +119,18 @@ const CheckoutPage = () => {
 
     const total = subtotal + shippingCost;
 
-    // Handle credit card form submission from the modal
     const handleCardSubmit = (values) => {
         console.log("Credit card details submitted:", values);
-        // For this example, we assume that submitting the credit card form
-        // sets the payment option to "Master Visa Card".
         message.success("Credit/Debit Card added successfully!");
         setCardModalVisible(false);
-        // In a real scenario, you might process the card info here.
     };
 
-    // Helper function to handle complete order submission.
     const handleCompleteOrder = async () => {
         if (!selectedAddressId) {
             try {
                 const values = await form.validateFields();
                 onFinish(values);
             } catch (error) {
-                // Form validation failed.
                 return;
             }
         } else {
@@ -196,7 +191,6 @@ const CheckoutPage = () => {
             total,
             payment_method_id: paymentMethod,
             shipping_method_id: shippingMethod,
-            // If Digital Wallet is chosen, include the sub-option.
             payment_option:
                 paymentMethod &&
                 paymentMethods
@@ -220,28 +214,30 @@ const CheckoutPage = () => {
             );
 
             if (response.status === 201) {
-                message.success("Order placed successfully!");
+                const { order_id, address_id } = response.data;
+                setOrderId(order_id);
+
                 localStorage.removeItem("cart");
                 window.dispatchEvent(new Event("cartUpdated"));
-                const { order_id, address_id } = response.data;
+
+                // Dispatch orderPlaced event with order details
+                window.dispatchEvent(
+                    new CustomEvent("orderPlaced", { detail: { id: order_id } })
+                );
 
                 if (!useDefault && !selectedAddressId && saveInfo) {
                     await axios.put(
                         `${API_URL}/addresses/${address_id}/set-default`,
                         {},
-                        {
-                            headers: { Authorization: `Bearer ${token}` },
-                        }
+                        { headers: { Authorization: `Bearer ${token}` } }
                     );
                     message.info("Default address updated for future orders.");
-                } else if (!saveInfo) {
-                    // If user did not check "Save this information," you might handle that here.
                 }
 
-                // Redirect based on payment method.
-                // Here, paymentMethod id "2" is assumed for Credit Card and "3" for Digital Wallet.
+                setSuccessModalVisible(true);
+
                 if (paymentMethod === 2) {
-                    // Credit Card: direct to payment page with Master Visa Card info.
+                    // Credit Card
                     navigate("/payment", {
                         state: {
                             orderId: order_id,
@@ -250,17 +246,13 @@ const CheckoutPage = () => {
                         },
                     });
                 } else if (paymentMethod === 3) {
-                    // Digital Wallet: pass the chosen option (e.g., G-Cash or PayMaya)
+                    // Digital Wallet
                     navigate("/payment", {
                         state: {
                             orderId: order_id,
                             total,
                             payment_option: digitalWalletOption,
                         },
-                    });
-                } else {
-                    navigate("/order-confirmation", {
-                        state: { orderId: order_id },
                     });
                 }
             }
@@ -277,11 +269,16 @@ const CheckoutPage = () => {
         }
     };
 
-    const handleAddressNotDefault = () => {
-        console.log("Order used a non-default address. Not updating default.");
+    const handleViewTrackOrder = () => {
+        setSuccessModalVisible(false);
+        navigate(`/order-tracking/${orderId}`);
     };
 
-    // Determine if the selected payment method is credit/debit card or digital wallet.
+    const handleGoHome = () => {
+        setSuccessModalVisible(false);
+        navigate("/user-home");
+    };
+
     const selectedPaymentMethod = paymentMethods.find(
         (m) => m.id === paymentMethod
     );
@@ -319,10 +316,7 @@ const CheckoutPage = () => {
                         >
                             {addresses.length > 0 && (
                                 <Select
-                                    style={{
-                                        width: "100%",
-                                        marginBottom: 16,
-                                    }}
+                                    style={{ width: "100%", marginBottom: 16 }}
                                     placeholder="Select an existing address"
                                     onChange={(value) => {
                                         setSelectedAddressId(value);
@@ -472,7 +466,6 @@ const CheckoutPage = () => {
                             <Radio.Group
                                 onChange={(e) => {
                                     setPaymentMethod(e.target.value);
-                                    // Reset any previously selected digital wallet option
                                     setDigitalWalletOption(null);
                                 }}
                                 value={paymentMethod}
@@ -700,6 +693,30 @@ const CheckoutPage = () => {
                         </Button>
                     </Form.Item>
                 </Form>
+            </Modal>
+
+            {/* Success Modal */}
+            <Modal
+                title="Order Submitted"
+                visible={successModalVisible}
+                footer={[
+                    <Button key="home" onClick={handleGoHome}>
+                        Home
+                    </Button>,
+                    <Button
+                        key="track"
+                        type="primary"
+                        onClick={handleViewTrackOrder}
+                    >
+                        View Track Order
+                    </Button>,
+                ]}
+                closable={false}
+            >
+                <p>
+                    YOUR ORDER #{orderId} WAS SUBMITTED. THANKS FOR SHOPPING
+                    WITH TIMELESS!
+                </p>
             </Modal>
         </div>
     );

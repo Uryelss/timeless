@@ -14,6 +14,7 @@ import {
     BellOutlined,
     MenuOutlined,
     UserOutlined,
+    ShoppingOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
@@ -26,6 +27,7 @@ const Header = () => {
     const [cartCount, setCartCount] = useState(0);
     const [orders, setOrders] = useState([]);
     const [notificationCount, setNotificationCount] = useState(0);
+    const [readNotifications, setReadNotifications] = useState([]); // New state to track read notifications
 
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
@@ -98,16 +100,17 @@ const Header = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-            console.log("Fetched orders from my-purchases:", response.data);
             const orderData = response.data.data || response.data;
             const allOrders = Array.isArray(orderData) ? orderData : [];
             setOrders(allOrders);
 
-            // Filter out completed orders for notification count
-            const activeOrders = allOrders.filter(
-                (order) => order.order_status.toLowerCase() !== "completed"
+            // Only count "Order Placed" (pending) notifications that are unread
+            const placedOrders = allOrders.filter(
+                (order) =>
+                    order.order_status.toLowerCase() === "pending" &&
+                    !readNotifications.includes(order.id)
             );
-            setNotificationCount(activeOrders.length);
+            setNotificationCount(placedOrders.length);
         } catch (err) {
             console.error(
                 "Error fetching orders:",
@@ -121,36 +124,12 @@ const Header = () => {
     // Listen for order-related events
     useEffect(() => {
         const handleOrderPlaced = (e) => {
-            console.log("Order placed event triggered:", e.detail);
             const order = e.detail;
-            const productName =
-                order?.order_details?.[0]?.product?.product_name ||
-                "Unknown Product";
-            notification.success({
-                message: "Order Placed",
-                description: `You've ordered ${productName}`,
-                placement: "topRight",
-                duration: 3,
-            });
-            fetchOrders();
+            fetchOrders(); // Refresh orders to include the new one
         };
 
         const handleOrderStatusUpdate = (e) => {
-            console.log("Order status update event triggered:", e.detail);
-            const order = e.detail;
-            const productName =
-                order?.order_details?.[0]?.product?.product_name ||
-                "Unknown Product";
-
-            if (order.order_status.toLowerCase() === "shipped") {
-                notification.info({
-                    message: "Order Shipped",
-                    description: `Admin has shipped your product: ${productName}`,
-                    placement: "topRight",
-                    duration: 3,
-                });
-            }
-            fetchOrders();
+            fetchOrders(); // Refresh orders on status update
         };
 
         window.addEventListener("orderPlaced", handleOrderPlaced);
@@ -164,6 +143,15 @@ const Header = () => {
             );
         };
     }, []);
+
+    // Mark notification as read and navigate to tracking page
+    const markAsReadAndNavigate = (orderId) => {
+        if (!readNotifications.includes(orderId)) {
+            setReadNotifications((prev) => [...prev, orderId]);
+            setNotificationCount((prev) => Math.max(0, prev - 1)); // Decrease count, ensure it doesn't go below 0
+        }
+        navigate(`/order-tracking/${orderId}`);
+    };
 
     const avatarSrc =
         profile && profile.profile_image
@@ -183,67 +171,73 @@ const Header = () => {
     const notificationsMenu = (
         <Menu className="white-dropdown" style={{ width: 350 }}>
             {orders.length > 0 ? (
-                orders.slice(0, 3).map((order) => {
-                    const product = order.order_details?.[0]?.product || {};
-                    console.log("Rendering order:", order);
-                    return (
-                        <Menu.Item
-                            key={order.id}
-                            onClick={() =>
-                                navigate(`/order-tracking/${order.id}`)
-                            }
-                            style={{
-                                height: "auto",
-                                padding: "10px",
-                                cursor: "pointer",
-                            }}
-                        >
-                            <div
+                orders
+                    .filter(
+                        (order) =>
+                            order.order_status.toLowerCase() === "pending"
+                    ) // Only show "Order Placed" (pending status)
+                    .slice(0, 3) // Limit to 3 notifications
+                    .map((order) => {
+                        const product = order.order_details?.[0]?.product || {};
+                        return (
+                            <Menu.Item
+                                key={order.id}
+                                onClick={() => markAsReadAndNavigate(order.id)} // Mark as read and navigate
                                 style={{
-                                    display: "flex",
-                                    alignItems: "center",
+                                    height: "auto",
+                                    padding: "10px",
+                                    cursor: "pointer",
                                 }}
                             >
-                                <img
-                                    src={
-                                        product.main_image
-                                            ? `http://localhost:8000/storage/${product.main_image}`
-                                            : "/images/default-product.png"
-                                    }
-                                    alt={product.product_name || "Product"}
+                                <div
                                     style={{
-                                        width: 50,
-                                        height: 50,
-                                        objectFit: "cover",
-                                        marginRight: 10,
-                                        borderRadius: 4,
+                                        display: "flex",
+                                        alignItems: "center",
                                     }}
-                                    onError={(e) => {
-                                        e.target.src =
-                                            "/images/default-product.png";
-                                    }}
-                                />
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ fontWeight: "bold" }}>
-                                        {product.product_name ||
-                                            "Unnamed Product"}
-                                    </div>
-                                    <div
+                                >
+                                    <ShoppingOutlined
                                         style={{
-                                            fontSize: "12px",
-                                            color: "#888",
+                                            fontSize: "20px",
+                                            marginRight: "10px",
                                         }}
-                                    >
-                                        {order.order_status} -{" "}
-                                        {new Date(
-                                            order.order_date
-                                        ).toLocaleString()}
+                                    />
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontWeight: "bold" }}>
+                                            Order Placed
+                                        </div>
+                                        <div
+                                            style={{
+                                                fontSize: "12px",
+                                                color: "#888",
+                                            }}
+                                        >
+                                            Your order ({order.id}) was
+                                            submitted. Thanks for Shopping with
+                                            Timeless!
+                                        </div>
                                     </div>
+                                    <img
+                                        src={
+                                            product.main_image
+                                                ? `http://localhost:8000/storage/${product.main_image}`
+                                                : "/images/default-product.png"
+                                        }
+                                        alt={product.product_name || "Product"}
+                                        style={{
+                                            width: 50,
+                                            height: 50,
+                                            objectFit: "cover",
+                                            borderRadius: 4,
+                                        }}
+                                        onError={(e) => {
+                                            e.target.src =
+                                                "/images/default-product.png";
+                                        }}
+                                    />
                                 </div>
-                            </div>
-                        </Menu.Item>
-                    );
-                })
+                            </Menu.Item>
+                        );
+                    })
             ) : (
                 <Menu.Item key="no-notif">No new notifications</Menu.Item>
             )}
@@ -295,10 +289,9 @@ const Header = () => {
         setIsMobileMenuVisible(!isMobileMenuVisible);
     };
 
-    // Prevent any selection behavior on click or double-click
     const handleMenuClick = (e) => {
-        e.domEvent.preventDefault(); // Prevent default behavior
-        handleNavigation(e.item.props.path); // Navigate without highlighting
+        e.domEvent.preventDefault();
+        handleNavigation(e.item.props.path);
     };
 
     return (
@@ -313,8 +306,8 @@ const Header = () => {
                 theme="light"
                 mode="horizontal"
                 className={`nav-menu ${isMobileMenuVisible ? "visible" : ""}`}
-                selectedKeys={[]} // Explicitly empty to prevent highlighting
-                onClick={handleMenuClick} // Custom click handler
+                selectedKeys={[]}
+                onClick={handleMenuClick}
             >
                 <Menu.Item key="home" path="/user-home">
                     Home

@@ -183,7 +183,7 @@ const OrderTracking = () => {
         const shippingStatusId = order?.shipping?.shipping_status_id || 1;
         const timestamps = {
             placed: order?.created_at || null,
-            paymentConfirmed: order?.payment_confirmed_at || null, // removed fallback to updated_at
+            paymentConfirmed: order?.payment_confirmed_at || null,
             shipped: order?.shipped_at || null,
             delivered: order?.delivered_at || null,
             completed: order?.completed_at || null,
@@ -257,9 +257,6 @@ const OrderTracking = () => {
             .padStart(2, "0")}/${date.getFullYear()}`;
     };
 
-    const productName =
-        order?.order_details?.[0]?.product?.product_name || "Tracking";
-
     return (
         <Layout className="order-tracking">
             <Navbar />
@@ -273,7 +270,7 @@ const OrderTracking = () => {
                         >
                             Back to Shipped Orders
                         </Button>
-                        <Title level={2}>{productName}</Title>
+                        <Title level={2}>TRACKING ORDER</Title>
                     </div>
 
                     {loading ? (
