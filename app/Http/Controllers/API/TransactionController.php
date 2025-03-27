@@ -10,16 +10,21 @@ use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
+    /**
+     * Retrieve a paginated list of transactions.
+     * Supports fetching archived transactions if 'archived=1' is passed.
+     */
     public function index(Request $request)
     {
         try {
             if ($request->query('archived') == 1) {
-                // Return only soft-deleted (archived) transactions
+                // Fetch only soft-deleted (archived) transactions
                 $transactions = Transaction::withTrashed()
                     ->onlyTrashed()
                     ->with(['profile', 'order', 'paymentMethod', 'paymentStatus'])
                     ->paginate(10);
             } else {
+                // Fetch active transactions
                 $transactions = Transaction::with(['profile', 'order', 'paymentMethod', 'paymentStatus'])
                     ->paginate(10);
             }
@@ -30,6 +35,10 @@ class TransactionController extends Controller
         }
     }
 
+    /**
+     * Update a transaction's details.
+     * Allows updating payment status independently of transaction status.
+     */
     public function update(Request $request, $id)
     {
         return DB::transaction(function () use ($request, $id) {
@@ -41,10 +50,11 @@ class TransactionController extends Controller
                     'transaction_status' => 'sometimes|required|string|in:Pending,Completed,Cancelled',
                 ]);
 
-                // Update the transaction with the validated data
+                // Update the transaction with validated data
                 $transaction->update($data);
                 Log::info("Transaction {$id} updated by user {$request->user()->id}");
 
+                // If transaction status is set to "Completed", update the associated order
                 if (isset($data['transaction_status']) && $data['transaction_status'] === 'Completed') {
                     $order = $transaction->order;
                     if ($order) {
@@ -65,6 +75,9 @@ class TransactionController extends Controller
         });
     }
 
+    /**
+     * Archive a transaction (soft delete).
+     */
     public function archive($id)
     {
         try {
@@ -81,6 +94,9 @@ class TransactionController extends Controller
         }
     }
 
+    /**
+     * Restore an archived transaction.
+     */
     public function restore($id)
     {
         try {

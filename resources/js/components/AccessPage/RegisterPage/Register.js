@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Button, message, Row, Col } from "antd";
+import { Form, Input, Button, message, Row, Col, Select } from "antd";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
@@ -11,7 +11,7 @@ const Register = () => {
             first_name: values.first_name,
             middle_name: values.middle_name,
             last_name: values.last_name,
-            suffix: values.suffix, // optional
+            suffix: values.suffix === "None" ? undefined : values.suffix, // Treat "None" as no suffix
             password: values.password,
             password_confirmation: values.password_confirmation,
         };
@@ -34,7 +34,6 @@ const Register = () => {
                 <h2>Register</h2>
                 <p className="sub-text">Create an account to continue</p>
 
-                {/* Updated Form Structure */}
                 <Form name="register" onFinish={onFinish} layout="vertical">
                     <Row gutter={16}>
                         <Col span={12}>
@@ -111,7 +110,21 @@ const Register = () => {
                         </Col>
                         <Col span={12}>
                             <Form.Item name="suffix" label="Suffix (optional)">
-                                <Input className="auth-input" />
+                                <Select
+                                    className="auth-input"
+                                    placeholder="Select suffix"
+                                    allowClear
+                                >
+                                    <Select.Option value="None">
+                                        None
+                                    </Select.Option>
+                                    <Select.Option value="Jr">Jr</Select.Option>
+                                    <Select.Option value="Sr">Sr</Select.Option>
+                                    <Select.Option value="II">II</Select.Option>
+                                    <Select.Option value="III">
+                                        III
+                                    </Select.Option>
+                                </Select>
                             </Form.Item>
                         </Col>
                     </Row>

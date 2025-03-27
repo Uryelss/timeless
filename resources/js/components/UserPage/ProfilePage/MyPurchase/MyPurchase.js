@@ -14,6 +14,7 @@ import {
 import { SearchOutlined } from "@ant-design/icons";
 import Navbar from "../../Navbar/Navbar"; // Adjust path as needed
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const { TabPane } = Tabs;
 
@@ -23,6 +24,7 @@ const MyPurchase = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalOrders, setTotalOrders] = useState(0);
     const API_URL = "http://localhost:8000/api/my-purchases";
+    const navigate = useNavigate();
 
     // Fetch orders from the API
     const fetchOrders = (page = 1) => {
@@ -40,7 +42,7 @@ const MyPurchase = () => {
                         name: detail.product?.product_name || "Unknown Product",
                         quantity: detail.quantity || 0,
                         price: detail.price || 0,
-                        size: detail.inventory?.size || "N/A", // Assuming size comes from inventory
+                        size: detail.inventory?.size || "N/A",
                         image: detail.product?.main_image
                             ? `http://localhost:8000/storage/${detail.product.main_image}`
                             : "https://via.placeholder.com/80",
@@ -104,6 +106,11 @@ const MyPurchase = () => {
         );
     });
 
+    // Handle track order button click
+    const handleTrackOrder = (orderId) => {
+        navigate(`/track-order/${orderId}`);
+    };
+
     return (
         <div>
             <Navbar />
@@ -119,7 +126,11 @@ const MyPurchase = () => {
                         <OrderList orders={filteredOrders} />
                     </TabPane>
                     <TabPane tab="To Pay" key="2">
-                        <OrderList orders={filterOrdersByStatus("To Pay")} />
+                        <OrderList
+                            orders={filterOrdersByStatus("To Pay")}
+                            showTrackButton={true}
+                            onTrackOrder={handleTrackOrder}
+                        />
                     </TabPane>
                     <TabPane tab="To Ship" key="3">
                         <OrderList orders={filterOrdersByStatus("To Ship")} />
@@ -169,7 +180,7 @@ const MyPurchase = () => {
 };
 
 // Reusable Order List Component
-const OrderList = ({ orders }) => (
+const OrderList = ({ orders, showTrackButton = false, onTrackOrder }) => (
     <>
         {orders.map((order) => (
             <Card key={order.id} style={{ marginBottom: "20px" }}>
@@ -182,10 +193,7 @@ const OrderList = ({ orders }) => (
                             {order.status === "To Receive"
                                 ? "Parcel has arrived and to be received by the delivery hub"
                                 : order.status}
-                        </span>{" "}
-                        <Button type="link" style={{ color: "#f5222d" }}>
-                            {order.status.toUpperCase()}
-                        </Button>
+                        </span>
                     </Col>
                 </Row>
                 <hr />
@@ -231,6 +239,14 @@ const OrderList = ({ orders }) => (
                             <Button type="primary" danger>
                                 Contact Seller
                             </Button>
+                            {showTrackButton && (
+                                <Button
+                                    type="primary"
+                                    onClick={() => onTrackOrder(order.id)}
+                                >
+                                    Track Order
+                                </Button>
+                            )}
                         </Space>
                     </Col>
                 </Row>
