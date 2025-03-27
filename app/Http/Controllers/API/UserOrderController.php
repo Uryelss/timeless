@@ -108,17 +108,14 @@ class UserOrderController extends Controller
 
             $order->update(['shipping_id' => $shipping->id]);
 
-            // Create a transaction record for this order.
             Transaction::create([
-                'profile_id'        => $profile->id,
-                'order_id'          => $order->id,
+                'profile_id' => $profile->id,
+                'order_id' => $order->id,
                 'payment_method_id' => $request->payment_method_id,
                 'payment_status_id' => 1, // pending
                 'transaction_status' => 'pending',
-                'payment_option'    => $request->payment_option ?? null,
+                'payment_option' => $request->payment_option ?? null,
             ]);
-
-
 
             return response()->json([
                 'message' => 'Order created successfully',
@@ -133,36 +130,32 @@ class UserOrderController extends Controller
      */
     public function myPurchases(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
+        $orderId = $request->query('order_id');
 
-        if (!$user || !$user->profile) {
-            return response()->json(['message' => 'User profile not found'], 404);
+        $query = Order::with([
+            'profile.user',
+            'shipping.shippingMethod',
+            'shipping.paymentMethod',
+            'shipping.address',
+            'shipping.shippingStatus',
+            'orderDetails.product',
+        ])
+            ->whereHas('profile', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->whereNull('deleted_at');
+
+        if ($orderId) {
+            $query->where('id', $orderId);
         }
 
-        try {
-            $query = Order::where('profile_id', $user->profile->id)
-                ->with([
-                    'orderDetails.product',
-                    'orderDetails.inventory',
-                    'shipping.shippingMethod',
-                    'shipping.paymentMethod',
-                    'shipping.address'
-                ])
-                ->withTrashed()
-                ->orderBy('order_date', 'desc');
+        $orders = $query->get();
 
-            if ($request->has('order_id')) {
-                $order = $query->where('id', $request->input('order_id'))->firstOrFail();
-                return response()->json($order);
-            }
-
-            $orders = $query->paginate(10);
-            return response()->json($orders);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Error fetching purchases',
-                'error' => $e->getMessage(),
-            ], 500);
+        if ($orderId && $orders->isEmpty()) {
+            return response()->json(['error' => 'Order not found or not yours'], 404);
         }
+
+        return response()->json($orderId ? $orders->first() : $orders);
     }
 }

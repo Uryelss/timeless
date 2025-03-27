@@ -6,15 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
-    /**
-     * Retrieve a list of all orders with related data.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function index(Request $request)
     {
         $query = Order::with([
@@ -27,21 +22,15 @@ class OrderController extends Controller
         ]);
 
         if ($request->query('archived')) {
-            $query->onlyTrashed(); // Show only archived (soft-deleted) orders
+            $query->onlyTrashed();
         } else {
-            $query->withTrashed(); // Include both active and archived orders
+            $query->withTrashed();
         }
 
         $orders = $query->get();
         return response()->json($orders);
     }
 
-    /**
-     * Retrieve a specific order by ID with related data.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show($id)
     {
         $order = Order::with([
@@ -58,21 +47,6 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-    /**
-     * Update an order, including its shipping status and timestamps.
-     *
-     * The request must supply shipping.shipping_status_id (and optionally tracking_number).
-     * Based on the provided shipping status:
-     * - 2: Payment Info Confirmed → set payment_confirmed_at
-     * - 3: Shipped → set shipped_at (and generate tracking number if missing)
-     * - 4: Delivered → set delivered_at
-     * - 5: Cancelled → set order_status to 'cancelled'
-     * - 6: Completed → set completed_at and order_status to 'completed'
-     *
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(Request $request, $id)
     {
         try {
@@ -86,11 +60,11 @@ class OrderController extends Controller
 
             $shippingData = [
                 'shipping_status_id' => $request->input('shipping.shipping_status_id', 1),
-                'tracking_number'    => $request->input('shipping.tracking_number', null),
-                'order_id'           => $order->id,
-                'payment_method_id'  => 1,
-                'payment_status_id'  => 1,
-                'address_id'         => $order->profile->address_id ?? 1,
+                'tracking_number' => $request->input('shipping.tracking_number', null),
+                'order_id' => $order->id,
+                'payment_method_id' => 1,
+                'payment_status_id' => 1,
+                'address_id' => $order->profile->address_id ?? 1,
                 'shipping_method_id' => 1,
                 'shipping_total_amount' => 0,
             ];
@@ -102,17 +76,22 @@ class OrderController extends Controller
                 Log::info("Updating existing shipping record for order {$id}");
                 $order->shipping->update([
                     'shipping_status_id' => $shippingData['shipping_status_id'],
-                    'tracking_number'    => $shippingData['tracking_number'],
+                    'tracking_number' => $shippingData['tracking_number'],
                 ]);
             }
 
             $shippingStatusId = $request->input('shipping.shipping_status_id');
             switch ($shippingStatusId) {
-                case 2:
-                    $order->payment_confirmed_at = $order->payment_confirmed_at ?? now();
+                case 1: // Order Placed
+                    $order->order_status = 'pending';
                     break;
-                case 3:
+                case 2: // Payment Info Confirmed
+                    $order->payment_confirmed_at = $order->payment_confirmed_at ?? now();
+                    $order->order_status = 'pending';
+                    break;
+                case 3: // Shipped
                     $order->shipped_at = $order->shipped_at ?? now();
+                    $order->order_status = 'processing';
                     if (!$order->shipping->tracking_number) {
                         $date = now()->format('Ymd');
                         $random = strtoupper(substr(uniqid(), -5));
@@ -120,13 +99,14 @@ class OrderController extends Controller
                         $order->shipping->save();
                     }
                     break;
-                case 4:
+                case 4: // Delivered
                     $order->delivered_at = $order->delivered_at ?? now();
+                    $order->order_status = 'shipped';
                     break;
-                case 5:
+                case 5: // Cancelled
                     $order->order_status = 'cancelled';
                     break;
-                case 6:
+                case 6: // Completed
                     $order->completed_at = $order->completed_at ?? now();
                     $order->order_status = 'completed';
                     if (!$order->shipping->tracking_number) {
@@ -137,6 +117,7 @@ class OrderController extends Controller
                     }
                     break;
                 default:
+                    $order->order_status = $order->order_status ?? 'pending';
                     break;
             }
 
@@ -157,12 +138,6 @@ class OrderController extends Controller
         }
     }
 
-    /**
-     * Archive (soft delete) an order.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function archive($id)
     {
         $order = Order::findOrFail($id);
@@ -170,12 +145,6 @@ class OrderController extends Controller
         return response()->json(['message' => 'Order archived successfully']);
     }
 
-    /**
-     * Restore a soft-deleted order.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function restore($id)
     {
         $order = Order::withTrashed()->findOrFail($id);
@@ -183,12 +152,6 @@ class OrderController extends Controller
         return response()->json(['message' => 'Order restored successfully']);
     }
 
-    /**
-     * Retrieve all active orders for the authenticated user.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function userOrders(Request $request)
     {
         $user = $request->user();
@@ -200,10 +163,72 @@ class OrderController extends Controller
             'shipping.shippingStatus',
             'orderDetails.product',
         ])
-            ->where('user_id', $user->id)
+            ->whereHas('profile', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
             ->whereNull('deleted_at')
             ->get();
 
         return response()->json($orders);
+    }
+
+    public function cancel(Request $request, $id)
+    {
+        try {
+            $user = $request->user();
+
+            $order = Order::with('shipping')
+                ->whereNull('deleted_at')
+                ->whereHas('profile', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                })
+                ->findOrFail($id);
+
+            $request->validate([
+                'reason' => 'required|string|max:255',
+            ]);
+
+            if (!in_array($order->shipping->shipping_status_id, [1, 2, 3])) {
+                return response()->json(['error' => 'Order cannot be canceled at this stage'], 400);
+            }
+
+            $order->shipping->update([
+                'shipping_status_id' => 5,
+                'updated_at' => now(),
+            ]);
+
+            $order->order_status = 'cancelled';
+            $order->updated_at = now();
+            $order->save();
+
+            Log::info("Order {$id} cancelled by user {$user->id}. Reason: " . $request->input('reason'));
+
+            $order->load([
+                'profile.user',
+                'shipping.shippingMethod',
+                'shipping.paymentMethod',
+                'shipping.address',
+                'shipping.shippingStatus',
+                'orderDetails.product',
+            ]);
+
+            return response()->json([
+                'message' => 'Order cancelled successfully',
+                'order' => $order,
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'error' => 'Validation failed',
+                'messages' => $e->errors(),
+            ], 422);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Order not found or not yours'], 404);
+        } catch (\Exception $e) {
+            Log::error("Order cancellation failed for order {$id}: " . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to cancel order',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

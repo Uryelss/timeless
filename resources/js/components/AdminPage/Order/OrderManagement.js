@@ -327,25 +327,57 @@ const OrderManagement = () => {
             });
     };
 
+    // In OrderManagement.js, inside handleUpdate function
+    // In OrderManagement.js, inside handleUpdate
+    // In OrderManagement.js, inside handleUpdate
+    // In OrderManagement.js, inside handleUpdate
     const handleUpdate = () => {
+        const shippingStatusId =
+            selectedOrder.shipping?.shipping_status_id || 1;
+        let updatedOrderStatus;
+
+        switch (shippingStatusId) {
+            case 1:
+                updatedOrderStatus = "pending";
+                break;
+            case 2:
+                updatedOrderStatus = "pending";
+                break;
+            case 3:
+                updatedOrderStatus = "shipped";
+                break;
+            case 4:
+                updatedOrderStatus = "delivered";
+                break;
+            case 5:
+                updatedOrderStatus = "cancelled";
+                break;
+            case 6:
+                updatedOrderStatus = "completed";
+                break;
+            default:
+                updatedOrderStatus = selectedOrder.order_status || "pending";
+        }
+
         axios
             .put(
                 `${API_URL}/${selectedOrder.id}`,
                 {
-                    order_status: selectedOrder.order_status,
+                    order_status: updatedOrderStatus,
                     shipping: {
                         tracking_number:
                             selectedOrder.shipping?.tracking_number || null,
-                        shipping_status_id:
-                            selectedOrder.shipping?.shipping_status_id || 1,
+                        shipping_status_id: shippingStatusId,
                     },
                 },
                 { headers: { Authorization: `Bearer ${token}` } }
             )
-            .then(() => {
+            .then((response) => {
                 message.success("Order updated successfully");
                 setOpenEditModal(false);
                 fetchOrders();
+                console.log("Dispatching orderStatusUpdated event");
+                window.dispatchEvent(new Event("orderStatusUpdated"));
             })
             .catch((err) => {
                 message.error(
@@ -355,7 +387,6 @@ const OrderManagement = () => {
                 console.error(err);
             });
     };
-
     const handleView = (record) => {
         setSelectedOrder(record);
         setOpenViewModal(true);
@@ -399,10 +430,7 @@ const OrderManagement = () => {
                                 </Space>
                             ),
                         },
-                        {
-                            title: "Quantity",
-                            dataIndex: "quantity",
-                        },
+                        { title: "Quantity", dataIndex: "quantity" },
                         {
                             title: "Price",
                             dataIndex: "price",
@@ -421,7 +449,6 @@ const OrderManagement = () => {
                     rowKey="id"
                     size="small"
                 />
-
                 <div style={{ marginTop: 16 }}>
                     <Row gutter={[16, 16]}>
                         <Col span={12}>

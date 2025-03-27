@@ -17,7 +17,7 @@ import {
     FolderOpenOutlined,
     DeleteOutlined,
 } from "@ant-design/icons";
-import Sidebar from "../AdminSidebar/Sidebar";
+import Sidebar from "../AdminSidebar/Sidebar"; // Adjust the path as needed
 import axios from "axios";
 
 const { Header, Content, Sider } = Layout;
@@ -50,10 +50,13 @@ const TransactionManagement = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = response.data.data || response.data;
-            // add a "selected" field for checkbox management
             const updatedData = data.map((item) => ({
                 ...item,
                 selected: false,
+                transaction_status: item.transaction_status
+                    ? item.transaction_status.charAt(0).toUpperCase() +
+                      item.transaction_status.slice(1).toLowerCase()
+                    : "Pending", // Normalize case
             }));
             setTransactions(updatedData);
         } catch (error) {
@@ -76,6 +79,10 @@ const TransactionManagement = () => {
             const updatedData = data.map((item) => ({
                 ...item,
                 selected: false,
+                transaction_status: item.transaction_status
+                    ? item.transaction_status.charAt(0).toUpperCase() +
+                      item.transaction_status.slice(1).toLowerCase()
+                    : "Pending",
             }));
             setArchivedTransactions(updatedData);
         } catch (error) {
@@ -94,19 +101,29 @@ const TransactionManagement = () => {
 
     const handleUpdate = async (values) => {
         try {
-            await axios.put(
+            // Normalize transaction_status case
+            const normalizedValues = {
+                ...values,
+                transaction_status: values.transaction_status
+                    ? values.transaction_status.charAt(0).toUpperCase() +
+                      values.transaction_status.slice(1).toLowerCase()
+                    : "Pending",
+            };
+            console.log("Sending update payload:", normalizedValues); // Debug payload
+            const response = await axios.put(
                 `${API_URL}/transactions/${editingTransaction.id}`,
-                values,
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
+                normalizedValues,
+                { headers: { Authorization: `Bearer ${token}` } }
             );
             message.success("Transaction updated successfully");
             setEditModalVisible(false);
             setEditingTransaction(null);
             fetchTransactions();
         } catch (error) {
-            message.error("Failed to update transaction");
+            console.error("Update error:", error.response?.data); // Log detailed error
+            message.error(
+                error.response?.data?.message || "Failed to update transaction"
+            );
         }
     };
 
@@ -272,7 +289,6 @@ const TransactionManagement = () => {
         });
     };
 
-    // Active view: actions column contains only archive and update actions as icons.
     const activeColumns = [
         {
             title: "Actions",
@@ -294,13 +310,12 @@ const TransactionManagement = () => {
                         onClick={() => {
                             setEditingTransaction(record);
                             form.setFieldsValue({
-                                payment_method_id: record.payment_method
-                                    ? record.payment_method.id
-                                    : null,
-                                payment_status_id: record.payment_status
-                                    ? record.payment_status.id
-                                    : null,
-                                transaction_status: record.transaction_status,
+                                payment_method:
+                                    record.payment_method?.name || null,
+                                payment_status:
+                                    record.payment_status?.name || null,
+                                transaction_status:
+                                    record.transaction_status || "Pending",
                             });
                             setEditModalVisible(true);
                         }}
@@ -311,10 +326,7 @@ const TransactionManagement = () => {
         {
             title: "Customer Name",
             key: "customerName",
-            render: (_, record) =>
-                record.profile && record.profile.customer_name
-                    ? record.profile.customer_name
-                    : "N/A",
+            render: (_, record) => record.profile?.customer_name || "N/A",
         },
         {
             title: "Total Amount",
@@ -327,19 +339,18 @@ const TransactionManagement = () => {
         {
             title: "Payment Method",
             key: "paymentMethod",
-            render: (_, record) =>
-                record.payment_method ? record.payment_method.name : "N/A",
+            render: (_, record) => record.payment_method?.name || "N/A",
         },
         {
             title: "Payment Status",
             key: "paymentStatus",
-            render: (_, record) =>
-                record.payment_status ? record.payment_status.name : "N/A",
+            render: (_, record) => record.payment_status?.name || "N/A",
         },
         {
             title: "Transaction Status",
             dataIndex: "transaction_status",
             key: "transaction_status",
+            render: (text) => text || "N/A",
         },
         {
             title: "Payment Option",
@@ -349,7 +360,6 @@ const TransactionManagement = () => {
         },
     ];
 
-    // Archived view: actions column now shows only the restore icon.
     const archivedColumns = [
         {
             title: "Actions",
@@ -372,19 +382,13 @@ const TransactionManagement = () => {
     ];
 
     const filteredTransactions = transactions.filter((transaction) => {
-        const name =
-            transaction.profile && transaction.profile.customer_name
-                ? transaction.profile.customer_name
-                : "";
+        const name = transaction.profile?.customer_name || "";
         return name.toLowerCase().includes(searchQuery.toLowerCase());
     });
 
     const filteredArchivedTransactions = archivedTransactions.filter(
         (transaction) => {
-            const name =
-                transaction.profile && transaction.profile.customer_name
-                    ? transaction.profile.customer_name
-                    : "";
+            const name = transaction.profile?.customer_name || "";
             return name.toLowerCase().includes(searchQuery.toLowerCase());
         }
     );
@@ -453,6 +457,7 @@ const TransactionManagement = () => {
                     />
                 </Content>
             </Layout>
+
             <Modal
                 title="Update Transaction"
                 visible={editModalVisible}
@@ -465,7 +470,7 @@ const TransactionManagement = () => {
                 <Form form={form} layout="vertical" onFinish={handleUpdate}>
                     <Form.Item
                         label="Payment Method"
-                        name="payment_method_id"
+                        name="payment_method"
                         rules={[
                             {
                                 required: true,
@@ -474,14 +479,18 @@ const TransactionManagement = () => {
                         ]}
                     >
                         <Select>
-                            <Option value="1">Cash on Delivery</Option>
-                            <Option value="2">Credit Card</Option>
-                            <Option value="3">Digital Wallet</Option>
+                            <Option value="Cash on Delivery">
+                                Cash on Delivery
+                            </Option>
+                            <Option value="Credit Card">Credit Card</Option>
+                            <Option value="Digital Wallet">
+                                Digital Wallet
+                            </Option>
                         </Select>
                     </Form.Item>
                     <Form.Item
                         label="Payment Status"
-                        name="payment_status_id"
+                        name="payment_status"
                         rules={[
                             {
                                 required: true,
@@ -490,9 +499,9 @@ const TransactionManagement = () => {
                         ]}
                     >
                         <Select>
-                            <Option value="1">Pending</Option>
-                            <Option value="2">Paid</Option>
-                            <Option value="3">Failed</Option>
+                            <Option value="Pending">Pending</Option>
+                            <Option value="Paid">Paid</Option>
+                            <Option value="Failed">Failed</Option>
                         </Select>
                     </Form.Item>
                     <Form.Item
@@ -522,6 +531,7 @@ const TransactionManagement = () => {
                     </Form.Item>
                 </Form>
             </Modal>
+
             <Modal
                 title="Archived Transactions"
                 centered

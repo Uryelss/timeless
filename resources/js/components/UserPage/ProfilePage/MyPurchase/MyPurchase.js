@@ -12,7 +12,7 @@ import {
     Image,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import Navbar from "../../Navbar/Navbar"; // Adjust path as needed
+import Navbar from "../../Navbar/Navbar";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -26,7 +26,6 @@ const MyPurchase = () => {
     const API_URL = "http://localhost:8000/api/my-purchases";
     const navigate = useNavigate();
 
-    // Fetch orders from the API
     const fetchOrders = (page = 1) => {
         axios
             .get(`${API_URL}?page=${page}`, {
@@ -35,6 +34,7 @@ const MyPurchase = () => {
                 },
             })
             .then((res) => {
+                console.log("Fetched orders:", res.data.data); // Debug
                 const transformedOrders = res.data.data.map((order) => ({
                     id: order.id,
                     seller: order.order_details[0]?.product?.seller?.name || "",
@@ -64,24 +64,26 @@ const MyPurchase = () => {
 
     useEffect(() => {
         fetchOrders();
-    }, []);
+        const interval = setInterval(() => fetchOrders(currentPage), 30000); // Poll every 30s
+        return () => clearInterval(interval);
+    }, [currentPage]);
 
-    // Handle page change
     const handlePageChange = (page) => {
+        setCurrentPage(page);
         fetchOrders(page);
     };
 
-    // Map API statuses to MyPurchase tabs
     const mapStatusToTab = (status) => {
+        console.log("Mapping status:", status); // Debug
         switch (status?.toLowerCase()) {
             case "pending":
-                return "To Pay";
+                return "To Pay"; // For "Order Placed" and "Payment Info Confirmed"
             case "processing":
-                return "To Ship";
+                return "To Ship"; // For "Shipped" in admin
             case "shipped":
-                return "To Receive";
+                return "To Receive"; // For "Delivered" in admin
             case "completed":
-                return "Completed";
+                return "Completed"; // For "Completed" in admin
             case "cancelled":
                 return "Cancelled";
             default:
@@ -89,12 +91,10 @@ const MyPurchase = () => {
         }
     };
 
-    // Filter orders by status for each tab
     const filterOrdersByStatus = (status) => {
         return orders.filter((order) => order.status === status);
     };
 
-    // Filter orders based on search text
     const filteredOrders = orders.filter((order) => {
         const lowerSearch = searchText.toLowerCase();
         return (
@@ -106,7 +106,6 @@ const MyPurchase = () => {
         );
     });
 
-    // Handle track order button click
     const handleTrackOrder = (orderId) => {
         navigate(`/track-order/${orderId}`);
     };
@@ -121,6 +120,12 @@ const MyPurchase = () => {
                     onChange={(e) => setSearchText(e.target.value)}
                     style={{ marginBottom: "20px", width: "100%" }}
                 />
+                <Button
+                    onClick={() => fetchOrders(currentPage)}
+                    style={{ marginBottom: "20px" }}
+                >
+                    Refresh
+                </Button>
                 <Tabs defaultActiveKey="1" type="card">
                     <TabPane tab="All" key="1">
                         <OrderList orders={filteredOrders} />
@@ -166,7 +171,6 @@ const MyPurchase = () => {
                         />
                     </TabPane>
                 </Tabs>
-
                 <Pagination
                     current={currentPage}
                     total={totalOrders}
@@ -179,7 +183,6 @@ const MyPurchase = () => {
     );
 };
 
-// Reusable Order List Component
 const OrderList = ({ orders, showTrackButton = false, onTrackOrder }) => (
     <>
         {orders.map((order) => (

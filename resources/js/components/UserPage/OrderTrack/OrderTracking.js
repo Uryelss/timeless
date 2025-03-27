@@ -10,6 +10,7 @@ import {
     Radio,
     Space,
     Card,
+    Timeline,
 } from "antd";
 import {
     LeftOutlined,
@@ -19,6 +20,7 @@ import {
     DownloadOutlined,
     StarOutlined,
     CloseOutlined,
+    EyeOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
@@ -35,6 +37,9 @@ const OrderTracking = () => {
     const [isCancelLoading, setIsCancelLoading] = useState(false);
     const [isConfirmReceiptLoading, setIsConfirmReceiptLoading] =
         useState(false);
+    const [isTrackingModalVisible, setIsTrackingModalVisible] = useState(false);
+    const [trackingDetails, setTrackingDetails] = useState([]);
+    const [isTrackingLoading, setIsTrackingLoading] = useState(false);
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
     const { orderId } = useParams();
@@ -86,6 +91,7 @@ const OrderTracking = () => {
                         error.message ||
                         "Unknown error")
             );
+            navigate("/user-shipped");
         } finally {
             setLoading(false);
         }
@@ -149,8 +155,43 @@ const OrderTracking = () => {
         }
     };
 
-    const handleTrackOrder = () => {
-        message.info("Tracking order... (Feature not implemented yet)");
+    const handleTrackOrder = async () => {
+        if (!order?.shipping?.tracking_number) {
+            message.warning("No tracking number available for this order.");
+            return;
+        }
+        setIsTrackingModalVisible(true);
+        setIsTrackingLoading(true);
+        try {
+            const res = await axios.get(
+                `${baseUrl}/api/orders/${orderId}/track`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            setTrackingDetails(res.data || []);
+            if (res.data.length === 0) {
+                message.info("No tracking updates available yet.");
+            }
+        } catch (error) {
+            console.error(
+                "Error fetching tracking details:",
+                error.response?.data || error
+            );
+            message.error(
+                "Failed to fetch tracking details: " +
+                    (error.response?.data?.error || "Unknown error")
+            );
+            setTrackingDetails([
+                {
+                    status: "Tracking Not Available",
+                    location: "N/A",
+                    timestamp: new Date().toISOString(),
+                },
+            ]);
+        } finally {
+            setIsTrackingLoading(false);
+        }
     };
 
     const handleCancelOrder = async () => {
@@ -160,7 +201,7 @@ const OrderTracking = () => {
         }
         setIsCancelLoading(true);
         try {
-            await axios.post(
+            const response = await axios.post(
                 `${baseUrl}/api/orders/${orderId}/cancel`,
                 { reason: cancelReason },
                 { headers: { Authorization: `Bearer ${token}` } }
@@ -170,10 +211,32 @@ const OrderTracking = () => {
             setCancelReason("");
             fetchOrderDetails();
         } catch (error) {
-            message.error(
-                "Failed to cancel order: " +
-                    (error.response?.data?.error || "Unknown error")
+            console.error(
+                "Error cancelling order:",
+                error.response?.data || error
             );
+            const errorData = error.response?.data || {};
+            if (errorData.error === "You can only cancel your own orders") {
+                message.error("You can only cancel your own orders.");
+            } else if (
+                errorData.error === "Order cannot be canceled at this stage"
+            ) {
+                message.error(
+                    "This order cannot be canceled at its current stage."
+                );
+            } else if (errorData.error === "Order not found") {
+                message.error("Order not found.");
+            } else if (errorData.error === "Validation failed") {
+                message.error(
+                    errorData.messages?.reason?.[0] ||
+                        "Invalid cancellation reason."
+                );
+            } else {
+                message.error(
+                    "Failed to cancel order: " +
+                        (errorData.error || error.message || "Unknown error")
+                );
+            }
         } finally {
             setIsCancelLoading(false);
         }
@@ -187,6 +250,7 @@ const OrderTracking = () => {
             shipped: order?.shipped_at || null,
             delivered: order?.delivered_at || null,
             completed: order?.completed_at || null,
+            cancelled: order?.updated_at || null,
         };
 
         const formatTimestamp = (timestamp) => {
@@ -206,7 +270,7 @@ const OrderTracking = () => {
                 .padStart(2, "0")}`;
         };
 
-        return [
+        const timeline = [
             {
                 label: "Order Placed",
                 timestamp: formatTimestamp(timestamps.placed),
@@ -232,12 +296,25 @@ const OrderTracking = () => {
                 icon: <DownloadOutlined />,
             },
             {
+                label: "Cancelled",
+                timestamp: formatTimestamp(timestamps.cancelled),
+                completed: shippingStatusId === 5,
+                icon: <CloseOutlined />,
+            },
+            {
                 label: "Completed",
                 timestamp: formatTimestamp(timestamps.completed),
-                completed: shippingStatusId >= 6 && order.completed_at,
+                completed: shippingStatusId === 6 && order.completed_at,
                 icon: <StarOutlined />,
             },
         ];
+
+        if (shippingStatusId === 5) {
+            return timeline.filter(
+                (step) => step.label === "Cancelled" || step.completed
+            );
+        }
+        return timeline;
     };
 
     const formatAddress = (address) => {
@@ -319,32 +396,44 @@ const OrderTracking = () => {
                                     <Button
                                         className="primary-btn"
                                         onClick={handleTrackOrder}
+                                        icon={<EyeOutlined />}
+                                        disabled={
+                                            !order?.shipping?.tracking_number
+                                        }
                                     >
                                         Track Order
                                     </Button>
-                                    {[1, 2, 3].includes(
-                                        order?.shipping?.shipping_status_id
-                                    ) && (
-                                        <Button
-                                            className="danger-btn"
-                                            icon={<CloseOutlined />}
-                                            onClick={() =>
-                                                setIsCancelModalVisible(true)
-                                            }
-                                        >
-                                            Cancel Order
-                                        </Button>
-                                    )}
-                                    {order?.shipping?.shipping_status_id ===
-                                        4 && (
-                                        <Button
-                                            className="primary-btn"
-                                            onClick={handleConfirmReceipt}
-                                            loading={isConfirmReceiptLoading}
-                                        >
-                                            Confirm Receipt
-                                        </Button>
-                                    )}
+                                    {order?.shipping?.shipping_status_id !==
+                                        5 &&
+                                        [1, 2, 3].includes(
+                                            order?.shipping?.shipping_status_id
+                                        ) && (
+                                            <Button
+                                                className="danger-btn"
+                                                icon={<CloseOutlined />}
+                                                onClick={() =>
+                                                    setIsCancelModalVisible(
+                                                        true
+                                                    )
+                                                }
+                                            >
+                                                Cancel Order
+                                            </Button>
+                                        )}
+                                    {order?.shipping?.shipping_status_id !==
+                                        5 &&
+                                        order?.shipping?.shipping_status_id ===
+                                            4 && (
+                                            <Button
+                                                className="primary-btn"
+                                                onClick={handleConfirmReceipt}
+                                                loading={
+                                                    isConfirmReceiptLoading
+                                                }
+                                            >
+                                                Confirm Receipt
+                                            </Button>
+                                        )}
                                 </div>
                             </Card>
 
@@ -504,6 +593,43 @@ const OrderTracking = () => {
                                 <Radio value="Others">Others</Radio>
                             </Space>
                         </Radio.Group>
+                    </Modal>
+
+                    <Modal
+                        title={`Tracking Details - Order #${orderId}`}
+                        open={isTrackingModalVisible}
+                        onCancel={() => setIsTrackingModalVisible(false)}
+                        footer={[
+                            <Button
+                                key="close"
+                                onClick={() => setIsTrackingModalVisible(false)}
+                            >
+                                Close
+                            </Button>,
+                        ]}
+                        className="tracking-modal"
+                    >
+                        {isTrackingLoading ? (
+                            <Text>Loading tracking details...</Text>
+                        ) : trackingDetails.length > 0 ? (
+                            <Timeline>
+                                {trackingDetails.map((event, index) => (
+                                    <Timeline.Item key={index}>
+                                        <Text strong>{event.status}</Text>
+                                        <br />
+                                        <Text type="secondary">
+                                            Location: {event.location || "N/A"}
+                                        </Text>
+                                        <br />
+                                        <Text type="secondary">
+                                            {formatDate(event.timestamp)}
+                                        </Text>
+                                    </Timeline.Item>
+                                ))}
+                            </Timeline>
+                        ) : (
+                            <Text>No tracking updates available.</Text>
+                        )}
                     </Modal>
                 </div>
             </Content>

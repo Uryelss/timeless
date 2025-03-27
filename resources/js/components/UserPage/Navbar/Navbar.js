@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { flushSync } from "react-dom"; // Added import
+import { flushSync } from "react-dom";
 import { Layout, Menu, Dropdown, Badge, Avatar, Button } from "antd";
 import {
     ShoppingCartOutlined,
@@ -19,6 +19,7 @@ const Header = () => {
     const [avatarKey, setAvatarKey] = useState(0);
     const [cartCount, setCartCount] = useState(0);
     const [orders, setOrders] = useState([]);
+    const [notifications, setNotifications] = useState([]);
     const [notificationCount, setNotificationCount] = useState(0);
     const [readNotifications, setReadNotifications] = useState([]);
 
@@ -38,7 +39,13 @@ const Header = () => {
             "readNotifications",
             JSON.stringify(readNotifications)
         );
-    }, [readNotifications]);
+        // Recalculate unread count when readNotifications changes
+        setNotificationCount(
+            notifications.filter(
+                (n) => !readNotifications.includes(`${n.id}-${n.type}`)
+            ).length
+        );
+    }, [readNotifications, notifications]);
 
     useEffect(() => {
         if (token) {
@@ -84,7 +91,7 @@ const Header = () => {
         if (token) {
             fetchOrders();
         }
-    }, [token, readNotifications]);
+    }, [token]);
 
     const fetchOrders = async () => {
         try {
@@ -97,12 +104,106 @@ const Header = () => {
             const orderData = response.data.data || response.data;
             const allOrders = Array.isArray(orderData) ? orderData : [];
             setOrders(allOrders);
-            const placedOrders = allOrders.filter(
-                (order) =>
-                    order.order_status.toLowerCase() === "pending" &&
-                    !readNotifications.includes(order.id)
+
+            // Generate notifications based on order status
+            const newNotifications = allOrders.flatMap((order) => {
+                const status = order.order_status.toLowerCase();
+                const trackingNumber =
+                    order.shipping?.tracking_number || "Not Available";
+                const notifs = [];
+
+                if (status === "pending") {
+                    notifs.push({
+                        id: order.id,
+                        type: "confirmation",
+                        message: `Thank you for your order! Your order #${order.id} has been successfully placed.`,
+                        image: order.order_details?.[0]?.product?.main_image
+                            ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
+                            : "/images/default-product.png",
+                        timestamp: order.created_at || new Date().toISOString(),
+                    });
+                    notifs.push({
+                        id: order.id,
+                        type: "processing",
+                        message: `Your order #${order.id} is being prepared for shipment.`,
+                        image: order.order_details?.[0]?.product?.main_image
+                            ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
+                            : "/images/default-product.png",
+                        timestamp:
+                            order.payment_confirmed_at ||
+                            new Date().toISOString(),
+                    });
+                } else if (status === "shipped") {
+                    notifs.push({
+                        id: order.id,
+                        type: "shipped",
+                        message: `Good news! Your order #${order.id} has been shipped. Track your package here: ${trackingNumber}.`,
+                        image: order.order_details?.[0]?.product?.main_image
+                            ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
+                            : "/images/default-product.png",
+                        timestamp: order.shipped_at || new Date().toISOString(),
+                    });
+                } else if (status === "delivered") {
+                    notifs.push({
+                        id: order.id,
+                        type: "out-for-delivery",
+                        message: `Your order #${order.id} is out for delivery and should arrive today.`,
+                        image: order.order_details?.[0]?.product?.main_image
+                            ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
+                            : "/images/default-product.png",
+                        timestamp:
+                            order.delivered_at || new Date().toISOString(),
+                    });
+                } else if (status === "completed") {
+                    notifs.push({
+                        id: order.id,
+                        type: "delivered",
+                        message: `Your order #${order.id} has been delivered. We hope you enjoy your purchase!`,
+                        image: order.order_details?.[0]?.product?.main_image
+                            ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
+                            : "/images/default-product.png",
+                        timestamp:
+                            order.completed_at || new Date().toISOString(),
+                    });
+                } else if (status === "cancelled") {
+                    notifs.push({
+                        id: order.id,
+                        type: "cancelled",
+                        message: `Your order #${order.id} has been cancelled.`,
+                        image: order.order_details?.[0]?.product?.main_image
+                            ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
+                            : "/images/default-product.png",
+                        timestamp: new Date().toISOString(),
+                    });
+                }
+                return notifs;
+            });
+
+            // Append new notifications without overwriting existing ones
+            setNotifications((prev) => {
+                const merged = [...prev];
+                newNotifications.forEach((newNotif) => {
+                    const existingIndex = merged.findIndex(
+                        (n) => n.id === newNotif.id && n.type === newNotif.type
+                    );
+                    if (existingIndex === -1) {
+                        merged.push(newNotif);
+                    } else {
+                        // Update timestamp if the notification already exists
+                        merged[existingIndex].timestamp = newNotif.timestamp;
+                    }
+                });
+                return merged.sort(
+                    (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+                );
+            });
+
+            // Update unread count
+            setNotificationCount(
+                newNotifications.filter(
+                    (n) => !readNotifications.includes(`${n.id}-${n.type}`)
+                ).length
             );
-            setNotificationCount(placedOrders.length);
         } catch (err) {
             console.error(
                 "Error fetching orders:",
@@ -114,8 +215,14 @@ const Header = () => {
     };
 
     useEffect(() => {
-        const handleOrderPlaced = () => fetchOrders();
-        const handleOrderStatusUpdate = () => fetchOrders();
+        const handleOrderPlaced = () => {
+            console.log("Order placed event received");
+            fetchOrders();
+        };
+        const handleOrderStatusUpdate = () => {
+            console.log("Order status updated event received");
+            fetchOrders();
+        };
         window.addEventListener("orderPlaced", handleOrderPlaced);
         window.addEventListener("orderStatusUpdated", handleOrderStatusUpdate);
         return () => {
@@ -127,15 +234,15 @@ const Header = () => {
         };
     }, []);
 
-    const markAsReadAndNavigate = (orderId) => {
-        if (!readNotifications.includes(orderId)) {
+    const markAsReadAndNavigate = (notifId, notifType) => {
+        const notifKey = `${notifId}-${notifType}`;
+        if (!readNotifications.includes(notifKey)) {
             flushSync(() => {
-                // Added flushSync
-                setReadNotifications((prev) => [...prev, orderId]);
+                setReadNotifications((prev) => [...prev, notifKey]);
                 setNotificationCount((prev) => Math.max(0, prev - 1));
             });
         }
-        navigate(`/order-tracking/${orderId}`);
+        navigate(`/order-tracking/${notifId}`);
     };
 
     const avatarSrc = profile?.profile_image
@@ -153,23 +260,22 @@ const Header = () => {
 
     const notificationsMenu = (
         <Menu className="white-dropdown" style={{ width: 350 }}>
-            {orders
-                .filter(
-                    (order) =>
-                        order.order_status.toLowerCase() === "pending" &&
-                        !readNotifications.includes(order.id)
-                )
-                .slice(0, 3)
-                .map((order) => {
-                    const product = order.order_details?.[0]?.product || {};
+            {notifications.length > 0 ? (
+                notifications.slice(0, 5).map((notif) => {
+                    const isRead = readNotifications.includes(
+                        `${notif.id}-${notif.type}`
+                    );
                     return (
                         <Menu.Item
-                            key={order.id}
-                            onClick={() => markAsReadAndNavigate(order.id)}
+                            key={`${notif.id}-${notif.type}`}
+                            onClick={() =>
+                                markAsReadAndNavigate(notif.id, notif.type)
+                            }
                             style={{
                                 height: "auto",
                                 padding: "10px",
                                 cursor: "pointer",
+                                backgroundColor: isRead ? "#f5f5f5" : "#fff",
                             }}
                         >
                             <div
@@ -185,8 +291,18 @@ const Header = () => {
                                     }}
                                 />
                                 <div style={{ flex: 1 }}>
-                                    <div style={{ fontWeight: "bold" }}>
-                                        Order Placed
+                                    <div
+                                        style={{
+                                            fontWeight: isRead
+                                                ? "normal"
+                                                : "bold",
+                                        }}
+                                    >
+                                        {notif.type
+                                            .replace(/-/g, " ")
+                                            .replace(/\b\w/g, (c) =>
+                                                c.toUpperCase()
+                                            )}
                                     </div>
                                     <div
                                         style={{
@@ -194,17 +310,12 @@ const Header = () => {
                                             color: "#888",
                                         }}
                                     >
-                                        Your order ({order.id}) was submitted.
-                                        Thanks for Shopping with Timeless!
+                                        {notif.message}
                                     </div>
                                 </div>
                                 <img
-                                    src={
-                                        product.main_image
-                                            ? `http://localhost:8000/storage/${product.main_image}`
-                                            : "/images/default-product.png"
-                                    }
-                                    alt={product.product_name || "Product"}
+                                    src={notif.image}
+                                    alt="Product"
                                     style={{
                                         width: 50,
                                         height: 50,
@@ -219,13 +330,9 @@ const Header = () => {
                             </div>
                         </Menu.Item>
                     );
-                })}
-            {orders.filter(
-                (order) =>
-                    order.order_status.toLowerCase() === "pending" &&
-                    !readNotifications.includes(order.id)
-            ).length === 0 && (
-                <Menu.Item key="no-notif">No new notifications</Menu.Item>
+                })
+            ) : (
+                <Menu.Item key="no-notif">No notifications</Menu.Item>
             )}
             <Menu.Item
                 key="view-all"

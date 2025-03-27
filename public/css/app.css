@@ -12961,6 +12961,7 @@ h3, .h3 {
 .cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper .ant-radio .ant-radio-inner {
   width: 16px;
   height: 16px;
+  border-color: #d9d9d9; /* Unchecked circle */
 }
 .cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper .ant-radio .ant-radio-inner::after {
   width: 6px;
@@ -12970,13 +12971,17 @@ h3, .h3 {
 }
 .cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper .ant-radio.ant-radio-checked .ant-radio-inner {
   border-color: #1890ff;
-  background-color: #fff;
+  background-color: #1890ff; /* Solid blue for checked */
 }
 .cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper .ant-radio.ant-radio-checked .ant-radio-inner::after {
-  background-color: #1890ff;
+  background-color: #fff; /* White dot */
+  width: 8px; /* Larger dot */
+  height: 8px;
+  top: 3px;
+  left: 3px;
 }
 .cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper .ant-radio:hover .ant-radio-inner {
-  border-color: #40a9ff;
+  border-color: #40a9ff; /* Hover effect for unchecked */
 }
 .cancel-modal .cancel-reasons .ant-space .ant-radio-wrapper:last-child {
   margin-bottom: 0;
