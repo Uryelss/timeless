@@ -1,10 +1,11 @@
+/* About Us Page */
 .about-us {
     font-family: "Poppins", sans-serif;
-    color: #333;
-    background-color: #f9f9f9;
+    color: #e5e5e5; /* Off-white for primary text */
+    background-color: #121516; /* Dark background to match the page vibe */
 }
 
-// Hero Section
+/* Hero Section */
 .hero-section {
     position: relative;
     background: url("/images/hero-bg.jpg") center/cover no-repeat;
@@ -13,10 +14,10 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: white;
+    color: #e5e5e5; /* Off-white for text */
 
     .hero-overlay {
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.7); /* Darker overlay for better contrast */
         width: 100%;
         height: 100%;
         display: flex;
@@ -29,26 +30,27 @@
     h1 {
         font-size: 3rem;
         text-transform: uppercase;
-        color: #006666;
+        color: #e5e5e5; /* Off-white for the title */
         font-weight: bold;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); /* Add shadow for depth */
     }
 
     p {
         font-size: 1.2rem;
         max-width: 600px;
         margin-top: 10px;
-        color: #cce7e7;
+        color: #b0b0b0; /* Light gray for secondary text */
     }
 
     .quote {
         font-style: italic;
         font-size: 1.2rem;
         margin-top: 15px;
-        color: #cce7e7;
+        color: #b0b0b0; /* Light gray for the quote */
     }
 }
 
-// Vision & Mission Section
+/* Vision & Mission Section */
 .vision-mission-container {
     display: flex;
     justify-content: space-between;
@@ -57,9 +59,14 @@
     padding: 3rem;
     margin: 3rem auto;
     width: 80%;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(
+        26,
+        30,
+        31,
+        0.8
+    ); /* Dark background with slight transparency */
     border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Darker shadow */
     backdrop-filter: blur(10px);
     text-align: center;
     flex-wrap: wrap;
@@ -68,9 +75,14 @@
     .mission {
         flex: 1;
         padding: 2rem;
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(
+            42,
+            48,
+            50,
+            0.8
+        ); /* Slightly lighter dark background for contrast */
         border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Darker shadow */
         transition: transform 0.3s ease-in-out;
     }
 
@@ -81,47 +93,47 @@
 
     h2 {
         font-size: 2rem;
-        color: #006666;
+        color: #e5e5e5; /* Off-white for headings */
         margin-bottom: 10px;
         font-weight: bold;
 
         span {
-            color: #c69c6d;
+            color: #1890ff; /* Teal accent to match the site */
             font-weight: bold;
         }
     }
 
     p {
         font-size: 1.2rem;
-        color: #006666;
+        color: #b0b0b0; /* Light gray for text */
         line-height: 1.5;
     }
 }
 
-// Meet the Developers Section
+/* Meet the Developers Section */
 .meet-developers {
     text-align: center;
     margin-top: 4rem;
 
     h2 {
         font-size: 2rem;
-        color: #006666;
+        color: #e5e5e5; /* Off-white for headings */
         font-weight: bold;
 
         span {
-            color: #c69c6d;
+            color: #1890ff; /* Teal accent to match the site */
             font-weight: bold;
         }
     }
 
     p {
         font-size: 1.2rem;
-        color: #006666;
+        color: #b0b0b0; /* Light gray for text */
         margin-top: 10px;
     }
 }
 
-// Flip Card Container
+/* Flip Card Container */
 .flip-card-container {
     display: flex;
     flex-wrap: wrap;
@@ -131,7 +143,7 @@
     width: 80%;
 }
 
-// Flip Card Styling
+/* Flip Card Styling */
 .flip-card {
     background-color: transparent;
     width: 250px;
@@ -158,7 +170,7 @@
         width: 100%;
         height: 100%;
         border-radius: 15px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Darker shadow */
         backface-visibility: hidden;
         display: flex;
         flex-direction: column;
@@ -167,9 +179,9 @@
     }
 
     .flip-card-front {
-        background: #fff;
+        background: #2a3032; /* Dark gray background to match the theme */
         padding: 20px;
-        border: 2px solid #006666;
+        border: 2px solid #1890ff; /* Teal border to match the accent */
 
         img {
             width: 100px;
@@ -177,23 +189,23 @@
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 10px;
-            border: 3px solid #006666;
+            border: 3px solid #1890ff; /* Teal border for the image */
         }
 
         h3 {
-            color: #006666;
+            color: #e5e5e5; /* Off-white for headings */
             font-size: 1.2rem;
             font-weight: bold;
         }
 
         p {
-            color: #006666;
+            color: #b0b0b0; /* Light gray for text */
         }
     }
 
     .flip-card-back {
-        background: #006666;
-        color: white;
+        background: #1a1e1f; /* Darker background for the back */
+        color: #e5e5e5; /* Off-white for text */
         transform: rotateY(180deg);
         padding: 20px;
 
@@ -209,7 +221,7 @@
     }
 }
 
-// Responsive Design
+/* Responsive Design */
 @media (max-width: 1024px) {
     .vision-mission-container {
         flex-direction: column;

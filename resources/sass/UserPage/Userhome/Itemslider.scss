@@ -1,7 +1,11 @@
+/* Styles for item-slider-section */
 .item-slider-section {
     width: 90%;
     margin: 40px auto 60px;
     text-align: center;
+    background-color: #1a1e1f;
+    padding: 20px 0;
+    border-radius: 10px;
 }
 
 .item-slider {
@@ -9,10 +13,12 @@
 
     .slider-title {
         font-size: 28px;
-        font-weight: 900;
+        font-weight: 700;
         text-transform: uppercase;
         margin-bottom: 20px;
-        color: #333;
+        color: #e5e5e5;
+        letter-spacing: 1.5px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
     .swiper {
@@ -24,6 +30,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        position: relative;
     }
 
     .slider-image {
@@ -31,35 +38,64 @@
         max-height: 150px;
         object-fit: contain;
         border-radius: 10px;
-        transition: transform 0.3s ease-in-out;
-
-        &:hover {
-            transform: scale(1.1);
-        }
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        background-color: #2a3032;
+        padding: 10px;
     }
 
-    .swiper-button-prev,
-    .swiper-button-next {
-        color: #333;
-        background: rgba(255, 255, 255, 0.7);
-        padding: 10px;
-        border-radius: 50%;
+    .swiper-slide:hover .slider-image {
+        transform: scale(1.1);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     }
 }
 
-// Large Category Slider (Luxury, Fashion, Smart Watches)
+/* Styles for brand-slider-section */
+.brand-slider-section {
+    margin: 60px 0;
+    padding: 30px 0;
+    background-color: #121516;
+    border-top: 1px solid #2a3032;
+    border-bottom: 1px solid #2a3032;
+    border-radius: 10px;
+    text-align: center;
+
+    .brand-slider-title {
+        font-size: 28px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #e5e5e5;
+        letter-spacing: 1.5px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        margin-bottom: 20px;
+    }
+}
+
+/* Styles for large-item-slider */
 .large-item-slider {
     margin-top: 50px;
     text-align: center;
+    background-color: transparent; /* Remove white background to inherit #1A1E1F from parent */
+    padding: 30px 0;
+    border-radius: 10px;
+
+    .slider-title {
+        font-size: 28px;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        color: #e5e5e5; /* Off-white for contrast on dark background */
+        letter-spacing: 1.5px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Reintroduce shadow for depth */
+    }
 
     .large-slide {
         position: relative;
         text-align: center;
         transition: transform 0.3s ease-in-out;
+    }
 
-        &:hover {
-            transform: scale(1.1);
-        }
+    .large-slide:hover {
+        transform: scale(1.05);
     }
 
     .large-slider-image {
@@ -67,7 +103,12 @@
         height: 500px;
         object-fit: cover;
         border-radius: 10px;
-        transition: transform 0.3s ease-in-out;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        background-color: #2a3032; /* Match the background of other slider images */
+    }
+
+    .large-slide:hover .large-slider-image {
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4); /* Darker shadow for dark background */
     }
 
     .category-name {
@@ -75,14 +116,29 @@
         bottom: 20px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.6);
-        color: white;
-        padding: 10px 20px;
+        background: linear-gradient(
+            90deg,
+            rgba(24, 144, 255, 0.8),
+            rgba(0, 0, 0, 0.6)
+        );
+        color: #ffffff;
+        padding: 12px 24px;
         font-size: 24px;
+        font-weight: 600;
         border-radius: 5px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: background 0.3s ease-in-out;
     }
 
-    // Hover Effect - Expands to 3 images
+    .large-slide:hover .category-name {
+        background: linear-gradient(
+            90deg,
+            rgba(24, 144, 255, 1),
+            rgba(0, 0, 0, 0.8)
+        );
+    }
+
     .luxury-slider:hover,
     .fashion-slider:hover,
     .smart-slider:hover {
@@ -95,39 +151,115 @@
     }
 }
 
-// Responsive Adjustments
+/* Responsive Adjustments */
 @media (max-width: 1200px) {
-    .slider-title {
+    .slider-title,
+    .brand-slider-title {
         font-size: 24px;
+    }
+
+    .large-slider-image {
+        height: 400px;
+    }
+
+    .category-name {
+        font-size: 20px;
+        padding: 10px 20px;
+    }
+
+    .brand-slider-section {
+        margin: 50px 0;
     }
 }
 
 @media (max-width: 992px) {
-    .slider-title {
+    .slider-title,
+    .brand-slider-title {
         font-size: 22px;
     }
+
     .slider-image {
         max-height: 130px;
+    }
+
+    .large-slider-image {
+        height: 350px;
+    }
+
+    .category-name {
+        font-size: 18px;
+        padding: 8px 16px;
+    }
+
+    .brand-slider-section {
+        margin: 40px 0;
+        padding: 25px 0;
     }
 }
 
 @media (max-width: 768px) {
-    .slider-title {
+    .item-slider-section {
+        width: 95%;
+        padding: 15px 0;
+    }
+
+    .slider-title,
+    .brand-slider-title {
         font-size: 20px;
     }
+
     .slider-image {
         max-height: 120px;
     }
+
     .swiper-slide {
         flex-direction: column;
+    }
+
+    .large-slider-image {
+        height: 300px;
+    }
+
+    .category-name {
+        font-size: 16px;
+        padding: 6px 12px;
+    }
+
+    .brand-slider-section {
+        margin: 30px 0;
+        padding: 20px 0;
+    }
+
+    .large-item-slider {
+        padding: 20px 0;
     }
 }
 
 @media (max-width: 576px) {
-    .slider-title {
+    .slider-title,
+    .brand-slider-title {
         font-size: 18px;
     }
+
     .slider-image {
         max-height: 100px;
+    }
+
+    .large-slider-image {
+        height: 250px;
+    }
+
+    .category-name {
+        font-size: 14px;
+        padding: 5px 10px;
+    }
+
+    .brand-slider-section {
+        margin: 20px 0;
+        padding: 15px 0;
+    }
+
+    .large-item-slider {
+        padding: 15px 0;
     }
 }
