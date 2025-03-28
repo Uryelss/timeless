@@ -15,9 +15,6 @@ use Illuminate\Support\Facades\DB;
 
 class UserOrderController extends Controller
 {
-    /**
-     * Store a new order.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -99,10 +96,10 @@ class UserOrderController extends Controller
             $shipping = Shipping::create([
                 'order_id' => $order->id,
                 'payment_method_id' => $request->payment_method_id,
-                'payment_status_id' => 1,
+                'payment_status_id' => 1, // Pending
                 'address_id' => $address->id,
                 'shipping_method_id' => $request->shipping_method_id,
-                'shipping_status_id' => 1,
+                'shipping_status_id' => 1, // Order Placed
                 'shipping_total_amount' => $request->shipping_cost,
             ]);
 
@@ -112,22 +109,30 @@ class UserOrderController extends Controller
                 'profile_id' => $profile->id,
                 'order_id' => $order->id,
                 'payment_method_id' => $request->payment_method_id,
-                'payment_status_id' => 1, // pending
+                'payment_status_id' => 1, // Pending
                 'transaction_status' => 'pending',
                 'payment_option' => $request->payment_option ?? null,
+            ]);
+
+            $order->load([
+                'profile.user',
+                'shipping.shippingMethod',
+                'shipping.paymentMethod',
+                'shipping.address',
+                'shipping.shippingStatus',
+                'orderDetails.product',
+                'orderDetails.inventory',
             ]);
 
             return response()->json([
                 'message' => 'Order created successfully',
                 'order_id' => $order->id,
                 'address_id' => $address->id,
+                'order' => $order,
             ], 201);
         }, 5);
     }
 
-    /**
-     * Fetch the authenticated user's purchases.
-     */
     public function myPurchases(Request $request)
     {
         $user = $request->user();
@@ -140,6 +145,7 @@ class UserOrderController extends Controller
             'shipping.address',
             'shipping.shippingStatus',
             'orderDetails.product',
+            'orderDetails.inventory',
         ])
             ->whereHas('profile', function ($query) use ($user) {
                 $query->where('user_id', $user->id);

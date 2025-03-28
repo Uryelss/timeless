@@ -31,6 +31,7 @@ Route::post('/login', [AccessController::class, 'login'])->name('login');
 Route::get('/products/public', [ProductController::class, 'publicIndex'])->name('products.public');
 Route::get('/sub-categories/public', [SubCategoryController::class, 'publicIndex'])->name('subcategories.public');
 Route::get('/products/{id}', [ProductViewController::class, 'show'])->name('products.show');
+
 /*
 |--------------------------------------------------------------------------
 | Authenticated Routes (Requires API Token)
@@ -54,10 +55,7 @@ Route::middleware('auth:api')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth:api', 'check.role:user'])->group(function () {
-    // Inside the User Routes group (requires auth:api and check.role:user)
-    Route::post('/orders/{id}/confirm-receipt', [OrderController::class, 'confirmReceipt'])
-        ->name('orders.confirm-receipt');
-
+    Route::post('/orders/{id}/confirm-receipt', [OrderController::class, 'confirmReceipt'])->name('orders.confirm-receipt');
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/orders/create', [UserOrderController::class, 'store'])->name('orders.store');
@@ -69,6 +67,7 @@ Route::middleware(['auth:api', 'check.role:user'])->group(function () {
     Route::delete('/addresses/{id}', [AddressController::class, 'destroy'])->name('addresses.destroy');
     Route::put('/addresses/{id}/set-default', [AddressController::class, 'setDefault'])->name('addresses.set-default');
 });
+
 /*
 |--------------------------------------------------------------------------
 | Admin Routes (Requires 'admin' Role)

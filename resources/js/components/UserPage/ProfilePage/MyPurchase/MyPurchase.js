@@ -1,14 +1,12 @@
-// MyPurchase.js
 import React, { useState, useEffect } from "react";
 import {
     Tabs,
     Input,
-    Button,
     Card,
     Row,
     Col,
     Badge,
-    Space,
+    Button,
     Pagination,
     Image,
 } from "antd";
@@ -35,27 +33,28 @@ const MyPurchase = () => {
                 },
             })
             .then((res) => {
-                // Handle both paginated response or direct array
                 const ordersArray = res.data.data || res.data;
-                console.log("Fetched orders:", ordersArray); // Debug
+                console.log("Fetched orders:", ordersArray);
                 const transformedOrders = ordersArray.map((order) => ({
                     id: order.id,
-                    seller:
-                        order.order_details?.[0]?.product?.seller?.name || "",
-                    products: order.order_details?.map((detail) => ({
-                        name: detail.product?.product_name || "Unknown Product",
-                        quantity: detail.quantity || 0,
-                        price: detail.price || 0,
-                        size: detail.inventory?.size || "N/A",
-                        image: detail.product?.main_image
-                            ? `http://localhost:8000/storage/${detail.product.main_image}`
-                            : "https://via.placeholder.com/80",
-                    })),
+                    products:
+                        order.order_details?.map((detail) => ({
+                            name:
+                                detail.product?.product_name ||
+                                "Unknown Product",
+                            quantity: detail.quantity || 0,
+                            size: detail.inventory?.size || "N/A",
+                            image: detail.product?.main_image
+                                ? `http://localhost:8000/storage/${detail.product.main_image}`
+                                : "https://via.placeholder.com/80",
+                            total: detail.price
+                                ? detail.price * detail.quantity
+                                : 0,
+                        })) || [],
                     status: mapStatusToTab(order.order_status),
                     orderTotal: order.total_amount || 0,
                 }));
                 setOrders(transformedOrders);
-                // If your API returns pagination info, adjust accordingly:
                 setTotalOrders(res.data.total || transformedOrders.length);
                 setCurrentPage(res.data.current_page || page);
             })
@@ -69,7 +68,7 @@ const MyPurchase = () => {
 
     useEffect(() => {
         fetchOrders();
-        const interval = setInterval(() => fetchOrders(currentPage), 30000); // Poll every 30s
+        const interval = setInterval(() => fetchOrders(currentPage), 30000);
         return () => clearInterval(interval);
     }, [currentPage]);
 
@@ -81,21 +80,23 @@ const MyPurchase = () => {
     const mapStatusToTab = (status) => {
         switch (status?.toLowerCase()) {
             case "pending":
-                return "To Pay"; // Order Placed & Payment Info Confirmed
+                return "To Pay";
             case "processing":
-                return "To Ship"; // Shipped
+                return "To Ship";
             case "shipped":
-                return "To Receive"; // Delivered
+                return "To Receive";
             case "completed":
-                return "Completed"; // Completed
+                return "Completed";
             case "cancelled":
-                return "Cancelled"; // Cancelled
+                return "Cancelled";
             default:
+                console.warn(
+                    `Unrecognized status: ${status}, defaulting to 'To Pay'`
+                );
                 return "To Pay";
         }
     };
 
-    // Updated filter function using case-insensitive comparison
     const filterOrdersByStatus = (status) => {
         return orders.filter(
             (order) =>
@@ -108,7 +109,6 @@ const MyPurchase = () => {
         const lowerSearch = searchText.toLowerCase();
         return (
             order.id.toString().includes(lowerSearch) ||
-            order.seller.toLowerCase().includes(lowerSearch) ||
             order.products.some((product) =>
                 product.name.toLowerCase().includes(lowerSearch)
             )
@@ -116,7 +116,8 @@ const MyPurchase = () => {
     });
 
     const handleTrackOrder = (orderId) => {
-        navigate(`/track-order/${orderId}`);
+        // Navigate to the external tracking URL using window.location.href
+        window.location.href = `http://localhost:8000/order-tracking/${orderId}`;
     };
 
     return (
@@ -124,17 +125,11 @@ const MyPurchase = () => {
             <Navbar />
             <div style={{ padding: "20px" }}>
                 <Input
-                    placeholder="Search by Seller Name, Order ID, or Product Name"
+                    placeholder="Search by Order ID or Product Name"
                     prefix={<SearchOutlined />}
                     onChange={(e) => setSearchText(e.target.value)}
                     style={{ marginBottom: "20px", width: "100%" }}
                 />
-                <Button
-                    onClick={() => fetchOrders(currentPage)}
-                    style={{ marginBottom: "20px" }}
-                >
-                    Refresh
-                </Button>
                 <Tabs defaultActiveKey="1" type="card">
                     <TabPane tab="All" key="1">
                         <OrderList orders={filteredOrders} />
@@ -187,6 +182,9 @@ const MyPurchase = () => {
                     onChange={handlePageChange}
                     style={{ marginTop: "20px", textAlign: "center" }}
                 />
+                <div style={{ textAlign: "center", marginTop: "10px" }}>
+                    Total Orders: {totalOrders}
+                </div>
             </div>
         </div>
     );
@@ -194,63 +192,52 @@ const MyPurchase = () => {
 
 const OrderList = ({ orders, showTrackButton = false, onTrackOrder }) => (
     <>
-        {orders.map((order) => (
-            <Card key={order.id} style={{ marginBottom: "20px" }}>
-                <Row align="middle">
-                    <Col span={12}>
-                        <span>{order.seller || ""}</span>
-                    </Col>
-                    <Col span={12} style={{ textAlign: "right" }}>
-                        <span style={{ color: "#13c2c2" }}>
-                            {order.status === "To Receive"
-                                ? "Parcel has arrived and to be received by the delivery hub"
-                                : order.status}
-                        </span>
-                    </Col>
-                </Row>
-                <hr />
-                {order.products.map((product, index) => (
-                    <Row
-                        align="middle"
-                        style={{ marginTop: "10px" }}
-                        key={index}
-                    >
-                        <Col span={4}>
-                            <Image
-                                src={product.image}
-                                alt={product.name}
-                                style={{ width: "80px", height: "80px" }}
-                            />
-                        </Col>
+        {orders.length === 0 ? (
+            <p>No orders found.</p>
+        ) : (
+            orders.map((order) => (
+                <Card key={order.id} style={{ marginBottom: "20px" }}>
+                    <Row align="middle">
                         <Col span={12}>
-                            <div>
-                                <strong>{product.name}</strong>
-                            </div>
-                            <div>Size: {product.size}</div>
-                            <div>Quantity: {product.quantity}</div>
+                            <span>Order ID: {order.id}</span>
                         </Col>
-                        <Col span={8} style={{ textAlign: "right" }}>
-                            <div>₱{product.price.toLocaleString()}</div>
+                        <Col span={12} style={{ textAlign: "right" }}>
+                            <span style={{ color: "#13c2c2" }}>
+                                {order.status === "To Receive"
+                                    ? "Parcel has arrived and to be received by the delivery hub"
+                                    : order.status}
+                            </span>
                         </Col>
                     </Row>
-                ))}
-                <hr />
-                <Row align="middle">
-                    <Col span={12}>
-                        <span style={{ fontSize: "12px", color: "#888" }}>
-                            Confirm receipt after you've checked the received
-                            items and made payment
-                        </span>
-                    </Col>
-                    <Col span={12} style={{ textAlign: "right" }}>
-                        <Space>
-                            <span>
-                                Order Total: ₱
-                                {order.orderTotal.toLocaleString()}
-                            </span>
-                            <Button type="primary" danger>
-                                Contact Seller
-                            </Button>
+                    <hr />
+                    {order.products.map((product, index) => (
+                        <Row
+                            align="middle"
+                            style={{ marginTop: "10px" }}
+                            key={index}
+                        >
+                            <Col span={4}>
+                                <Image
+                                    src={product.image}
+                                    alt={product.name}
+                                    style={{ width: "80px", height: "80px" }}
+                                />
+                            </Col>
+                            <Col span={20}>
+                                <div>
+                                    <strong>{product.name}</strong>
+                                </div>
+                                <div>Size: {product.size}</div>
+                                <div>Quantity: {product.quantity}</div>
+                                <div>
+                                    Total: ₱{product.total.toLocaleString()}
+                                </div>
+                            </Col>
+                        </Row>
+                    ))}
+                    <hr />
+                    <Row align="middle">
+                        <Col span={24} style={{ textAlign: "center" }}>
                             {showTrackButton && (
                                 <Button
                                     type="primary"
@@ -259,11 +246,19 @@ const OrderList = ({ orders, showTrackButton = false, onTrackOrder }) => (
                                     Track Order
                                 </Button>
                             )}
-                        </Space>
-                    </Col>
-                </Row>
-            </Card>
-        ))}
+                        </Col>
+                    </Row>
+                    <Row style={{ marginTop: "10px" }}>
+                        <Col span={24} style={{ textAlign: "center" }}>
+                            <strong>
+                                Order Total: ₱
+                                {Number(order.orderTotal).toLocaleString()}
+                            </strong>
+                        </Col>
+                    </Row>
+                </Card>
+            ))
+        )}
     </>
 );
 
