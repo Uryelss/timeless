@@ -14,14 +14,19 @@ import {
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import Navbar from "../Navbar/Navbar";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import BrandSlider from "../UserHome/BrandSlider";
 
 const { Content, Sider } = Layout;
 const { Search } = Input;
 const { Option } = Select;
 
-const Collection = () => {
+const CategoryCollection = () => {
+    // Get the category parameter from the URL (assumed to be the category ID)
+    const { category } = useParams();
+    const navigate = useNavigate();
+
+    // State for products and filtering
     const [products, setProducts] = useState([]);
     const [filters, setFilters] = useState({
         brand: [],
@@ -29,31 +34,42 @@ const Collection = () => {
         movement: [],
         strapMaterial: [],
     });
+    // For brand, gender and movement we derive available names from products
     const [filterOptions, setFilterOptions] = useState({
         brand: [],
         gender: [],
         movement: [],
         strapMaterial: [],
     });
+    // We also keep a mapping for strap material (id -> name)
+    const [strapMaterialMapping, setStrapMaterialMapping] = useState({});
+
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("default");
     const [filterKey, setFilterKey] = useState(0);
+
+    // Modal states for Add-to-Cart
     const [showAddToCartModal, setShowAddToCartModal] = useState(false);
     const [modalProduct, setModalProduct] = useState(null);
     const [modalCurrentMainImage, setModalCurrentMainImage] = useState("");
     const [modalSelectedSize, setModalSelectedSize] = useState(null);
 
+    // API endpoints (adjust as needed)
     const PRODUCTS_API = "http://localhost:8000/api/products/public";
     const SUBCATEGORIES_API = "http://localhost:8000/api/sub-categories/public";
     const isLoggedIn = Boolean(localStorage.getItem("token"));
-    const navigate = useNavigate();
 
-    // Fetch products from the API
+    // Fetch products filtered by the category (using category_id)
     const fetchProducts = () => {
         axios
             .get(PRODUCTS_API)
             .then((res) => {
-                setProducts(res.data);
+                const filtered = res.data.filter(
+                    (prod) =>
+                        prod.category_id &&
+                        prod.category_id.toString() === category.toString()
+                );
+                setProducts(filtered);
             })
             .catch((err) => {
                 message.error("Error fetching products");
@@ -61,63 +77,84 @@ const Collection = () => {
             });
     };
 
-    // Fetch filter options for each category from the API
-    const fetchFilterOptions = (type, setter) => {
-        axios
-            .get(`${SUBCATEGORIES_API}?type=${type}`)
-            .then((res) => {
-                // For strap materials, we assume the API returns objects
-                if (type === "strap_materials") {
-                    setter(res.data);
-                } else {
-                    setter(res.data.map((item) => item.name));
-                }
-            })
-            .catch((err) => {
-                console.error(`Error fetching ${type} options`, err);
-            });
-    };
-
     useEffect(() => {
         fetchProducts();
-        fetchFilterOptions("brand", (data) =>
-            setFilterOptions((prev) => ({ ...prev, brand: data }))
-        );
-        fetchFilterOptions("gender", (data) =>
-            setFilterOptions((prev) => ({ ...prev, gender: data }))
-        );
-        fetchFilterOptions("movement", (data) =>
-            setFilterOptions((prev) => ({ ...prev, movement: data }))
-        );
-        fetchFilterOptions("strap_materials", (data) =>
-            setFilterOptions((prev) => ({ ...prev, strapMaterial: data }))
-        );
-    }, []);
+    }, [category]);
 
-    const handleFilterChange = (category, value) => {
+    // Derive filter options for brand, gender and movement from the products
+    useEffect(() => {
+        const brands = Array.from(
+            new Set(
+                products.map((p) => p.brand?.name || p.brand).filter(Boolean)
+            )
+        );
+        const genders = Array.from(
+            new Set(
+                products.map((p) => p.gender?.name || p.gender).filter(Boolean)
+            )
+        );
+        const movements = Array.from(
+            new Set(
+                products
+                    .map((p) => p.movement?.name || p.movement)
+                    .filter(Boolean)
+            )
+        );
+        setFilterOptions((prev) => ({
+            ...prev,
+            brand: brands,
+            gender: genders,
+            movement: movements,
+        }));
+    }, [products]);
+
+    // Fetch strap material sub-categories from API and build mapping,
+    // then filter the available strap materials based on the products in this category.
+    useEffect(() => {
+        if (products.length > 0) {
+            axios
+                .get(`${SUBCATEGORIES_API}?type=strap_materials`)
+                .then((res) => {
+                    // res.data is an array of strap material objects {id, name, ...}
+                    const available = res.data.filter((material) =>
+                        products.some(
+                            (p) => p.strap_material_id === material.id
+                        )
+                    );
+                    // Build a mapping from id to name and extract names.
+                    const mapping = {};
+                    const names = available.map((mat) => {
+                        mapping[mat.id] = mat.name;
+                        return mat.name;
+                    });
+                    setStrapMaterialMapping(mapping);
+                    setFilterOptions((prev) => ({
+                        ...prev,
+                        strapMaterial: names,
+                    }));
+                })
+                .catch((err) => {
+                    console.error("Error fetching strap materials:", err);
+                });
+        }
+    }, [products]);
+
+    const handleFilterChange = (filterCategory, value) => {
         setFilters((prev) => {
-            const updated = prev[category].includes(value)
-                ? prev[category].filter((item) => item !== value)
-                : [...prev[category], value];
-            return { ...prev, [category]: updated };
+            const updated = prev[filterCategory].includes(value)
+                ? prev[filterCategory].filter((item) => item !== value)
+                : [...prev[filterCategory], value];
+            return { ...prev, [filterCategory]: updated };
         });
         setFilterKey((prev) => prev + 1);
     };
 
-    // Display selected filters
     const getDisplayFilters = () => {
         const displays = [];
         Object.keys(filters).forEach((key) => {
             if (filters[key].length > 0) {
                 filters[key].forEach((value) => {
-                    if (key === "strapMaterial") {
-                        const match = filterOptions.strapMaterial.find(
-                            (item) => item.id === value || item === value
-                        );
-                        displays.push(match && match.name ? match.name : value);
-                    } else {
-                        displays.push(value);
-                    }
+                    displays.push(value);
                 });
             }
         });
@@ -139,15 +176,11 @@ const Collection = () => {
             )
                 .toLowerCase()
                 .trim();
-            // For strap material, assume product.strap_material_id is stored
-            // and we want to compare its corresponding name from the API.
-            const productStrapMaterial = (() => {
-                const mat = filterOptions.strapMaterial.find(
-                    (m) => m.id === product.strap_material_id
-                );
-                return mat ? mat.name.toLowerCase().trim() : "";
-            })();
-
+            // For strap material, map the product's strap_material_id to a name
+            const productStrapMaterial =
+                strapMaterialMapping[product.strap_material_id]
+                    ?.toLowerCase()
+                    .trim() || "";
             const matchesBrand =
                 filters.brand.length === 0 ||
                 filters.brand.some(
@@ -165,13 +198,9 @@ const Collection = () => {
                 );
             const matchesStrapMaterial =
                 filters.strapMaterial.length === 0 ||
-                filters.strapMaterial.some((sm) => {
-                    const selectedName =
-                        typeof sm === "object" && sm.name
-                            ? sm.name.toLowerCase().trim()
-                            : sm.toLowerCase().trim();
-                    return selectedName === productStrapMaterial;
-                });
+                filters.strapMaterial.some(
+                    (mat) => mat.toLowerCase().trim() === productStrapMaterial
+                );
             return (
                 matchesBrand &&
                 matchesGender &&
@@ -225,13 +254,12 @@ const Collection = () => {
     const filteredProducts = getFilteredProducts();
     const displayFilters = getDisplayFilters();
 
-    // Updated handleDirectAddToCart: now sets inventory_id with a fallback
+    // Functions to handle adding products to the cart
     const handleDirectAddToCart = (product, size) => {
         if (!isLoggedIn) {
             message.info("Please log in to add to cart");
             return;
         }
-
         let sizesArr = [];
         if (typeof product.sizes === "string") {
             try {
@@ -249,11 +277,8 @@ const Collection = () => {
             );
             return;
         }
-
         const cartItem = {
             id: product.id,
-            // Use product.inventory_id if available; otherwise, fallback to product.id
-            inventory_id: product.inventory_id || product.id,
             productName: product.product_name,
             image: product.main_image
                 ? `http://localhost:8000/storage/${product.main_image}`
@@ -263,7 +288,6 @@ const Collection = () => {
             quantity: 1,
             total: product.price,
         };
-
         const storedCart = localStorage.getItem("cart");
         let cart = storedCart ? JSON.parse(storedCart) : [];
         const existingItemIndex = cart.findIndex(
@@ -536,24 +560,18 @@ const Collection = () => {
                             <div className="horizontal-checkboxes">
                                 {filterOptions.strapMaterial.map((material) => (
                                     <Checkbox
-                                        key={
-                                            material.id ? material.id : material
-                                        }
+                                        key={material}
                                         onChange={() =>
                                             handleFilterChange(
                                                 "strapMaterial",
-                                                material.id
-                                                    ? material.id
-                                                    : material
+                                                material
                                             )
                                         }
                                         checked={filters.strapMaterial.includes(
-                                            material.id ? material.id : material
+                                            material
                                         )}
                                     >
-                                        {material.name
-                                            ? material.name
-                                            : material}
+                                        {material}
                                     </Checkbox>
                                 ))}
                             </div>
@@ -722,4 +740,4 @@ const Collection = () => {
     );
 };
 
-export default Collection;
+export default CategoryCollection;

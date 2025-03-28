@@ -21,6 +21,9 @@ class Address extends Model
         'is_default'
     ];
 
+    // Append computed attributes to the JSON output.
+    protected $appends = ['full_address'];
+
     public function profile()
     {
         return $this->belongsTo(Profile::class);
@@ -29,5 +32,11 @@ class Address extends Model
     public function shipping()
     {
         return $this->hasMany(Shipping::class);
+    }
+
+    // Computed accessor to get the full address as a single string.
+    public function getFullAddressAttribute()
+    {
+        return "{$this->street}, {$this->barangay}, {$this->city}, {$this->state}, {$this->postal_code}, {$this->country}";
     }
 }

@@ -21,10 +21,10 @@ import TransactionManagement from "./AdminPage/Transaction/Transaction";
 // Auth pages
 import Register from "./AccessPage/RegisterPage/Register";
 import Login from "./AccessPage/LoginPage/Login";
-
 // User pages
 import UserHome from "./UserPage/UserHome/HomePage";
 import Collection from "./UserPage/CollectionPage/Collection";
+import CategoryCollection from "./UserPage/CollectionPage/CategoryCollection";
 import UserProfile from "./UserPage/ProfilePage/Profile";
 import ProductOverview from "./UserPage/ProductOverview/Productview";
 import AboutUs from "./UserPage/AboutUsPage/Aboutus";
@@ -33,7 +33,6 @@ import OrderCheckout from "./UserPage/Checkout/Checkout";
 import OrderTracking from "./UserPage/OrderTrack/OrderTracking";
 import MyPurchase from "./UserPage/ProfilePage/MyPurchase/MyPurchase";
 import MyAddress from "./UserPage/ProfilePage/Address/MyAddress";
-
 // Single route protection component
 import PrivateRoute from "./PrivateRoute";
 import ReviewsManagement from "./AdminPage/AdminReview/Reviews";
@@ -78,7 +77,6 @@ function Routers() {
                         path="/Transactions"
                         element={<TransactionManagement />}
                     />
-
                     <Route
                         path="/inventory"
                         element={<InventoryManagement />}
@@ -91,6 +89,11 @@ function Routers() {
                 <Route element={<PrivateRoute allowedRoles={["user"]} />}>
                     <Route path="/user-home" element={<UserHome />} />
                     <Route path="/user-collection" element={<Collection />} />
+                    {/* Dynamic category route */}
+                    <Route
+                        path="/user-category/:category"
+                        element={<CategoryCollection />}
+                    />
                     <Route path="/user-profile" element={<UserProfile />} />
                     <Route path="/product/:id" element={<ProductOverview />} />
                     <Route path="/AboutUs" element={<AboutUs />} />

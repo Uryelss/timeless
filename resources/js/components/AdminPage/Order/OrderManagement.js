@@ -327,10 +327,6 @@ const OrderManagement = () => {
             });
     };
 
-    // In OrderManagement.js, inside handleUpdate function
-    // In OrderManagement.js, inside handleUpdate
-    // In OrderManagement.js, inside handleUpdate
-    // In OrderManagement.js, inside handleUpdate
     const handleUpdate = () => {
         const shippingStatusId =
             selectedOrder.shipping?.shipping_status_id || 1;
@@ -376,7 +372,6 @@ const OrderManagement = () => {
                 message.success("Order updated successfully");
                 setOpenEditModal(false);
                 fetchOrders();
-                console.log("Dispatching orderStatusUpdated event");
                 window.dispatchEvent(new Event("orderStatusUpdated"));
             })
             .catch((err) => {
@@ -387,6 +382,7 @@ const OrderManagement = () => {
                 console.error(err);
             });
     };
+
     const handleView = (record) => {
         setSelectedOrder(record);
         setOpenViewModal(true);
@@ -496,7 +492,7 @@ const OrderManagement = () => {
                                             {shipping?.address?.phone || "N/A"}
                                         </Descriptions.Item>
                                         <Descriptions.Item label="Address">
-                                            {shipping?.address?.address ||
+                                            {shipping?.address?.full_address ||
                                                 "N/A"}
                                         </Descriptions.Item>
                                     </Descriptions>

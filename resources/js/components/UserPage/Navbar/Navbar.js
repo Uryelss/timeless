@@ -1,5 +1,5 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { flushSync } from "react-dom";
 import { Layout, Menu, Dropdown, Badge, Avatar, Button } from "antd";
 import {
@@ -14,6 +14,9 @@ import { useNavigate } from "react-router-dom";
 const { Header: AntHeader } = Layout;
 
 const Header = () => {
+    // State for dynamic categories
+    const [categories, setCategories] = useState([]);
+    // Other states
     const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
     const [profile, setProfile] = useState(null);
     const [avatarKey, setAvatarKey] = useState(0);
@@ -35,7 +38,7 @@ const Header = () => {
         }
     }, []);
 
-    // Store read notifications and update unread count when they change
+    // Update read notifications in localStorage and recalc unread count
     useEffect(() => {
         localStorage.setItem(
             "readNotifications",
@@ -91,41 +94,31 @@ const Header = () => {
         return () => window.removeEventListener("cartUpdated", updateCartCount);
     }, []);
 
-    // Fetch orders (and notifications) when token is available
+    // Fetch orders (and generate notifications)
     useEffect(() => {
         if (token) {
             fetchOrders();
         }
     }, [token]);
 
-    // Updated fetchOrders function with delivered fix:
     const fetchOrders = async () => {
         try {
             const response = await axios.get(
                 "http://localhost:8000/api/my-purchases",
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
             const orderData = response.data.data || response.data;
             const allOrders = Array.isArray(orderData) ? orderData : [];
             setOrders(allOrders);
 
-            // Generate notifications based on order status and timestamps.
-            // Note:
-            // - Pending: "order-placed" or "payment-confirmed"
-            // - Processing: order is in transit → "shipped" notification
-            // - Shipped: indicates delivered (backend sets delivered orders to "shipped")
-            // - Completed and Cancelled remain as before.
+            // Generate notifications based on order status
             const newNotifications = allOrders.flatMap((order) => {
                 const status = order.order_status.toLowerCase();
                 const trackingNumber =
                     order.shipping?.tracking_number || "Not Available";
                 const notifs = [];
-
                 if (status === "pending") {
                     if (order.payment_confirmed_at) {
-                        // Payment confirmed notification
                         notifs.push({
                             id: order.id,
                             type: "payment-confirmed",
@@ -136,7 +129,6 @@ const Header = () => {
                             timestamp: order.payment_confirmed_at,
                         });
                     } else {
-                        // Order placed notification
                         notifs.push({
                             id: order.id,
                             type: "order-placed",
@@ -149,7 +141,6 @@ const Header = () => {
                         });
                     }
                 } else if (status === "processing") {
-                    // Order is in transit (shipped but not yet delivered)
                     notifs.push({
                         id: order.id,
                         type: "shipped",
@@ -160,7 +151,6 @@ const Header = () => {
                         timestamp: order.shipped_at || new Date().toISOString(),
                     });
                 } else if (status === "shipped") {
-                    // For delivered orders, backend sets order_status to "shipped" and delivered_at should be set.
                     if (order.delivered_at) {
                         notifs.push({
                             id: order.id,
@@ -172,7 +162,6 @@ const Header = () => {
                             timestamp: order.delivered_at,
                         });
                     } else {
-                        // Fallback: if delivered_at isn't set yet, show shipped notification.
                         notifs.push({
                             id: order.id,
                             type: "shipped",
@@ -209,11 +198,9 @@ const Header = () => {
                 return notifs;
             });
 
-            // Append new notifications without removing existing ones
             setNotifications((prev) => {
                 const merged = [...prev];
                 newNotifications.forEach((newNotif) => {
-                    // Check for an exact duplicate (order id, type, and timestamp)
                     const exists = merged.find(
                         (n) =>
                             n.id === newNotif.id &&
@@ -229,7 +216,6 @@ const Header = () => {
                 );
             });
 
-            // Update unread count
             setNotificationCount(
                 newNotifications.filter(
                     (n) => !readNotifications.includes(`${n.id}-${n.type}`)
@@ -282,11 +268,36 @@ const Header = () => {
         : "/images/default-avatar.png";
     const username = profile ? profile.username : "Guest";
 
+    // Fetch categories dynamically from the public endpoint (for type 'categories')
+    useEffect(() => {
+        axios
+            .get(
+                "http://localhost:8000/api/sub-categories/public?type=categories"
+            )
+            .then((res) => {
+                setCategories(res.data);
+            })
+            .catch((err) => {
+                console.error("Error fetching categories:", err);
+            });
+    }, []);
+
+    // Generate the dynamic categories dropdown menu
     const categoriesMenu = (
         <Menu className="white-dropdown">
-            <Menu.Item key="luxury-watches">Luxury Watches</Menu.Item>
-            <Menu.Item key="fashion-watches">Fashion Watches</Menu.Item>
-            <Menu.Item key="smart-watches">Smart Watches</Menu.Item>
+            {categories.length > 0 ? (
+                categories.map((cat) => (
+                    <Menu.Item
+                        key={cat.id}
+                        // Navigate using the /user-category/:category route, using the category ID
+                        onClick={() => navigate(`/user-category/${cat.id}`)}
+                    >
+                        {cat.name}
+                    </Menu.Item>
+                ))
+            ) : (
+                <Menu.Item key="empty">No Categories</Menu.Item>
+            )}
         </Menu>
     );
 
@@ -406,14 +417,10 @@ const Header = () => {
 
     const toggleMobileMenu = () => setIsMobileMenuVisible(!isMobileMenuVisible);
 
-    const handleNavigation = (path) => {
-        navigate(path);
-        setIsMobileMenuVisible(false);
-    };
-
     const handleMenuClick = (e) => {
         e.domEvent.preventDefault();
-        handleNavigation(e.item.props.path);
+        navigate(e.item.props.path);
+        setIsMobileMenuVisible(false);
     };
 
     return (
