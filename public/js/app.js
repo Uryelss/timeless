@@ -191624,7 +191624,7 @@ var ProductOverview = function ProductOverview() {
     return normalizeSize(inv.size) === normalizeSize(selectedSize || "");
   });
 
-  // Function to add product to cart (Updated from second code)
+  // Function to add product to cart
   var handleAddToCart = function handleAddToCart() {
     if (!selectedSize) {
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].warning("Please select a size.");
@@ -191875,6 +191875,10 @@ var ProductOverview = function ProductOverview() {
                   onMouseEnter: function onMouseEnter() {
                     return setCurrentMainImage(product.side_image_1);
                   },
+                  onMouseLeave: function onMouseLeave() {
+                    return setCurrentMainImage(product.main_image);
+                  } // Reset to main image
+                  ,
                   style: {
                     width: "100%",
                     height: "100%",
@@ -191898,6 +191902,10 @@ var ProductOverview = function ProductOverview() {
                   onMouseEnter: function onMouseEnter() {
                     return setCurrentMainImage(product.side_image_2);
                   },
+                  onMouseLeave: function onMouseLeave() {
+                    return setCurrentMainImage(product.main_image);
+                  } // Reset to main image
+                  ,
                   style: {
                     width: "100%",
                     height: "100%",
@@ -191921,6 +191929,10 @@ var ProductOverview = function ProductOverview() {
                   onMouseEnter: function onMouseEnter() {
                     return setCurrentMainImage(product.side_image_3);
                   },
+                  onMouseLeave: function onMouseLeave() {
+                    return setCurrentMainImage(product.main_image);
+                  } // Reset to main image
+                  ,
                   style: {
                     width: "100%",
                     height: "100%",
@@ -192140,7 +192152,6 @@ var ProductOverview = function ProductOverview() {
                     }), " ", "to leave a review."]
                   }), reviews.length > 0 ? reviews.map(function (review) {
                     var _review$user, _review$user2;
-                    // Handle profile_image: if it's a full URL, use it; otherwise, prepend baseUrl
                     var avatarSrc = (_review$user = review.user) !== null && _review$user !== void 0 && (_review$user = _review$user.profile) !== null && _review$user !== void 0 && _review$user.profile_image ? review.user.profile.profile_image.startsWith("http") ? review.user.profile.profile_image : "".concat(baseUrl).concat(review.user.profile.profile_image) : null;
                     console.log("Review ".concat(review.id, " Avatar Src:"), avatarSrc); // Debug log
                     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {

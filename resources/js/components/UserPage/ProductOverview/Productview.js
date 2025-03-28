@@ -197,7 +197,7 @@ const ProductOverview = () => {
         (inv) => normalizeSize(inv.size) === normalizeSize(selectedSize || "")
     );
 
-    // Function to add product to cart (Updated from second code)
+    // Function to add product to cart
     const handleAddToCart = () => {
         if (!selectedSize) {
             message.warning("Please select a size.");
@@ -233,8 +233,7 @@ const ProductOverview = () => {
         if (existingItemIndex > -1) {
             cart[existingItemIndex].quantity += 1;
             cart[existingItemIndex].total =
-                cart[existingItemIndex].price *
-                cart[existingItemIndex].quantity;
+                cart[existingItemIndex].price * cart[existingItemIndex].quantity;
         } else {
             cart.push(cartItem);
         }
@@ -434,10 +433,11 @@ const ProductOverview = () => {
                                             alt="Side 1"
                                             preview={false}
                                             onMouseEnter={() =>
-                                                setCurrentMainImage(
-                                                    product.side_image_1
-                                                )
+                                                setCurrentMainImage(product.side_image_1)
                                             }
+                                            onMouseLeave={() =>
+                                                setCurrentMainImage(product.main_image)
+                                            } // Reset to main image
                                             style={{
                                                 width: "100%",
                                                 height: "100%",
@@ -461,10 +461,11 @@ const ProductOverview = () => {
                                             alt="Side 2"
                                             preview={false}
                                             onMouseEnter={() =>
-                                                setCurrentMainImage(
-                                                    product.side_image_2
-                                                )
+                                                setCurrentMainImage(product.side_image_2)
                                             }
+                                            onMouseLeave={() =>
+                                                setCurrentMainImage(product.main_image)
+                                            } // Reset to main image
                                             style={{
                                                 width: "100%",
                                                 height: "100%",
@@ -488,10 +489,11 @@ const ProductOverview = () => {
                                             alt="Side 3"
                                             preview={false}
                                             onMouseEnter={() =>
-                                                setCurrentMainImage(
-                                                    product.side_image_3
-                                                )
+                                                setCurrentMainImage(product.side_image_3)
                                             }
+                                            onMouseLeave={() =>
+                                                setCurrentMainImage(product.main_image)
+                                            } // Reset to main image
                                             style={{
                                                 width: "100%",
                                                 height: "100%",
@@ -765,7 +767,6 @@ const ProductOverview = () => {
                                         )}
                                         {reviews.length > 0 ? (
                                             reviews.map((review) => {
-                                                // Handle profile_image: if it's a full URL, use it; otherwise, prepend baseUrl
                                                 const avatarSrc = review.user
                                                     ?.profile?.profile_image
                                                     ? review.user.profile.profile_image.startsWith(
