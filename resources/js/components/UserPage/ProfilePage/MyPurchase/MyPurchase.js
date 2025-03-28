@@ -1,3 +1,4 @@
+// MyPurchase.js
 import React, { useState, useEffect } from "react";
 import {
     Tabs,
@@ -34,11 +35,14 @@ const MyPurchase = () => {
                 },
             })
             .then((res) => {
-                console.log("Fetched orders:", res.data.data); // Debug
-                const transformedOrders = res.data.data.map((order) => ({
+                // Handle both paginated response or direct array
+                const ordersArray = res.data.data || res.data;
+                console.log("Fetched orders:", ordersArray); // Debug
+                const transformedOrders = ordersArray.map((order) => ({
                     id: order.id,
-                    seller: order.order_details[0]?.product?.seller?.name || "",
-                    products: order.order_details.map((detail) => ({
+                    seller:
+                        order.order_details?.[0]?.product?.seller?.name || "",
+                    products: order.order_details?.map((detail) => ({
                         name: detail.product?.product_name || "Unknown Product",
                         quantity: detail.quantity || 0,
                         price: detail.price || 0,
@@ -51,8 +55,9 @@ const MyPurchase = () => {
                     orderTotal: order.total_amount || 0,
                 }));
                 setOrders(transformedOrders);
-                setTotalOrders(res.data.total);
-                setCurrentPage(res.data.current_page);
+                // If your API returns pagination info, adjust accordingly:
+                setTotalOrders(res.data.total || transformedOrders.length);
+                setCurrentPage(res.data.current_page || page);
             })
             .catch((err) => {
                 console.error(
@@ -74,25 +79,29 @@ const MyPurchase = () => {
     };
 
     const mapStatusToTab = (status) => {
-        console.log("Mapping status:", status); // Debug
         switch (status?.toLowerCase()) {
             case "pending":
-                return "To Pay"; // For "Order Placed" and "Payment Info Confirmed"
+                return "To Pay"; // Order Placed & Payment Info Confirmed
             case "processing":
-                return "To Ship"; // For "Shipped" in admin
+                return "To Ship"; // Shipped
             case "shipped":
-                return "To Receive"; // For "Delivered" in admin
+                return "To Receive"; // Delivered
             case "completed":
-                return "Completed"; // For "Completed" in admin
+                return "Completed"; // Completed
             case "cancelled":
-                return "Cancelled";
+                return "Cancelled"; // Cancelled
             default:
                 return "To Pay";
         }
     };
 
+    // Updated filter function using case-insensitive comparison
     const filterOrdersByStatus = (status) => {
-        return orders.filter((order) => order.status === status);
+        return orders.filter(
+            (order) =>
+                order.status &&
+                order.status.toLowerCase() === status.toLowerCase()
+        );
     };
 
     const filteredOrders = orders.filter((order) => {

@@ -190202,19 +190202,24 @@ var Header = function Header() {
     setReadNotifications = _useState16[1];
   var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_4__.useNavigate)();
   var token = localStorage.getItem("token");
+
+  // Load read notifications from localStorage
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var storedReadNotifications = localStorage.getItem("readNotifications");
     if (storedReadNotifications) {
       setReadNotifications(JSON.parse(storedReadNotifications));
     }
   }, []);
+
+  // Store read notifications and update unread count when they change
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     localStorage.setItem("readNotifications", JSON.stringify(readNotifications));
-    // Recalculate unread count when readNotifications changes
     setNotificationCount(notifications.filter(function (n) {
       return !readNotifications.includes("".concat(n.id, "-").concat(n.type));
     }).length);
   }, [readNotifications, notifications]);
+
+  // Fetch user profile
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (token) {
       axios__WEBPACK_IMPORTED_MODULE_5__["default"].get("http://localhost:8000/api/profile", {
@@ -190228,6 +190233,8 @@ var Header = function Header() {
       });
     }
   }, [token]);
+
+  // Listen for profile updates
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var handleProfileUpdated = function handleProfileUpdated(e) {
       setProfile(e.detail);
@@ -190240,6 +190247,8 @@ var Header = function Header() {
       return window.removeEventListener("profileUpdated", handleProfileUpdated);
     };
   }, []);
+
+  // Update cart count from localStorage
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var updateCartCount = function updateCartCount() {
       var storedCart = localStorage.getItem("cart");
@@ -190260,11 +190269,15 @@ var Header = function Header() {
       return window.removeEventListener("cartUpdated", updateCartCount);
     };
   }, []);
+
+  // Fetch orders (and notifications) when token is available
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (token) {
       fetchOrders();
     }
   }, [token]);
+
+  // Updated fetchOrders function with delivered fix:
   var fetchOrders = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var response, orderData, allOrders, newNotifications, _err$response;
@@ -190284,30 +190297,42 @@ var Header = function Header() {
             allOrders = Array.isArray(orderData) ? orderData : [];
             setOrders(allOrders);
 
-            // Generate notifications based on order status
+            // Generate notifications based on order status and timestamps.
+            // Note:
+            // - Pending: "order-placed" or "payment-confirmed"
+            // - Processing: order is in transit → "shipped" notification
+            // - Shipped: indicates delivered (backend sets delivered orders to "shipped")
+            // - Completed and Cancelled remain as before.
             newNotifications = allOrders.flatMap(function (order) {
               var _order$shipping;
               var status = order.order_status.toLowerCase();
               var trackingNumber = ((_order$shipping = order.shipping) === null || _order$shipping === void 0 ? void 0 : _order$shipping.tracking_number) || "Not Available";
               var notifs = [];
               if (status === "pending") {
-                var _order$order_details, _order$order_details2;
-                notifs.push({
-                  id: order.id,
-                  type: "confirmation",
-                  message: "Thank you for your order! Your order #".concat(order.id, " has been successfully placed."),
-                  image: (_order$order_details = order.order_details) !== null && _order$order_details !== void 0 && (_order$order_details = _order$order_details[0]) !== null && _order$order_details !== void 0 && (_order$order_details = _order$order_details.product) !== null && _order$order_details !== void 0 && _order$order_details.main_image ? "http://localhost:8000/storage/".concat(order.order_details[0].product.main_image) : "/images/default-product.png",
-                  timestamp: order.created_at || new Date().toISOString()
-                });
-                notifs.push({
-                  id: order.id,
-                  type: "processing",
-                  message: "Your order #".concat(order.id, " is being prepared for shipment."),
-                  image: (_order$order_details2 = order.order_details) !== null && _order$order_details2 !== void 0 && (_order$order_details2 = _order$order_details2[0]) !== null && _order$order_details2 !== void 0 && (_order$order_details2 = _order$order_details2.product) !== null && _order$order_details2 !== void 0 && _order$order_details2.main_image ? "http://localhost:8000/storage/".concat(order.order_details[0].product.main_image) : "/images/default-product.png",
-                  timestamp: order.payment_confirmed_at || new Date().toISOString()
-                });
-              } else if (status === "shipped") {
+                if (order.payment_confirmed_at) {
+                  var _order$order_details;
+                  // Payment confirmed notification
+                  notifs.push({
+                    id: order.id,
+                    type: "payment-confirmed",
+                    message: "Your payment has been confirmed. Your order #".concat(order.id, " is now ready to be shipped."),
+                    image: (_order$order_details = order.order_details) !== null && _order$order_details !== void 0 && (_order$order_details = _order$order_details[0]) !== null && _order$order_details !== void 0 && (_order$order_details = _order$order_details.product) !== null && _order$order_details !== void 0 && _order$order_details.main_image ? "http://localhost:8000/storage/".concat(order.order_details[0].product.main_image) : "/images/default-product.png",
+                    timestamp: order.payment_confirmed_at
+                  });
+                } else {
+                  var _order$order_details2;
+                  // Order placed notification
+                  notifs.push({
+                    id: order.id,
+                    type: "order-placed",
+                    message: "Order placed successfully! Here is your order ID: #".concat(order.id, "."),
+                    image: (_order$order_details2 = order.order_details) !== null && _order$order_details2 !== void 0 && (_order$order_details2 = _order$order_details2[0]) !== null && _order$order_details2 !== void 0 && (_order$order_details2 = _order$order_details2.product) !== null && _order$order_details2 !== void 0 && _order$order_details2.main_image ? "http://localhost:8000/storage/".concat(order.order_details[0].product.main_image) : "/images/default-product.png",
+                    timestamp: order.created_at || new Date().toISOString()
+                  });
+                }
+              } else if (status === "processing") {
                 var _order$order_details3;
+                // Order is in transit (shipped but not yet delivered)
                 notifs.push({
                   id: order.id,
                   type: "shipped",
@@ -190315,47 +190340,58 @@ var Header = function Header() {
                   image: (_order$order_details3 = order.order_details) !== null && _order$order_details3 !== void 0 && (_order$order_details3 = _order$order_details3[0]) !== null && _order$order_details3 !== void 0 && (_order$order_details3 = _order$order_details3.product) !== null && _order$order_details3 !== void 0 && _order$order_details3.main_image ? "http://localhost:8000/storage/".concat(order.order_details[0].product.main_image) : "/images/default-product.png",
                   timestamp: order.shipped_at || new Date().toISOString()
                 });
-              } else if (status === "delivered") {
-                var _order$order_details4;
-                notifs.push({
-                  id: order.id,
-                  type: "out-for-delivery",
-                  message: "Your order #".concat(order.id, " is out for delivery and should arrive today."),
-                  image: (_order$order_details4 = order.order_details) !== null && _order$order_details4 !== void 0 && (_order$order_details4 = _order$order_details4[0]) !== null && _order$order_details4 !== void 0 && (_order$order_details4 = _order$order_details4.product) !== null && _order$order_details4 !== void 0 && _order$order_details4.main_image ? "http://localhost:8000/storage/".concat(order.order_details[0].product.main_image) : "/images/default-product.png",
-                  timestamp: order.delivered_at || new Date().toISOString()
-                });
+              } else if (status === "shipped") {
+                // For delivered orders, backend sets order_status to "shipped" and delivered_at should be set.
+                if (order.delivered_at) {
+                  var _order$order_details4;
+                  notifs.push({
+                    id: order.id,
+                    type: "delivered",
+                    message: "Your order #".concat(order.id, " has been delivered. We hope you enjoy your purchase!"),
+                    image: (_order$order_details4 = order.order_details) !== null && _order$order_details4 !== void 0 && (_order$order_details4 = _order$order_details4[0]) !== null && _order$order_details4 !== void 0 && (_order$order_details4 = _order$order_details4.product) !== null && _order$order_details4 !== void 0 && _order$order_details4.main_image ? "http://localhost:8000/storage/".concat(order.order_details[0].product.main_image) : "/images/default-product.png",
+                    timestamp: order.delivered_at
+                  });
+                } else {
+                  var _order$order_details5;
+                  // Fallback: if delivered_at isn't set yet, show shipped notification.
+                  notifs.push({
+                    id: order.id,
+                    type: "shipped",
+                    message: "Good news! Your order #".concat(order.id, " has been shipped. Track your package here: ").concat(trackingNumber, "."),
+                    image: (_order$order_details5 = order.order_details) !== null && _order$order_details5 !== void 0 && (_order$order_details5 = _order$order_details5[0]) !== null && _order$order_details5 !== void 0 && (_order$order_details5 = _order$order_details5.product) !== null && _order$order_details5 !== void 0 && _order$order_details5.main_image ? "http://localhost:8000/storage/".concat(order.order_details[0].product.main_image) : "/images/default-product.png",
+                    timestamp: order.shipped_at || new Date().toISOString()
+                  });
+                }
               } else if (status === "completed") {
-                var _order$order_details5;
+                var _order$order_details6;
                 notifs.push({
                   id: order.id,
                   type: "delivered",
                   message: "Your order #".concat(order.id, " has been delivered. We hope you enjoy your purchase!"),
-                  image: (_order$order_details5 = order.order_details) !== null && _order$order_details5 !== void 0 && (_order$order_details5 = _order$order_details5[0]) !== null && _order$order_details5 !== void 0 && (_order$order_details5 = _order$order_details5.product) !== null && _order$order_details5 !== void 0 && _order$order_details5.main_image ? "http://localhost:8000/storage/".concat(order.order_details[0].product.main_image) : "/images/default-product.png",
+                  image: (_order$order_details6 = order.order_details) !== null && _order$order_details6 !== void 0 && (_order$order_details6 = _order$order_details6[0]) !== null && _order$order_details6 !== void 0 && (_order$order_details6 = _order$order_details6.product) !== null && _order$order_details6 !== void 0 && _order$order_details6.main_image ? "http://localhost:8000/storage/".concat(order.order_details[0].product.main_image) : "/images/default-product.png",
                   timestamp: order.completed_at || new Date().toISOString()
                 });
               } else if (status === "cancelled") {
-                var _order$order_details6;
+                var _order$order_details7;
                 notifs.push({
                   id: order.id,
                   type: "cancelled",
                   message: "Your order #".concat(order.id, " has been cancelled."),
-                  image: (_order$order_details6 = order.order_details) !== null && _order$order_details6 !== void 0 && (_order$order_details6 = _order$order_details6[0]) !== null && _order$order_details6 !== void 0 && (_order$order_details6 = _order$order_details6.product) !== null && _order$order_details6 !== void 0 && _order$order_details6.main_image ? "http://localhost:8000/storage/".concat(order.order_details[0].product.main_image) : "/images/default-product.png",
+                  image: (_order$order_details7 = order.order_details) !== null && _order$order_details7 !== void 0 && (_order$order_details7 = _order$order_details7[0]) !== null && _order$order_details7 !== void 0 && (_order$order_details7 = _order$order_details7.product) !== null && _order$order_details7 !== void 0 && _order$order_details7.main_image ? "http://localhost:8000/storage/".concat(order.order_details[0].product.main_image) : "/images/default-product.png",
                   timestamp: new Date().toISOString()
                 });
               }
               return notifs;
-            }); // Append new notifications without overwriting existing ones
+            }); // Append new notifications without removing existing ones
             setNotifications(function (prev) {
               var merged = _toConsumableArray(prev);
               newNotifications.forEach(function (newNotif) {
-                var existingIndex = merged.findIndex(function (n) {
-                  return n.id === newNotif.id && n.type === newNotif.type;
+                // Check for an exact duplicate (order id, type, and timestamp)
+                var exists = merged.find(function (n) {
+                  return n.id === newNotif.id && n.type === newNotif.type && n.timestamp === newNotif.timestamp;
                 });
-                if (existingIndex === -1) {
+                if (!exists) {
                   merged.push(newNotif);
-                } else {
-                  // Update timestamp if the notification already exists
-                  merged[existingIndex].timestamp = newNotif.timestamp;
                 }
               });
               return merged.sort(function (a, b) {
@@ -190385,6 +190421,8 @@ var Header = function Header() {
       return _ref.apply(this, arguments);
     };
   }();
+
+  // Listen for order events to refresh notifications
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var handleOrderPlaced = function handleOrderPlaced() {
       console.log("Order placed event received");
@@ -190669,8 +190707,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DollarOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/TruckOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DownloadOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/CloseOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/StarOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/StarOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/CloseOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/LeftOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EyeOutlined.js");
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
@@ -190789,6 +190827,9 @@ var OrderTracking = function OrderTracking() {
               shipped_at: orderData.shipped_at || null,
               delivered_at: orderData.delivered_at || null,
               completed_at: orderData.completed_at || null,
+              cancelled_at: orderData.cancelled_at || null,
+              cancel_reason: orderData.cancel_reason || "",
+              // Include cancellation reason
               updated_at: orderData.updated_at || null
             });
             setOrder(transformedOrder);
@@ -190965,7 +191006,7 @@ var OrderTracking = function OrderTracking() {
   }();
   var handleCancelOrder = /*#__PURE__*/function () {
     var _ref5 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-      var response, _error$response8, _error$response9, errorData, _errorData$messages;
+      var _error$response8, _error$response9, errorData, _errorData$messages;
       return _regeneratorRuntime().wrap(function _callee5$(_context5) {
         while (1) switch (_context5.prev = _context5.next) {
           case 0:
@@ -190987,11 +191028,11 @@ var OrderTracking = function OrderTracking() {
               }
             });
           case 7:
-            response = _context5.sent;
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Order cancelled successfully");
             setIsCancelModalVisible(false);
             setCancelReason("");
             fetchOrderDetails();
+            navigate("/my-purchase");
             _context5.next = 19;
             break;
           case 14:
@@ -191033,14 +191074,14 @@ var OrderTracking = function OrderTracking() {
       shipped: (order === null || order === void 0 ? void 0 : order.shipped_at) || null,
       delivered: (order === null || order === void 0 ? void 0 : order.delivered_at) || null,
       completed: (order === null || order === void 0 ? void 0 : order.completed_at) || null,
-      cancelled: (order === null || order === void 0 ? void 0 : order.updated_at) || null
+      cancelled: (order === null || order === void 0 ? void 0 : order.cancelled_at) || (order === null || order === void 0 ? void 0 : order.updated_at) || null
     };
     var formatTimestamp = function formatTimestamp(timestamp) {
       if (!timestamp || isNaN(new Date(timestamp).getTime())) {
         return "Awaiting";
       }
       var date = new Date(timestamp);
-      return "".concat((date.getMonth() + 1).toString().padStart(2, "0"), "/").concat(date.getDate().toString().padStart(2, "0"), "/").concat(date.getFullYear(), " ").concat(date.getHours(), ":").concat(date.getMinutes().toString().padStart(2, "0"));
+      return "".concat(date.toLocaleDateString(), " ").concat(date.toLocaleTimeString());
     };
     var timeline = [{
       label: "Order Placed",
@@ -191063,22 +191104,24 @@ var OrderTracking = function OrderTracking() {
       completed: shippingStatusId >= 4,
       icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {})
     }, {
-      label: "Cancelled",
-      timestamp: formatTimestamp(timestamps.cancelled),
-      completed: shippingStatusId === 5,
-      icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {})
-    }, {
       label: "Completed",
       timestamp: formatTimestamp(timestamps.completed),
-      completed: shippingStatusId === 6 && order.completed_at,
+      completed: shippingStatusId === 6,
+      icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {})
+    }, {
+      label: "Cancelled" + (order.cancel_reason ? " - " + order.cancel_reason : ""),
+      timestamp: formatTimestamp(timestamps.cancelled),
+      completed: shippingStatusId === 5,
       icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {})
     }];
     if (shippingStatusId === 5) {
       return timeline.filter(function (step) {
-        return step.label === "Cancelled" || step.completed;
+        return step.completed || step.label.startsWith("Cancelled");
       });
     }
-    return timeline;
+    return timeline.filter(function (step) {
+      return step.label !== "Cancelled" || step.completed;
+    });
   };
   var formatAddress = function formatAddress(address) {
     if (!address) return "Not Available";
@@ -191155,7 +191198,7 @@ var OrderTracking = function OrderTracking() {
                 children: "Track Order"
               }), (order === null || order === void 0 || (_order$shipping4 = order.shipping) === null || _order$shipping4 === void 0 ? void 0 : _order$shipping4.shipping_status_id) !== 5 && [1, 2, 3].includes(order === null || order === void 0 || (_order$shipping5 = order.shipping) === null || _order$shipping5 === void 0 ? void 0 : _order$shipping5.shipping_status_id) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                 className: "danger-btn",
-                icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
+                icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {}),
                 onClick: function onClick() {
                   return setIsCancelModalVisible(true);
                 },
@@ -191198,7 +191241,7 @@ var OrderTracking = function OrderTracking() {
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                       children: ["Quantity:", " ", detail.quantity]
                     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
-                      children: ["Subtotal: \u20B1", detail.price ? (detail.price * detail.quantity).toLocaleString() : "N/A"]
+                      children: ["Subtotal: \u20B1", " ", detail.price ? (detail.price * detail.quantity).toLocaleString() : "N/A"]
                     })]
                   })]
                 }, detail.id);
@@ -191277,7 +191320,7 @@ var OrderTracking = function OrderTracking() {
                 value: "Payment process too troublesome",
                 children: "Payment process too troublesome"
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
-                value: "Don't want to buy anymore",
+                value: "Don\u2019t want to buy anymore",
                 children: "Don\u2019t want to buy anymore"
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
                 value: "Others",
@@ -192747,6 +192790,7 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+// MyPurchase.js
 
 
 
@@ -192781,13 +192825,15 @@ var MyPurchase = function MyPurchase() {
         Authorization: "Bearer ".concat(localStorage.getItem("token"))
       }
     }).then(function (res) {
-      console.log("Fetched orders:", res.data.data); // Debug
-      var transformedOrders = res.data.data.map(function (order) {
-        var _order$order_details$;
+      // Handle both paginated response or direct array
+      var ordersArray = res.data.data || res.data;
+      console.log("Fetched orders:", ordersArray); // Debug
+      var transformedOrders = ordersArray.map(function (order) {
+        var _order$order_details, _order$order_details2;
         return {
           id: order.id,
-          seller: ((_order$order_details$ = order.order_details[0]) === null || _order$order_details$ === void 0 || (_order$order_details$ = _order$order_details$.product) === null || _order$order_details$ === void 0 || (_order$order_details$ = _order$order_details$.seller) === null || _order$order_details$ === void 0 ? void 0 : _order$order_details$.name) || "",
-          products: order.order_details.map(function (detail) {
+          seller: ((_order$order_details = order.order_details) === null || _order$order_details === void 0 || (_order$order_details = _order$order_details[0]) === null || _order$order_details === void 0 || (_order$order_details = _order$order_details.product) === null || _order$order_details === void 0 || (_order$order_details = _order$order_details.seller) === null || _order$order_details === void 0 ? void 0 : _order$order_details.name) || "",
+          products: (_order$order_details2 = order.order_details) === null || _order$order_details2 === void 0 ? void 0 : _order$order_details2.map(function (detail) {
             var _detail$product, _detail$inventory, _detail$product2;
             return {
               name: ((_detail$product = detail.product) === null || _detail$product === void 0 ? void 0 : _detail$product.product_name) || "Unknown Product",
@@ -192802,8 +192848,9 @@ var MyPurchase = function MyPurchase() {
         };
       });
       setOrders(transformedOrders);
-      setTotalOrders(res.data.total);
-      setCurrentPage(res.data.current_page);
+      // If your API returns pagination info, adjust accordingly:
+      setTotalOrders(res.data.total || transformedOrders.length);
+      setCurrentPage(res.data.current_page || page);
     })["catch"](function (err) {
       var _err$response;
       console.error("Error fetching orders:", ((_err$response = err.response) === null || _err$response === void 0 ? void 0 : _err$response.data) || err);
@@ -192823,29 +192870,31 @@ var MyPurchase = function MyPurchase() {
     fetchOrders(page);
   };
   var mapStatusToTab = function mapStatusToTab(status) {
-    console.log("Mapping status:", status); // Debug
     switch (status === null || status === void 0 ? void 0 : status.toLowerCase()) {
       case "pending":
         return "To Pay";
-      // For "Order Placed" and "Payment Info Confirmed"
+      // Order Placed & Payment Info Confirmed
       case "processing":
         return "To Ship";
-      // For "Shipped" in admin
+      // Shipped
       case "shipped":
         return "To Receive";
-      // For "Delivered" in admin
+      // Delivered
       case "completed":
         return "Completed";
-      // For "Completed" in admin
+      // Completed
       case "cancelled":
         return "Cancelled";
+      // Cancelled
       default:
         return "To Pay";
     }
   };
+
+  // Updated filter function using case-insensitive comparison
   var filterOrdersByStatus = function filterOrdersByStatus(status) {
     return orders.filter(function (order) {
-      return order.status === status;
+      return order.status && order.status.toLowerCase() === status.toLowerCase();
     });
   };
   var filteredOrders = orders.filter(function (order) {

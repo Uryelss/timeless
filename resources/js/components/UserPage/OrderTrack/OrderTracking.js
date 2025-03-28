@@ -55,9 +55,7 @@ const OrderTracking = () => {
         try {
             const res = await axios.get(
                 `${baseUrl}/api/my-purchases?order_id=${orderId}`,
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
             const orderData = res.data;
 
@@ -77,6 +75,8 @@ const OrderTracking = () => {
                 shipped_at: orderData.shipped_at || null,
                 delivered_at: orderData.delivered_at || null,
                 completed_at: orderData.completed_at || null,
+                cancelled_at: orderData.cancelled_at || null,
+                cancel_reason: orderData.cancel_reason || "", // Include cancellation reason
                 updated_at: orderData.updated_at || null,
             };
             setOrder(transformedOrder);
@@ -201,7 +201,7 @@ const OrderTracking = () => {
         }
         setIsCancelLoading(true);
         try {
-            const response = await axios.post(
+            await axios.post(
                 `${baseUrl}/api/orders/${orderId}/cancel`,
                 { reason: cancelReason },
                 { headers: { Authorization: `Bearer ${token}` } }
@@ -210,6 +210,7 @@ const OrderTracking = () => {
             setIsCancelModalVisible(false);
             setCancelReason("");
             fetchOrderDetails();
+            navigate("/my-purchase");
         } catch (error) {
             console.error(
                 "Error cancelling order:",
@@ -250,7 +251,7 @@ const OrderTracking = () => {
             shipped: order?.shipped_at || null,
             delivered: order?.delivered_at || null,
             completed: order?.completed_at || null,
-            cancelled: order?.updated_at || null,
+            cancelled: order?.cancelled_at || order?.updated_at || null,
         };
 
         const formatTimestamp = (timestamp) => {
@@ -258,16 +259,7 @@ const OrderTracking = () => {
                 return "Awaiting";
             }
             const date = new Date(timestamp);
-            return `${(date.getMonth() + 1).toString().padStart(2, "0")}/${date
-                .getDate()
-                .toString()
-                .padStart(
-                    2,
-                    "0"
-                )}/${date.getFullYear()} ${date.getHours()}:${date
-                .getMinutes()
-                .toString()
-                .padStart(2, "0")}`;
+            return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
         };
 
         const timeline = [
@@ -296,25 +288,29 @@ const OrderTracking = () => {
                 icon: <DownloadOutlined />,
             },
             {
-                label: "Cancelled",
+                label: "Completed",
+                timestamp: formatTimestamp(timestamps.completed),
+                completed: shippingStatusId === 6,
+                icon: <StarOutlined />,
+            },
+            {
+                label:
+                    "Cancelled" +
+                    (order.cancel_reason ? " - " + order.cancel_reason : ""),
                 timestamp: formatTimestamp(timestamps.cancelled),
                 completed: shippingStatusId === 5,
                 icon: <CloseOutlined />,
-            },
-            {
-                label: "Completed",
-                timestamp: formatTimestamp(timestamps.completed),
-                completed: shippingStatusId === 6 && order.completed_at,
-                icon: <StarOutlined />,
             },
         ];
 
         if (shippingStatusId === 5) {
             return timeline.filter(
-                (step) => step.label === "Cancelled" || step.completed
+                (step) => step.completed || step.label.startsWith("Cancelled")
             );
         }
-        return timeline;
+        return timeline.filter(
+            (step) => step.label !== "Cancelled" || step.completed
+        );
     };
 
     const formatAddress = (address) => {
@@ -485,7 +481,7 @@ const OrderTracking = () => {
                                                         {detail.quantity}
                                                     </Text>
                                                     <Text>
-                                                        Subtotal: ₱
+                                                        Subtotal: ₱{" "}
                                                         {detail.price
                                                             ? (
                                                                   detail.price *
@@ -587,7 +583,7 @@ const OrderTracking = () => {
                                 <Radio value="Payment process too troublesome">
                                     Payment process too troublesome
                                 </Radio>
-                                <Radio value="Don't want to buy anymore">
+                                <Radio value="Don’t want to buy anymore">
                                     Don’t want to buy anymore
                                 </Radio>
                                 <Radio value="Others">Others</Radio>

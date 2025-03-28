@@ -26,6 +26,7 @@ const Header = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
 
+    // Load read notifications from localStorage
     useEffect(() => {
         const storedReadNotifications =
             localStorage.getItem("readNotifications");
@@ -34,12 +35,12 @@ const Header = () => {
         }
     }, []);
 
+    // Store read notifications and update unread count when they change
     useEffect(() => {
         localStorage.setItem(
             "readNotifications",
             JSON.stringify(readNotifications)
         );
-        // Recalculate unread count when readNotifications changes
         setNotificationCount(
             notifications.filter(
                 (n) => !readNotifications.includes(`${n.id}-${n.type}`)
@@ -47,6 +48,7 @@ const Header = () => {
         );
     }, [readNotifications, notifications]);
 
+    // Fetch user profile
     useEffect(() => {
         if (token) {
             axios
@@ -58,6 +60,7 @@ const Header = () => {
         }
     }, [token]);
 
+    // Listen for profile updates
     useEffect(() => {
         const handleProfileUpdated = (e) => {
             setProfile(e.detail);
@@ -68,6 +71,7 @@ const Header = () => {
             window.removeEventListener("profileUpdated", handleProfileUpdated);
     }, []);
 
+    // Update cart count from localStorage
     useEffect(() => {
         const updateCartCount = () => {
             const storedCart = localStorage.getItem("cart");
@@ -87,12 +91,14 @@ const Header = () => {
         return () => window.removeEventListener("cartUpdated", updateCartCount);
     }, []);
 
+    // Fetch orders (and notifications) when token is available
     useEffect(() => {
         if (token) {
             fetchOrders();
         }
     }, [token]);
 
+    // Updated fetchOrders function with delivered fix:
     const fetchOrders = async () => {
         try {
             const response = await axios.get(
@@ -105,7 +111,12 @@ const Header = () => {
             const allOrders = Array.isArray(orderData) ? orderData : [];
             setOrders(allOrders);
 
-            // Generate notifications based on order status
+            // Generate notifications based on order status and timestamps.
+            // Note:
+            // - Pending: "order-placed" or "payment-confirmed"
+            // - Processing: order is in transit → "shipped" notification
+            // - Shipped: indicates delivered (backend sets delivered orders to "shipped")
+            // - Completed and Cancelled remain as before.
             const newNotifications = allOrders.flatMap((order) => {
                 const status = order.order_status.toLowerCase();
                 const trackingNumber =
@@ -113,27 +124,32 @@ const Header = () => {
                 const notifs = [];
 
                 if (status === "pending") {
-                    notifs.push({
-                        id: order.id,
-                        type: "confirmation",
-                        message: `Thank you for your order! Your order #${order.id} has been successfully placed.`,
-                        image: order.order_details?.[0]?.product?.main_image
-                            ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
-                            : "/images/default-product.png",
-                        timestamp: order.created_at || new Date().toISOString(),
-                    });
-                    notifs.push({
-                        id: order.id,
-                        type: "processing",
-                        message: `Your order #${order.id} is being prepared for shipment.`,
-                        image: order.order_details?.[0]?.product?.main_image
-                            ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
-                            : "/images/default-product.png",
-                        timestamp:
-                            order.payment_confirmed_at ||
-                            new Date().toISOString(),
-                    });
-                } else if (status === "shipped") {
+                    if (order.payment_confirmed_at) {
+                        // Payment confirmed notification
+                        notifs.push({
+                            id: order.id,
+                            type: "payment-confirmed",
+                            message: `Your payment has been confirmed. Your order #${order.id} is now ready to be shipped.`,
+                            image: order.order_details?.[0]?.product?.main_image
+                                ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
+                                : "/images/default-product.png",
+                            timestamp: order.payment_confirmed_at,
+                        });
+                    } else {
+                        // Order placed notification
+                        notifs.push({
+                            id: order.id,
+                            type: "order-placed",
+                            message: `Order placed successfully! Here is your order ID: #${order.id}.`,
+                            image: order.order_details?.[0]?.product?.main_image
+                                ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
+                                : "/images/default-product.png",
+                            timestamp:
+                                order.created_at || new Date().toISOString(),
+                        });
+                    }
+                } else if (status === "processing") {
+                    // Order is in transit (shipped but not yet delivered)
                     notifs.push({
                         id: order.id,
                         type: "shipped",
@@ -143,17 +159,31 @@ const Header = () => {
                             : "/images/default-product.png",
                         timestamp: order.shipped_at || new Date().toISOString(),
                     });
-                } else if (status === "delivered") {
-                    notifs.push({
-                        id: order.id,
-                        type: "out-for-delivery",
-                        message: `Your order #${order.id} is out for delivery and should arrive today.`,
-                        image: order.order_details?.[0]?.product?.main_image
-                            ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
-                            : "/images/default-product.png",
-                        timestamp:
-                            order.delivered_at || new Date().toISOString(),
-                    });
+                } else if (status === "shipped") {
+                    // For delivered orders, backend sets order_status to "shipped" and delivered_at should be set.
+                    if (order.delivered_at) {
+                        notifs.push({
+                            id: order.id,
+                            type: "delivered",
+                            message: `Your order #${order.id} has been delivered. We hope you enjoy your purchase!`,
+                            image: order.order_details?.[0]?.product?.main_image
+                                ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
+                                : "/images/default-product.png",
+                            timestamp: order.delivered_at,
+                        });
+                    } else {
+                        // Fallback: if delivered_at isn't set yet, show shipped notification.
+                        notifs.push({
+                            id: order.id,
+                            type: "shipped",
+                            message: `Good news! Your order #${order.id} has been shipped. Track your package here: ${trackingNumber}.`,
+                            image: order.order_details?.[0]?.product?.main_image
+                                ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
+                                : "/images/default-product.png",
+                            timestamp:
+                                order.shipped_at || new Date().toISOString(),
+                        });
+                    }
                 } else if (status === "completed") {
                     notifs.push({
                         id: order.id,
@@ -179,18 +209,19 @@ const Header = () => {
                 return notifs;
             });
 
-            // Append new notifications without overwriting existing ones
+            // Append new notifications without removing existing ones
             setNotifications((prev) => {
                 const merged = [...prev];
                 newNotifications.forEach((newNotif) => {
-                    const existingIndex = merged.findIndex(
-                        (n) => n.id === newNotif.id && n.type === newNotif.type
+                    // Check for an exact duplicate (order id, type, and timestamp)
+                    const exists = merged.find(
+                        (n) =>
+                            n.id === newNotif.id &&
+                            n.type === newNotif.type &&
+                            n.timestamp === newNotif.timestamp
                     );
-                    if (existingIndex === -1) {
+                    if (!exists) {
                         merged.push(newNotif);
-                    } else {
-                        // Update timestamp if the notification already exists
-                        merged[existingIndex].timestamp = newNotif.timestamp;
                     }
                 });
                 return merged.sort(
@@ -214,6 +245,7 @@ const Header = () => {
         }
     };
 
+    // Listen for order events to refresh notifications
     useEffect(() => {
         const handleOrderPlaced = () => {
             console.log("Order placed event received");

@@ -81,17 +81,19 @@ class OrderController extends Controller
             }
 
             $shippingStatusId = $request->input('shipping.shipping_status_id');
+
+            // Update order status based on shipping status ID:
             switch ($shippingStatusId) {
                 case 1: // Order Placed
-                    $order->order_status = 'pending';
+                    $order->order_status = 'pending'; // Shows as "To Pay"
                     break;
                 case 2: // Payment Info Confirmed
                     $order->payment_confirmed_at = $order->payment_confirmed_at ?? now();
-                    $order->order_status = 'pending';
+                    $order->order_status = 'pending'; // Also "To Pay"
                     break;
                 case 3: // Shipped
                     $order->shipped_at = $order->shipped_at ?? now();
-                    $order->order_status = 'processing';
+                    $order->order_status = 'processing'; // Will show as "To Ship"
                     if (!$order->shipping->tracking_number) {
                         $date = now()->format('Ymd');
                         $random = strtoupper(substr(uniqid(), -5));
@@ -101,14 +103,14 @@ class OrderController extends Controller
                     break;
                 case 4: // Delivered
                     $order->delivered_at = $order->delivered_at ?? now();
-                    $order->order_status = 'shipped';
+                    $order->order_status = 'shipped'; // Maps to "To Receive"
                     break;
                 case 5: // Cancelled
-                    $order->order_status = 'cancelled';
+                    $order->order_status = 'cancelled'; // Maps to "Cancelled"
                     break;
                 case 6: // Completed
                     $order->completed_at = $order->completed_at ?? now();
-                    $order->order_status = 'completed';
+                    $order->order_status = 'completed'; // Maps to "Completed"
                     if (!$order->shipping->tracking_number) {
                         $date = now()->format('Ymd');
                         $random = strtoupper(substr(uniqid(), -5));
@@ -137,6 +139,7 @@ class OrderController extends Controller
             return response()->json(['message' => 'Failed to update order', 'error' => $e->getMessage()], 500);
         }
     }
+
 
     public function archive($id)
     {
@@ -228,6 +231,44 @@ class OrderController extends Controller
             return response()->json([
                 'error' => 'Failed to cancel order',
                 'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function confirmReceipt(Request $request, $id)
+    {
+        try {
+            // Retrieve the order along with its shipping details
+            $order = Order::with('shipping')->findOrFail($id);
+
+            if (!$order->shipping) {
+                return response()->json(['error' => 'Shipping details not found for this order.'], 404);
+            }
+
+            // Ensure that the order is delivered.
+            // For example, assume shipping_status_id 4 means delivered.
+            if ($order->shipping->shipping_status_id != 4) {
+                return response()->json(['error' => 'Order is not delivered yet.'], 400);
+            }
+
+            // Update the order as completed.
+            $order->completed_at = now();
+            $order->order_status = 'completed';
+
+            // Update the shipping record to indicate "completed"
+            // (for example, assuming 6 is the status for completed)
+            $order->shipping->update(['shipping_status_id' => 6]);
+            $order->save();
+
+            Log::info("Order {$id} receipt confirmed by user.");
+            return response()->json([
+                'message' => 'Order receipt confirmed successfully',
+                'order'   => $order
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Confirm receipt failed for order {$id}: " . $e->getMessage());
+            return response()->json([
+                'error'   => 'Failed to confirm receipt',
+                'message' => $e->getMessage()
             ], 500);
         }
     }
