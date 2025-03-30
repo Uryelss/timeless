@@ -197815,7 +197815,7 @@ var CustomerReview = function CustomerReview() {
     setLoading = _useState4[1];
   var token = localStorage.getItem("token");
 
-  // Fetch reviews from the API
+  // Fetch reviews from API and extract reviews array
   var fetchReviews = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var response;
@@ -197831,7 +197831,7 @@ var CustomerReview = function CustomerReview() {
             });
           case 3:
             response = _context.sent;
-            // Extract the reviews array from the returned object
+            // Response is expected to be an object with a "reviews" key
             setReviews(response.data.reviews || []);
             setLoading(false);
             _context.next = 13;
@@ -197859,9 +197859,9 @@ var CustomerReview = function CustomerReview() {
     title: "Customer Image",
     key: "customerImage",
     render: function render(text, record) {
-      var profileImage = record.profile ? record.profile.profile_image : null;
+      // Since your API doesn't return a nested profile with an image, we use a placeholder.
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-        src: profileImage ? "http://localhost:8000/storage/".concat(profileImage) : "https://via.placeholder.com/60?text=Customer",
+        src: "https://via.placeholder.com/60?text=Customer",
         alt: "Customer",
         style: {
           width: 60,
@@ -197874,16 +197874,20 @@ var CustomerReview = function CustomerReview() {
   }, {
     title: "Customer Name",
     key: "customerName",
+    // Use the "username" field from your API response
     render: function render(text, record) {
-      return record.profile ? "".concat(record.profile.first_name, " ").concat(record.profile.last_name) : "N/A";
+      return record.username || "N/A";
     }
   }, {
     title: "Product Image",
     key: "productImage",
     render: function render(text, record) {
-      var productImage = record.product ? record.product.main_image : null;
+      // Ensure the product_image URL is correctly built.
+      // If the URL already starts with "http", use it; otherwise, prepend your API host.
+      var productImage = record.product_image;
+      var imageUrl = productImage.startsWith("http") ? productImage : "http://localhost:8000".concat(productImage);
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-        src: productImage ? "http://localhost:8000/storage/".concat(productImage) : "https://via.placeholder.com/60?text=Product",
+        src: imageUrl,
         alt: "Product",
         style: {
           width: 60,
@@ -197896,7 +197900,7 @@ var CustomerReview = function CustomerReview() {
     title: "Product Name",
     key: "productName",
     render: function render(text, record) {
-      return record.product ? record.product.product_name : "N/A";
+      return record.product_name || "N/A";
     }
   }, {
     title: "Rating",
@@ -197904,16 +197908,24 @@ var CustomerReview = function CustomerReview() {
     render: function render(text, record) {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
         disabled: true,
-        defaultValue: record.rating
+        defaultValue: record.rating || 0
       });
     },
     sorter: function sorter(a, b) {
-      return a.rating - b.rating;
+      return (a.rating || 0) - (b.rating || 0);
     }
   }, {
     title: "Comments",
-    dataIndex: "comments",
-    key: "comments"
+    key: "comments",
+    render: function render(text, record) {
+      return record.review || "N/A";
+    }
+  }, {
+    title: "Date Added",
+    key: "dateAdded",
+    render: function render(text, record) {
+      return record.date_added ? new Date(record.date_added).toLocaleString() : "N/A";
+    }
   }];
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
     title: "Customer Reviews",
@@ -197966,7 +197978,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
-// Helper function to format a number as Philippine Peso with no decimals
+// Helper function to format amounts as Philippine Peso (no decimals)
 
 var formatPeso = function formatPeso(amount) {
   return "₱" + Number(amount).toLocaleString("en-PH", {
@@ -197984,6 +197996,8 @@ var RecentOrders = function RecentOrders() {
     loading = _useState4[0],
     setLoading = _useState4[1];
   var token = localStorage.getItem("token");
+
+  // Fetch orders from API
   var fetchOrders = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var response, activeOrders;
@@ -197999,7 +198013,7 @@ var RecentOrders = function RecentOrders() {
             });
           case 3:
             response = _context.sent;
-            // Filter out archived orders (assuming archived orders have deleted_at not null)
+            // Filter out archived orders (assuming orders with non-null deleted_at are archived)
             activeOrders = response.data.filter(function (order) {
               return !order.deleted_at;
             }); // Sort orders by order_date descending (most recent first)
@@ -198029,8 +198043,6 @@ var RecentOrders = function RecentOrders() {
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchOrders();
   }, [token]);
-
-  // Table columns for Recent Orders (with Customer Image)
   var columns = [{
     title: "Customer Image",
     key: "customerImage",

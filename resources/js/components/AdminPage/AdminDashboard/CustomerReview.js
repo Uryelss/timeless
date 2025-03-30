@@ -7,7 +7,7 @@ const CustomerReview = () => {
     const [loading, setLoading] = useState(true);
     const token = localStorage.getItem("token");
 
-    // Fetch reviews from the API
+    // Fetch reviews from API and extract reviews array
     const fetchReviews = async () => {
         try {
             const response = await axios.get(
@@ -16,7 +16,7 @@ const CustomerReview = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-            // Extract the reviews array from the returned object
+            // Response is expected to be an object with a "reviews" key
             setReviews(response.data.reviews || []);
             setLoading(false);
         } catch (error) {
@@ -35,16 +35,10 @@ const CustomerReview = () => {
             title: "Customer Image",
             key: "customerImage",
             render: (text, record) => {
-                const profileImage = record.profile
-                    ? record.profile.profile_image
-                    : null;
+                // Since your API doesn't return a nested profile with an image, we use a placeholder.
                 return (
                     <img
-                        src={
-                            profileImage
-                                ? `http://localhost:8000/storage/${profileImage}`
-                                : "https://via.placeholder.com/60?text=Customer"
-                        }
+                        src="https://via.placeholder.com/60?text=Customer"
                         alt="Customer"
                         style={{
                             width: 60,
@@ -59,25 +53,22 @@ const CustomerReview = () => {
         {
             title: "Customer Name",
             key: "customerName",
-            render: (text, record) =>
-                record.profile
-                    ? `${record.profile.first_name} ${record.profile.last_name}`
-                    : "N/A",
+            // Use the "username" field from your API response
+            render: (text, record) => record.username || "N/A",
         },
         {
             title: "Product Image",
             key: "productImage",
             render: (text, record) => {
-                const productImage = record.product
-                    ? record.product.main_image
-                    : null;
+                // Ensure the product_image URL is correctly built.
+                // If the URL already starts with "http", use it; otherwise, prepend your API host.
+                const productImage = record.product_image;
+                const imageUrl = productImage.startsWith("http")
+                    ? productImage
+                    : `http://localhost:8000${productImage}`;
                 return (
                     <img
-                        src={
-                            productImage
-                                ? `http://localhost:8000/storage/${productImage}`
-                                : "https://via.placeholder.com/60?text=Product"
-                        }
+                        src={imageUrl}
                         alt="Product"
                         style={{ width: 60, height: 60, objectFit: "cover" }}
                     />
@@ -87,21 +78,28 @@ const CustomerReview = () => {
         {
             title: "Product Name",
             key: "productName",
-            render: (text, record) =>
-                record.product ? record.product.product_name : "N/A",
+            render: (text, record) => record.product_name || "N/A",
         },
         {
             title: "Rating",
             key: "rating",
             render: (text, record) => (
-                <Rate disabled defaultValue={record.rating} />
+                <Rate disabled defaultValue={record.rating || 0} />
             ),
-            sorter: (a, b) => a.rating - b.rating,
+            sorter: (a, b) => (a.rating || 0) - (b.rating || 0),
         },
         {
             title: "Comments",
-            dataIndex: "comments",
             key: "comments",
+            render: (text, record) => record.review || "N/A",
+        },
+        {
+            title: "Date Added",
+            key: "dateAdded",
+            render: (text, record) =>
+                record.date_added
+                    ? new Date(record.date_added).toLocaleString()
+                    : "N/A",
         },
     ];
 

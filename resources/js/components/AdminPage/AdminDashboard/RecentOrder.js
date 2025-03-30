@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, Table, Spin, message } from "antd";
 import axios from "axios";
 
-// Helper function to format a number as Philippine Peso with no decimals
+// Helper function to format amounts as Philippine Peso (no decimals)
 const formatPeso = (amount) =>
     "₱" +
     Number(amount).toLocaleString("en-PH", {
@@ -15,6 +15,7 @@ const RecentOrders = () => {
     const [loading, setLoading] = useState(true);
     const token = localStorage.getItem("token");
 
+    // Fetch orders from API
     const fetchOrders = async () => {
         try {
             const response = await axios.get(
@@ -23,7 +24,7 @@ const RecentOrders = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-            // Filter out archived orders (assuming archived orders have deleted_at not null)
+            // Filter out archived orders (assuming orders with non-null deleted_at are archived)
             const activeOrders = response.data.filter(
                 (order) => !order.deleted_at
             );
@@ -44,7 +45,6 @@ const RecentOrders = () => {
         fetchOrders();
     }, [token]);
 
-    // Table columns for Recent Orders (with Customer Image)
     const columns = [
         {
             title: "Customer Image",
