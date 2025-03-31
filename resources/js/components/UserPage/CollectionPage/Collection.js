@@ -406,8 +406,10 @@ const Collection = () => {
                     <div
                         style={{
                             display: "flex",
-                            flexWrap: "wrap",
+                            flexWrap: "nowrap",
                             gap: "8px",
+                            width: "100px",
+                            flexDirection: "row",
                         }}
                     >
                         {renderSizeOptions(modalProduct)}

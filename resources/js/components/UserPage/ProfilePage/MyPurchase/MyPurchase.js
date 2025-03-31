@@ -120,12 +120,17 @@ const MyPurchase = () => {
                     onChange={(e) => setSearchText(e.target.value)}
                     style={{ marginBottom: "20px", width: "100%" }}
                 />
+
                 <Button
                     onClick={() => fetchOrders(currentPage)}
-                    style={{ marginBottom: "20px" }}
+                    style={{
+                        marginBottom: "20px",
+                        width: "131px",
+                    }}
                 >
                     Refresh
                 </Button>
+
                 <Tabs defaultActiveKey="1" type="card">
                     <TabPane tab="All" key="1">
                         <OrderList orders={filteredOrders} />
