@@ -83,6 +83,7 @@ const ProductOverview = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 .then((res) => {
+                    console.log("Fetched Reviews:", res.data); // Debug log
                     setReviews(res.data);
                 })
                 .catch((err) => {
@@ -103,6 +104,7 @@ const ProductOverview = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 .then((res) => {
+                    console.log("Fetched User Profile:", res.data); // Debug log
                     setUserProfile(res.data);
                     localStorage.setItem("user", JSON.stringify(res.data));
                 })
@@ -149,6 +151,7 @@ const ProductOverview = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             )
             .then((res) => {
+                console.log("Review Submission Response:", res.data); // Debug log
                 setReviews([res.data.review, ...reviews]);
                 setReviewText("");
                 setReviewRating(0);
@@ -189,6 +192,11 @@ const ProductOverview = () => {
             ? sizesArr.map((item) => item.size)
             : sizesArr;
 
+    // Find inventory record for the selected size
+    const selectedInventoryRecord = inventoryRecords.find(
+        (inv) => normalizeSize(inv.size) === normalizeSize(selectedSize || "")
+    );
+
     // Function to add product to cart
     const handleAddToCart = () => {
         if (!selectedSize) {
@@ -225,8 +233,7 @@ const ProductOverview = () => {
         if (existingItemIndex > -1) {
             cart[existingItemIndex].quantity += 1;
             cart[existingItemIndex].total =
-                cart[existingItemIndex].price *
-                cart[existingItemIndex].quantity;
+                cart[existingItemIndex].price * cart[existingItemIndex].quantity;
         } else {
             cart.push(cartItem);
         }
@@ -276,10 +283,6 @@ const ProductOverview = () => {
             );
             return;
         }
-        if (buyNowQuantity < 1) {
-            message.error("Please select a valid quantity.");
-            return;
-        }
         const cartItem = {
             id: product.id,
             inventory_id: selectedInventory.id,
@@ -299,174 +302,84 @@ const ProductOverview = () => {
         setShowQuantityModal(false);
     };
 
-    // Render Buy Now Modal Content (SKU Removed)
+    // Render modal overview content
     const renderModalOverview = () => {
         if (!product) return null;
-
-        const selectedInventory = inventoryRecords.find(
-            (inv) =>
-                normalizeSize(inv.size) === normalizeSize(selectedSize || "")
-        );
-        const maxQuantity = selectedInventory ? selectedInventory.quantity : 0;
-
         return (
-            <div
-                style={{
-                    padding: "16px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "24px",
-                }}
-            >
-                {/* Header Section */}
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "16px",
-                        borderBottom: "1px solid #f0f0f0",
-                        paddingBottom: "16px",
-                        marginBottom: "10px",
-                    }}
-                >
-                    <Image
+            <div style={{ display: "flex", flexDirection: "row", gap: "24px" }}>
+                <div>
+                    <img
                         src={`${baseUrl}/storage/${currentMainImage}`}
                         alt={product.product_name}
-                        preview={false}
                         style={{
-                            width: "120px",
-                            height: "120px",
+                            width: "300px",
+                            height: "300px",
                             objectFit: "cover",
                             borderRadius: "8px",
-                            border: "1px solid #e8e8e8",
                         }}
                     />
-                    <div style={{ flex: 1 }}>
-                        <Title level={4} style={{ margin: 0 }}>
-                            {product.product_name}
-                        </Title>
-                        {/* SKU Removed */}
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                            <Rate
-                                disabled
-                                value={product.average_rating || 0}
-                                allowHalf
-                                style={{ fontSize: "16px", marginRight: "8px" }}
-                            />
-                            <span style={{ fontSize: "14px" }}>
-                                ({product.average_rating || 0})
-                            </span>
-                        </div>
-                    </div>
                 </div>
-
-                {/* Price and Size Selection */}
                 <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
+                    style={{
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        textAlign: "right",
+                    }}
                 >
-                    <div>
-                        <Paragraph strong style={{ marginBottom: "8px" }}>
-                            Price
-                        </Paragraph>
-                        <Title
-                            level={3}
-                            style={{ color: "#ff4d4f", margin: 0 }}
-                        >
-                            ₱{number_format(product.price)}
-                        </Title>
+                    <Title level={2} style={{ margin: 0 }}>
+                        {product.product_name}
+                    </Title>
+                    <Title level={3} style={{ margin: "8px 0" }}>
+                        ₱{number_format(product.price)}
+                    </Title>
+                    <div style={{ marginBottom: "16px" }}>
+                        <Rate
+                            disabled
+                            value={product.average_rating || 0}
+                            allowHalf
+                            style={{ fontSize: "18px", marginRight: "8px" }}
+                        />
+                        <span style={{ fontSize: "18px" }}>
+                            {product.average_rating || 0}
+                        </span>
                     </div>
-                    {sizesDisplay && sizesDisplay.length > 0 && (
-                        <div>
-                            <Paragraph strong style={{ marginBottom: "8px" }}>
-                                Selected Size
-                            </Paragraph>
-                            <div
-                                style={{ fontSize: "16px", fontWeight: "bold" }}
-                            >
-                                {selectedSize || "Not Selected"}
-                                {selectedSize && selectedInventory && (
-                                    <span
-                                        style={{
-                                            color: "#888",
-                                            marginLeft: "8px",
-                                        }}
-                                    >
-                                        ({selectedInventory.quantity} in stock)
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                {/* Quantity Selection */}
-                <div>
-                    <Paragraph strong style={{ marginBottom: "8px" }}>
-                        Quantity
-                    </Paragraph>
-                    <div
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "16px",
-                        }}
-                    >
+                    <div style={{ marginBottom: "16px", textAlign: "right" }}>
                         <InputNumber
                             min={1}
-                            max={maxQuantity}
+                            max={
+                                selectedInventoryRecord
+                                    ? selectedInventoryRecord.quantity
+                                    : 1
+                            }
                             value={buyNowQuantity}
                             onChange={(value) => setBuyNowQuantity(value)}
                             size="large"
-                            style={{ width: "100px" }}
-                            status={buyNowQuantity > maxQuantity ? "error" : ""}
                         />
-                        {maxQuantity > 0 ? (
-                            <span style={{ color: "#888" }}>
-                                {maxQuantity} available
-                            </span>
-                        ) : (
-                            <span style={{ color: "#ff4d4f" }}>
-                                Out of stock
-                            </span>
-                        )}
-                    </div>
-                    {buyNowQuantity > maxQuantity && (
-                        <Paragraph type="danger" style={{ marginTop: "8px" }}>
-                            Quantity exceeds available stock ({maxQuantity}).
-                        </Paragraph>
-                    )}
-                </div>
-
-                {/* Total and Action Buttons */}
-                <div
-                    style={{
-                        borderTop: "1px solid #f0f0f0",
-                        paddingTop: "16px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                    }}
-                >
-                    <div>
-                        <Paragraph strong>Total</Paragraph>
-                        <Title level={3} style={{ margin: 0 }}>
-                            ₱{number_format(product.price * buyNowQuantity)}
-                        </Title>
                     </div>
                     <Button
                         type="primary"
-                        size="large"
                         onClick={handleConfirmBuyNow}
-                        disabled={
-                            !selectedSize ||
-                            buyNowQuantity > maxQuantity ||
-                            buyNowQuantity < 1
-                        }
-                        style={{
-                            width: "200px",
-                        }}
+                        size="large"
+                        style={{ width: "100%", marginBottom: "8px" }}
                     >
                         Proceed to Checkout
+                    </Button>
+                    <Button
+                        onClick={() => setShowQuantityModal(false)}
+                        size="large"
+                        style={{ width: "100%", marginBottom: "8px" }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="primary"
+                        onClick={handleConfirmBuyNow}
+                        size="large"
+                        style={{ width: "100%" }}
+                    >
+                        OK
                     </Button>
                 </div>
             </div>
@@ -480,7 +393,7 @@ const ProductOverview = () => {
         <div>
             <Navbar style={{ width: "100%" }} />
             <div style={{ marginTop: "90px" }}>
-                <Row gutter={16} justify="center">
+                <Row gutter={16} align="middle" justify="center">
                     <Col xs={24} md={12}>
                         <Card
                             style={{
@@ -535,9 +448,10 @@ const ProductOverview = () => {
                                             alt="Side 1"
                                             preview={false}
                                             onMouseEnter={() =>
-                                                setCurrentMainImage(
-                                                    product.side_image_1
-                                                )
+                                                setCurrentMainImage(product.side_image_1)
+                                            }
+                                            onMouseLeave={() =>
+                                                setCurrentMainImage(product.main_image)
                                             }
                                             style={{
                                                 width: "100%",
@@ -562,9 +476,10 @@ const ProductOverview = () => {
                                             alt="Side 2"
                                             preview={false}
                                             onMouseEnter={() =>
-                                                setCurrentMainImage(
-                                                    product.side_image_2
-                                                )
+                                                setCurrentMainImage(product.side_image_2)
+                                            }
+                                            onMouseLeave={() =>
+                                                setCurrentMainImage(product.main_image)
                                             }
                                             style={{
                                                 width: "100%",
@@ -589,9 +504,10 @@ const ProductOverview = () => {
                                             alt="Side 3"
                                             preview={false}
                                             onMouseEnter={() =>
-                                                setCurrentMainImage(
-                                                    product.side_image_3
-                                                )
+                                                setCurrentMainImage(product.side_image_3)
+                                            }
+                                            onMouseLeave={() =>
+                                                setCurrentMainImage(product.main_image)
                                             }
                                             style={{
                                                 width: "100%",
@@ -736,27 +652,11 @@ const ProductOverview = () => {
                                                 Selected Size:{" "}
                                                 <strong>{selectedSize}</strong>
                                                 <br />
-                                                {inventoryRecords.find(
-                                                    (inv) =>
-                                                        normalizeSize(
-                                                            inv.size
-                                                        ) ===
-                                                        normalizeSize(
-                                                            selectedSize
-                                                        )
-                                                ) ? (
+                                                {selectedInventoryRecord ? (
                                                     <span>
                                                         Stock Quantity:{" "}
                                                         {
-                                                            inventoryRecords.find(
-                                                                (inv) =>
-                                                                    normalizeSize(
-                                                                        inv.size
-                                                                    ) ===
-                                                                    normalizeSize(
-                                                                        selectedSize
-                                                                    )
-                                                            ).quantity
+                                                            selectedInventoryRecord.quantity
                                                         }
                                                     </span>
                                                 ) : (
@@ -799,7 +699,11 @@ const ProductOverview = () => {
                                     width: "150px",
                                     height: "40px",
                                 }}
-                                onClick={handleBuyNow}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleBuyNow(e);
+                                }}
                             >
                                 BUY NOW
                             </Button>
@@ -887,6 +791,10 @@ const ProductOverview = () => {
                                                               .profile_image
                                                         : `${baseUrl}${review.user.profile.profile_image}`
                                                     : null;
+                                                console.log(
+                                                    `Review ${review.id} Avatar Src:`,
+                                                    avatarSrc
+                                                ); // Debug log
                                                 return (
                                                     <Card
                                                         key={review.id}
@@ -908,9 +816,12 @@ const ProductOverview = () => {
                                                                 icon={
                                                                     <UserOutlined />
                                                                 }
-                                                                onError={() =>
-                                                                    true
-                                                                }
+                                                                onError={() => {
+                                                                    console.log(
+                                                                        `Failed to load image for review ${review.id}: ${avatarSrc}`
+                                                                    );
+                                                                    return true; // Fallback to icon
+                                                                }}
                                                             />
                                                             <div>
                                                                 <strong>
@@ -956,14 +867,12 @@ const ProductOverview = () => {
                 </Row>
             </div>
 
-            {/* Buy Now Modal */}
             <Modal
-                title="Buy Now"
+                title={null} // No title, as previously set
                 visible={showQuantityModal}
                 onCancel={() => setShowQuantityModal(false)}
-                footer={null}
+                footer={null} // Removed footer since buttons are now in the content
                 width={700}
-                bodyStyle={{ padding: 0 }}
             >
                 {renderModalOverview()}
             </Modal>

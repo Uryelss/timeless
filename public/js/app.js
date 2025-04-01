@@ -208652,13 +208652,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/tabs/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/rate/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input-number/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/row/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/col/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/rate/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input-number/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/row/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/col/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
@@ -208777,6 +208777,7 @@ var ProductOverview = function ProductOverview() {
           Authorization: "Bearer ".concat(token)
         }
       }).then(function (res) {
+        console.log("Fetched Reviews:", res.data); // Debug log
         setReviews(res.data);
       })["catch"](function (err) {
         var _err$response2;
@@ -208797,6 +208798,7 @@ var ProductOverview = function ProductOverview() {
           Authorization: "Bearer ".concat(token)
         }
       }).then(function (res) {
+        console.log("Fetched User Profile:", res.data); // Debug log
         setUserProfile(res.data);
         localStorage.setItem("user", JSON.stringify(res.data));
       })["catch"](function (err) {
@@ -208845,6 +208847,7 @@ var ProductOverview = function ProductOverview() {
         Authorization: "Bearer ".concat(token)
       }
     }).then(function (res) {
+      console.log("Review Submission Response:", res.data); // Debug log
       setReviews([res.data.review].concat(_toConsumableArray(reviews)));
       setReviewText("");
       setReviewRating(0);
@@ -208878,6 +208881,11 @@ var ProductOverview = function ProductOverview() {
   var sizesDisplay = Array.isArray(sizesArr) && sizesArr.length > 0 && _typeof(sizesArr[0]) === "object" && sizesArr[0].size ? sizesArr.map(function (item) {
     return item.size;
   }) : sizesArr;
+
+  // Find inventory record for the selected size
+  var selectedInventoryRecord = inventoryRecords.find(function (inv) {
+    return normalizeSize(inv.size) === normalizeSize(selectedSize || "");
+  });
 
   // Function to add product to cart
   var handleAddToCart = function handleAddToCart() {
@@ -208950,10 +208958,6 @@ var ProductOverview = function ProductOverview() {
       antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Only ".concat(selectedInventory.quantity, " items are in stock."));
       return;
     }
-    if (buyNowQuantity < 1) {
-      antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Please select a valid quantity.");
-      return;
-    }
     var cartItem = {
       id: product.id,
       inventory_id: selectedInventory.id,
@@ -208973,183 +208977,105 @@ var ProductOverview = function ProductOverview() {
     setShowQuantityModal(false);
   };
 
-  // Render Buy Now Modal Content (SKU Removed)
+  // Render modal overview content
   var renderModalOverview = function renderModalOverview() {
     if (!product) return null;
-    var selectedInventory = inventoryRecords.find(function (inv) {
-      return normalizeSize(inv.size) === normalizeSize(selectedSize || "");
-    });
-    var maxQuantity = selectedInventory ? selectedInventory.quantity : 0;
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
       style: {
-        padding: "16px",
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "row",
         gap: "24px"
       },
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-        style: {
-          display: "flex",
-          alignItems: "center",
-          gap: "16px",
-          borderBottom: "1px solid #f0f0f0",
-          paddingBottom: "16px",
-          marginBottom: "10px"
-        },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
           src: "".concat(baseUrl, "/storage/").concat(currentMainImage),
           alt: product.product_name,
-          preview: false,
           style: {
-            width: "120px",
-            height: "120px",
+            width: "300px",
+            height: "300px",
             objectFit: "cover",
-            borderRadius: "8px",
-            border: "1px solid #e8e8e8"
+            borderRadius: "8px"
           }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-          style: {
-            flex: 1
-          },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
-            level: 4,
-            style: {
-              margin: 0
-            },
-            children: product.product_name
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-            style: {
-              display: "flex",
-              alignItems: "center"
-            },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-              disabled: true,
-              value: product.average_rating || 0,
-              allowHalf: true,
-              style: {
-                fontSize: "16px",
-                marginRight: "8px"
-              }
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
-              style: {
-                fontSize: "14px"
-              },
-              children: ["(", product.average_rating || 0, ")"]
-            })]
-          })]
-        })]
+        })
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
         style: {
+          flex: 1,
           display: "flex",
-          justifyContent: "space-between"
+          flexDirection: "column",
+          justifyContent: "center",
+          textAlign: "right"
         },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
-            strong: true,
-            style: {
-              marginBottom: "8px"
-            },
-            children: "Price"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Title, {
-            level: 3,
-            style: {
-              color: "#ff4d4f",
-              margin: 0
-            },
-            children: ["\u20B1", number_format(product.price)]
-          })]
-        }), sizesDisplay && sizesDisplay.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
-            strong: true,
-            style: {
-              marginBottom: "8px"
-            },
-            children: "Selected Size"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-            style: {
-              fontSize: "16px",
-              fontWeight: "bold"
-            },
-            children: [selectedSize || "Not Selected", selectedSize && selectedInventory && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
-              style: {
-                color: "#888",
-                marginLeft: "8px"
-              },
-              children: ["(", selectedInventory.quantity, " in stock)"]
-            })]
-          })]
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
-          strong: true,
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Title, {
+          level: 2,
           style: {
-            marginBottom: "8px"
+            margin: 0
           },
-          children: "Quantity"
+          children: product.product_name
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Title, {
+          level: 3,
+          style: {
+            margin: "8px 0"
+          },
+          children: ["\u20B1", number_format(product.price)]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           style: {
-            display: "flex",
-            alignItems: "center",
-            gap: "16px"
+            marginBottom: "16px"
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+            disabled: true,
+            value: product.average_rating || 0,
+            allowHalf: true,
+            style: {
+              fontSize: "18px",
+              marginRight: "8px"
+            }
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
+            style: {
+              fontSize: "18px"
+            },
+            children: product.average_rating || 0
+          })]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+          style: {
+            marginBottom: "16px",
+            textAlign: "right"
+          },
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
             min: 1,
-            max: maxQuantity,
+            max: selectedInventoryRecord ? selectedInventoryRecord.quantity : 1,
             value: buyNowQuantity,
             onChange: function onChange(value) {
               return setBuyNowQuantity(value);
             },
-            size: "large",
-            style: {
-              width: "100px"
-            },
-            status: buyNowQuantity > maxQuantity ? "error" : ""
-          }), maxQuantity > 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
-            style: {
-              color: "#888"
-            },
-            children: [maxQuantity, " available"]
-          }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
-            style: {
-              color: "#ff4d4f"
-            },
-            children: "Out of stock"
-          })]
-        }), buyNowQuantity > maxQuantity && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Paragraph, {
-          type: "danger",
-          style: {
-            marginTop: "8px"
-          },
-          children: ["Quantity exceeds available stock (", maxQuantity, ")."]
-        })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-        style: {
-          borderTop: "1px solid #f0f0f0",
-          paddingTop: "16px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center"
-        },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
-            strong: true,
-            children: "Total"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Title, {
-            level: 3,
-            style: {
-              margin: 0
-            },
-            children: ["\u20B1", number_format(product.price * buyNowQuantity)]
-          })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            size: "large"
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
           type: "primary",
-          size: "large",
           onClick: handleConfirmBuyNow,
-          disabled: !selectedSize || buyNowQuantity > maxQuantity || buyNowQuantity < 1,
+          size: "large",
           style: {
-            width: "200px"
+            width: "100%",
+            marginBottom: "8px"
           },
           children: "Proceed to Checkout"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          onClick: function onClick() {
+            return setShowQuantityModal(false);
+          },
+          size: "large",
+          style: {
+            width: "100%",
+            marginBottom: "8px"
+          },
+          children: "Cancel"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          type: "primary",
+          onClick: handleConfirmBuyNow,
+          size: "large",
+          style: {
+            width: "100%"
+          },
+          children: "OK"
         })]
       })]
     });
@@ -209169,13 +209095,14 @@ var ProductOverview = function ProductOverview() {
       style: {
         marginTop: "90px"
       },
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
         gutter: 16,
+        align: "middle",
         justify: "center",
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
           xs: 24,
           md: 12,
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
             style: {
               width: "600px",
               height: "600px",
@@ -209187,7 +209114,7 @@ var ProductOverview = function ProductOverview() {
             bodyStyle: {
               padding: 0
             },
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
               src: "".concat(baseUrl, "/storage/").concat(currentMainImage),
               alt: product.product_name,
               preview: false,
@@ -209198,7 +209125,7 @@ var ProductOverview = function ProductOverview() {
                 display: "block"
               }
             })
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
             style: {
               width: "600px",
               margin: "20px auto",
@@ -209214,7 +209141,7 @@ var ProductOverview = function ProductOverview() {
                 display: "flex",
                 justifyContent: "center"
               },
-              children: [product.side_image_1 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+              children: [product.side_image_1 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                 style: {
                   width: "100px",
                   height: "100px",
@@ -209223,35 +209150,15 @@ var ProductOverview = function ProductOverview() {
                 bodyStyle: {
                   padding: 0
                 },
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
                   src: "".concat(baseUrl, "/storage/").concat(product.side_image_1),
                   alt: "Side 1",
                   preview: false,
                   onMouseEnter: function onMouseEnter() {
                     return setCurrentMainImage(product.side_image_1);
                   },
-                  style: {
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    cursor: "pointer"
-                  }
-                })
-              }), product.side_image_2 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
-                style: {
-                  width: "100px",
-                  height: "100px",
-                  overflow: "hidden"
-                },
-                bodyStyle: {
-                  padding: 0
-                },
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-                  src: "".concat(baseUrl, "/storage/").concat(product.side_image_2),
-                  alt: "Side 2",
-                  preview: false,
-                  onMouseEnter: function onMouseEnter() {
-                    return setCurrentMainImage(product.side_image_2);
+                  onMouseLeave: function onMouseLeave() {
+                    return setCurrentMainImage(product.main_image);
                   },
                   style: {
                     width: "100%",
@@ -209260,7 +209167,7 @@ var ProductOverview = function ProductOverview() {
                     cursor: "pointer"
                   }
                 })
-              }), product.side_image_3 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+              }), product.side_image_2 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                 style: {
                   width: "100px",
                   height: "100px",
@@ -209269,12 +209176,41 @@ var ProductOverview = function ProductOverview() {
                 bodyStyle: {
                   padding: 0
                 },
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+                  src: "".concat(baseUrl, "/storage/").concat(product.side_image_2),
+                  alt: "Side 2",
+                  preview: false,
+                  onMouseEnter: function onMouseEnter() {
+                    return setCurrentMainImage(product.side_image_2);
+                  },
+                  onMouseLeave: function onMouseLeave() {
+                    return setCurrentMainImage(product.main_image);
+                  },
+                  style: {
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    cursor: "pointer"
+                  }
+                })
+              }), product.side_image_3 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+                style: {
+                  width: "100px",
+                  height: "100px",
+                  overflow: "hidden"
+                },
+                bodyStyle: {
+                  padding: 0
+                },
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
                   src: "".concat(baseUrl, "/storage/").concat(product.side_image_3),
                   alt: "Side 3",
                   preview: false,
                   onMouseEnter: function onMouseEnter() {
                     return setCurrentMainImage(product.side_image_3);
+                  },
+                  onMouseLeave: function onMouseLeave() {
+                    return setCurrentMainImage(product.main_image);
                   },
                   style: {
                     width: "100%",
@@ -209286,10 +209222,10 @@ var ProductOverview = function ProductOverview() {
               })]
             })
           })]
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
           xs: 24,
           md: 12,
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
             bodyStyle: {
               padding: "24px"
             },
@@ -209309,7 +209245,7 @@ var ProductOverview = function ProductOverview() {
                   justifyContent: "center",
                   alignItems: "center"
                 },
-                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
                   disabled: true,
                   value: product.average_rating || 0,
                   allowHalf: true,
@@ -209344,7 +209280,7 @@ var ProductOverview = function ProductOverview() {
                       return normalizeSize(inv.size) === normalizeSize(size);
                     });
                     var isOutOfStock = inventory && inventory.quantity === 0;
-                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
                       onClick: function onClick() {
                         return !isOutOfStock && setSelectedSize(size);
                       },
@@ -209382,12 +209318,8 @@ var ProductOverview = function ProductOverview() {
                   },
                   children: ["Selected Size:", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
                     children: selectedSize
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), inventoryRecords.find(function (inv) {
-                    return normalizeSize(inv.size) === normalizeSize(selectedSize);
-                  }) ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
-                    children: ["Stock Quantity:", " ", inventoryRecords.find(function (inv) {
-                      return normalizeSize(inv.size) === normalizeSize(selectedSize);
-                    }).quantity]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("br", {}), selectedInventoryRecord ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("span", {
+                    children: ["Stock Quantity:", " ", selectedInventoryRecord.quantity]
                   }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
                     children: "No stock info available"
                   })]
@@ -209402,7 +209334,7 @@ var ProductOverview = function ProductOverview() {
               marginTop: "16px",
               justifyContent: "center"
             },
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
               style: {
                 backgroundColor: "#28A745",
                 color: "white",
@@ -209412,7 +209344,7 @@ var ProductOverview = function ProductOverview() {
               },
               onClick: handleAddToCart,
               children: "ADD TO CART"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
               style: {
                 backgroundColor: "black",
                 color: "white",
@@ -209420,34 +209352,38 @@ var ProductOverview = function ProductOverview() {
                 width: "150px",
                 height: "40px"
               },
-              onClick: handleBuyNow,
+              onClick: function onClick(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleBuyNow(e);
+              },
               children: "BUY NOW"
             })]
           })]
         })]
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
         justify: "center",
         style: {
           marginTop: "20px"
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
           xs: 24,
           md: 24,
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
               defaultActiveKey: "1",
               type: "card",
               size: "large",
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(TabPane, {
                 tab: "Details",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                   children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Paragraph, {
                     children: product.description
                   })
                 })
               }, "1"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(TabPane, {
                 tab: "Comments",
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                   children: [isLoggedIn ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                     style: {
                       marginBottom: "15px"
@@ -209461,7 +209397,7 @@ var ProductOverview = function ProductOverview() {
                           marginRight: "10px"
                         },
                         children: "Rate this product:"
-                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
                         value: reviewRating,
                         onChange: function onChange(value) {
                           return setReviewRating(value);
@@ -209477,7 +209413,7 @@ var ProductOverview = function ProductOverview() {
                       style: {
                         marginTop: "5px"
                       }
-                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
                       type: "primary",
                       onClick: handleSubmitReview,
                       style: {
@@ -209496,7 +209432,8 @@ var ProductOverview = function ProductOverview() {
                   }), reviews.length > 0 ? reviews.map(function (review) {
                     var _review$user, _review$user2;
                     var avatarSrc = (_review$user = review.user) !== null && _review$user !== void 0 && (_review$user = _review$user.profile) !== null && _review$user !== void 0 && _review$user.profile_image ? review.user.profile.profile_image.startsWith("http") ? review.user.profile.profile_image : "".concat(baseUrl).concat(review.user.profile.profile_image) : null;
-                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+                    console.log("Review ".concat(review.id, " Avatar Src:"), avatarSrc); // Debug log
+                    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                       style: {
                         marginBottom: "10px"
                       },
@@ -209510,13 +209447,14 @@ var ProductOverview = function ProductOverview() {
                           src: avatarSrc,
                           icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_19__["default"], {}),
                           onError: function onError() {
-                            return true;
+                            console.log("Failed to load image for review ".concat(review.id, ": ").concat(avatarSrc));
+                            return true; // Fallback to icon
                           }
                         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("strong", {
                             children: ((_review$user2 = review.user) === null || _review$user2 === void 0 ? void 0 : _review$user2.username) || "Unknown User"
                           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-                            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+                            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
                               disabled: true,
                               value: review.rating,
                               style: {
@@ -209542,16 +209480,15 @@ var ProductOverview = function ProductOverview() {
         })
       })]
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
-      title: "Buy Now",
+      title: null // No title, as previously set
+      ,
       visible: showQuantityModal,
       onCancel: function onCancel() {
         return setShowQuantityModal(false);
       },
-      footer: null,
+      footer: null // Removed footer since buttons are now in the content
+      ,
       width: 700,
-      bodyStyle: {
-        padding: 0
-      },
       children: renderModalOverview()
     })]
   });
