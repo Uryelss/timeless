@@ -205296,7 +205296,6 @@ var CartPage = function CartPage() {
                 antd__WEBPACK_IMPORTED_MODULE_5__["default"].warning("Product ".concat(item.productName, " is no longer available."));
                 return null;
               }
-              // Validate size if sizes are provided by the API
               var sizesArr = product.sizes || [];
               if (typeof product.sizes === "string") {
                 try {
@@ -205348,13 +205347,26 @@ var CartPage = function CartPage() {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
   var updateQuantity = function updateQuantity(id, size, newQuantity) {
-    var updated = cartItems.map(function (item) {
-      return item.id === id && item.size === size ? _objectSpread(_objectSpread({}, item), {}, {
-        quantity: newQuantity,
-        total: newQuantity * item.price
-      }) : item;
-    });
-    setCartItems(updated);
+    if (newQuantity <= 0) {
+      var updated = cartItems.filter(function (item) {
+        return !(item.id === id && item.size === size);
+      });
+      setCartItems(updated);
+      setSelectedRowKeys(function (prev) {
+        return prev.filter(function (key) {
+          return key !== "".concat(id, "-").concat(size);
+        });
+      });
+      antd__WEBPACK_IMPORTED_MODULE_5__["default"].success("Item removed from cart");
+    } else {
+      var _updated = cartItems.map(function (item) {
+        return item.id === id && item.size === size ? _objectSpread(_objectSpread({}, item), {}, {
+          quantity: newQuantity,
+          total: newQuantity * item.price
+        }) : item;
+      });
+      setCartItems(_updated);
+    }
   };
   var handleDeleteSelected = function handleDeleteSelected() {
     if (selectedRowKeys.length === 0) {
@@ -205404,18 +205416,19 @@ var CartPage = function CartPage() {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
           onClick: function onClick() {
-            return updateQuantity(record.id, record.size, Math.max(1, record.quantity - 1));
+            return updateQuantity(record.id, record.size, quantity - 1);
           },
           children: "-"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-          min: 1,
+          min: 0,
           value: quantity,
-          onChange: function onChange(value) {
-            return updateQuantity(record.id, record.size, value);
+          controls: false,
+          style: {
+            width: 60
           }
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
           onClick: function onClick() {
-            return updateQuantity(record.id, record.size, record.quantity + 1);
+            return updateQuantity(record.id, record.size, quantity + 1);
           },
           children: "+"
         })]
@@ -205493,25 +205506,28 @@ var CartPage = function CartPage() {
         children: ["Subtotal: ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("strong", {
           children: ["\u20B1", subtotal.toLocaleString()]
         })]
-      }), selectedRowKeys.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
-        danger: true,
-        icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {}),
-        onClick: handleDeleteSelected,
-        style: {
-          marginTop: "10px"
-        },
-        children: "Remove Selected"
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
         style: {
           marginTop: "20px",
           textAlign: "right"
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+        children: [selectedRowKeys.length > 0 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+          danger: true,
+          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {}),
+          onClick: handleDeleteSelected,
+          style: {
+            marginTop: "10px",
+            width: "179.53px",
+            height: "40px",
+            marginRight: "10px"
+          },
+          children: "Remove Selected"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
           type: "primary",
           size: "large",
           onClick: handleProceedToCheckout,
           children: "Proceed to Checkout"
-        })
+        })]
       })]
     })]
   });
@@ -208514,7 +208530,6 @@ var OrderTracking = function OrderTracking() {
               completed_at: orderData.completed_at || null,
               cancelled_at: orderData.cancelled_at || null,
               cancel_reason: orderData.cancel_reason || "",
-              // Include cancellation reason
               updated_at: orderData.updated_at || null
             });
             setOrder(transformedOrder);
@@ -208965,8 +208980,14 @@ var OrderTracking = function OrderTracking() {
         }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
           className: "no-tracking",
           children: "No order tracking available."
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
-          title: "Cancel Order",
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+          title: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            style: {
+              display: "flex",
+              alignItems: "center"
+            },
+            children: ["Cancel Order #", orderId]
+          }),
           open: isCancelModalVisible,
           onCancel: function onCancel() {
             return setIsCancelModalVisible(false);
@@ -208976,43 +208997,94 @@ var OrderTracking = function OrderTracking() {
               return setIsCancelModalVisible(false);
             },
             disabled: isCancelLoading,
-            children: "Cancel"
+            style: {
+              width: "100px",
+              borderRadius: "4px"
+            },
+            children: "Back"
           }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
             type: "primary",
+            danger: true,
             onClick: handleCancelOrder,
             loading: isCancelLoading,
-            children: "Confirm"
+            style: {
+              width: "100px",
+              borderRadius: "4px"
+            },
+            children: "Cancel Order"
           }, "confirm")],
           className: "cancel-modal",
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
-            className: "modal-description",
-            children: "Please select a reason for cancelling your order. Note that this action will cancel all items and cannot be undone."
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"].Group, {
-            onChange: function onChange(e) {
-              return setCancelReason(e.target.value);
+          width: 450,
+          centered: true,
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+            style: {
+              padding: "16px 0"
             },
-            value: cancelReason,
-            className: "cancel-reasons",
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_21__["default"], {
-              direction: "vertical",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
-                value: "Need to change delivery address",
-                children: "Need to change delivery address"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
-                value: "Need to modify order (size, quantity, etc)",
-                children: "Need to modify order (size, quantity, etc)"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
-                value: "Payment process too troublesome",
-                children: "Payment process too troublesome"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
-                value: "Don\u2019t want to buy anymore",
-                children: "Don\u2019t want to buy anymore"
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
-                value: "Others",
-                children: "Others"
-              })]
-            })
-          })]
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
+              strong: true,
+              style: {
+                display: "block",
+                marginBottom: "12px",
+                fontSize: "16px",
+                color: "#333"
+              },
+              children: "Why are you cancelling this order?"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
+              type: "secondary",
+              style: {
+                display: "block",
+                marginBottom: "16px",
+                lineHeight: "1.5"
+              },
+              children: "Please select a reason below. Note that cancelling will affect all items in this order and cannot be undone."
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"].Group, {
+              onChange: function onChange(e) {
+                return setCancelReason(e.target.value);
+              },
+              value: cancelReason,
+              style: {
+                width: "100%"
+              },
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_21__["default"], {
+                direction: "vertical",
+                size: "middle",
+                style: {
+                  width: "100%"
+                },
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+                  value: "Need to change delivery address",
+                  style: {
+                    padding: "8px 0"
+                  },
+                  children: "Need to change delivery address"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+                  value: "Need to modify order (size, quantity, etc)",
+                  style: {
+                    padding: "8px 0"
+                  },
+                  children: "Need to modify order (size, quantity, etc)"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+                  value: "Payment process too troublesome",
+                  style: {
+                    padding: "8px 0"
+                  },
+                  children: "Payment process too troublesome"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+                  value: "Don\u2019t want to buy anymore",
+                  style: {
+                    padding: "8px 0"
+                  },
+                  children: "Don\u2019t want to buy anymore"
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+                  value: "Others",
+                  style: {
+                    padding: "8px 0"
+                  },
+                  children: "Others"
+                })]
+              })
+            })]
+          })
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
           title: "Tracking Details - Order #".concat(orderId),
           open: isTrackingModalVisible,
