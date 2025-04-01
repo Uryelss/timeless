@@ -119,18 +119,27 @@ const UserManagement = () => {
             key: "actions",
             render: (_, record) => (
                 <Space>
-                    <Checkbox
-                        checked={record.selected}
-                        onChange={() => handleCheckboxChange(record.id)}
-                    />
-                    <EditOutlined
-                        onClick={() => handleEdit(record)}
-                        style={{ fontSize: "16px" }}
-                    />
-                    <DeleteOutlined
-                        onClick={() => handleArchive(record)}
-                        style={{ fontSize: "16px" }}
-                    />
+                    <div
+                        style={{
+                            marginTop: "20px",
+                            display: "flex",
+                            justifyContent: "flex-start",
+                        }}
+                    >
+                        <Checkbox
+                            checked={record.selected}
+                            onChange={() => handleCheckboxChange(record.id)}
+                            style={{ fonstSize: "16px", marginLeft: "15px" }}
+                        />
+                        <EditOutlined
+                            onClick={() => handleEdit(record)}
+                            style={{ fonstSize: "16px", marginLeft: "15px" }}
+                        />
+                        <DeleteOutlined
+                            onClick={() => handleArchive(record)}
+                            style={{ fonstSize: "16px", marginLeft: "15px" }}
+                        />
+                    </div>
                 </Space>
             ),
         },

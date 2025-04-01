@@ -341,7 +341,7 @@ const ReviewsManagement = () => {
                         style={{
                             fontSize: "16px",
                             cursor: "pointer",
-                            color: "red",
+                            color: "black",
                         }}
                     />
                 </Space>
@@ -575,15 +575,7 @@ const ReviewsManagement = () => {
                 open={openArchiveModal}
                 onCancel={() => setOpenArchiveModal(false)}
                 width={1000}
-                footer={[
-                    <Button
-                        key="close"
-                        onClick={() => setOpenArchiveModal(false)}
-                        style={{ width: "131px" }}
-                    >
-                        Close
-                    </Button>,
-                ]}
+                footer={[]}
             >
                 <div
                     style={{

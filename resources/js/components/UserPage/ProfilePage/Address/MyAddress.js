@@ -3,12 +3,11 @@ import axios from "axios";
 import { Layout, Button, Form, Input, Select, Radio, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../Navbar/Navbar";
-import Sidebar from "../Sidebar/Sidebar"; // Adjust the import path as needed
+import Sidebar from "../Sidebar/Sidebar";
 
 const { Content } = Layout;
 const { Option } = Select;
 
-// Helper function to format address string and filter out "000"
 const formatAddress = (address) => {
     const parts = [];
     if (address.street && address.street !== "000") parts.push(address.street);
@@ -29,7 +28,7 @@ const MyAddress = () => {
     const [editMode, setEditMode] = useState(false);
     const [currentAddressId, setCurrentAddressId] = useState(null);
     const [selectedAddressId, setSelectedAddressId] = useState(null);
-    const [collapsed, setCollapsed] = useState(false); // Sidebar collapsed state
+    const [collapsed, setCollapsed] = useState(false);
     const [form] = Form.useForm();
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
@@ -57,15 +56,35 @@ const MyAddress = () => {
     }, [token]);
 
     const onFinish = async (values) => {
+        // Trim all string values to remove leading/trailing whitespace
         const addressData = {
-            street: values.street,
-            city: values.city,
-            state: values.province,
-            barangay: values.barangay,
-            postal_code: values.postal_code,
-            country: values.country,
-            phone: values.phone,
+            street: values.street?.trim() || "",
+            city: values.city?.trim() || "",
+            state: values.province?.trim() || "",
+            barangay: values.barangay?.trim() || "",
+            postal_code: values.postal_code?.trim() || "",
+            country: values.country?.trim() || "",
+            phone: values.phone?.trim() || "",
+            label: values.label?.trim() || "Home", // Include label in the data
         };
+
+        // Check if any required field is empty after trimming
+        const requiredFields = [
+            "street",
+            "city",
+            "state",
+            "barangay",
+            "postal_code",
+            "country",
+            "phone",
+        ];
+        const emptyFields = requiredFields.filter(
+            (field) => !addressData[field]
+        );
+        if (emptyFields.length > 0) {
+            message.error("Please fill in all required fields");
+            return;
+        }
 
         try {
             if (editMode) {
@@ -134,14 +153,23 @@ const MyAddress = () => {
         setCurrentAddressId(address.id);
         setShowForm(true);
         form.setFieldsValue({
-            street: address.street,
-            barangay: address.barangay,
-            city: address.city,
-            province: address.state,
-            postal_code: address.postal_code,
-            country: address.country,
-            phone: address.phone,
+            street: address.street?.trim() || "",
+            barangay: address.barangay?.trim() || "",
+            city: address.city?.trim() || "",
+            province: address.state?.trim() || "",
+            postal_code: address.postal_code?.trim() || "",
+            country: address.country?.trim() || "",
+            phone: address.phone?.trim() || "",
+            label: address.label || "Home",
         });
+    };
+
+    // Custom validator to check for whitespace-only input
+    const noWhitespaceValidator = (_, value) => {
+        if (value && !value.trim()) {
+            return Promise.reject(new Error("Input cannot be just whitespace"));
+        }
+        return Promise.resolve();
     };
 
     return (
@@ -172,8 +200,8 @@ const MyAddress = () => {
                                     <Button
                                         type="primary"
                                         style={{
-                                            backgroundColor: "#ff4d4f",
-                                            borderColor: "#ff4d4f",
+                                            backgroundColor: "#000000",
+                                            borderInline: "#ff4d4f",
                                         }}
                                         onClick={() => {
                                             setShowForm(true);
@@ -205,7 +233,7 @@ const MyAddress = () => {
                                                 backgroundColor:
                                                     selectedAddressId ===
                                                     address.id
-                                                        ? "#e6f7ff" // Blue highlight when selected
+                                                        ? "#e6f7ff"
                                                         : "transparent",
                                             }}
                                         >
@@ -229,12 +257,32 @@ const MyAddress = () => {
                                                     ) === 1 && (
                                                         <span
                                                             style={{
-                                                                color: "#ff4d4f",
+                                                                color: "#000000",
                                                                 marginRight: 10,
+                                                                fontWeight:
+                                                                    "bold",
                                                             }}
                                                         >
                                                             Default
                                                         </span>
+                                                    )}
+                                                    {Number(
+                                                        address.is_default
+                                                    ) !== 1 && (
+                                                        <Button
+                                                            type="default"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleSetDefault(
+                                                                    address.id
+                                                                );
+                                                            }}
+                                                            style={{
+                                                                width: "100px",
+                                                            }}
+                                                        >
+                                                            Set as default
+                                                        </Button>
                                                     )}
                                                 </div>
                                             </div>
@@ -267,23 +315,6 @@ const MyAddress = () => {
                                                 >
                                                     Delete
                                                 </Button>
-                                                {Number(address.is_default) !==
-                                                    1 && (
-                                                    <Button
-                                                        type="default"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleSetDefault(
-                                                                address.id
-                                                            );
-                                                        }}
-                                                        style={{
-                                                            marginLeft: 10,
-                                                        }}
-                                                    >
-                                                        Set as default
-                                                    </Button>
-                                                )}
                                             </div>
                                         </div>
                                     ))
@@ -309,7 +340,10 @@ const MyAddress = () => {
                                     layout="vertical"
                                     onFinish={onFinish}
                                     style={{ maxWidth: 600 }}
-                                    initialValues={{ country: "Philippines" }}
+                                    initialValues={{
+                                        country: "Philippines",
+                                        label: "Home",
+                                    }}
                                 >
                                     <Form.Item
                                         label="Street Name, Building, House No."
@@ -319,6 +353,10 @@ const MyAddress = () => {
                                                 required: true,
                                                 message:
                                                     "Please enter your street details",
+                                            },
+                                            {
+                                                validator:
+                                                    noWhitespaceValidator,
                                             },
                                         ]}
                                     >
@@ -333,6 +371,10 @@ const MyAddress = () => {
                                                 message:
                                                     "Please enter your barangay",
                                             },
+                                            {
+                                                validator:
+                                                    noWhitespaceValidator,
+                                            },
                                         ]}
                                     >
                                         <Input placeholder="Barangay" />
@@ -345,6 +387,10 @@ const MyAddress = () => {
                                                 required: true,
                                                 message:
                                                     "Please enter your city",
+                                            },
+                                            {
+                                                validator:
+                                                    noWhitespaceValidator,
                                             },
                                         ]}
                                     >
@@ -359,6 +405,10 @@ const MyAddress = () => {
                                                 message:
                                                     "Please enter your province",
                                             },
+                                            {
+                                                validator:
+                                                    noWhitespaceValidator,
+                                            },
                                         ]}
                                     >
                                         <Input placeholder="Province" />
@@ -372,6 +422,10 @@ const MyAddress = () => {
                                                 message:
                                                     "Please enter your postal code",
                                             },
+                                            {
+                                                validator:
+                                                    noWhitespaceValidator,
+                                            },
                                         ]}
                                     >
                                         <Input placeholder="Postal Code" />
@@ -384,6 +438,10 @@ const MyAddress = () => {
                                                 required: true,
                                                 message:
                                                     "Please enter your country",
+                                            },
+                                            {
+                                                validator:
+                                                    noWhitespaceValidator,
                                             },
                                         ]}
                                     >
@@ -402,15 +460,16 @@ const MyAddress = () => {
                                                 message:
                                                     "Please enter your phone number",
                                             },
+                                            {
+                                                validator:
+                                                    noWhitespaceValidator,
+                                            },
                                         ]}
                                     >
                                         <Input placeholder="Phone Number" />
                                     </Form.Item>
-                                    <Form.Item label="Label As:">
-                                        <Radio.Group
-                                            name="label"
-                                            defaultValue="Home"
-                                        >
+                                    <Form.Item label="Label As" name="label">
+                                        <Radio.Group>
                                             <Radio value="Home">Home</Radio>
                                             <Radio value="Work">Work</Radio>
                                         </Radio.Group>
@@ -430,6 +489,10 @@ const MyAddress = () => {
                                                     setCurrentAddressId(null);
                                                     form.resetFields();
                                                 }}
+                                                style={{
+                                                    width: "131.8px",
+                                                    height: "32px",
+                                                }}
                                             >
                                                 Cancel
                                             </Button>
@@ -437,8 +500,9 @@ const MyAddress = () => {
                                                 type="primary"
                                                 htmlType="submit"
                                                 style={{
-                                                    backgroundColor: "#ff4d4f",
-                                                    borderColor: "#ff4d4f",
+                                                    backgroundColor: "#000000",
+                                                    borderInline: "#000000",
+                                                    width: "120.8px",
                                                 }}
                                             >
                                                 {editMode ? "Update" : "Submit"}

@@ -427,8 +427,10 @@ const Collection = () => {
                     <div
                         style={{
                             display: "flex",
-                            flexWrap: "wrap",
+                            flexWrap: "nowrap",
                             gap: "8px",
+                            flexDirection: "row",
+                            width: "90px",
                         }}
                     >
                         {renderSizeOptions(modalProduct)}
@@ -437,7 +439,7 @@ const Collection = () => {
                 <Button
                     type="primary"
                     onClick={handleModalAddToCart}
-                    style={{ width: "100%" }}
+                    style={{ width: "100%", height: "35px" }}
                 >
                     Add to Cart
                 </Button>

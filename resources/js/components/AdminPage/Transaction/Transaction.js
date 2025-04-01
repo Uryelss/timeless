@@ -301,12 +301,8 @@ const TransactionManagement = () => {
                     />
                     <Button
                         type="link"
-                        icon={<FolderOpenOutlined />}
-                        onClick={() => handleArchive(record.id)}
-                    />
-                    <Button
-                        type="link"
                         icon={<EditOutlined />}
+                        style={{ color: "black" }}
                         onClick={() => {
                             setEditingTransaction(record);
                             form.setFieldsValue({
@@ -318,6 +314,14 @@ const TransactionManagement = () => {
                                     record.transaction_status || "Pending",
                             });
                             setEditModalVisible(true);
+                        }}
+                    />
+                    <DeleteOutlined
+                        onClick={() => handleArchive(record)}
+                        style={{
+                            fontSize: "16px",
+                            cursor: "pointer",
+                            color: "black",
                         }}
                     />
                 </Space>

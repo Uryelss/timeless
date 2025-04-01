@@ -222,11 +222,12 @@ const UserProfile = () => {
                                 <button
                                     style={{
                                         padding: "8px 16px",
-                                        backgroundColor: "#0066cc",
+                                        backgroundColor: "#000000",
                                         color: "#fff",
                                         border: "none",
                                         borderRadius: 4,
                                         cursor: "pointer",
+                                        width: "117px",
                                     }}
                                     onClick={handleEdit}
                                 >
@@ -432,11 +433,12 @@ const UserProfile = () => {
                                         type="submit"
                                         style={{
                                             padding: "8px 16px",
-                                            backgroundColor: "#4caf50",
+                                            backgroundColor: "#000000",
                                             color: "#fff",
-                                            border: "none",
+                                            border: "solid 1px #000000",
                                             borderRadius: 4,
                                             cursor: "pointer",
+                                            width: "171px",
                                         }}
                                     >
                                         Save Changes
@@ -445,11 +447,12 @@ const UserProfile = () => {
                                         type="button"
                                         style={{
                                             padding: "8px 16px",
-                                            backgroundColor: "#ff4444",
-                                            color: "#fff",
-                                            border: "none",
+                                            backgroundColor: "#ffffff",
+                                            color: "#000",
+                                            border: "solid 1px #000000",
                                             borderRadius: 4,
                                             cursor: "pointer",
+                                            width: "171px",
                                         }}
                                         onClick={handleCancel}
                                     >

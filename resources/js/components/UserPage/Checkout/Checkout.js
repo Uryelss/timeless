@@ -461,44 +461,70 @@ const CheckoutPage = () => {
                         </Card>
                         <Card
                             title="PAYMENT METHOD"
-                            style={{ marginBottom: "20px" }}
+                            style={{
+                                marginBottom: "20px",
+                            }}
                         >
-                            <Radio.Group
-                                onChange={(e) => {
-                                    setPaymentMethod(e.target.value);
-                                    setDigitalWalletOption(null);
+                            <div
+                                style={{
+                                    marginTop: "16px",
+                                    flexDirection: "column",
+                                    flexWrap: "nowrap",
+                                    display: "flex",
                                 }}
-                                value={paymentMethod}
                             >
-                                {paymentMethods.map((method) => (
-                                    <Radio key={method.id} value={method.id}>
-                                        {method.name}
-                                    </Radio>
-                                ))}
-                            </Radio.Group>
-                            {isDigitalWallet && (
-                                <Select
-                                    placeholder="Select Digital Wallet Option"
-                                    style={{ width: 250, marginTop: 16 }}
-                                    onChange={(value) =>
-                                        setDigitalWalletOption(value)
-                                    }
-                                    value={digitalWalletOption}
+                                <Radio.Group
+                                    onChange={(e) => {
+                                        setPaymentMethod(e.target.value);
+                                        setDigitalWalletOption(null);
+                                    }}
+                                    value={paymentMethod}
                                 >
-                                    <Option value="G-Cash">G-Cash</Option>
-                                    <Option value="PayMaya">PayMaya</Option>
-                                </Select>
-                            )}
-                            {isCreditCard && (
-                                <Button
-                                    type="dashed"
-                                    icon={<PlusOutlined />}
-                                    onClick={() => setCardModalVisible(true)}
-                                    style={{ marginTop: 16 }}
-                                >
-                                    Add New Credit/Debit Card
-                                </Button>
-                            )}
+                                    {paymentMethods.map((method) => (
+                                        <Radio
+                                            key={method.id}
+                                            value={method.id}
+                                        >
+                                            {method.name}
+                                        </Radio>
+                                    ))}
+                                </Radio.Group>
+                                {isDigitalWallet && (
+                                    <Select
+                                        placeholder="Select Digital Wallet Option"
+                                        style={{
+                                            width: 250,
+                                            marginTop: "16px",
+                                            flexDirection: "column",
+                                            flexWrap: "nowrap",
+                                            design: "flex",
+                                        }}
+                                        onChange={(value) =>
+                                            setDigitalWalletOption(value)
+                                        }
+                                        value={digitalWalletOption}
+                                    >
+                                        <Option value="G-Cash">G-Cash</Option>
+                                        <Option value="PayMaya">PayMaya</Option>
+                                    </Select>
+                                )}
+
+                                {isCreditCard && (
+                                    <Button
+                                        type="dashed"
+                                        icon={<PlusOutlined />}
+                                        onClick={() =>
+                                            setCardModalVisible(true)
+                                        }
+                                        style={{
+                                            marginTop: 16,
+                                            width: "210px",
+                                        }}
+                                    >
+                                        Add New Credit/Debit Card
+                                    </Button>
+                                )}
+                            </div>
                         </Card>
                         <Card
                             title="SHIPPING METHOD"
@@ -700,7 +726,11 @@ const CheckoutPage = () => {
                 title="Order Submitted"
                 visible={successModalVisible}
                 footer={[
-                    <Button key="home" onClick={handleGoHome}>
+                    <Button
+                        key="home"
+                        onClick={handleGoHome}
+                        style={{ width: "90px" }}
+                    >
                         Home
                     </Button>,
                     <Button
