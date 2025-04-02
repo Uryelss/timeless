@@ -6,6 +6,7 @@ import {
     Route,
     Navigate,
 } from "react-router-dom";
+import AppLayout from "./AppLayout"; // Import the layout component
 import { getUserRole, isAuthenticated } from "./AccessPage/Auth";
 
 // Admin pages
@@ -40,76 +41,101 @@ import ReviewsManagement from "./AdminPage/AdminReview/Reviews";
 function Routers() {
     return (
         <Router>
-            <Routes>
-                {/* Public Routes */}
-                <Route
-                    path="/login"
-                    element={
-                        isAuthenticated() ? (
-                            <Navigate
-                                to={
-                                    getUserRole() === "admin"
-                                        ? "/dashboard"
-                                        : "/user-home"
-                                }
-                                replace
-                            />
-                        ) : (
-                            <Login />
-                        )
-                    }
-                />
-                <Route path="/register" element={<Register />} />
-                <Route
-                    path="/logout"
-                    element={<PrivateRoute isLogout={true} />}
-                />
+            <AppLayout>
+                <Routes>
+                    {/* Public Routes */}
+                    <Route
+                        path="/login"
+                        element={
+                            isAuthenticated() ? (
+                                <Navigate
+                                    to={
+                                        getUserRole() === "admin"
+                                            ? "/dashboard"
+                                            : "/user-home"
+                                    }
+                                    replace
+                                />
+                            ) : (
+                                <Login />
+                            )
+                        }
+                    />
+                    <Route path="/register" element={<Register />} />
+                    <Route
+                        path="/logout"
+                        element={<PrivateRoute isLogout={true} />}
+                    />
 
-                {/* Admin Protected Routes */}
-                <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
-                    <Route path="/dashboard" element={<AdminDashboard />} />
-                    <Route path="/products" element={<ProductManagement />} />
-                    <Route path="/orders" element={<OrderManagement />} />
-                    <Route path="/customers" element={<CustomerManagement />} />
-                    <Route path="/users" element={<UserManagement />} />
-                    <Route path="/Reviews" element={<ReviewsManagement />} />
-                    <Route
-                        path="/Transactions"
-                        element={<TransactionManagement />}
-                    />
-                    <Route
-                        path="/inventory"
-                        element={<InventoryManagement />}
-                    />
-                    <Route path="/admin-profile" element={<AdminProfile />} />
-                    <Route path="/sub-category" element={<SubCategory />} />
-                </Route>
+                    {/* Admin Protected Routes */}
+                    <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
+                        <Route path="/dashboard" element={<AdminDashboard />} />
+                        <Route
+                            path="/products"
+                            element={<ProductManagement />}
+                        />
+                        <Route path="/orders" element={<OrderManagement />} />
+                        <Route
+                            path="/customers"
+                            element={<CustomerManagement />}
+                        />
+                        <Route path="/users" element={<UserManagement />} />
+                        <Route
+                            path="/Reviews"
+                            element={<ReviewsManagement />}
+                        />
+                        <Route
+                            path="/Transactions"
+                            element={<TransactionManagement />}
+                        />
+                        <Route
+                            path="/inventory"
+                            element={<InventoryManagement />}
+                        />
+                        <Route
+                            path="/admin-profile"
+                            element={<AdminProfile />}
+                        />
+                        <Route path="/sub-category" element={<SubCategory />} />
+                    </Route>
 
-                {/* User Protected Routes */}
-                <Route element={<PrivateRoute allowedRoles={["user"]} />}>
-                    <Route path="/user-home" element={<UserHome />} />
-                    <Route path="/user-collection" element={<Collection />} />
-                    {/* Dynamic category route */}
-                    <Route
-                        path="/user-category/:category"
-                        element={<CategoryCollection />}
-                    />
-                    <Route path="/user-profile" element={<UserProfile />} />
-                    <Route path="/product/:id" element={<ProductOverview />} />
-                    <Route path="/AboutUs" element={<AboutUs />} />
-                    <Route path="/user-cart" element={<CartPage />} />
-                    <Route path="/user-checkout" element={<OrderCheckout />} />
-                    <Route path="/user-Address" element={<MyAddress />} />
-                    <Route
-                        path="/order-tracking/:orderId"
-                        element={<OrderTracking />}
-                    />
-                    <Route path="/user-purchase" element={<MyPurchase />} />
-                </Route>
+                    {/* User Protected Routes */}
+                    <Route element={<PrivateRoute allowedRoles={["user"]} />}>
+                        <Route path="/user-home" element={<UserHome />} />
+                        <Route
+                            path="/user-collection"
+                            element={<Collection />}
+                        />
+                        <Route
+                            path="/user-category/:category"
+                            element={<CategoryCollection />}
+                        />
+                        <Route path="/user-profile" element={<UserProfile />} />
+                        <Route
+                            path="/product/:id"
+                            element={<ProductOverview />}
+                        />
+                        <Route path="/AboutUs" element={<AboutUs />} />
+                        <Route path="/user-cart" element={<CartPage />} />
+                        <Route
+                            path="/user-checkout"
+                            element={<OrderCheckout />}
+                        />
+                        <Route path="/user-Address" element={<MyAddress />} />
+                        <Route
+                            path="/order-tracking/:orderId"
+                            element={<OrderTracking />}
+                        />
+                        <Route path="/user-purchase" element={<MyPurchase />} />
+                    </Route>
 
-                {/* Catch-all redirect */}
-                <Route path="*" element={<PrivateRoute allowedRoles={[]} />} />
-            </Routes>
+                    {/* Catch-all redirect */}
+                    <Route
+                        path="*"
+                        element={<PrivateRoute allowedRoles={[]} />}
+                    />
+                </Routes>
+            </AppLayout>
         </Router>
     );
 }

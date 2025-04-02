@@ -16,6 +16,7 @@ use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\UserOrderController;
 use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\ForgotPasswordController;
+use App\Http\Controllers\API\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/shipping-methods', fn() => App\Models\ShippingMethod::all())->name('shipping.methods');
     Route::get('/my-purchases', [UserOrderController::class, 'myPurchases'])->name('user.orders.my_purchases');
     Route::get('/users/me', [UserController::class, 'getCurrentUser'])->name('users.me');
+
+    // User chat endpoints
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
 });
 
 /*
@@ -75,6 +80,7 @@ Route::middleware(['auth:api', 'check.role:user'])->group(function () {
 */
 Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('/admin-dashboard', fn() => response()->json(['message' => 'Welcome to the Admin Dashboard']))->name('admin.dashboard');
+
     Route::prefix('sub-categories')->name('subcategories.')->group(function () {
         Route::get('/', [SubCategoryController::class, 'index'])->name('index');
         Route::post('/', [SubCategoryController::class, 'store'])->name('store');
@@ -82,6 +88,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::delete('/{id}', [SubCategoryController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/restore', [SubCategoryController::class, 'restore'])->name('restore');
     });
+
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::post('/', [ProductController::class, 'store'])->name('store');
@@ -89,6 +96,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::delete('/{id}', [ProductController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/restore', [ProductController::class, 'restore'])->name('restore');
     });
+
     Route::prefix('inventory')->name('inventory.')->group(function () {
         Route::get('/', [InventoryController::class, 'index'])->name('index');
         Route::post('/{product_id}', [InventoryController::class, 'store'])->name('store');
@@ -96,6 +104,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::delete('/{id}', [InventoryController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/restore', [InventoryController::class, 'restore'])->name('restore');
     });
+
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::post('/', [UserController::class, 'store'])->name('store');
@@ -103,6 +112,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/restore', [UserController::class, 'restore'])->name('restore');
     });
+
     Route::prefix('customers')->name('customers.')->group(function () {
         Route::get('/', [CustomerController::class, 'index'])->name('index');
         Route::get('/{id}', [CustomerController::class, 'show'])->name('show');
@@ -110,6 +120,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/restore', [CustomerController::class, 'restore'])->name('restore');
     });
+
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('index');
         Route::get('/{id}', [OrderController::class, 'show'])->name('show');
@@ -117,6 +128,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::post('/{id}/archive', [OrderController::class, 'archive'])->name('archive');
         Route::post('/{id}/restore', [OrderController::class, 'restore'])->name('restore');
     });
+
     Route::prefix('admin/reviews')->name('admin.reviews.')->group(function () {
         Route::get('/', [ReviewController::class, 'adminIndex'])->name('index');
         Route::put('/{id}', [ReviewController::class, 'update'])->name('update');
@@ -124,6 +136,12 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::post('/{id}/archive', [ReviewController::class, 'archive'])->name('archive');
         Route::post('/{id}/restore', [ReviewController::class, 'restore'])->name('restore');
     });
+
+    // Admin Chat endpoints (placed outside of transactions)
+    Route::get('/admin/chat/inbox', [ChatController::class, 'inbox'])->name('chat.inbox');
+    Route::get('/admin/chat/{user_id}', [ChatController::class, 'adminConversation'])->name('chat.adminConversation');
+    Route::post('/admin/chat', [ChatController::class, 'store'])->name('chat.adminStore');
+
     Route::prefix('transactions')->name('transactions.')->group(function () {
         Route::get('/', [TransactionController::class, 'index'])->name('index');
         Route::put('/{id}', [TransactionController::class, 'update'])->name('update');

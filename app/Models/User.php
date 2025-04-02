@@ -24,7 +24,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    // Relationships
     public function profile()
     {
         return $this->hasOne(Profile::class);
@@ -35,9 +34,13 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
-    // A user can have many reviews
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+
+    public function chatMessages()
+    {
+        return $this->hasMany(ChatMessage::class);
     }
 }
