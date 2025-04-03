@@ -1,17 +1,18 @@
 /* Card Styling */
-.card {
+.product-card {
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100%; /* Ensure the card takes full height of the container */
+    height: 100%;
+    width: 250px;
 
-    img {
-        width: 250px; /* Fixed width */
-        height: 250px; /* Fixed height */
-        object-fit: cover; /* Ensures the image is cropped to fit within the fixed size */
-        border-radius: 8px 8px 0 0; /* Rounded top corners for the image */
+    .product-image {
+        width: 250px;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 8px 8px 0 0;
     }
 
     .ant-card-meta-title {
@@ -23,8 +24,13 @@
         color: #666;
     }
 
-    .ant-btn-link {
+    .cart-button {
+        padding: 0;
+        margin-top: 8px;
+        display: block;
+        text-align: center;
         color: #1890ff;
+
         &:hover {
             color: #40a9ff;
         }
@@ -32,48 +38,75 @@
 }
 
 /* Card Layout */
-.ant-layout {
+.collection-layout {
+    min-height: 100vh;
+
     &.ant-layout-has-sider {
-        margin-right: 24px; /* Match the right padding of the content area */
+        margin-right: 24px;
     }
 }
 
-.ant-layout-content {
-    .ant-row {
+.content-layout {
+    padding: 0 24px 24px;
+}
+
+.content {
+    padding: 24px;
+    background: #fff;
+
+    .product-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 16px; /* Adjust the gap between the cards */
+        gap: 16px;
     }
 }
 
 /* Filter Sidebar */
-.ant-layout-sider {
+.filter-sider {
+    width: 250px !important;
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 16px;
+    margin-right: 32px;
+    margin-left: 24px;
 }
 
-/* Sidebar Content */
 .ant-layout-sider-children {
     padding: 16px;
 }
 
 /* Filter Section */
+.filter-title {
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
 .selected-filters {
     color: #1890ff;
     font-size: 14px;
     margin-bottom: 16px;
 }
 
+.filter-section {
+    margin-bottom: 16px;
+
+    h3 {
+        margin-bottom: 8px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+}
+
 .horizontal-checkboxes {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px; /* Adjust the gap between checkboxes as needed */
-}
+    gap: 8px;
 
-.horizontal-checkboxes .ant-checkbox-wrapper {
-    margin: 0; /* Remove default margin */
+    .ant-checkbox-wrapper {
+        margin: 0;
+    }
 }
 
 .ant-checkbox-wrapper {
@@ -81,29 +114,83 @@
 }
 
 /* Styling for the search bar and sort dropdown */
-.ant-space {
+.search-sort-space {
+    margin-bottom: 16px;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.ant-btn-link {
-    color: #1890ff;
-    &:hover {
-        color: #40a9ff;
-    }
-}
-
-/* Filter Section Title */
-h3 {
-    margin-bottom: 8px;
-    font-size: 16px;
-    font-weight: bold;
-}
-
 /* Button Styling for the Clear Filter Button */
-.ant-btn-default {
+.clear-filter-button {
     width: 100%;
     background: #fff;
     border-color: #d9d9d9;
+}
+
+/* Brand Slider Container */
+.brand-slider-container {
+    margin: 24px;
+}
+
+/* Inner Layout */
+.inner-layout {
+    margin-top: 24px;
+}
+
+/* Modal Styling */
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .modal-image-section {
+        display: flex;
+        gap: 16px;
+
+        .modal-main-image {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .modal-side-images {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+            .modal-side-image {
+                width: 60px;
+                height: 60px;
+                object-fit: cover;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .modal-rating {
+        display: flex;
+        align-items: center;
+    }
+
+    .modal-size-selection {
+        display: flex;
+        flex-wrap: nowrap; // Copied from new layout
+        gap: 8px;
+        flex-direction: row; // Copied from new layout
+        width: 90px; // Copied from new layout
+    }
+
+    .modal-add-to-cart {
+        width: 100%;
+        height: 35px; // Copied from new layout
+    }
+}
+
+/* Rating inside product card */
+.rating {
+    display: flex;
+    align-items: center;
 }

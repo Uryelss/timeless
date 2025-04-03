@@ -32,6 +32,7 @@ Route::post('/login', [AccessController::class, 'login'])->name('login');
 Route::get('/products/public', [ProductController::class, 'publicIndex'])->name('products.public');
 Route::get('/sub-categories/public', [SubCategoryController::class, 'publicIndex'])->name('subcategories.public');
 Route::get('/products/{id}', [ProductViewController::class, 'show'])->name('products.show');
+Route::get('/inventory/public', [InventoryController::class, 'getPublicInventory'])->name('inventory.public');
 
 /*
 |--------------------------------------------------------------------------
@@ -48,15 +49,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/shipping-methods', fn() => App\Models\ShippingMethod::all())->name('shipping.methods');
     Route::get('/my-purchases', [UserOrderController::class, 'myPurchases'])->name('user.orders.my_purchases');
     Route::get('/users/me', [UserController::class, 'getCurrentUser'])->name('users.me');
-
-    // NEW: Route for fetching a single user's profile.
     Route::get('/user/{id}', [UserController::class, 'show']);
 
     // User chat endpoints
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -141,7 +139,6 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::post('/{id}/restore', [ReviewController::class, 'restore'])->name('restore');
     });
 
-    // Admin Chat endpoints (placed outside of transactions)
     Route::get('/admin/chat/inbox', [ChatController::class, 'inbox'])->name('chat.inbox');
     Route::get('/admin/chat/{user_id}', [ChatController::class, 'adminConversation'])->name('chat.adminConversation');
     Route::post('/admin/chat', [ChatController::class, 'store'])->name('chat.adminStore');

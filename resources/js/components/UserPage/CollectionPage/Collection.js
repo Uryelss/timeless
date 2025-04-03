@@ -45,10 +45,10 @@ const Collection = () => {
 
     const PRODUCTS_API = "http://localhost:8000/api/products/public";
     const SUBCATEGORIES_API = "http://localhost:8000/api/sub-categories/public";
+    const INVENTORY_API = "http://localhost:8000/api/inventory/public";
     const isLoggedIn = Boolean(localStorage.getItem("token"));
     const navigate = useNavigate();
 
-    // Fetch products from the API
     const fetchProducts = () => {
         axios
             .get(PRODUCTS_API)
@@ -61,12 +61,10 @@ const Collection = () => {
             });
     };
 
-    // Fetch filter options for each category from the API
     const fetchFilterOptions = (type, setter) => {
         axios
             .get(`${SUBCATEGORIES_API}?type=${type}`)
             .then((res) => {
-                // For strap materials, we assume the API returns objects
                 if (type === "strap_materials") {
                     setter(res.data);
                 } else {
@@ -104,7 +102,6 @@ const Collection = () => {
         setFilterKey((prev) => prev + 1);
     };
 
-    // Display selected filters
     const getDisplayFilters = () => {
         const displays = [];
         Object.keys(filters).forEach((key) => {
@@ -139,7 +136,6 @@ const Collection = () => {
             )
                 .toLowerCase()
                 .trim();
-            // For strap material, compare product.strap_material_id directly
             const matchesBrand =
                 filters.brand.length === 0 ||
                 filters.brand.some(
@@ -208,11 +204,7 @@ const Collection = () => {
         setFilterKey((prev) => prev + 1);
     };
 
-    const filteredProducts = getFilteredProducts();
-    const displayFilters = getDisplayFilters();
-
-    // Updated handleDirectAddToCart: now sets inventory_id with a fallback
-    const handleDirectAddToCart = (product, size) => {
+    const handleDirectAddToCart = async (product, size) => {
         if (!isLoggedIn) {
             message.info("Please log in to add to cart");
             return;
@@ -236,38 +228,53 @@ const Collection = () => {
             return;
         }
 
-        const cartItem = {
-            id: product.id,
-            // Use product.inventory_id if available; otherwise, fallback to product.id
-            inventory_id: product.inventory_id || product.id,
-            productName: product.product_name,
-            image: product.main_image
-                ? `http://localhost:8000/storage/${product.main_image}`
-                : "/placeholder.jpg",
-            size: size,
-            price: product.price,
-            quantity: 1,
-            total: product.price,
-        };
+        try {
+            const response = await axios.get(
+                `${INVENTORY_API}?product_id=${product.id}&size=${size}`
+            );
+            const inventory = response.data[0];
+            if (!inventory || !inventory.id) {
+                message.error(
+                    `No inventory available for ${product.product_name} in size ${size}`
+                );
+                return;
+            }
 
-        const storedCart = localStorage.getItem("cart");
-        let cart = storedCart ? JSON.parse(storedCart) : [];
-        const existingItemIndex = cart.findIndex(
-            (item) => item.id === product.id && item.size === size
-        );
-        if (existingItemIndex > -1) {
-            cart[existingItemIndex].quantity += 1;
-            cart[existingItemIndex].total =
-                cart[existingItemIndex].price *
-                cart[existingItemIndex].quantity;
-        } else {
-            cart.push(cartItem);
+            const cartItem = {
+                id: product.id,
+                inventory_id: inventory.id,
+                productName: product.product_name,
+                image: product.main_image
+                    ? `http://localhost:8000/storage/${product.main_image}`
+                    : "/placeholder.jpg",
+                size: size,
+                price: product.price,
+                quantity: 1,
+                total: product.price,
+            };
+
+            const storedCart = localStorage.getItem("cart");
+            let cart = storedCart ? JSON.parse(storedCart) : [];
+            const existingItemIndex = cart.findIndex(
+                (item) => item.id === product.id && item.size === size
+            );
+            if (existingItemIndex > -1) {
+                cart[existingItemIndex].quantity += 1;
+                cart[existingItemIndex].total =
+                    cart[existingItemIndex].price *
+                    cart[existingItemIndex].quantity;
+            } else {
+                cart.push(cartItem);
+            }
+            localStorage.setItem("cart", JSON.stringify(cart));
+            window.dispatchEvent(new Event("cartUpdated"));
+            message.success(
+                `Successfully added ${product.product_name} (${size}) to your cart!`
+            );
+        } catch (error) {
+            message.error("Error adding item to cart");
+            console.error(error);
         }
-        localStorage.setItem("cart", JSON.stringify(cart));
-        window.dispatchEvent(new Event("cartUpdated"));
-        message.success(
-            `Successfully added ${product.product_name} (${size}) to your cart!`
-        );
     };
 
     const renderSizeOptions = (product) => {
@@ -431,134 +438,91 @@ const Collection = () => {
         );
     };
 
+    const filteredProducts = getFilteredProducts();
+    const displayFilters = getDisplayFilters();
+
     return (
         <Layout style={{ minHeight: "100vh" }} key={filterKey}>
             <Navbar />
             <div style={{ margin: "24px" }}>
                 <BrandSlider />
-            </div>
-            <Layout style={{ marginTop: "24px" }}>
-                <Sider
-                    width={250}
-                    style={{
-                        background: "#fff",
-                        padding: "16px",
-                        marginRight: "32px",
-                        marginLeft: "24px",
-                    }}
-                >
-                    <div
-                        style={{
-                            marginBottom: "16px",
-                            fontSize: "18px",
-                            fontWeight: "bold",
-                        }}
+                <Layout>
+                    <Sider
+                        width={200}
+                        style={{ background: "#fff", padding: "16px" }}
                     >
-                        FILTER
-                    </div>
-                    {displayFilters.length > 0 && (
-                        <div style={{ marginBottom: "16px", color: "#1890ff" }}>
-                            {displayFilters.join(" > ")}
+                        <h3>Filters</h3>
+                        <div>
+                            <h4>Brand</h4>
+                            {filterOptions.brand.map((brand) => (
+                                <Checkbox
+                                    key={brand}
+                                    checked={filters.brand.includes(brand)}
+                                    onChange={() =>
+                                        handleFilterChange("brand", brand)
+                                    }
+                                >
+                                    {brand}
+                                </Checkbox>
+                            ))}
                         </div>
-                    )}
-                    <div>
-                        <div style={{ marginBottom: "16px" }}>
-                            <h3>BRAND</h3>
-                            <div className="horizontal-checkboxes">
-                                {filterOptions.brand.map((brand) => (
-                                    <Checkbox
-                                        key={brand}
-                                        onChange={() =>
-                                            handleFilterChange("brand", brand)
-                                        }
-                                        checked={filters.brand.includes(brand)}
-                                    >
-                                        {brand}
-                                    </Checkbox>
-                                ))}
-                            </div>
+                        <div>
+                            <h4>Gender</h4>
+                            {filterOptions.gender.map((gender) => (
+                                <Checkbox
+                                    key={gender}
+                                    checked={filters.gender.includes(gender)}
+                                    onChange={() =>
+                                        handleFilterChange("gender", gender)
+                                    }
+                                >
+                                    {gender}
+                                </Checkbox>
+                            ))}
                         </div>
-                        <div style={{ marginBottom: "16px" }}>
-                            <h3>GENDER</h3>
-                            <div className="horizontal-checkboxes">
-                                {filterOptions.gender.map((gender) => (
-                                    <Checkbox
-                                        key={gender}
-                                        onChange={() =>
-                                            handleFilterChange("gender", gender)
-                                        }
-                                        checked={filters.gender.includes(
-                                            gender
-                                        )}
-                                    >
-                                        {gender}
-                                    </Checkbox>
-                                ))}
-                            </div>
+                        <div>
+                            <h4>Movement</h4>
+                            {filterOptions.movement.map((movement) => (
+                                <Checkbox
+                                    key={movement}
+                                    checked={filters.movement.includes(
+                                        movement
+                                    )}
+                                    onChange={() =>
+                                        handleFilterChange("movement", movement)
+                                    }
+                                >
+                                    {movement}
+                                </Checkbox>
+                            ))}
                         </div>
-                        <div style={{ marginBottom: "16px" }}>
-                            <h3>MOVEMENT</h3>
-                            <div className="horizontal-checkboxes">
-                                {filterOptions.movement.map((movement) => (
-                                    <Checkbox
-                                        key={movement}
-                                        onChange={() =>
-                                            handleFilterChange(
-                                                "movement",
-                                                movement
-                                            )
-                                        }
-                                        checked={filters.movement.includes(
-                                            movement
-                                        )}
-                                    >
-                                        {movement}
-                                    </Checkbox>
-                                ))}
-                            </div>
-                        </div>
-                        <div style={{ marginBottom: "16px" }}>
-                            <h3>STRAP MATERIAL</h3>
-                            <div className="horizontal-checkboxes">
-                                {filterOptions.strapMaterial.map((material) => (
-                                    <Checkbox
-                                        key={
-                                            material.id ? material.id : material
-                                        }
-                                        onChange={() =>
-                                            handleFilterChange(
-                                                "strapMaterial",
-                                                material.id
-                                                    ? material.id
-                                                    : material
-                                            )
-                                        }
-                                        checked={filters.strapMaterial.includes(
-                                            material.id ? material.id : material
-                                        )}
-                                    >
-                                        {material.name
-                                            ? material.name
-                                            : material}
-                                    </Checkbox>
-                                ))}
-                            </div>
+                        <div>
+                            <h4>Strap Material</h4>
+                            {filterOptions.strapMaterial.map((material) => (
+                                <Checkbox
+                                    key={material.id}
+                                    checked={filters.strapMaterial.includes(
+                                        material.id
+                                    )}
+                                    onChange={() =>
+                                        handleFilterChange(
+                                            "strapMaterial",
+                                            material.id
+                                        )
+                                    }
+                                >
+                                    {material.name}
+                                </Checkbox>
+                            ))}
                         </div>
                         <Button
-                            type="default"
-                            style={{
-                                width: "100%",
-                                background: "#fff",
-                                borderColor: "#d9d9d9",
-                            }}
                             onClick={clearFilters}
+                            style={{ marginTop: "16px" }}
                         >
-                            Clear Filter
+                            Clear Filters
                         </Button>
-                    </div>
-                </Sider>
-                <Layout style={{ padding: "0 24px 24px" }}>
-                    <Content style={{ padding: 24, background: "#fff" }}>
+                    </Sider>
+                    <Content style={{ padding: "0 24px", minHeight: 280 }}>
                         <Space
                             style={{
                                 marginBottom: "16px",
@@ -567,17 +531,17 @@ const Collection = () => {
                             }}
                         >
                             <Search
-                                placeholder="Search collections..."
-                                onSearch={(value) => setSearchTerm(value)}
+                                placeholder="Search products"
+                                value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{ width: 300 }}
+                                style={{ width: 200 }}
                             />
                             <Select
-                                defaultValue="default"
-                                style={{ width: 150 }}
+                                value={sortBy}
                                 onChange={setSortBy}
+                                style={{ width: 200 }}
                             >
-                                <Option value="default">Sort By</Option>
+                                <Option value="default">Default</Option>
                                 <Option value="priceAsc">
                                     Price: Low to High
                                 </Option>
@@ -586,22 +550,25 @@ const Collection = () => {
                                 </Option>
                             </Select>
                         </Space>
-                        <div
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns:
-                                    "repeat(auto-fill, minmax(250px, 1fr))",
-                                gap: "16px",
-                            }}
-                        >
-                            {filteredProducts.map((product) => (
-                                <Link
-                                    key={product.id}
-                                    to={`/product/${product.id}`}
-                                    style={{ textDecoration: "none" }}
-                                >
+                        <div>
+                            {displayFilters.length > 0 && (
+                                <div style={{ marginBottom: "16px" }}>
+                                    <strong>Applied Filters: </strong>
+                                    {displayFilters.join(", ")}
+                                </div>
+                            )}
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    gap: "16px",
+                                }}
+                            >
+                                {filteredProducts.map((product) => (
                                     <Card
+                                        key={product.id}
                                         hoverable
+                                        style={{ width: 240 }}
                                         cover={
                                             <img
                                                 alt={product.product_name}
@@ -611,98 +578,60 @@ const Collection = () => {
                                                         : "/placeholder.jpg"
                                                 }
                                                 style={{
-                                                    width: "250px",
-                                                    height: "250px",
+                                                    height: 200,
                                                     objectFit: "cover",
-                                                    borderRadius: "8px 8px 0 0",
                                                 }}
                                             />
                                         }
-                                        style={{ width: 250 }}
+                                        actions={[
+                                            <ShoppingCartOutlined
+                                                key="cart"
+                                                onClick={() => {
+                                                    setModalProduct(product);
+                                                    setModalCurrentMainImage(
+                                                        product.main_image
+                                                    );
+                                                    setShowAddToCartModal(true);
+                                                }}
+                                            />,
+                                            <Link to={`/product/${product.id}`}>
+                                                View
+                                            </Link>,
+                                        ]}
                                     >
                                         <Card.Meta
                                             title={product.product_name}
                                             description={
-                                                <div>
-                                                    <p>
-                                                        Price: {product.price}
-                                                    </p>
-                                                    <div
+                                                <>
+                                                    <p>{product.price}</p>
+                                                    <Rate
+                                                        disabled
+                                                        value={
+                                                            product.average_rating ||
+                                                            0
+                                                        }
+                                                        allowHalf
                                                         style={{
-                                                            display: "flex",
-                                                            alignItems:
-                                                                "center",
+                                                            fontSize: "12px",
                                                         }}
-                                                    >
-                                                        <Rate
-                                                            disabled
-                                                            value={
-                                                                product.average_rating ||
-                                                                0
-                                                            }
-                                                            allowHalf
-                                                            style={{
-                                                                fontSize:
-                                                                    "14px",
-                                                                marginRight:
-                                                                    "8px",
-                                                            }}
-                                                        />
-                                                        <span>
-                                                            {product.average_rating ||
-                                                                0}
-                                                        </span>
-                                                    </div>
-                                                </div>
+                                                    />
+                                                </>
                                             }
-                                        />
-                                        <Button
-                                            type="link"
-                                            icon={
-                                                <ShoppingCartOutlined
-                                                    style={{ fontSize: "28px" }}
-                                                />
-                                            }
-                                            disabled={!isLoggedIn}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                setModalProduct(product);
-                                                setModalCurrentMainImage(
-                                                    product.main_image
-                                                );
-                                                setModalSelectedSize(null);
-                                                setShowAddToCartModal(true);
-                                            }}
-                                            style={{
-                                                padding: 0,
-                                                marginTop: "8px",
-                                                display: "block",
-                                                textAlign: "center",
-                                            }}
                                         />
                                     </Card>
-                                </Link>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     </Content>
                 </Layout>
-            </Layout>
+            </div>
             <Modal
-                title={
-                    modalProduct
-                        ? modalProduct.product_name
-                        : "Product Overview"
-                }
+                title="Add to Cart"
                 visible={showAddToCartModal}
-                onCancel={() => {
-                    setShowAddToCartModal(false);
-                    setModalProduct(null);
-                }}
+                onCancel={() => setShowAddToCartModal(false)}
                 footer={null}
-                width={700}
             >
-                {modalProduct && renderModalOverview()}
+                {renderModalOverview()}
             </Modal>
         </Layout>
     );
