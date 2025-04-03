@@ -139,15 +139,7 @@ const Collection = () => {
             )
                 .toLowerCase()
                 .trim();
-            // For strap material, assume product.strap_material_id is stored
-            // and we want to compare its corresponding name from the API.
-            const productStrapMaterial = (() => {
-                const mat = filterOptions.strapMaterial.find(
-                    (m) => m.id === product.strap_material_id
-                );
-                return mat ? mat.name.toLowerCase().trim() : "";
-            })();
-
+            // For strap material, compare product.strap_material_id directly
             const matchesBrand =
                 filters.brand.length === 0 ||
                 filters.brand.some(
@@ -165,13 +157,7 @@ const Collection = () => {
                 );
             const matchesStrapMaterial =
                 filters.strapMaterial.length === 0 ||
-                filters.strapMaterial.some((sm) => {
-                    const selectedName =
-                        typeof sm === "object" && sm.name
-                            ? sm.name.toLowerCase().trim()
-                            : sm.toLowerCase().trim();
-                    return selectedName === productStrapMaterial;
-                });
+                filters.strapMaterial.includes(product.strap_material_id);
             return (
                 matchesBrand &&
                 matchesGender &&

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\ChatMessage;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
 
 class ChatController extends Controller
 {
@@ -84,15 +86,26 @@ class ChatController extends Controller
         $request->validate([
             'user_id'     => 'required|exists:users,id',
             'sender_type' => 'required|in:user,admin',
-            'message'     => 'required|string',
+            // Allow message to be nullable if image is provided; otherwise require it as a string
+            'message'     => 'nullable|string|required_without:image',
+            'image'       => 'nullable|image|max:2048'
         ]);
 
-        $chatMessage = ChatMessage::create([
+        $data = [
             'user_id'     => $request->input('user_id'),
             'sender_type' => $request->input('sender_type'),
-            'message'     => $request->input('message'),
+            // Use empty string if message is null
+            'message'     => $request->input('message') ?? '',
             'is_read'     => $request->input('sender_type') === 'admin' ? true : false,
-        ]);
+        ];
+
+        // Handle image upload if provided
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('chat_images', 'public');
+            $data['image'] = Storage::url($path); // Return a publicly accessible URL
+        }
+
+        $chatMessage = ChatMessage::create($data);
 
         return response()->json($chatMessage, 201);
     }

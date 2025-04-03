@@ -8,6 +8,7 @@ import {
     MenuOutlined,
     UserOutlined,
     ShoppingOutlined,
+    CloseOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
@@ -263,6 +264,13 @@ const Header = () => {
         navigate(`/order-tracking/${notifId}`);
     };
 
+    // Remove notification when dismiss icon is clicked
+    const removeNotification = (notifId, notifType) => {
+        setNotifications((prev) =>
+            prev.filter((n) => !(n.id === notifId && n.type === notifType))
+        );
+    };
+
     const avatarSrc = profile?.profile_image
         ? `${profile.profile_image}?${new Date().getTime()}`
         : "/images/default-avatar.png";
@@ -289,7 +297,6 @@ const Header = () => {
                 categories.map((cat) => (
                     <Menu.Item
                         key={cat.id}
-                        // Navigate using the /user-category/:category route, using the category ID
                         onClick={() => navigate(`/user-category/${cat.id}`)}
                     >
                         {cat.name}
@@ -319,8 +326,32 @@ const Header = () => {
                                 padding: "10px",
                                 cursor: "pointer",
                                 backgroundColor: isRead ? "#f5f5f5" : "#fff",
+                                position: "relative",
                             }}
                         >
+                            <div
+                                style={{
+                                    position: "absolute",
+                                    top: 5,
+                                    right: 5,
+                                    zIndex: 10,
+                                }}
+                            >
+                                <CloseOutlined
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        removeNotification(
+                                            notif.id,
+                                            notif.type
+                                        );
+                                    }}
+                                    style={{
+                                        fontSize: "16px",
+                                        cursor: "pointer",
+                                        color: "#888",
+                                    }}
+                                />
+                            </div>
                             <div
                                 style={{
                                     display: "flex",

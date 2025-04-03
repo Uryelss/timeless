@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+    Layout,
     Tabs,
     Input,
     Card,
@@ -11,20 +12,24 @@ import {
     Image,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import Navbar from "../../Navbar/Navbar";
+import Navbar from "../../Navbar/Navbar"; // Updated import path
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "../Sidebar/Sidebar"; // Adjust the import path if necessary
 
 const { TabPane } = Tabs;
+const { Content } = Layout;
 
 const MyPurchase = () => {
     const [orders, setOrders] = useState([]);
     const [searchText, setSearchText] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalOrders, setTotalOrders] = useState(0);
+    const [collapsed, setCollapsed] = useState(false);
     const API_URL = "http://localhost:8000/api/my-purchases";
     const navigate = useNavigate();
 
+    // Fetch orders and transform them (including productId for each product)
     const fetchOrders = (page = 1) => {
         axios
             .get(`${API_URL}?page=${page}`, {
@@ -34,11 +39,11 @@ const MyPurchase = () => {
             })
             .then((res) => {
                 const ordersArray = res.data.data || res.data;
-                console.log("Fetched orders:", ordersArray);
                 const transformedOrders = ordersArray.map((order) => ({
                     id: order.id,
                     products:
                         order.order_details?.map((detail) => ({
+                            productId: detail.product?.id, // included for cart actions
                             name:
                                 detail.product?.product_name ||
                                 "Unknown Product",
@@ -61,7 +66,7 @@ const MyPurchase = () => {
             .catch((err) => {
                 console.error(
                     "Error fetching orders:",
-                    err.response?.data || err
+                    err.response?.data || err.message
                 );
             });
     };
@@ -77,6 +82,7 @@ const MyPurchase = () => {
         fetchOrders(page);
     };
 
+    // Map API order status to our tab names
     const mapStatusToTab = (status) => {
         switch (status?.toLowerCase()) {
             case "pending":
@@ -90,9 +96,6 @@ const MyPurchase = () => {
             case "cancelled":
                 return "Cancelled";
             default:
-                console.warn(
-                    `Unrecognized status: ${status}, defaulting to 'To Pay'`
-                );
                 return "To Pay";
         }
     };
@@ -116,81 +119,176 @@ const MyPurchase = () => {
     });
 
     const handleTrackOrder = (orderId) => {
-        // Navigate to the external tracking URL using window.location.href
-        window.location.href = `http://localhost:8000/order-tracking/${orderId}`;
+        navigate(`/order-tracking/${orderId}`);
+    };
+
+    // "Buy Again" adds each product from the order into the cart and navigates to the cart page.
+    const handleBuyAgain = (order) => {
+        const storedCart = localStorage.getItem("cart");
+        let cart = storedCart ? JSON.parse(storedCart) : [];
+        order.products.forEach((product) => {
+            // Calculate price per unit (assuming product.total represents the total for the quantity)
+            const pricePerUnit =
+                product.quantity > 0
+                    ? product.total / product.quantity
+                    : product.total;
+            const existingItemIndex = cart.findIndex(
+                (item) =>
+                    item.id === product.productId && item.size === product.size
+            );
+            if (existingItemIndex > -1) {
+                cart[existingItemIndex].quantity += product.quantity;
+                cart[existingItemIndex].total =
+                    cart[existingItemIndex].price *
+                    cart[existingItemIndex].quantity;
+            } else {
+                cart.push({
+                    id: product.productId,
+                    productName: product.name,
+                    image: product.image,
+                    size: product.size,
+                    price: pricePerUnit,
+                    quantity: product.quantity,
+                    total: product.total,
+                });
+            }
+        });
+        localStorage.setItem("cart", JSON.stringify(cart));
+        window.dispatchEvent(new Event("cartUpdated"));
+        navigate("/user-cart");
     };
 
     return (
-        <div>
+        <Layout style={{ minHeight: "100vh" }}>
             <Navbar />
-            <div style={{ padding: "20px" }}>
-                <Input
-                    placeholder="Search by Order ID or Product Name"
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => setSearchText(e.target.value)}
-                    style={{ marginBottom: "20px", width: "100%" }}
-                />
-                <Tabs defaultActiveKey="1" type="card">
-                    <TabPane tab="All" key="1">
-                        <OrderList orders={filteredOrders} />
-                    </TabPane>
-                    <TabPane tab="To Pay" key="2">
-                        <OrderList
-                            orders={filterOrdersByStatus("To Pay")}
-                            showTrackButton={true}
-                            onTrackOrder={handleTrackOrder}
-                        />
-                    </TabPane>
-                    <TabPane tab="To Ship" key="3">
-                        <OrderList orders={filterOrdersByStatus("To Ship")} />
-                    </TabPane>
-                    <TabPane
-                        tab={
-                            <span>
-                                To Receive{" "}
-                                <Badge
-                                    count={
-                                        filterOrdersByStatus("To Receive")
-                                            .length
+            <Layout>
+                <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+                <Layout style={{ padding: "24px 16px 0", overflow: "initial" }}>
+                    <Content>
+                        <div
+                            style={{
+                                padding: 24,
+                                background: "#fff",
+                                borderRadius: 8,
+                                minHeight: 360,
+                            }}
+                        >
+                            <Input
+                                placeholder="Search by Order ID or Product Name"
+                                prefix={<SearchOutlined />}
+                                onChange={(e) => setSearchText(e.target.value)}
+                                style={{ marginBottom: "20px", width: "100%" }}
+                            />
+                            <Tabs defaultActiveKey="1" type="card">
+                                <TabPane tab="All" key="1">
+                                    <OrderList
+                                        orders={filteredOrders}
+                                        onTrackOrder={handleTrackOrder}
+                                        onBuyAgain={handleBuyAgain}
+                                    />
+                                </TabPane>
+                                <TabPane tab="To Pay" key="2">
+                                    <OrderList
+                                        orders={filterOrdersByStatus("To Pay")}
+                                        showTrackButton={true}
+                                        onTrackOrder={handleTrackOrder}
+                                        onBuyAgain={handleBuyAgain}
+                                    />
+                                </TabPane>
+                                <TabPane tab="To Ship" key="3">
+                                    <OrderList
+                                        orders={filterOrdersByStatus("To Ship")}
+                                        onTrackOrder={handleTrackOrder}
+                                        onBuyAgain={handleBuyAgain}
+                                    />
+                                </TabPane>
+                                <TabPane
+                                    tab={
+                                        <span>
+                                            To Receive{" "}
+                                            <Badge
+                                                count={
+                                                    filterOrdersByStatus(
+                                                        "To Receive"
+                                                    ).length
+                                                }
+                                                style={{
+                                                    backgroundColor: "#f5222d",
+                                                }}
+                                            />
+                                        </span>
                                     }
-                                    style={{ backgroundColor: "#f5222d" }}
-                                />
-                            </span>
-                        }
-                        key="4"
-                    >
-                        <OrderList
-                            orders={filterOrdersByStatus("To Receive")}
-                        />
-                    </TabPane>
-                    <TabPane tab="Completed" key="5">
-                        <OrderList orders={filterOrdersByStatus("Completed")} />
-                    </TabPane>
-                    <TabPane tab="Cancelled" key="6">
-                        <OrderList orders={filterOrdersByStatus("Cancelled")} />
-                    </TabPane>
-                    <TabPane tab="Return/Refund" key="7">
-                        <OrderList
-                            orders={filterOrdersByStatus("Return/Refund")}
-                        />
-                    </TabPane>
-                </Tabs>
-                <Pagination
-                    current={currentPage}
-                    total={totalOrders}
-                    pageSize={10}
-                    onChange={handlePageChange}
-                    style={{ marginTop: "20px", textAlign: "center" }}
-                />
-                <div style={{ textAlign: "center", marginTop: "10px" }}>
-                    Total Orders: {totalOrders}
-                </div>
-            </div>
-        </div>
+                                    key="4"
+                                >
+                                    <OrderList
+                                        orders={filterOrdersByStatus(
+                                            "To Receive"
+                                        )}
+                                        onTrackOrder={handleTrackOrder}
+                                        onBuyAgain={handleBuyAgain}
+                                    />
+                                </TabPane>
+                                <TabPane tab="Completed" key="5">
+                                    <OrderList
+                                        orders={filterOrdersByStatus(
+                                            "Completed"
+                                        )}
+                                        onTrackOrder={handleTrackOrder}
+                                        onBuyAgain={handleBuyAgain}
+                                    />
+                                </TabPane>
+                                <TabPane tab="Cancelled" key="6">
+                                    <OrderList
+                                        orders={filterOrdersByStatus(
+                                            "Cancelled"
+                                        )}
+                                        onTrackOrder={handleTrackOrder}
+                                        onBuyAgain={handleBuyAgain}
+                                    />
+                                </TabPane>
+                                <TabPane tab="Return/Refund" key="7">
+                                    <OrderList
+                                        orders={filterOrdersByStatus(
+                                            "Return/Refund"
+                                        )}
+                                        onTrackOrder={handleTrackOrder}
+                                        onBuyAgain={handleBuyAgain}
+                                    />
+                                </TabPane>
+                            </Tabs>
+                            <Pagination
+                                current={currentPage}
+                                total={totalOrders}
+                                pageSize={10}
+                                onChange={handlePageChange}
+                                style={{
+                                    marginTop: "20px",
+                                    textAlign: "center",
+                                }}
+                            />
+                            <div
+                                style={{
+                                    textAlign: "center",
+                                    marginTop: "10px",
+                                }}
+                            >
+                                Total Orders: {totalOrders}
+                            </div>
+                        </div>
+                    </Content>
+                </Layout>
+            </Layout>
+        </Layout>
     );
 };
 
-const OrderList = ({ orders, showTrackButton = false, onTrackOrder }) => (
+// OrderList component receives onBuyAgain and conditionally renders the "Buy Again" button
+const OrderList = ({
+    orders,
+    showTrackButton = false,
+    onTrackOrder,
+    onBuyAgain,
+}) => (
     <>
         {orders.length === 0 ? (
             <p>No orders found.</p>
@@ -236,14 +334,23 @@ const OrderList = ({ orders, showTrackButton = false, onTrackOrder }) => (
                         </Row>
                     ))}
                     <hr />
-                    <Row align="middle">
+                    <Row align="middle" gutter={[16, 16]}>
                         <Col span={24} style={{ textAlign: "center" }}>
                             {showTrackButton && (
                                 <Button
                                     type="primary"
                                     onClick={() => onTrackOrder(order.id)}
+                                    style={{ marginRight: "10px" }}
                                 >
                                     Track Order
+                                </Button>
+                            )}
+                            {order.status === "Completed" && onBuyAgain && (
+                                <Button
+                                    type="default"
+                                    onClick={() => onBuyAgain(order)}
+                                >
+                                    Buy Again
                                 </Button>
                             )}
                         </Col>

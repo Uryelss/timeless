@@ -107,10 +107,17 @@ class ReviewController extends Controller
             ->get()
             ->map(function ($review) {
                 $username = 'Deleted User';
+                $profileImage = null;
+
                 if ($review->user) {
                     $username = $review->user->profile
                         ? ($review->user->profile->username ?? $review->user->username)
                         : ($review->user->username ?? $review->user->email ?? 'Unknown User');
+                    $profileImage = $review->user->profile && $review->user->profile->profile_image
+                        ? (str_starts_with($review->user->profile->profile_image, 'http')
+                            ? $review->user->profile->profile_image
+                            : Storage::url($review->user->profile->profile_image))
+                        : null;
                 }
 
                 $productImage = $review->product
@@ -122,6 +129,7 @@ class ReviewController extends Controller
                     'product_image' => $productImage,
                     'product_name' => $review->product ? $review->product->product_name : 'Unknown Product',
                     'username' => $username,
+                    'profile_image' => $profileImage, // Added profile_image
                     'rating' => $review->rating,
                     'review' => $review->comment,
                     'date_added' => $review->created_at->toDateString(),
@@ -131,8 +139,8 @@ class ReviewController extends Controller
             });
 
         return response()->json([
-            'reviews' => array_values($reviews->where('is_archived', false)->all()), // Reset keys
-            'archived_reviews' => array_values($reviews->where('is_archived', true)->all()), // Already an array, but consistent
+            'reviews' => array_values($reviews->where('is_archived', false)->all()),
+            'archived_reviews' => array_values($reviews->where('is_archived', true)->all()),
         ]);
     }
     public function update(Request $request, $id)
