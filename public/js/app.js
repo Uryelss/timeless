@@ -208980,14 +208980,8 @@ var OrderTracking = function OrderTracking() {
         }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
           className: "no-tracking",
           children: "No order tracking available."
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
-          title: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-            style: {
-              display: "flex",
-              alignItems: "center"
-            },
-            children: ["Cancel Order #", orderId]
-          }),
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+          title: "Cancel Order ".concat(orderId),
           open: isCancelModalVisible,
           onCancel: function onCancel() {
             return setIsCancelModalVisible(false);
@@ -208997,94 +208991,70 @@ var OrderTracking = function OrderTracking() {
               return setIsCancelModalVisible(false);
             },
             disabled: isCancelLoading,
-            style: {
-              width: "100px",
-              borderRadius: "4px"
-            },
+            className: "modal-back-btn",
             children: "Back"
           }, "cancel"), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
             type: "primary",
             danger: true,
             onClick: handleCancelOrder,
             loading: isCancelLoading,
-            style: {
-              width: "100px",
-              borderRadius: "4px"
-            },
+            className: "modal-cancel-btn",
             children: "Cancel Order"
           }, "confirm")],
           className: "cancel-modal",
           width: 450,
           centered: true,
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
             style: {
-              padding: "16px 0"
+              flexDirection: "column",
+              display: "flex",
+              alignItems: "center"
             },
             children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
               strong: true,
-              style: {
-                display: "block",
-                marginBottom: "12px",
-                fontSize: "16px",
-                color: "#333"
-              },
+              className: "cancel-modal-title",
               children: "Why are you cancelling this order?"
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
               type: "secondary",
-              style: {
-                display: "block",
-                marginBottom: "16px",
-                lineHeight: "1.5"
-              },
+              className: "modal-description",
               children: "Please select a reason below. Note that cancelling will affect all items in this order and cannot be undone."
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"].Group, {
+            })]
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+            className: "cancel-modal-content",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"].Group, {
               onChange: function onChange(e) {
                 return setCancelReason(e.target.value);
               },
               value: cancelReason,
-              style: {
-                width: "100%"
-              },
+              className: "cancel-reasons",
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_21__["default"], {
                 direction: "vertical",
-                size: "middle",
+                className: "cancel-reasons-space",
                 style: {
-                  width: "100%"
+                  display: "flex",
+                  alignItems: "flex-start",
+                  flexWrap: "wrap",
+                  flexDirection: "column"
                 },
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
                   value: "Need to change delivery address",
-                  style: {
-                    padding: "8px 0"
-                  },
                   children: "Need to change delivery address"
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
                   value: "Need to modify order (size, quantity, etc)",
-                  style: {
-                    padding: "8px 0"
-                  },
                   children: "Need to modify order (size, quantity, etc)"
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
                   value: "Payment process too troublesome",
-                  style: {
-                    padding: "8px 0"
-                  },
                   children: "Payment process too troublesome"
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
                   value: "Don\u2019t want to buy anymore",
-                  style: {
-                    padding: "8px 0"
-                  },
                   children: "Don\u2019t want to buy anymore"
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
                   value: "Others",
-                  style: {
-                    padding: "8px 0"
-                  },
                   children: "Others"
                 })]
               })
-            })]
-          })
+            })
+          })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
           title: "Tracking Details - Order #".concat(orderId),
           open: isTrackingModalVisible,
@@ -211013,31 +210983,35 @@ var OrderList = function OrderList(_ref) {
             })]
           }, index);
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("hr", {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
-          align: "middle",
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-            span: 24,
-            style: {
-              textAlign: "center"
-            },
-            children: showTrackButton && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
-              type: "primary",
-              onClick: function onClick() {
-                return onTrackOrder(order.id);
-              },
-              children: "Track Order"
-            })
-          })
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
           style: {
             marginTop: "10px"
           },
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
             span: 24,
             style: {
-              textAlign: "center"
+              textAlign: "right"
             },
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("strong", {
               children: ["Order Total: \u20B1", Number(order.orderTotal).toLocaleString()]
+            })
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+          align: "right",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+            span: 24,
+            style: {
+              textAlign: "right"
+            },
+            children: showTrackButton && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+              type: "primary",
+              onClick: function onClick() {
+                return onTrackOrder(order.id);
+              },
+              style: {
+                backgroundColor: "#000000",
+                borderColor: "#black"
+              },
+              children: "Track Order"
             })
           })
         })]

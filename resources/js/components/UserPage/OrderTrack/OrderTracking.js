@@ -541,16 +541,7 @@ const OrderTracking = () => {
                     )}
 
                     <Modal
-                        title={
-                            <div
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                }}
-                            >
-                                Cancel Order #{orderId}
-                            </div>
-                        }
+                        title={`Cancel Order ${orderId}`}
                         open={isCancelModalVisible}
                         onCancel={() => setIsCancelModalVisible(false)}
                         footer={[
@@ -558,10 +549,7 @@ const OrderTracking = () => {
                                 key="cancel"
                                 onClick={() => setIsCancelModalVisible(false)}
                                 disabled={isCancelLoading}
-                                style={{
-                                    width: "100px",
-                                    borderRadius: "4px",
-                                }}
+                                className="modal-back-btn"
                             >
                                 Back
                             </Button>,
@@ -571,10 +559,7 @@ const OrderTracking = () => {
                                 danger
                                 onClick={handleCancelOrder}
                                 loading={isCancelLoading}
-                                style={{
-                                    width: "100px",
-                                    borderRadius: "4px",
-                                }}
+                                className="modal-cancel-btn"
                             >
                                 Cancel Order
                             </Button>,
@@ -583,73 +568,57 @@ const OrderTracking = () => {
                         width={450}
                         centered
                     >
-                        <div style={{ padding: "16px 0" }}>
-                            <Text
-                                strong
-                                style={{
-                                    display: "block",
-                                    marginBottom: "12px",
-                                    fontSize: "16px",
-                                    color: "#333",
-                                }}
-                            >
+                        <div
+                            style={{
+                                flexDirection: "column",
+                                display: "flex",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Text strong className="cancel-modal-title">
                                 Why are you cancelling this order?
                             </Text>
                             <Text
                                 type="secondary"
-                                style={{
-                                    display: "block",
-                                    marginBottom: "16px",
-                                    lineHeight: "1.5",
-                                }}
+                                className="modal-description"
                             >
                                 Please select a reason below. Note that
                                 cancelling will affect all items in this order
                                 and cannot be undone.
                             </Text>
+                        </div>
+                        <div className="cancel-modal-content">
                             <Radio.Group
                                 onChange={(e) =>
                                     setCancelReason(e.target.value)
                                 }
                                 value={cancelReason}
-                                style={{ width: "100%" }}
+                                className="cancel-reasons"
                             >
                                 <Space
                                     direction="vertical"
-                                    size="middle"
-                                    style={{ width: "100%" }}
+                                    className="cancel-reasons-space"
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "flex-start",
+                                        flexWrap: "wrap",
+                                        flexDirection: "column",
+                                    }}
                                 >
-                                    <Radio
-                                        value="Need to change delivery address"
-                                        style={{ padding: "8px 0" }}
-                                    >
+                                    <Radio value="Need to change delivery address">
                                         Need to change delivery address
                                     </Radio>
-                                    <Radio
-                                        value="Need to modify order (size, quantity, etc)"
-                                        style={{ padding: "8px 0" }}
-                                    >
+                                    <Radio value="Need to modify order (size, quantity, etc)">
                                         Need to modify order (size, quantity,
                                         etc)
                                     </Radio>
-                                    <Radio
-                                        value="Payment process too troublesome"
-                                        style={{ padding: "8px 0" }}
-                                    >
+                                    <Radio value="Payment process too troublesome">
                                         Payment process too troublesome
                                     </Radio>
-                                    <Radio
-                                        value="Don’t want to buy anymore"
-                                        style={{ padding: "8px 0" }}
-                                    >
+                                    <Radio value="Don’t want to buy anymore">
                                         Don’t want to buy anymore
                                     </Radio>
-                                    <Radio
-                                        value="Others"
-                                        style={{ padding: "8px 0" }}
-                                    >
-                                        Others
-                                    </Radio>
+                                    <Radio value="Others">Others</Radio>
                                 </Space>
                             </Radio.Group>
                         </div>

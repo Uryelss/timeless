@@ -236,24 +236,29 @@ const OrderList = ({ orders, showTrackButton = false, onTrackOrder }) => (
                         </Row>
                     ))}
                     <hr />
-                    <Row align="middle">
-                        <Col span={24} style={{ textAlign: "center" }}>
-                            {showTrackButton && (
-                                <Button
-                                    type="primary"
-                                    onClick={() => onTrackOrder(order.id)}
-                                >
-                                    Track Order
-                                </Button>
-                            )}
-                        </Col>
-                    </Row>
+
                     <Row style={{ marginTop: "10px" }}>
-                        <Col span={24} style={{ textAlign: "center" }}>
+                        <Col span={24} style={{ textAlign: "right" }}>
                             <strong>
                                 Order Total: ₱
                                 {Number(order.orderTotal).toLocaleString()}
                             </strong>
+                        </Col>
+                    </Row>
+                    <Row align="right">
+                        <Col span={24} style={{ textAlign: "right" }}>
+                            {showTrackButton && (
+                                <Button
+                                    type="primary"
+                                    onClick={() => onTrackOrder(order.id)}
+                                    style={{
+                                        backgroundColor: "#000000",
+                                        borderColor: "#black",
+                                    }}
+                                >
+                                    Track Order
+                                </Button>
+                            )}
                         </Col>
                     </Row>
                 </Card>
