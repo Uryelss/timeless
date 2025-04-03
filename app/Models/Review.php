@@ -19,4 +19,6 @@ class Review extends Model
     {
         return $this->belongsTo(Product::class);
     }
+    
+    // No need for profile() relationship since user.profile is sufficient
 }

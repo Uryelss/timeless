@@ -12,6 +12,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class UserOrderController extends Controller
 {
@@ -139,9 +140,9 @@ class UserOrderController extends Controller
         $orderId = $request->query('order_id');
 
         $query = Order::with([
-            'profile.user',
+            'profile.user', // Loads profile and user data
+            'shipping.paymentMethod', // Payment method details
             'shipping.shippingMethod',
-            'shipping.paymentMethod',
             'shipping.address',
             'shipping.shippingStatus',
             'orderDetails.product',
@@ -150,7 +151,7 @@ class UserOrderController extends Controller
             ->whereHas('profile', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
-            ->whereNull('deleted_at');
+            ->whereNull('deleted_at'); // Only active orders
 
         if ($orderId) {
             $query->where('id', $orderId);
@@ -162,6 +163,33 @@ class UserOrderController extends Controller
             return response()->json(['error' => 'Order not found or not yours'], 404);
         }
 
-        return response()->json($orderId ? $orders->first() : $orders);
+        // Format the response to match frontend expectations
+        $formattedOrders = $orders->map(function ($order) {
+            $profileImage = $order->profile && $order->profile->profile_image
+                ? (str_starts_with($order->profile->profile_image, 'http')
+                    ? $order->profile->profile_image
+                    : Storage::url($order->profile->profile_image))
+                : null;
+
+            return [
+                'id' => $order->id,
+                'profile' => $order->profile ? [
+                    'first_name' => $order->profile->first_name ?? 'Unknown',
+                    'last_name' => $order->profile->last_name ?? '',
+                    'profile_image' => $profileImage,
+                ] : null,
+                'total_amount' => $order->total_amount,
+                'order_status' => $order->order_status,
+                'order_date' => $order->order_date->toDateTimeString(),
+                'shipping' => $order->shipping ? [
+                    'payment_method' => $order->shipping->paymentMethod ? [
+                        'name' => $order->shipping->paymentMethod->name,
+                    ] : null,
+                ] : null,
+                'deleted_at' => $order->deleted_at,
+            ];
+        });
+
+        return response()->json($orderId ? $formattedOrders->first() : $formattedOrders);
     }
 }

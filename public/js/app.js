@@ -199754,10 +199754,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/rate/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/spin/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/rate/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/spin/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -199784,8 +199785,7 @@ var CustomerReview = function CustomerReview() {
     loading = _useState4[0],
     setLoading = _useState4[1];
   var token = localStorage.getItem("token");
-
-  // Fetch reviews from API and extract reviews array
+  var baseUrl = "http://localhost:8000";
   var fetchReviews = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var response;
@@ -199794,15 +199794,16 @@ var CustomerReview = function CustomerReview() {
           case 0:
             _context.prev = 0;
             _context.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/admin/reviews", {
+            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("".concat(baseUrl, "/api/admin/reviews"),
+            // Using adminIndex endpoint
+            {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 3:
             response = _context.sent;
-            // Response is expected to be an object with a "reviews" key
-            setReviews(response.data.reviews || []);
+            setReviews(response.data.reviews || []); // Only active reviews
             setLoading(false);
             _context.next = 13;
             break;
@@ -199828,57 +199829,57 @@ var CustomerReview = function CustomerReview() {
   var columns = [{
     title: "Customer Image",
     key: "customerImage",
-    render: function render(text, record) {
-      // Since your API doesn't return a nested profile with an image, we use a placeholder.
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-        src: "https://via.placeholder.com/60?text=Customer",
+    render: function render(_, record) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        src: record.profile_image || "https://via.placeholder.com/60?text=Customer",
         alt: "Customer",
+        preview: false,
         style: {
           width: 60,
           height: 60,
           objectFit: "cover",
           borderRadius: "50%"
-        }
+        },
+        fallback: "https://via.placeholder.com/60?text=Customer"
       });
     }
   }, {
     title: "Customer Name",
     key: "customerName",
-    // Use the "username" field from your API response
-    render: function render(text, record) {
-      return record.username || "N/A";
+    render: function render(_, record) {
+      return record.profile ? "".concat(record.profile.first_name, " ").concat(record.profile.last_name) : "N/A";
     }
   }, {
     title: "Product Image",
     key: "productImage",
-    render: function render(text, record) {
-      // Ensure the product_image URL is correctly built.
-      // If the URL already starts with "http", use it; otherwise, prepend your API host.
-      var productImage = record.product_image;
-      var imageUrl = productImage.startsWith("http") ? productImage : "http://localhost:8000".concat(productImage);
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-        src: imageUrl,
+    render: function render(_, record) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        src: record.product_image || "https://via.placeholder.com/60?text=Product",
         alt: "Product",
+        preview: false,
         style: {
           width: 60,
           height: 60,
           objectFit: "cover"
-        }
+        },
+        fallback: "https://via.placeholder.com/60?text=Product"
       });
     }
   }, {
     title: "Product Name",
+    dataIndex: "product_name",
     key: "productName",
-    render: function render(text, record) {
-      return record.product_name || "N/A";
+    render: function render(text) {
+      return text || "N/A";
     }
   }, {
     title: "Rating",
+    dataIndex: "rating",
     key: "rating",
-    render: function render(text, record) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    render: function render(rating) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
         disabled: true,
-        defaultValue: record.rating || 0
+        value: rating || 0
       });
     },
     sorter: function sorter(a, b) {
@@ -199886,29 +199887,33 @@ var CustomerReview = function CustomerReview() {
     }
   }, {
     title: "Comments",
+    dataIndex: "comment",
     key: "comments",
-    render: function render(text, record) {
-      return record.review || "N/A";
+    render: function render(text) {
+      return text || "N/A";
     }
   }, {
     title: "Date Added",
+    dataIndex: "created_at",
     key: "dateAdded",
-    render: function render(text, record) {
-      return record.date_added ? new Date(record.date_added).toLocaleString() : "N/A";
+    render: function render(date) {
+      return date ? new Date(date).toLocaleString() : "N/A";
     }
   }];
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
     title: "Customer Reviews",
     style: {
       margin: "24px"
     },
-    children: loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    children: loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
       tip: "Loading reviews..."
-    }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
+    }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
       columns: columns,
       dataSource: reviews,
       rowKey: "id",
-      pagination: false
+      pagination: {
+        pageSize: 10
+      }
     })
   });
 };
@@ -199929,9 +199934,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/spin/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/spin/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -199948,10 +199954,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
-// Helper function to format amounts as Philippine Peso (no decimals)
-
 var formatPeso = function formatPeso(amount) {
-  return "₱" + Number(amount).toLocaleString("en-PH", {
+  return "₱" + Number(amount || 0).toLocaleString("en-PH", {
     maximumFractionDigits: 0,
     minimumFractionDigits: 0
   });
@@ -199966,45 +199970,44 @@ var RecentOrders = function RecentOrders() {
     loading = _useState4[0],
     setLoading = _useState4[1];
   var token = localStorage.getItem("token");
-
-  // Fetch orders from API
+  var baseUrl = "http://localhost:8000";
   var fetchOrders = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      var response, activeOrders;
+      var response, activeOrders, _error$response;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
             _context.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("http://localhost:8000/api/orders", {
+            return axios__WEBPACK_IMPORTED_MODULE_2__["default"].get("".concat(baseUrl, "/api/orders"), {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 3:
             response = _context.sent;
-            // Filter out archived orders (assuming orders with non-null deleted_at are archived)
-            activeOrders = response.data.filter(function (order) {
+            console.log("API Response:", response.data); // Debug the response
+            activeOrders = Array.isArray(response.data) ? response.data.filter(function (order) {
               return !order.deleted_at;
-            }); // Sort orders by order_date descending (most recent first)
+            }) : [];
             activeOrders.sort(function (a, b) {
               return new Date(b.order_date) - new Date(a.order_date);
             });
             setOrders(activeOrders);
             setLoading(false);
-            _context.next = 15;
+            _context.next = 16;
             break;
-          case 10:
-            _context.prev = 10;
+          case 11:
+            _context.prev = 11;
             _context.t0 = _context["catch"](0);
             antd__WEBPACK_IMPORTED_MODULE_3__["default"].error("Error fetching recent orders");
-            console.error(_context.t0);
+            console.error("Error:", ((_error$response = _context.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context.t0.message);
             setLoading(false);
-          case 15:
+          case 16:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[0, 10]]);
+      }, _callee, null, [[0, 11]]);
     }));
     return function fetchOrders() {
       return _ref.apply(this, arguments);
@@ -200013,27 +200016,28 @@ var RecentOrders = function RecentOrders() {
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchOrders();
   }, [token]);
+  var getImageUrl = function getImageUrl(profileImage) {
+    if (!profileImage) return "https://via.placeholder.com/60?text=Customer";
+    return profileImage.startsWith("http") ? profileImage : profileImage.startsWith("/storage") ? "".concat(baseUrl).concat(profileImage) : "".concat(baseUrl, "/storage/").concat(profileImage);
+  };
   var columns = [{
     title: "Customer Image",
     key: "customerImage",
-    render: function render(text, record) {
-      return record.profile && record.profile.profile_image ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-        src: "http://localhost:8000/storage/".concat(record.profile.profile_image),
+    render: function render(_, record) {
+      var _record$profile;
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        src: getImageUrl((_record$profile = record.profile) === null || _record$profile === void 0 ? void 0 : _record$profile.profile_image),
         alt: "Customer",
+        preview: false,
         style: {
           width: 60,
           height: 60,
           objectFit: "cover",
           borderRadius: "50%"
-        }
-      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-        src: "https://via.placeholder.com/60?text=Customer",
-        alt: "Customer",
-        style: {
-          width: 60,
-          height: 60,
-          objectFit: "cover",
-          borderRadius: "50%"
+        },
+        fallback: "https://via.placeholder.com/60?text=Customer",
+        onError: function onError() {
+          return console.log("Image load failed for:", record);
         }
       });
     }
@@ -200041,20 +200045,22 @@ var RecentOrders = function RecentOrders() {
     title: "Customer Name",
     key: "customerName",
     render: function render(_, record) {
-      return record.profile ? "".concat(record.profile.first_name, " ").concat(record.profile.last_name) : "N/A";
+      var _record$profile2;
+      return (_record$profile2 = record.profile) !== null && _record$profile2 !== void 0 && _record$profile2.first_name ? "".concat(record.profile.first_name, " ").concat(record.profile.last_name || "").trim() : "N/A";
     }
   }, {
     title: "Total Amount",
     dataIndex: "total_amount",
     key: "total_amount",
     render: function render(amount) {
-      return amount ? formatPeso(amount) : "N/A";
+      return formatPeso(amount);
     }
   }, {
     title: "Payment Method",
     key: "paymentMethod",
     render: function render(_, record) {
-      return record.shipping && record.shipping.payment_method ? record.shipping.payment_method.name : "N/A";
+      var _record$shipping;
+      return ((_record$shipping = record.shipping) === null || _record$shipping === void 0 || (_record$shipping = _record$shipping.payment_method) === null || _record$shipping === void 0 ? void 0 : _record$shipping.name) || "N/A";
     }
   }, {
     title: "Order Status",
@@ -200071,14 +200077,14 @@ var RecentOrders = function RecentOrders() {
       return date ? new Date(date).toLocaleString() : "N/A";
     }
   }];
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
     title: "Recent Orders",
     style: {
       margin: "24px"
     },
-    children: loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+    children: loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
       tip: "Loading recent orders..."
-    }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
       columns: columns,
       dataSource: orders,
       rowKey: "id",
@@ -206380,9 +206386,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/drawer/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/list/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/drawer/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/list/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
@@ -206400,7 +206406,6 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-// File: AdminChatBox.js
 
 
 
@@ -206419,6 +206424,9 @@ var AdminChatBox = function AdminChatBox(_ref) {
     _useState4 = _slicedToArray(_useState3, 2),
     newMsg = _useState4[0],
     setNewMsg = _useState4[1];
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    console.log("AdminChatBox conversation:", conversation);
+  }, [conversation]);
   var fetchMessages = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var response;
@@ -206462,7 +206470,6 @@ var AdminChatBox = function AdminChatBox(_ref) {
     var intervalId;
     if (visible && conversation) {
       fetchMessages();
-      // Poll for new messages every 5 seconds
       intervalId = setInterval(fetchMessages, 5000);
     }
     return function () {
@@ -206513,21 +206520,42 @@ var AdminChatBox = function AdminChatBox(_ref) {
       return _ref3.apply(this, arguments);
     };
   }();
-  var displayUsername = conversation && conversation.username ? conversation.username : "Unknown";
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
-    title: "Chat with ".concat(displayUsername),
+  if (!conversation) {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      children: "Loading conversation..."
+    }); // Prevent rendering until conversation is ready
+  }
+  var displayUsername = conversation !== null && conversation !== void 0 && conversation.username && conversation.username.trim().length > 0 ? conversation.username : "Unknown";
+  var profileImage = conversation !== null && conversation !== void 0 && conversation.profile_image && conversation.profile_image.trim().length > 0 ? conversation.profile_image : "https://via.placeholder.com/40?text=".concat(displayUsername.charAt(0));
+  console.log("Header - Username:", displayUsername, "Profile Image:", profileImage);
+  var headerContent = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    style: {
+      display: "flex",
+      alignItems: "center"
+    },
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      src: profileImage,
+      style: {
+        marginRight: 10
+      }
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("span", {
+      children: ["Chat with ", displayUsername]
+    })]
+  });
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    title: headerContent,
     placement: "right",
     onClose: onClose,
     visible: visible,
     width: 350,
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
       itemLayout: "horizontal",
       dataSource: messages,
       renderItem: function renderItem(item) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item.Meta, {
-            avatar: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-              src: item.sender_type === "admin" ? "https://via.placeholder.com/40?text=Admin" : conversation && conversation.username ? "https://via.placeholder.com/40?text=".concat(conversation.username.charAt(0)) : "https://via.placeholder.com/40?text=U"
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Item, {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Item.Meta, {
+            avatar: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+              src: item.sender_type === "admin" ? "https://via.placeholder.com/40?text=Admin" : profileImage
             }),
             title: item.sender_type === "admin" ? "Admin" : displayUsername,
             description: item.message

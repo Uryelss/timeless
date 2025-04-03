@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Card, Table, Spin, message } from "antd";
+import { Card, Table, Spin, message, Image } from "antd";
 import axios from "axios";
 
-// Helper function to format amounts as Philippine Peso (no decimals)
 const formatPeso = (amount) =>
     "₱" +
-    Number(amount).toLocaleString("en-PH", {
+    Number(amount || 0).toLocaleString("en-PH", {
         maximumFractionDigits: 0,
         minimumFractionDigits: 0,
     });
@@ -14,21 +13,18 @@ const RecentOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const token = localStorage.getItem("token");
+    const baseUrl = "http://localhost:8000";
 
-    // Fetch orders from API
     const fetchOrders = async () => {
         try {
-            const response = await axios.get(
-                "http://localhost:8000/api/orders",
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            );
-            // Filter out archived orders (assuming orders with non-null deleted_at are archived)
-            const activeOrders = response.data.filter(
-                (order) => !order.deleted_at
-            );
-            // Sort orders by order_date descending (most recent first)
+            const response = await axios.get(`${baseUrl}/api/orders`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log("API Response:", response.data); // Debug the response
+            const activeOrders = Array.isArray(response.data)
+                ? response.data.filter((order) => !order.deleted_at)
+ 
+                : [];
             activeOrders.sort(
                 (a, b) => new Date(b.order_date) - new Date(a.order_date)
             );
@@ -36,7 +32,7 @@ const RecentOrders = () => {
             setLoading(false);
         } catch (error) {
             message.error("Error fetching recent orders");
-            console.error(error);
+            console.error("Error:", error.response?.data || error.message);
             setLoading(false);
         }
     };
@@ -45,56 +41,54 @@ const RecentOrders = () => {
         fetchOrders();
     }, [token]);
 
+    const getImageUrl = (profileImage) => {
+        if (!profileImage) return "https://via.placeholder.com/60?text=Customer";
+        return profileImage.startsWith("http")
+            ? profileImage
+            : profileImage.startsWith("/storage")
+            ? `${baseUrl}${profileImage}`
+            : `${baseUrl}/storage/${profileImage}`;
+    };
+
     const columns = [
         {
             title: "Customer Image",
             key: "customerImage",
-            render: (text, record) =>
-                record.profile && record.profile.profile_image ? (
-                    <img
-                        src={`http://localhost:8000/storage/${record.profile.profile_image}`}
-                        alt="Customer"
-                        style={{
-                            width: 60,
-                            height: 60,
-                            objectFit: "cover",
-                            borderRadius: "50%",
-                        }}
-                    />
-                ) : (
-                    <img
-                        src="https://via.placeholder.com/60?text=Customer"
-                        alt="Customer"
-                        style={{
-                            width: 60,
-                            height: 60,
-                            objectFit: "cover",
-                            borderRadius: "50%",
-                        }}
-                    />
-                ),
+            render: (_, record) => (
+                <Image
+                    src={getImageUrl(record.profile?.profile_image)}
+                    alt="Customer"
+                    preview={false}
+                    style={{
+                        width: 60,
+                        height: 60,
+                        objectFit: "cover",
+                        borderRadius: "50%",
+                    }}
+                    fallback="https://via.placeholder.com/60?text=Customer"
+                    onError={() => console.log("Image load failed for:", record)}
+                />
+            ),
         },
         {
             title: "Customer Name",
             key: "customerName",
             render: (_, record) =>
-                record.profile
-                    ? `${record.profile.first_name} ${record.profile.last_name}`
+                record.profile?.first_name
+                    ? `${record.profile.first_name} ${record.profile.last_name || ""}`.trim()
                     : "N/A",
         },
         {
             title: "Total Amount",
             dataIndex: "total_amount",
             key: "total_amount",
-            render: (amount) => (amount ? formatPeso(amount) : "N/A"),
+            render: (amount) => formatPeso(amount),
         },
         {
             title: "Payment Method",
             key: "paymentMethod",
             render: (_, record) =>
-                record.shipping && record.shipping.payment_method
-                    ? record.shipping.payment_method.name
-                    : "N/A",
+                record.shipping?.payment_method?.name || "N/A",
         },
         {
             title: "Order Status",

@@ -41,7 +41,7 @@ Route::get('/products/{id}', [ProductViewController::class, 'show'])->name('prod
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AccessController::class, 'logout'])->name('logout');
     Route::get('/validate-token', [AccessController::class, 'validateToken'])->name('validate.token');
-    Route::get('/reviews/{product_id}', [ReviewController::class, 'index'])->name('reviews.index');
+    Route::get('/reviews/{id}', [ReviewController::class, 'index'])->name('reviews.index'); // Changed to {id} to match controller
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::get('/inventory-public', [InventoryController::class, 'index'])->name('inventory.public');
     Route::get('/payment-methods', [PaymentMethodController::class, 'index'])->name('payment.methods.index');
@@ -133,11 +133,11 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::get('/', [ReviewController::class, 'adminIndex'])->name('index');
         Route::put('/{id}', [ReviewController::class, 'update'])->name('update');
         Route::delete('/{id}', [ReviewController::class, 'destroy'])->name('destroy');
-        Route::post('/{id}/archive', [ReviewController::class, 'archive'])->name('archive');
-        Route::post('/{id}/restore', [ReviewController::class, 'restore'])->name('restore');
+        Route::put('/{id}/archive', [ReviewController::class, 'archive'])->name('archive'); // Changed to PUT for RESTfulness
+        Route::put('/{id}/restore', [ReviewController::class, 'restore'])->name('restore'); // Changed to PUT for RESTfulness
     });
 
-    // Admin Chat endpoints (placed outside of transactions)
+    // Admin Chat endpoints
     Route::get('/admin/chat/inbox', [ChatController::class, 'inbox'])->name('chat.inbox');
     Route::get('/admin/chat/{user_id}', [ChatController::class, 'adminConversation'])->name('chat.adminConversation');
     Route::post('/admin/chat', [ChatController::class, 'store'])->name('chat.adminStore');
