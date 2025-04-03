@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Drawer, List, Avatar, Badge, Button } from "antd";
 import { MessageOutlined } from "@ant-design/icons";
 import axios from "axios";
-import AdminChatBox from "./AdminChatBox";
+import AdminChatBox from "./AdminChatbox";
 
 const AdminChatInbox = () => {
     const [inboxVisible, setInboxVisible] = useState(false);

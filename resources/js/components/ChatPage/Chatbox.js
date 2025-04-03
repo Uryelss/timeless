@@ -8,8 +8,10 @@ const { TextArea } = Input;
 const ChatBox = ({ visible, onClose, userId }) => {
     const [messages, setMessages] = useState([]);
     const [newMsg, setNewMsg] = useState("");
+    const [userProfileImage, setUserProfileImage] = useState(null);
     const token = localStorage.getItem("token");
 
+    // Fetch chat messages
     const fetchMessages = async () => {
         try {
             const response = await axios.get("http://localhost:8000/api/chat", {
@@ -23,11 +25,29 @@ const ChatBox = ({ visible, onClose, userId }) => {
         }
     };
 
+    // Fetch user profile info to get profile image
+    const fetchUserProfile = async () => {
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/api/user/${userId}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            console.log("Fetched user profile:", response.data);
+            // Assumes the API returns an object with a "profile_image" field.
+            setUserProfileImage(response.data.profile_image);
+        } catch (error) {
+            console.error("Error fetching user profile:", error);
+        }
+    };
+
     useEffect(() => {
         if (visible) {
             fetchMessages();
+            fetchUserProfile();
         }
-    }, [visible]);
+    }, [visible, userId]);
 
     const sendMessage = async () => {
         if (!newMsg.trim()) return;
@@ -68,7 +88,8 @@ const ChatBox = ({ visible, onClose, userId }) => {
                                     src={
                                         item.sender_type === "admin"
                                             ? "https://via.placeholder.com/40?text=Admin"
-                                            : "https://via.placeholder.com/40?text=You"
+                                            : userProfileImage ||
+                                              "https://via.placeholder.com/40?text=You"
                                     }
                                 />
                             }

@@ -49,10 +49,14 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/my-purchases', [UserOrderController::class, 'myPurchases'])->name('user.orders.my_purchases');
     Route::get('/users/me', [UserController::class, 'getCurrentUser'])->name('users.me');
 
+    // NEW: Route for fetching a single user's profile.
+    Route::get('/user/{id}', [UserController::class, 'show']);
+
     // User chat endpoints
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
 });
+
 
 /*
 |--------------------------------------------------------------------------

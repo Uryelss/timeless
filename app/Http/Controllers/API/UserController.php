@@ -22,8 +22,6 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-
-
     // Store a new user
     public function store(Request $request)
     {
@@ -59,11 +57,9 @@ class UserController extends Controller
             'status'    => 'sometimes|required|string',
         ]);
 
-        // If a password is provided, hash it.
         if (!empty($validatedData['password'])) {
             $validatedData['password'] = Hash::make($validatedData['password']);
         } else {
-            // Remove password if not provided.
             unset($validatedData['password']);
         }
 
@@ -75,12 +71,10 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-        // Set status to inactive before archiving
         $user->update(['status' => 'inactive']);
         $user->delete();
         return response()->json(['message' => 'User archived successfully and set to inactive']);
     }
-
 
     // Restore a soft-deleted user
     public function restore($id)
@@ -89,6 +83,7 @@ class UserController extends Controller
         $user->restore();
         return response()->json(['message' => 'User restored successfully']);
     }
+
     // Fetch the authenticated user's details
     public function getCurrentUser(Request $request)
     {
@@ -109,5 +104,24 @@ class UserController extends Controller
             ]);
             return response()->json(['message' => 'Server error', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    // NEW: Fetch a single user's profile (including profile_image)
+    public function show($id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        // Assumes the User model has a "profile" relationship with a "profile_image" field.
+        $profileImage = ($user->profile && $user->profile->profile_image)
+            ? $user->profile->profile_image
+            : null;
+
+        return response()->json([
+            'id'            => $user->id,
+            'username'      => $user->username,
+            'profile_image' => $profileImage,
+        ]);
     }
 }
