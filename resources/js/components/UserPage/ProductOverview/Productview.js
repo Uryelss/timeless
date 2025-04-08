@@ -83,6 +83,7 @@ const ProductOverview = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 .then((res) => {
+                    console.log("Fetched Reviews:", res.data); // Debug log
                     setReviews(res.data);
                 })
                 .catch((err) => {
@@ -103,6 +104,7 @@ const ProductOverview = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 .then((res) => {
+                    console.log("Fetched User Profile:", res.data); // Debug log
                     setUserProfile(res.data);
                     localStorage.setItem("user", JSON.stringify(res.data));
                 })
@@ -149,6 +151,7 @@ const ProductOverview = () => {
                 { headers: { Authorization: `Bearer ${token}` } }
             )
             .then((res) => {
+                console.log("Review Submission Response:", res.data); // Debug log
                 setReviews([res.data.review, ...reviews]);
                 setReviewText("");
                 setReviewRating(0);
@@ -189,7 +192,12 @@ const ProductOverview = () => {
             ? sizesArr.map((item) => item.size)
             : sizesArr;
 
-    // Function to add product to cart
+    // Find inventory record for the selected size
+    const selectedInventoryRecord = inventoryRecords.find(
+        (inv) => normalizeSize(inv.size) === normalizeSize(selectedSize || "")
+    );
+
+    // Function to add product to cart (Updated from second code)
     const handleAddToCart = () => {
         if (!selectedSize) {
             message.warning("Please select a size.");
@@ -299,7 +307,7 @@ const ProductOverview = () => {
         setShowQuantityModal(false);
     };
 
-    // Render Buy Now Modal Content (SKU Removed)
+    // Enhanced Buy Now Modal Content
     const renderModalOverview = () => {
         if (!product) return null;
 
@@ -345,7 +353,9 @@ const ProductOverview = () => {
                         <Title level={4} style={{ margin: 0 }}>
                             {product.product_name}
                         </Title>
-                        {/* SKU Removed */}
+                        <Paragraph style={{ margin: "4px 0", color: "#888" }}>
+                            Stock : {product.id}
+                        </Paragraph>
                         <div style={{ display: "flex", alignItems: "center" }}>
                             <Rate
                                 disabled
@@ -453,6 +463,7 @@ const ProductOverview = () => {
                             ₱{number_format(product.price * buyNowQuantity)}
                         </Title>
                     </div>
+
                     <Button
                         type="primary"
                         size="large"
@@ -463,7 +474,11 @@ const ProductOverview = () => {
                             buyNowQuantity < 1
                         }
                         style={{
+                            backgroundColor: "#000000",
+                            borderColor: "#8d9192",
                             width: "200px",
+                            alignItems: "center",
+                            justifyContent: "center",
                         }}
                     >
                         Proceed to Checkout
@@ -479,13 +494,13 @@ const ProductOverview = () => {
     return (
         <div>
             <Navbar style={{ width: "100%" }} />
-            <div style={{ marginTop: "90px" }}>
-                <Row gutter={16} justify="center">
+            <div style={{ marginTop: "40px" }}>
+                <Row gutter={16} align="middle" justify="center">
                     <Col xs={24} md={12}>
                         <Card
                             style={{
                                 width: "600px",
-                                height: "600px",
+                                height: "550px",
                                 display: "block",
                                 margin: "0px auto",
                                 position: "relative",
@@ -499,7 +514,7 @@ const ProductOverview = () => {
                                 preview={false}
                                 style={{
                                     width: "600px",
-                                    height: "600px",
+                                    height: "550px",
                                     objectFit: "cover",
                                     display: "block",
                                 }}
@@ -606,204 +621,318 @@ const ProductOverview = () => {
                         </Card>
                     </Col>
                     <Col xs={24} md={12}>
-                        <Card bodyStyle={{ padding: "24px" }}>
-                            <Space
-                                direction="vertical"
-                                size="large"
-                                style={{ width: "100%", textAlign: "center" }}
+                        <div
+                            style={{
+                                marginBottom: "120px",
+                                marginRight: "20px",
+                            }}
+                        >
+                            <Card
+                                bodyStyle={{
+                                    padding: "24px",
+                                    backgroundColor: "#ffffff", // Light background for contrast
+                                    borderRadius: "8px",
+                                    height: "100%",
+                                }}
                             >
-                                <Title level={3}>{product.product_name}</Title>
-                                <div
+                                <Space
+                                    direction="vertical"
+                                    size="large"
                                     style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
+                                        width: "100%",
+                                        textAlign: "left ",
+                                        alignItems: "flex-start",
                                     }}
                                 >
-                                    <Rate
-                                        disabled
-                                        value={product.average_rating || 0}
-                                        allowHalf
-                                        style={{ marginRight: "8px" }}
-                                    />
-                                    <span>{product.average_rating || 0}</span>
-                                </div>
-                                <Paragraph strong>Price</Paragraph>
-                                <Paragraph strong>
-                                    ₱{number_format(product.price)}
-                                </Paragraph>
-                                {sizesDisplay && sizesDisplay.length > 0 && (
-                                    <div>
-                                        <div
+                                    {/* Product Name */}
+                                    <Title
+                                        level={3}
+                                        style={{
+                                            margin: 0,
+                                            fontWeight: "bold",
+                                            color: "#333",
+                                            fontSize: "40px",
+                                        }}
+                                    >
+                                        {product.product_name}
+                                    </Title>
+
+                                    {/* Rating */}
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            gap: "8px",
+                                        }}
+                                    >
+                                        <Rate
+                                            disabled
+                                            value={product.average_rating || 0}
+                                            allowHalf
+                                            style={{ color: "#fadb14" }} // Gold color for stars
+                                        />
+                                        <span
                                             style={{
-                                                marginBottom: "8px",
+                                                fontSize: "16px",
+                                                color: "#888",
+                                            }}
+                                        >
+                                            ({product.average_rating || 0})
+                                        </span>
+                                    </div>
+
+                                    {/* Price */}
+                                    <div>
+                                        <Paragraph
+                                            strong
+                                            style={{
+                                                fontSize: "16px",
+                                                color: "#555",
+                                            }}
+                                        >
+                                            Price
+                                        </Paragraph>
+                                        <Title
+                                            level={2}
+                                            style={{
+                                                margin: 0,
+                                                color: "#000000", //  color for price
                                                 fontWeight: "bold",
                                             }}
                                         >
-                                            Size (mm)
-                                        </div>
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                gap: "10px",
-                                                justifyContent: "center",
-                                                flexWrap: "wrap",
-                                            }}
-                                        >
-                                            {sizesDisplay.map((size, index) => {
-                                                const inventory =
-                                                    inventoryRecords.find(
-                                                        (inv) =>
-                                                            normalizeSize(
-                                                                inv.size
-                                                            ) ===
-                                                            normalizeSize(size)
-                                                    );
-                                                const isOutOfStock =
-                                                    inventory &&
-                                                    inventory.quantity === 0;
-                                                return (
-                                                    <Button
-                                                        key={index}
-                                                        onClick={() =>
-                                                            !isOutOfStock &&
-                                                            setSelectedSize(
-                                                                size
-                                                            )
+                                            ₱{number_format(product.price)}
+                                        </Title>
+                                    </div>
+
+                                    {/* Size Selection */}
+                                    {sizesDisplay &&
+                                        sizesDisplay.length > 0 && (
+                                            <div>
+                                                <Paragraph
+                                                    strong
+                                                    style={{
+                                                        fontSize: "16px",
+                                                        color: "#555",
+                                                    }}
+                                                >
+                                                    Size (mm)
+                                                </Paragraph>
+                                                <div
+                                                    style={{
+                                                        display: "grid",
+                                                        gridTemplateColumns:
+                                                            "repeat(auto-fit, 50px)",
+                                                        gap: "10px",
+                                                        justifyContent:
+                                                            "center",
+                                                        maxWidth: "300px",
+                                                        margin: "0 auto",
+                                                    }}
+                                                >
+                                                    {sizesDisplay.map(
+                                                        (size, index) => {
+                                                            const inventory =
+                                                                inventoryRecords.find(
+                                                                    (inv) =>
+                                                                        normalizeSize(
+                                                                            inv.size
+                                                                        ) ===
+                                                                        normalizeSize(
+                                                                            size
+                                                                        )
+                                                                );
+                                                            const isOutOfStock =
+                                                                inventory &&
+                                                                inventory.quantity ===
+                                                                    0;
+                                                            return (
+                                                                <Button
+                                                                    key={index}
+                                                                    onClick={() =>
+                                                                        !isOutOfStock &&
+                                                                        setSelectedSize(
+                                                                            size
+                                                                        )
+                                                                    }
+                                                                    disabled={
+                                                                        isOutOfStock
+                                                                    }
+                                                                    style={{
+                                                                        width: "50px",
+                                                                        height: "50px",
+                                                                        borderRadius:
+                                                                            "8px",
+                                                                        backgroundColor:
+                                                                            selectedSize ===
+                                                                                size &&
+                                                                            !isOutOfStock
+                                                                                ? "#000000" // Black for selected
+                                                                                : isOutOfStock
+                                                                                ? "#ffffff"
+                                                                                : "#fff",
+                                                                        color:
+                                                                            selectedSize ===
+                                                                                size &&
+                                                                            !isOutOfStock
+                                                                                ? "#fff"
+                                                                                : isOutOfStock
+                                                                                ? "#fff"
+                                                                                : "#333",
+                                                                        border: `1px solid ${
+                                                                            isOutOfStock
+                                                                                ? "#ccc"
+                                                                                : "#d9d9d9"
+                                                                        }`,
+                                                                        display:
+                                                                            "flex",
+                                                                        alignItems:
+                                                                            "center",
+                                                                        justifyContent:
+                                                                            "center",
+                                                                        cursor: isOutOfStock
+                                                                            ? "not-allowed"
+                                                                            : "pointer",
+                                                                        transition:
+                                                                            "all 0.3s", // Smooth hover effect
+                                                                    }}
+                                                                    onMouseEnter={(
+                                                                        e
+                                                                    ) =>
+                                                                        !isOutOfStock &&
+                                                                        (e.currentTarget.style.backgroundColor =
+                                                                            "#808284")
+                                                                    }
+                                                                    onMouseLeave={(
+                                                                        e
+                                                                    ) =>
+                                                                        !isOutOfStock &&
+                                                                        selectedSize !==
+                                                                            size &&
+                                                                        (e.currentTarget.style.backgroundColor =
+                                                                            "#ffffff")
+                                                                    }
+                                                                >
+                                                                    {size}
+                                                                </Button>
+                                                            );
                                                         }
-                                                        disabled={isOutOfStock}
+                                                    )}
+                                                </div>
+                                                {selectedSize && (
+                                                    <div
                                                         style={{
-                                                            width: "40px",
-                                                            height: "40px",
-                                                            borderRadius: "4px",
-                                                            backgroundColor:
-                                                                selectedSize ===
-                                                                    size &&
-                                                                !isOutOfStock
-                                                                    ? "black"
-                                                                    : "white",
-                                                            color:
-                                                                selectedSize ===
-                                                                    size &&
-                                                                !isOutOfStock
-                                                                    ? "white"
-                                                                    : isOutOfStock
-                                                                    ? "red"
-                                                                    : "black",
-                                                            border: `1px solid ${
-                                                                isOutOfStock
-                                                                    ? "red"
-                                                                    : "gray"
-                                                            }`,
-                                                            display: "flex",
-                                                            alignItems:
-                                                                "center",
-                                                            justifyContent:
-                                                                "center",
-                                                            cursor: isOutOfStock
-                                                                ? "not-allowed"
-                                                                : "pointer",
-                                                            position:
-                                                                "relative",
+                                                            marginTop: "12px",
+                                                            color: "#555",
                                                         }}
                                                     >
-                                                        {size}
-                                                        {isOutOfStock && (
+                                                        Selected Size:{" "}
+                                                        <strong>
+                                                            {selectedSize}
+                                                        </strong>
+                                                        <br />
+                                                        {selectedInventoryRecord ? (
+                                                            <span>
+                                                                In Stock:{" "}
+                                                                <strong>
+                                                                    {
+                                                                        selectedInventoryRecord.quantity
+                                                                    }
+                                                                </strong>
+                                                            </span>
+                                                        ) : (
                                                             <span
                                                                 style={{
-                                                                    position:
-                                                                        "absolute",
-                                                                    top: "100%",
-                                                                    left: "50%",
-                                                                    transform:
-                                                                        "translateX(-50%)",
-                                                                    color: "red",
-                                                                    fontSize:
-                                                                        "10px",
-                                                                    whiteSpace:
-                                                                        "nowrap",
+                                                                    color: "#ff4d4f",
                                                                 }}
                                                             >
-                                                                Out of Stock
+                                                                No stock info
+                                                                available
                                                             </span>
                                                         )}
-                                                    </Button>
-                                                );
-                                            })}
-                                        </div>
-                                        {selectedSize && (
-                                            <div style={{ marginTop: "8px" }}>
-                                                Selected Size:{" "}
-                                                <strong>{selectedSize}</strong>
-                                                <br />
-                                                {inventoryRecords.find(
-                                                    (inv) =>
-                                                        normalizeSize(
-                                                            inv.size
-                                                        ) ===
-                                                        normalizeSize(
-                                                            selectedSize
-                                                        )
-                                                ) ? (
-                                                    <span>
-                                                        Stock Quantity:{" "}
-                                                        {
-                                                            inventoryRecords.find(
-                                                                (inv) =>
-                                                                    normalizeSize(
-                                                                        inv.size
-                                                                    ) ===
-                                                                    normalizeSize(
-                                                                        selectedSize
-                                                                    )
-                                                            ).quantity
-                                                        }
-                                                    </span>
-                                                ) : (
-                                                    <span>
-                                                        No stock info available
-                                                    </span>
+                                                    </div>
                                                 )}
                                             </div>
                                         )}
-                                    </div>
-                                )}
+                                </Space>
+                            </Card>
+
+                            {/* Buttons */}
+                            <Space
+                                direction="horizontal"
+                                size="large"
+                                style={{
+                                    width: "100%",
+                                    marginTop: "24px",
+                                    justifyContent: "center",
+                                }}
+                            >
+                                <Button
+                                    style={{
+                                        backgroundColor: "#ffffff",
+                                        color: "black",
+                                        border: "none",
+                                        width: "180px",
+                                        height: "48px",
+                                        borderRadius: "8px",
+                                        border: "1px solid #000000",
+                                        fontSize: "16px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        gap: "8px",
+                                        transition: "all 0.3s",
+                                    }}
+                                    onClick={handleAddToCart}
+                                    onMouseEnter={(e) =>
+                                        (e.currentTarget.style.backgroundColor =
+                                            "#ececec")
+                                    }
+                                    onMouseLeave={(e) =>
+                                        (e.currentTarget.style.backgroundColor =
+                                            "#ffffff")
+                                    }
+                                >
+                                    <i className="fas fa-cart-plus" />{" "}
+                                    {/* FontAwesome cart icon */}
+                                    Add to Cart
+                                </Button>
+                                <Button
+                                    style={{
+                                        backgroundColor: "#000000",
+                                        color: "white",
+                                        border: "none",
+                                        width: "180px",
+                                        height: "48px",
+                                        borderRadius: "8px",
+                                        border: "1px solid #000000",
+                                        fontSize: "16px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        gap: "8px",
+                                        transition: "all 0.3s",
+                                    }}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleBuyNow(e);
+                                    }}
+                                    onMouseEnter={(e) =>
+                                        (e.currentTarget.style.backgroundColor =
+                                            "#3c3c3c")
+                                    }
+                                    onMouseLeave={(e) =>
+                                        (e.currentTarget.style.backgroundColor =
+                                            "#000000")
+                                    }
+                                >
+                                    <i className="fas fa-bolt" />{" "}
+                                    {/* FontAwesome bolt icon */}
+                                    Buy Now
+                                </Button>
                             </Space>
-                        </Card>
-                        <Space
-                            direction="horizontal"
-                            size="middle"
-                            style={{
-                                width: "100%",
-                                marginTop: "16px",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <Button
-                                style={{
-                                    backgroundColor: "#28A745",
-                                    color: "white",
-                                    border: "none",
-                                    width: "150px",
-                                    height: "40px",
-                                }}
-                                onClick={handleAddToCart}
-                            >
-                                ADD TO CART
-                            </Button>
-                            <Button
-                                style={{
-                                    backgroundColor: "black",
-                                    color: "white",
-                                    border: "none",
-                                    width: "150px",
-                                    height: "40px",
-                                }}
-                                onClick={handleBuyNow}
-                            >
-                                BUY NOW
-                            </Button>
-                        </Space>
+                        </div>
                     </Col>
                 </Row>
 
@@ -878,6 +1007,7 @@ const ProductOverview = () => {
                                         )}
                                         {reviews.length > 0 ? (
                                             reviews.map((review) => {
+                                                // Handle profile_image: if it's a full URL, use it; otherwise, prepend baseUrl
                                                 const avatarSrc = review.user
                                                     ?.profile?.profile_image
                                                     ? review.user.profile.profile_image.startsWith(
@@ -887,6 +1017,10 @@ const ProductOverview = () => {
                                                               .profile_image
                                                         : `${baseUrl}${review.user.profile.profile_image}`
                                                     : null;
+                                                console.log(
+                                                    `Review ${review.id} Avatar Src:`,
+                                                    avatarSrc
+                                                ); // Debug log
                                                 return (
                                                     <Card
                                                         key={review.id}
@@ -908,9 +1042,12 @@ const ProductOverview = () => {
                                                                 icon={
                                                                     <UserOutlined />
                                                                 }
-                                                                onError={() =>
-                                                                    true
-                                                                }
+                                                                onError={() => {
+                                                                    console.log(
+                                                                        `Failed to load image for review ${review.id}: ${avatarSrc}`
+                                                                    );
+                                                                    return true; // Fallback to icon
+                                                                }}
                                                             />
                                                             <div>
                                                                 <strong>
@@ -956,7 +1093,7 @@ const ProductOverview = () => {
                 </Row>
             </div>
 
-            {/* Buy Now Modal */}
+            {/*  Buy Now Modal */}
             <Modal
                 title="Buy Now"
                 visible={showQuantityModal}

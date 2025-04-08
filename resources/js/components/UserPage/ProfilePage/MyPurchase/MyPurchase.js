@@ -12,6 +12,7 @@ import {
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import Navbar from "../../Navbar/Navbar";
+import Sidebar from "../Sidebar/Sidebar"; // Import the Sidebar component
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -123,67 +124,76 @@ const MyPurchase = () => {
     return (
         <div>
             <Navbar />
-            <div style={{ padding: "20px" }}>
-                <Input
-                    placeholder="Search by Order ID or Product Name"
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => setSearchText(e.target.value)}
-                    style={{ marginBottom: "20px", width: "100%" }}
-                />
-                <Tabs defaultActiveKey="1" type="card">
-                    <TabPane tab="All" key="1">
-                        <OrderList orders={filteredOrders} />
-                    </TabPane>
-                    <TabPane tab="To Pay" key="2">
-                        <OrderList
-                            orders={filterOrdersByStatus("To Pay")}
-                            showTrackButton={true}
-                            onTrackOrder={handleTrackOrder}
-                        />
-                    </TabPane>
-                    <TabPane tab="To Ship" key="3">
-                        <OrderList orders={filterOrdersByStatus("To Ship")} />
-                    </TabPane>
-                    <TabPane
-                        tab={
-                            <span>
-                                To Receive{" "}
-                                <Badge
-                                    count={
-                                        filterOrdersByStatus("To Receive")
-                                            .length
-                                    }
-                                    style={{ backgroundColor: "#f5222d" }}
-                                />
-                            </span>
-                        }
-                        key="4"
-                    >
-                        <OrderList
-                            orders={filterOrdersByStatus("To Receive")}
-                        />
-                    </TabPane>
-                    <TabPane tab="Completed" key="5">
-                        <OrderList orders={filterOrdersByStatus("Completed")} />
-                    </TabPane>
-                    <TabPane tab="Cancelled" key="6">
-                        <OrderList orders={filterOrdersByStatus("Cancelled")} />
-                    </TabPane>
-                    <TabPane tab="Return/Refund" key="7">
-                        <OrderList
-                            orders={filterOrdersByStatus("Return/Refund")}
-                        />
-                    </TabPane>
-                </Tabs>
-                <Pagination
-                    current={currentPage}
-                    total={totalOrders}
-                    pageSize={10}
-                    onChange={handlePageChange}
-                    style={{ marginTop: "20px", textAlign: "center" }}
-                />
-                <div style={{ textAlign: "center", marginTop: "10px" }}>
-                    Total Orders: {totalOrders}
+            <div style={{ display: "flex" }}>
+                <Sidebar /> {/* Add the Sidebar component */}
+                <div style={{ flex: 1, padding: "20px" }}>
+                    <Input
+                        placeholder="Search by Order ID or Product Name"
+                        prefix={<SearchOutlined />}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        style={{ marginBottom: "20px", width: "100%" }}
+                    />
+                    <Tabs defaultActiveKey="1" type="card">
+                        <TabPane tab="All" key="1">
+                            <OrderList orders={filteredOrders} />
+                        </TabPane>
+                        <TabPane tab="To Pay" key="2">
+                            <OrderList
+                                orders={filterOrdersByStatus("To Pay")}
+                                showTrackButton={true}
+                                onTrackOrder={handleTrackOrder}
+                            />
+                        </TabPane>
+                        <TabPane tab="To Ship" key="3">
+                            <OrderList
+                                orders={filterOrdersByStatus("To Ship")}
+                            />
+                        </TabPane>
+                        <TabPane
+                            tab={
+                                <span>
+                                    To Receive{" "}
+                                    <Badge
+                                        count={
+                                            filterOrdersByStatus("To Receive")
+                                                .length
+                                        }
+                                        style={{ backgroundColor: "#f5222d" }}
+                                    />
+                                </span>
+                            }
+                            key="4"
+                        >
+                            <OrderList
+                                orders={filterOrdersByStatus("To Receive")}
+                            />
+                        </TabPane>
+                        <TabPane tab="Completed" key="5">
+                            <OrderList
+                                orders={filterOrdersByStatus("Completed")}
+                            />
+                        </TabPane>
+                        <TabPane tab="Cancelled" key="6">
+                            <OrderList
+                                orders={filterOrdersByStatus("Cancelled")}
+                            />
+                        </TabPane>
+                        <TabPane tab="Return/Refund" key="7">
+                            <OrderList
+                                orders={filterOrdersByStatus("Return/Refund")}
+                            />
+                        </TabPane>
+                    </Tabs>
+                    <Pagination
+                        current={currentPage}
+                        total={totalOrders}
+                        pageSize={10}
+                        onChange={handlePageChange}
+                        style={{ marginTop: "20px", textAlign: "center" }}
+                    />
+                    <div style={{ textAlign: "center", marginTop: "10px" }}>
+                        Total Orders: {totalOrders}
+                    </div>
                 </div>
             </div>
         </div>
@@ -236,24 +246,29 @@ const OrderList = ({ orders, showTrackButton = false, onTrackOrder }) => (
                         </Row>
                     ))}
                     <hr />
-                    <Row align="middle">
-                        <Col span={24} style={{ textAlign: "center" }}>
-                            {showTrackButton && (
-                                <Button
-                                    type="primary"
-                                    onClick={() => onTrackOrder(order.id)}
-                                >
-                                    Track Order
-                                </Button>
-                            )}
-                        </Col>
-                    </Row>
+
                     <Row style={{ marginTop: "10px" }}>
-                        <Col span={24} style={{ textAlign: "center" }}>
+                        <Col span={24} style={{ textAlign: "right" }}>
                             <strong>
                                 Order Total: ₱
                                 {Number(order.orderTotal).toLocaleString()}
                             </strong>
+                        </Col>
+                    </Row>
+                    <Row align="right">
+                        <Col span={24} style={{ textAlign: "right" }}>
+                            {showTrackButton && (
+                                <Button
+                                    type="primary"
+                                    onClick={() => onTrackOrder(order.id)}
+                                    style={{
+                                        backgroundColor: "#000000",
+                                        borderColor: "#black",
+                                    }}
+                                >
+                                    Track Order
+                                </Button>
+                            )}
                         </Col>
                     </Row>
                 </Card>

@@ -45,7 +45,6 @@ const CartPage = () => {
                         );
                         return null;
                     }
-                    // Validate size if sizes are provided by the API
                     let sizesArr = product.sizes || [];
                     if (typeof product.sizes === "string") {
                         try {
@@ -92,16 +91,27 @@ const CartPage = () => {
     }, [cartItems]);
 
     const updateQuantity = (id, size, newQuantity) => {
-        const updated = cartItems.map((item) =>
-            item.id === id && item.size === size
-                ? {
-                      ...item,
-                      quantity: newQuantity,
-                      total: newQuantity * item.price,
-                  }
-                : item
-        );
-        setCartItems(updated);
+        if (newQuantity <= 0) {
+            const updated = cartItems.filter(
+                (item) => !(item.id === id && item.size === size)
+            );
+            setCartItems(updated);
+            setSelectedRowKeys((prev) =>
+                prev.filter((key) => key !== `${id}-${size}`)
+            );
+            message.success("Item removed from cart");
+        } else {
+            const updated = cartItems.map((item) =>
+                item.id === id && item.size === size
+                    ? {
+                          ...item,
+                          quantity: newQuantity,
+                          total: newQuantity * item.price,
+                      }
+                    : item
+            );
+            setCartItems(updated);
+        }
     };
 
     const handleDeleteSelected = () => {
@@ -150,29 +160,20 @@ const CartPage = () => {
                 <Space>
                     <Button
                         onClick={() =>
-                            updateQuantity(
-                                record.id,
-                                record.size,
-                                Math.max(1, record.quantity - 1)
-                            )
+                            updateQuantity(record.id, record.size, quantity - 1)
                         }
                     >
                         -
                     </Button>
                     <InputNumber
-                        min={1}
+                        min={0}
                         value={quantity}
-                        onChange={(value) =>
-                            updateQuantity(record.id, record.size, value)
-                        }
+                        controls={false}
+                        style={{ width: 60 }}
                     />
                     <Button
                         onClick={() =>
-                            updateQuantity(
-                                record.id,
-                                record.size,
-                                record.quantity + 1
-                            )
+                            updateQuantity(record.id, record.size, quantity + 1)
                         }
                     >
                         +
@@ -235,6 +236,7 @@ const CartPage = () => {
                     dataSource={cartItems}
                     pagination={false}
                 />
+
                 <div
                     style={{
                         marginTop: "20px",
@@ -244,17 +246,28 @@ const CartPage = () => {
                 >
                     Subtotal: <strong>₱{subtotal.toLocaleString()}</strong>
                 </div>
-                {selectedRowKeys.length > 0 && (
-                    <Button
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={handleDeleteSelected}
-                        style={{ marginTop: "10px" }}
-                    >
-                        Remove Selected
-                    </Button>
-                )}
-                <div style={{ marginTop: "20px", textAlign: "right" }}>
+                <div
+                    style={{
+                        marginTop: "20px",
+                        textAlign: "right",
+                    }}
+                >
+                    {selectedRowKeys.length > 0 && (
+                        <Button
+                            danger
+                            icon={<DeleteOutlined />}
+                            onClick={handleDeleteSelected}
+                            style={{
+                                marginTop: "10px",
+                                width: "179.53px",
+                                height: "40px",
+                                marginRight: "10px",
+                            }}
+                        >
+                            Remove Selected
+                        </Button>
+                    )}
+
                     <Button
                         type="primary"
                         size="large"

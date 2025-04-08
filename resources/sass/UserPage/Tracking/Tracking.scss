@@ -1,4 +1,4 @@
-// Base layout styles
+// Base layout styles (unchanged)
 .order-tracking {
     min-height: 100vh;
 
@@ -41,7 +41,6 @@
             gap: 24px;
             grid-template-columns: 1fr;
 
-            // Timeline Card
             .timeline-card {
                 padding: 24px;
                 border-radius: 8px;
@@ -106,7 +105,6 @@
                 }
             }
 
-            // Action Buttons Card
             .action-buttons-card {
                 padding: 16px;
                 border-radius: 8px;
@@ -119,8 +117,8 @@
 
                     .ant-btn {
                         &.primary-btn {
-                            background-color: #1890ff;
-                            border-color: #1890ff;
+                            background-color: #121213;
+                            border-color: #262727;
                             color: #fff;
                             height: 32px;
                             padding: 0 8px;
@@ -130,8 +128,8 @@
 
                             &:hover,
                             &:focus {
-                                background-color: #40a9ff;
-                                border-color: #40a9ff;
+                                background-color: #3e3f3f;
+                                border-color: #363636;
                             }
                         }
 
@@ -155,7 +153,6 @@
                 }
             }
 
-            // Order Details Card
             .order-details-card {
                 padding: 24px;
                 border-radius: 8px;
@@ -223,7 +220,6 @@
                 }
             }
 
-            // Shipping Card
             .shipping-card {
                 padding: 24px;
                 border-radius: 8px;
@@ -251,72 +247,85 @@
     }
 }
 
-// Modal styles
+// Modal styles (updated with transferred inline styles)
 .cancel-modal {
     .ant-modal-title {
         font-size: 18px;
         font-weight: 500;
         line-height: 24px;
-        margin-bottom: 8px;
+        margin-bottom: 15px;
+    }
+
+    .cancel-modal-title {
+        font-size: 20px;
+        font-weight: 400;
+        color: #333;
+        margin-bottom: 20px;
     }
 
     .modal-description {
-        display: block;
         font-size: 14px;
         color: #595959;
-        margin-bottom: 24px;
-        line-height: 20px;
+        line-height: 1.5;
+        margin-bottom: 16px;
     }
+    .cancel-modal-content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
 
-    .cancel-reasons {
-        width: 100%;
-        margin-bottom: 24px;
-
-        .ant-space {
+        .cancel-reasons {
             width: 100%;
+            margin-bottom: 24px;
 
-            .ant-radio-wrapper {
-                margin-bottom: 16px;
-                font-size: 14px;
-                color: #333;
-                line-height: 20px;
+            .cancel-reasons-space {
+                width: 100%;
 
-                .ant-radio {
-                    margin-right: 8px;
+                .ant-radio-wrapper {
+                    margin-bottom: 16px;
+                    font-size: 14px;
+                    color: #333;
+                    line-height: 20px;
+                    padding: 8px 0;
 
-                    .ant-radio-inner {
-                        width: 16px;
-                        height: 16px;
-                        border-color: #d9d9d9; /* Unchecked circle */
+                    .ant-radio {
+                        margin-right: 8px;
+
+                        .ant-radio-inner {
+                            width: 16px;
+                            height: 16px;
+                            border-color: #d9d9d9;
+                        }
+
+                        .ant-radio-inner::after {
+                            width: 6px;
+                            height: 6px;
+                            top: 4px;
+                            left: 4px;
+                        }
+
+                        &.ant-radio-checked .ant-radio-inner {
+                            border-color: #1890ff;
+                            background-color: #1890ff;
+                        }
+
+                        &.ant-radio-checked .ant-radio-inner::after {
+                            background-color: #fff;
+                            width: 8px;
+                            height: 8px;
+                            top: 3px;
+                            left: 3px;
+                        }
+
+                        &:hover .ant-radio-inner {
+                            border-color: #40a9ff;
+                        }
                     }
 
-                    .ant-radio-inner::after {
-                        width: 6px;
-                        height: 6px;
-                        top: 4px;
-                        left: 4px;
+                    &:last-child {
+                        margin-bottom: 0;
                     }
-
-                    &.ant-radio-checked .ant-radio-inner {
-                        border-color: #1890ff;
-                        background-color: #1890ff; /* Solid blue for checked */
-                    }
-
-                    &.ant-radio-checked .ant-radio-inner::after {
-                        background-color: #fff; /* White dot */
-                        width: 8px; /* Larger dot */
-                        height: 8px;
-                        top: 3px;
-                        left: 3px;
-                    }
-
-                    &:hover .ant-radio-inner {
-                        border-color: #40a9ff; /* Hover effect for unchecked */
-                    }
-                }
-
-                &:last-child {
-                    margin-bottom: 0;
                 }
             }
         }
@@ -329,52 +338,56 @@
         justify-content: flex-end;
         gap: 8px;
 
-        .ant-btn {
+        .modal-back-btn {
+            width: 95px;
             height: 32px;
             padding: 0 15px;
             font-size: 14px;
             border-radius: 4px;
             line-height: 30px;
+            color: #595959;
+            border-color: #d9d9d9;
+            background-color: #fff;
 
-            &.ant-btn-default {
-                color: #595959;
-                border-color: #d9d9d9;
-                background-color: #fff;
-
-                &:hover {
-                    color: #40a9ff;
-                    border-color: #40a9ff;
-                }
-
-                &:disabled {
-                    color: #bfbfbf;
-                    border-color: #d9d9d9;
-                    background-color: #f5f5f5;
-                }
+            &:hover {
+                color: #141414;
+                border-color: #2c2c2c;
             }
 
-            &.ant-btn-primary {
-                background-color: #1890ff;
-                border-color: #1890ff;
+            &:disabled {
+                color: #bfbfbf;
+                border-color: #d9d9d9;
+                background-color: #f5f5f5;
+            }
+        }
+
+        .modal-cancel-btn {
+            width: 100px;
+            height: 32px;
+            padding: 0 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            line-height: 30px;
+            background-color: #f5222d;
+            border-color: #f5222d;
+            color: #fff;
+
+            &:hover,
+            &:focus {
+                background-color: #ff4d4f;
+                border-color: #ff4d4f;
+            }
+
+            &:disabled {
+                background-color: #bfbfbf;
+                border-color: #bfbfbf;
                 color: #fff;
-
-                &:hover,
-                &:focus {
-                    background-color: #40a9ff;
-                    border-color: #40a9ff;
-                }
-
-                &:disabled {
-                    background-color: #bfbfbf;
-                    border-color: #bfbfbf;
-                    color: #fff;
-                }
             }
         }
     }
 }
 
-// Responsive adjustments
+// Responsive adjustments (unchanged)
 @media (max-width: 768px) {
     .main-content {
         grid-template-columns: 1fr;

@@ -16,17 +16,19 @@ import Navbar from "../Navbar/Navbar";
 import axios from "axios";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import BrandSlider from "../UserHome/BrandSlider";
+import Footer from "../UserHome/Footer";
 
 const { Content, Sider } = Layout;
 const { Search } = Input;
 const { Option } = Select;
 
+const normalizeSize = (size) =>
+    size.toString().toLowerCase().replace(/\s+/g, "");
+
 const CategoryCollection = () => {
-    // Get the category parameter from the URL (assumed to be the category ID)
     const { category } = useParams();
     const navigate = useNavigate();
 
-    // State for products and filtering
     const [products, setProducts] = useState([]);
     const [filters, setFilters] = useState({
         brand: [],
@@ -34,32 +36,28 @@ const CategoryCollection = () => {
         movement: [],
         strapMaterial: [],
     });
-    // For brand, gender and movement we derive available names from products
     const [filterOptions, setFilterOptions] = useState({
         brand: [],
         gender: [],
         movement: [],
         strapMaterial: [],
     });
-    // We also keep a mapping for strap material (id -> name)
     const [strapMaterialMapping, setStrapMaterialMapping] = useState({});
-
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("default");
     const [filterKey, setFilterKey] = useState(0);
-
-    // Modal states for Add-to-Cart
     const [showAddToCartModal, setShowAddToCartModal] = useState(false);
     const [modalProduct, setModalProduct] = useState(null);
     const [modalCurrentMainImage, setModalCurrentMainImage] = useState("");
     const [modalSelectedSize, setModalSelectedSize] = useState(null);
+    const [inventoryRecords, setInventoryRecords] = useState([]);
+    const [modalSelectedStock, setModalSelectedStock] = useState(null);
 
-    // API endpoints (adjust as needed)
     const PRODUCTS_API = "http://localhost:8000/api/products/public";
     const SUBCATEGORIES_API = "http://localhost:8000/api/sub-categories/public";
+    const baseUrl = "http://localhost:8000";
     const isLoggedIn = Boolean(localStorage.getItem("token"));
 
-    // Fetch products filtered by the category (using category_id)
     const fetchProducts = () => {
         axios
             .get(PRODUCTS_API)
@@ -81,7 +79,6 @@ const CategoryCollection = () => {
         fetchProducts();
     }, [category]);
 
-    // Derive filter options for brand, gender and movement from the products
     useEffect(() => {
         const brands = Array.from(
             new Set(
@@ -108,20 +105,16 @@ const CategoryCollection = () => {
         }));
     }, [products]);
 
-    // Fetch strap material sub-categories from API and build mapping,
-    // then filter the available strap materials based on the products in this category.
     useEffect(() => {
         if (products.length > 0) {
             axios
                 .get(`${SUBCATEGORIES_API}?type=strap_materials`)
                 .then((res) => {
-                    // res.data is an array of strap material objects {id, name, ...}
                     const available = res.data.filter((material) =>
                         products.some(
                             (p) => p.strap_material_id === material.id
                         )
                     );
-                    // Build a mapping from id to name and extract names.
                     const mapping = {};
                     const names = available.map((mat) => {
                         mapping[mat.id] = mat.name;
@@ -138,6 +131,22 @@ const CategoryCollection = () => {
                 });
         }
     }, [products]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            axios
+                .get(`${baseUrl}/api/inventory-public`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                .then((res) => {
+                    setInventoryRecords(res.data);
+                })
+                .catch((err) => {
+                    console.error("Error fetching inventory:", err);
+                });
+        }
+    }, []);
 
     const handleFilterChange = (filterCategory, value) => {
         setFilters((prev) => {
@@ -176,7 +185,6 @@ const CategoryCollection = () => {
             )
                 .toLowerCase()
                 .trim();
-            // For strap material, map the product's strap_material_id to a name
             const productStrapMaterial =
                 strapMaterialMapping[product.strap_material_id]
                     ?.toLowerCase()
@@ -251,10 +259,6 @@ const CategoryCollection = () => {
         setFilterKey((prev) => prev + 1);
     };
 
-    const filteredProducts = getFilteredProducts();
-    const displayFilters = getDisplayFilters();
-
-    // Functions to handle adding products to the cart
     const handleDirectAddToCart = (product, size) => {
         if (!isLoggedIn) {
             message.info("Please log in to add to cart");
@@ -277,11 +281,23 @@ const CategoryCollection = () => {
             );
             return;
         }
+        const inventory = inventoryRecords.find(
+            (inv) =>
+                inv.product_id === product.id &&
+                normalizeSize(inv.size) === normalizeSize(size)
+        );
+        if (inventory && inventory.quantity === 0) {
+            message.error(
+                `Size ${size} is out of stock for ${product.product_name}.`
+            );
+            return;
+        }
         const cartItem = {
             id: product.id,
+            inventory_id: inventory ? inventory.id : product.id,
             productName: product.product_name,
             image: product.main_image
-                ? `http://localhost:8000/storage/${product.main_image}`
+                ? `${baseUrl}/storage/${product.main_image}`
                 : "/placeholder.jpg",
             size: size,
             price: product.price,
@@ -327,17 +343,35 @@ const CategoryCollection = () => {
                 sizesDisplay = sizesArr;
             }
         }
-        return sizesDisplay.map((size, index) => (
-            <Button
-                key={index}
-                size="large"
-                onClick={() => setModalSelectedSize(size)}
-                type={modalSelectedSize === size ? "primary" : "default"}
-                style={{ margin: "4px" }}
-            >
-                {size}
-            </Button>
-        ));
+        return sizesDisplay.map((size, index) => {
+            const inventory = inventoryRecords.find(
+                (inv) =>
+                    inv.product_id === product.id &&
+                    normalizeSize(inv.size) === normalizeSize(size)
+            );
+            const stock = inventory ? inventory.quantity : null;
+            const isOutOfStock = stock === 0;
+            return (
+                <Button
+                    key={index}
+                    size="large"
+                    onClick={() => {
+                        setModalSelectedSize(size);
+                        setModalSelectedStock(stock);
+                    }}
+                    type={modalSelectedSize === size ? "primary" : "default"}
+                    disabled={isOutOfStock}
+                    style={{ margin: "4px" }}
+                >
+                    {size}
+                    {stock !== null && (
+                        <span style={{ marginLeft: "4px", fontSize: "12px" }}>
+                            ({stock})
+                        </span>
+                    )}
+                </Button>
+            );
+        });
     };
 
     const handleModalAddToCart = () => {
@@ -345,9 +379,15 @@ const CategoryCollection = () => {
             message.warning("Please select a size.");
             return;
         }
+        if (modalSelectedStock === 0) {
+            message.warning("Selected size is out of stock.");
+            return;
+        }
         handleDirectAddToCart(modalProduct, modalSelectedSize);
         setShowAddToCartModal(false);
         setModalProduct(null);
+        setModalSelectedSize(null);
+        setModalSelectedStock(null);
     };
 
     const renderModalOverview = () => {
@@ -363,7 +403,7 @@ const CategoryCollection = () => {
                 <div style={{ display: "flex", gap: "16px" }}>
                     <div>
                         <img
-                            src={`http://localhost:8000/storage/${modalCurrentMainImage}`}
+                            src={`${baseUrl}/storage/${modalCurrentMainImage}`}
                             alt={modalProduct.product_name}
                             style={{
                                 width: "300px",
@@ -382,7 +422,7 @@ const CategoryCollection = () => {
                     >
                         {modalProduct.side_image_1 && (
                             <img
-                                src={`http://localhost:8000/storage/${modalProduct.side_image_1}`}
+                                src={`${baseUrl}/storage/${modalProduct.side_image_1}`}
                                 alt="Side 1"
                                 style={{
                                     width: "60px",
@@ -399,7 +439,7 @@ const CategoryCollection = () => {
                         )}
                         {modalProduct.side_image_2 && (
                             <img
-                                src={`http://localhost:8000/storage/${modalProduct.side_image_2}`}
+                                src={`${baseUrl}/storage/${modalProduct.side_image_2}`}
                                 alt="Side 2"
                                 style={{
                                     width: "60px",
@@ -416,7 +456,7 @@ const CategoryCollection = () => {
                         )}
                         {modalProduct.side_image_3 && (
                             <img
-                                src={`http://localhost:8000/storage/${modalProduct.side_image_3}`}
+                                src={`${baseUrl}/storage/${modalProduct.side_image_3}`}
                                 alt="Side 3"
                                 style={{
                                     width: "60px",
@@ -434,7 +474,7 @@ const CategoryCollection = () => {
                     </div>
                 </div>
                 <div>
-                    <h3>{modalProduct.product_name}</h3>
+                    <h4>{modalProduct.product_name}</h4>
                     <p>Price: {modalProduct.price}</p>
                     <div style={{ display: "flex", alignItems: "center" }}>
                         <Rate
@@ -451,23 +491,42 @@ const CategoryCollection = () => {
                     <div
                         style={{
                             display: "flex",
-                            flexWrap: "wrap",
+                            flexWrap: "nowrap",
                             gap: "8px",
+                            flexDirection: "row",
+                            width: "90px",
                         }}
                     >
                         {renderSizeOptions(modalProduct)}
                     </div>
+                    {modalSelectedSize && modalSelectedStock !== null && (
+                        <p
+                            style={{
+                                marginTop: "8px",
+                            }}
+                        >
+                            Stock: {modalSelectedStock}
+                            {modalSelectedStock === 0 && " (Out of Stock)"}
+                        </p>
+                    )}
                 </div>
                 <Button
                     type="primary"
                     onClick={handleModalAddToCart}
-                    style={{ width: "100%" }}
+                    style={{
+                        width: "100%",
+                        height: "35px",
+                        background: "black",
+                    }}
                 >
                     Add to Cart
                 </Button>
             </div>
         );
     };
+
+    const filteredProducts = getFilteredProducts();
+    const displayFilters = getDisplayFilters();
 
     return (
         <Layout style={{ minHeight: "100vh" }} key={filterKey}>
@@ -639,7 +698,7 @@ const CategoryCollection = () => {
                                                 alt={product.product_name}
                                                 src={
                                                     product.main_image
-                                                        ? `http://localhost:8000/storage/${product.main_image}`
+                                                        ? `${baseUrl}/storage/${product.main_image}`
                                                         : "/placeholder.jpg"
                                                 }
                                                 style={{
@@ -704,6 +763,7 @@ const CategoryCollection = () => {
                                                     product.main_image
                                                 );
                                                 setModalSelectedSize(null);
+                                                setModalSelectedStock(null);
                                                 setShowAddToCartModal(true);
                                             }}
                                             style={{
@@ -730,12 +790,15 @@ const CategoryCollection = () => {
                 onCancel={() => {
                     setShowAddToCartModal(false);
                     setModalProduct(null);
+                    setModalSelectedSize(null);
+                    setModalSelectedStock(null);
                 }}
                 footer={null}
                 width={700}
             >
                 {modalProduct && renderModalOverview()}
             </Modal>
+            <Footer />
         </Layout>
     );
 };

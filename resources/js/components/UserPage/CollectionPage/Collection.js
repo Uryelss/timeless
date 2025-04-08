@@ -16,10 +16,14 @@ import Navbar from "../Navbar/Navbar";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import BrandSlider from "../UserHome/BrandSlider";
+import Footer from "../UserHome/Footer"; // Added Footer import
 
 const { Content, Sider } = Layout;
 const { Search } = Input;
 const { Option } = Select;
+
+const normalizeSize = (size) =>
+    size.toString().toLowerCase().replace(/\s+/g, "");
 
 const Collection = () => {
     const [products, setProducts] = useState([]);
@@ -42,13 +46,15 @@ const Collection = () => {
     const [modalProduct, setModalProduct] = useState(null);
     const [modalCurrentMainImage, setModalCurrentMainImage] = useState("");
     const [modalSelectedSize, setModalSelectedSize] = useState(null);
+    const [inventoryRecords, setInventoryRecords] = useState([]);
+    const [modalSelectedStock, setModalSelectedStock] = useState(null);
 
     const PRODUCTS_API = "http://localhost:8000/api/products/public";
     const SUBCATEGORIES_API = "http://localhost:8000/api/sub-categories/public";
+    const baseUrl = "http://localhost:8000";
     const isLoggedIn = Boolean(localStorage.getItem("token"));
     const navigate = useNavigate();
 
-    // Fetch products from the API
     const fetchProducts = () => {
         axios
             .get(PRODUCTS_API)
@@ -61,12 +67,10 @@ const Collection = () => {
             });
     };
 
-    // Fetch filter options for each category from the API
     const fetchFilterOptions = (type, setter) => {
         axios
             .get(`${SUBCATEGORIES_API}?type=${type}`)
             .then((res) => {
-                // For strap materials, we assume the API returns objects
                 if (type === "strap_materials") {
                     setter(res.data);
                 } else {
@@ -94,6 +98,22 @@ const Collection = () => {
         );
     }, []);
 
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            axios
+                .get(`${baseUrl}/api/inventory-public`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                .then((res) => {
+                    setInventoryRecords(res.data);
+                })
+                .catch((err) => {
+                    console.error("Error fetching inventory:", err);
+                });
+        }
+    }, []);
+
     const handleFilterChange = (category, value) => {
         setFilters((prev) => {
             const updated = prev[category].includes(value)
@@ -104,7 +124,6 @@ const Collection = () => {
         setFilterKey((prev) => prev + 1);
     };
 
-    // Display selected filters
     const getDisplayFilters = () => {
         const displays = [];
         Object.keys(filters).forEach((key) => {
@@ -139,8 +158,6 @@ const Collection = () => {
             )
                 .toLowerCase()
                 .trim();
-            // For strap material, assume product.strap_material_id is stored
-            // and we want to compare its corresponding name from the API.
             const productStrapMaterial = (() => {
                 const mat = filterOptions.strapMaterial.find(
                     (m) => m.id === product.strap_material_id
@@ -222,10 +239,6 @@ const Collection = () => {
         setFilterKey((prev) => prev + 1);
     };
 
-    const filteredProducts = getFilteredProducts();
-    const displayFilters = getDisplayFilters();
-
-    // Updated handleDirectAddToCart: now sets inventory_id with a fallback
     const handleDirectAddToCart = (product, size) => {
         if (!isLoggedIn) {
             message.info("Please log in to add to cart");
@@ -252,11 +265,10 @@ const Collection = () => {
 
         const cartItem = {
             id: product.id,
-            // Use product.inventory_id if available; otherwise, fallback to product.id
             inventory_id: product.inventory_id || product.id,
             productName: product.product_name,
             image: product.main_image
-                ? `http://localhost:8000/storage/${product.main_image}`
+                ? `${baseUrl}/storage/${product.main_image}`
                 : "/placeholder.jpg",
             size: size,
             price: product.price,
@@ -298,27 +310,53 @@ const Collection = () => {
         let sizesDisplay = [];
         if (Array.isArray(sizesArr) && sizesArr.length > 0) {
             if (typeof sizesArr[0] === "object" && sizesArr[0].size) {
-                sizesDisplay = sizesArr.map((item) => item.size);
+                sizesDisplay = sizesArr;
             } else {
                 sizesDisplay = sizesArr;
             }
         }
-        return sizesDisplay.map((size, index) => (
-            <Button
-                key={index}
-                size="large"
-                onClick={() => setModalSelectedSize(size)}
-                type={modalSelectedSize === size ? "primary" : "default"}
-                style={{ margin: "4px" }}
-            >
-                {size}
-            </Button>
-        ));
+        return sizesDisplay.map((size, index) => {
+            const inventory = inventoryRecords.find(
+                (inv) =>
+                    inv.product_id === product.id &&
+                    normalizeSize(inv.size) === normalizeSize(size.size || size)
+            );
+            const stock = inventory ? inventory.quantity : null;
+            const isOutOfStock = stock === 0;
+            return (
+                <Button
+                    key={index}
+                    size="large"
+                    onClick={() => {
+                        setModalSelectedSize(size.size || size);
+                        setModalSelectedStock(stock);
+                    }}
+                    type={
+                        modalSelectedSize === (size.size || size)
+                            ? "primary"
+                            : "default"
+                    }
+                    disabled={isOutOfStock}
+                    style={{ margin: "4px" }}
+                >
+                    {size.size || size}
+                    {stock !== null && (
+                        <span style={{ marginLeft: "4px", fontSize: "12px" }}>
+                            ({stock})
+                        </span>
+                    )}
+                </Button>
+            );
+        });
     };
 
     const handleModalAddToCart = () => {
         if (!modalSelectedSize) {
             message.warning("Please select a size.");
+            return;
+        }
+        if (modalSelectedStock === 0) {
+            message.warning("Selected size is out of stock.");
             return;
         }
         handleDirectAddToCart(modalProduct, modalSelectedSize);
@@ -339,7 +377,7 @@ const Collection = () => {
                 <div style={{ display: "flex", gap: "16px" }}>
                     <div>
                         <img
-                            src={`http://localhost:8000/storage/${modalCurrentMainImage}`}
+                            src={`${baseUrl}/storage/${modalCurrentMainImage}`}
                             alt={modalProduct.product_name}
                             style={{
                                 width: "300px",
@@ -358,7 +396,7 @@ const Collection = () => {
                     >
                         {modalProduct.side_image_1 && (
                             <img
-                                src={`http://localhost:8000/storage/${modalProduct.side_image_1}`}
+                                src={`${baseUrl}/storage/${modalProduct.side_image_1}`}
                                 alt="Side 1"
                                 style={{
                                     width: "60px",
@@ -375,7 +413,7 @@ const Collection = () => {
                         )}
                         {modalProduct.side_image_2 && (
                             <img
-                                src={`http://localhost:8000/storage/${modalProduct.side_image_2}`}
+                                src={`${baseUrl}/storage/${modalProduct.side_image_2}`}
                                 alt="Side 2"
                                 style={{
                                     width: "60px",
@@ -392,7 +430,7 @@ const Collection = () => {
                         )}
                         {modalProduct.side_image_3 && (
                             <img
-                                src={`http://localhost:8000/storage/${modalProduct.side_image_3}`}
+                                src={`${baseUrl}/storage/${modalProduct.side_image_3}`}
                                 alt="Side 3"
                                 style={{
                                     width: "60px",
@@ -410,7 +448,7 @@ const Collection = () => {
                     </div>
                 </div>
                 <div>
-                    <h3>{modalProduct.product_name}</h3>
+                    <h4>{modalProduct.product_name}</h4>
                     <p>Price: {modalProduct.price}</p>
                     <div style={{ display: "flex", alignItems: "center" }}>
                         <Rate
@@ -427,23 +465,39 @@ const Collection = () => {
                     <div
                         style={{
                             display: "flex",
-                            flexWrap: "wrap",
+                            flexWrap: "nowrap",
                             gap: "8px",
+                            flexDirection: "row",
+                            width: "90px",
                         }}
                     >
                         {renderSizeOptions(modalProduct)}
                     </div>
+                    {modalSelectedSize && modalSelectedStock !== null && (
+                        <p style={{ marginTop: "8px" }}>
+                            Stock: {modalSelectedStock}
+                            {modalSelectedStock === 0 && " (Out of Stock)"}
+                        </p>
+                    )}
                 </div>
                 <Button
                     type="primary"
                     onClick={handleModalAddToCart}
-                    style={{ width: "100%" }}
+                    style={{
+                        width: "100%",
+                        height: "35px",
+                        background: "#000000",
+                    }}
+                    icon={<ShoppingCartOutlined />}
                 >
                     Add to Cart
                 </Button>
             </div>
         );
     };
+
+    const filteredProducts = getFilteredProducts();
+    const displayFilters = getDisplayFilters();
 
     return (
         <Layout style={{ minHeight: "100vh" }} key={filterKey}>
@@ -621,7 +675,7 @@ const Collection = () => {
                                                 alt={product.product_name}
                                                 src={
                                                     product.main_image
-                                                        ? `http://localhost:8000/storage/${product.main_image}`
+                                                        ? `${baseUrl}/storage/${product.main_image}`
                                                         : "/placeholder.jpg"
                                                 }
                                                 style={{
@@ -636,6 +690,7 @@ const Collection = () => {
                                     >
                                         <Card.Meta
                                             title={product.product_name}
+                                            style={{ fontSize: "16px" }}
                                             description={
                                                 <div>
                                                     <p>
@@ -671,7 +726,7 @@ const Collection = () => {
                                             }
                                         />
                                         <Button
-                                            type="link"
+                                            type=""
                                             icon={
                                                 <ShoppingCartOutlined
                                                     style={{ fontSize: "28px" }}
@@ -686,6 +741,7 @@ const Collection = () => {
                                                     product.main_image
                                                 );
                                                 setModalSelectedSize(null);
+                                                setModalSelectedStock(null);
                                                 setShowAddToCartModal(true);
                                             }}
                                             style={{
@@ -703,11 +759,6 @@ const Collection = () => {
                 </Layout>
             </Layout>
             <Modal
-                title={
-                    modalProduct
-                        ? modalProduct.product_name
-                        : "Product Overview"
-                }
                 visible={showAddToCartModal}
                 onCancel={() => {
                     setShowAddToCartModal(false);
@@ -718,6 +769,7 @@ const Collection = () => {
             >
                 {modalProduct && renderModalOverview()}
             </Modal>
+            <Footer /> {/* Added Footer component */}
         </Layout>
     );
 };

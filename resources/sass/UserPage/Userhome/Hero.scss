@@ -101,3 +101,15 @@
         font-size: 0.8rem;
     }
 }
+@media (max-width: 360px) {
+    .hero-container .hero-overlay .hero-text {
+        font-size: 1.2rem; /* Adjust text size for very small screens */
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+
+    .hero-container .hero-overlay .hero-button {
+        padding: 6px 12px; /* Adjust button size for very small screens */
+        font-size: 0.7rem;
+    }
+}

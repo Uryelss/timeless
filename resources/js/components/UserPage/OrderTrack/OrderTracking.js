@@ -76,7 +76,7 @@ const OrderTracking = () => {
                 delivered_at: orderData.delivered_at || null,
                 completed_at: orderData.completed_at || null,
                 cancelled_at: orderData.cancelled_at || null,
-                cancel_reason: orderData.cancel_reason || "", // Include cancellation reason
+                cancel_reason: orderData.cancel_reason || "",
                 updated_at: orderData.updated_at || null,
             };
             setOrder(transformedOrder);
@@ -541,7 +541,7 @@ const OrderTracking = () => {
                     )}
 
                     <Modal
-                        title="Cancel Order"
+                        title={`Cancel Order ${orderId}`}
                         open={isCancelModalVisible}
                         onCancel={() => setIsCancelModalVisible(false)}
                         footer={[
@@ -549,46 +549,79 @@ const OrderTracking = () => {
                                 key="cancel"
                                 onClick={() => setIsCancelModalVisible(false)}
                                 disabled={isCancelLoading}
+                                className="modal-back-btn"
                             >
-                                Cancel
+                                Back
                             </Button>,
                             <Button
                                 key="confirm"
                                 type="primary"
+                                danger
                                 onClick={handleCancelOrder}
                                 loading={isCancelLoading}
+                                className="modal-cancel-btn"
                             >
-                                Confirm
+                                Cancel Order
                             </Button>,
                         ]}
                         className="cancel-modal"
+                        width={450}
+                        centered
                     >
-                        <Text className="modal-description">
-                            Please select a reason for cancelling your order.
-                            Note that this action will cancel all items and
-                            cannot be undone.
-                        </Text>
-                        <Radio.Group
-                            onChange={(e) => setCancelReason(e.target.value)}
-                            value={cancelReason}
-                            className="cancel-reasons"
+                        <div
+                            style={{
+                                flexDirection: "column",
+                                display: "flex",
+                                alignItems: "center",
+                            }}
                         >
-                            <Space direction="vertical">
-                                <Radio value="Need to change delivery address">
-                                    Need to change delivery address
-                                </Radio>
-                                <Radio value="Need to modify order (size, quantity, etc)">
-                                    Need to modify order (size, quantity, etc)
-                                </Radio>
-                                <Radio value="Payment process too troublesome">
-                                    Payment process too troublesome
-                                </Radio>
-                                <Radio value="Don’t want to buy anymore">
-                                    Don’t want to buy anymore
-                                </Radio>
-                                <Radio value="Others">Others</Radio>
-                            </Space>
-                        </Radio.Group>
+                            <Text strong className="cancel-modal-title">
+                                Why are you cancelling this order?
+                            </Text>
+                            <Text
+                                type="secondary"
+                                className="modal-description"
+                            >
+                                Please select a reason below. Note that
+                                cancelling will affect all items in this order
+                                and cannot be undone.
+                            </Text>
+                        </div>
+                        <div className="cancel-modal-content">
+                            <Radio.Group
+                                onChange={(e) =>
+                                    setCancelReason(e.target.value)
+                                }
+                                value={cancelReason}
+                                className="cancel-reasons"
+                            >
+                                <Space
+                                    direction="vertical"
+                                    className="cancel-reasons-space"
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "flex-start",
+                                        flexWrap: "wrap",
+                                        flexDirection: "column",
+                                    }}
+                                >
+                                    <Radio value="Need to change delivery address">
+                                        Need to change delivery address
+                                    </Radio>
+                                    <Radio value="Need to modify order (size, quantity, etc)">
+                                        Need to modify order (size, quantity,
+                                        etc)
+                                    </Radio>
+                                    <Radio value="Payment process too troublesome">
+                                        Payment process too troublesome
+                                    </Radio>
+                                    <Radio value="Don’t want to buy anymore">
+                                        Don’t want to buy anymore
+                                    </Radio>
+                                    <Radio value="Others">Others</Radio>
+                                </Space>
+                            </Radio.Group>
+                        </div>
                     </Modal>
 
                     <Modal
