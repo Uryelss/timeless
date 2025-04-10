@@ -1,4 +1,3 @@
-// General container styling
 .test-container {
     display: flex;
     height: 100vh;
@@ -59,27 +58,23 @@
             .input-group {
                 display: flex;
                 align-items: center;
-                background-color: #333; // Ensure dark gray background for all inputs
+                background-color: #333;
                 border-radius: 5px;
                 padding: 0.5rem;
 
                 .input-icon {
                     font-size: 1.2rem;
-                    color: #fff; // White icons
+                    color: #fff;
                     margin-right: 0.5rem;
                 }
 
-                // Override Ant Design Input styles
-                .ant-input,
-                .ant-input-password {
+                input {
                     flex: 1;
-                    background: none !important; // Force no background
-                    border: none !important; // Force no border
-                    color: #fff; // White text
+                    background: none;
+                    border: none;
+                    color: #fff;
                     font-size: 1rem;
                     outline: none;
-                    padding: 0; // Remove default padding
-                    box-shadow: none; // Remove Ant Design's default shadow
 
                     &::placeholder {
                         color: #aaa;
@@ -87,14 +82,8 @@
                         font-size: 0.9rem;
                     }
                 }
-
-                // Ensure password toggle icon aligns with design
-                .ant-input-password .ant-input-suffix {
-                    color: #fff; // White toggle icon
-                }
             }
 
-            // Button styles will be updated in the next step
             .test-button {
                 background-color: #fff;
                 color: #000;
@@ -109,16 +98,6 @@
 
                 &:hover {
                     background-color: #ddd;
-                }
-
-                &.ant-btn-primary {
-                    background-color: #fff;
-                    border-color: #fff;
-
-                    &:hover {
-                        background-color: #ddd;
-                        border-color: #ddd;
-                    }
                 }
             }
 

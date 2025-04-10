@@ -12086,92 +12086,264 @@ textarea.form-control-lg {
   color: white;
 }
 
-/* General Styling - Do not apply global changes */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: "Poppins", sans-serif;
-}
-
-/* Apply only to login & register pages */
-.auth-page {
+.test-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
   height: 100vh;
-  background: linear-gradient(135deg, #0a5f61, #043d40);
+  width: 100vw;
+  overflow: hidden;
+  background-color: #000;
 }
-
-/* Centering the login box */
-.auth-page .login-container {
+.test-container .test-left {
+  flex: 1;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
+}
+.test-container .test-left h1, .test-container .test-left .h1 {
+  color: #fff;
+  font-size: 3rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: absolute;
+  top: 20%;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+.test-container .test-left .test-svg {
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  opacity: 0.8;
 }
-
-/* Login Box Styling */
-.auth-page .login-box {
-  background: rgba(255, 255, 255, 0.15);
-  -webkit-backdrop-filter: blur(10px);
-          backdrop-filter: blur(10px);
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  width: 350px;
-}
-
-/* Title and Subtitle */
-.auth-page h2, .auth-page .h2 {
-  font-size: 24px;
-  font-weight: 600;
+.test-container .test-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #000;
   color: #fff;
 }
-
-.auth-page .sub-text {
-  font-size: 14px;
-  color: #ddd;
-  margin-bottom: 20px;
+.test-container .test-right h2, .test-container .test-right .h2 {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
-
-/* Input Fields */
-.auth-page .ant-input {
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 14px;
+.test-container .test-right .test-form {
+  width: 60%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
-
-/* Login Button */
-.auth-page .login-button {
-  width: 100%;
-  background-color: #ff7f50;
+.test-container .test-right .test-form .input-group {
+  display: flex;
+  align-items: center;
+  background-color: #333;
+  border-radius: 5px;
+  padding: 0.5rem;
+}
+.test-container .test-right .test-form .input-group .input-icon {
+  font-size: 1.2rem;
+  color: #fff;
+  margin-right: 0.5rem;
+}
+.test-container .test-right .test-form .input-group .ant-input,
+.test-container .test-right .test-form .input-group .ant-input-password {
+  flex: 1;
+  background: none !important;
+  border: none !important;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  padding: 0;
+  box-shadow: none;
+}
+.test-container .test-right .test-form .input-group .ant-input::-moz-placeholder, .test-container .test-right .test-form .input-group .ant-input-password::-moz-placeholder {
+  color: #aaa;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+.test-container .test-right .test-form .input-group .ant-input::placeholder,
+.test-container .test-right .test-form .input-group .ant-input-password::placeholder {
+  color: #aaa;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+.test-container .test-right .test-form .input-group .ant-input-password .ant-input-suffix {
+  color: #fff;
+}
+.test-container .test-right .test-form .test-button {
+  background-color: #fff;
+  color: #000;
   border: none;
-  padding: 12px;
-  font-size: 16px;
+  padding: 0.75rem;
+  border-radius: 20px;
+  font-size: 1rem;
   font-weight: bold;
-  border-radius: 8px;
-  transition: 0.3s;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
-
-.auth-page .login-button:hover {
-  background-color: #ff5733;
+.test-container .test-right .test-form .test-button:hover {
+  background-color: #ddd;
 }
-
-/* Register Link */
-.auth-page .register-text {
-  margin-top: 12px;
-  font-size: 14px;
-  color: #ddd;
+.test-container .test-right .test-form .test-button.ant-btn-primary {
+  background-color: #fff;
+  border-color: #fff;
 }
-
-.auth-page .register-text a {
-  color: #ff7f50;
+.test-container .test-right .test-form .test-button.ant-btn-primary:hover {
+  background-color: #ddd;
+  border-color: #ddd;
+}
+.test-container .test-right .test-form .forgot-password {
+  color: #aaa;
+  font-size: 0.9rem;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 0.5rem;
+}
+.test-container .test-right .test-form .forgot-password:hover {
+  color: #fff;
+}
+.test-container .test-right .test-form .register-link {
+  color: #aaa;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+.test-container .test-right .test-form .register-link a {
+  color: #fff;
   text-decoration: none;
 }
+.test-container .test-right .test-form .register-link a:hover {
+  text-decoration: underline;
+}
 
-.auth-page .register-text a:hover {
+.test-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: #000;
+}
+.test-container .test-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.test-container .test-left h1, .test-container .test-left .h1 {
+  color: #fff;
+  font-size: 3rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: absolute;
+  top: 20%;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+.test-container .test-left .test-svg {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  opacity: 0.8;
+}
+.test-container .test-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #000;
+  color: #fff;
+}
+.test-container .test-right h2, .test-container .test-right .h2 {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.test-container .test-right .test-form {
+  width: 60%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.test-container .test-right .test-form .input-group {
+  display: flex;
+  align-items: center;
+  background-color: #333;
+  border-radius: 5px;
+  padding: 0.5rem;
+}
+.test-container .test-right .test-form .input-group .input-icon {
+  font-size: 1.2rem;
+  color: #fff;
+  margin-right: 0.5rem;
+}
+.test-container .test-right .test-form .input-group input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+}
+.test-container .test-right .test-form .input-group input::-moz-placeholder {
+  color: #aaa;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+.test-container .test-right .test-form .input-group input::placeholder {
+  color: #aaa;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+.test-container .test-right .test-form .test-button {
+  background-color: #fff;
+  color: #000;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.test-container .test-right .test-form .test-button:hover {
+  background-color: #ddd;
+}
+.test-container .test-right .test-form .forgot-password {
+  color: #aaa;
+  font-size: 0.9rem;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 0.5rem;
+}
+.test-container .test-right .test-form .forgot-password:hover {
+  color: #fff;
+}
+.test-container .test-right .test-form .register-link {
+  color: #aaa;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+.test-container .test-right .test-form .register-link a {
+  color: #fff;
+  text-decoration: none;
+}
+.test-container .test-right .test-form .register-link a:hover {
   text-decoration: underline;
 }
 

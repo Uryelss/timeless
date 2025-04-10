@@ -1,4 +1,4 @@
-// auth.js
+// AccessPage/Auth.js
 export const getToken = () => {
     return localStorage.getItem("token");
 };
@@ -26,6 +26,7 @@ export const hasRole = (allowedRoles = []) => {
 
 export const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     window.history.pushState(null, "", "/");
     window.location.href = "/login";
 };

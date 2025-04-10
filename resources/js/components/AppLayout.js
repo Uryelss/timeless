@@ -1,31 +1,41 @@
-// File: AppLayout.js
-import React from "react";
+// AppLayout.js
+import React, { useState, useEffect } from "react";
 import { getUserRole, isAuthenticated, getUser } from "./AccessPage/Auth";
-import FloatingChatButton from "./ChatPage/FloatingChatButton";
+import FloatingChatMenu from "./ChatPage/FloatingChatButton";
 import AdminChatInbox from "./ChatPage/AdminChatInbox";
 
 const AppLayout = ({ children }) => {
-    const user = getUser();
-    const userId = user ? user.id : null;
-    const role = getUserRole(); // should return "admin" for admins, "user" for regular users
+    const [authInfo, setAuthInfo] = useState({
+        user: getUser(),
+        role: getUserRole(),
+    });
 
-    console.log(
-        "User:",
-        user,
-        "Role:",
-        role,
-        "Authenticated:",
-        isAuthenticated()
-    );
+    useEffect(() => {
+        const handleAuthChange = () => {
+            setAuthInfo({
+                user: getUser(),
+                role: getUserRole(),
+            });
+        };
+        // Listen for changes from other tabs...
+        window.addEventListener("storage", handleAuthChange);
+        // Listen for our custom "authChange" event after login
+        window.addEventListener("authChange", handleAuthChange);
+        return () => {
+            window.removeEventListener("storage", handleAuthChange);
+            window.removeEventListener("authChange", handleAuthChange);
+        };
+    }, []);
 
     return (
         <div>
             {children}
             {isAuthenticated() &&
-                (role === "admin" ? (
+                authInfo.user &&
+                (authInfo.role === "admin" ? (
                     <AdminChatInbox />
                 ) : (
-                    <FloatingChatButton userId={userId} />
+                    <FloatingChatMenu userId={authInfo.user.id} />
                 ))}
         </div>
     );

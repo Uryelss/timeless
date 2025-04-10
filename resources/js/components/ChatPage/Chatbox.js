@@ -1,4 +1,4 @@
-// File: ChatBox.js
+// ChatPage/ChatBox.js
 import React, { useState, useEffect } from "react";
 import { Drawer, Input, Button, List, Avatar, message } from "antd";
 import axios from "axios";
@@ -34,8 +34,6 @@ const ChatBox = ({ visible, onClose, userId }) => {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-            console.log("Fetched user profile:", response.data);
-            // Assumes the API returns an object with a "profile_image" field.
             setUserProfileImage(response.data.profile_image);
         } catch (error) {
             console.error("Error fetching user profile:", error);

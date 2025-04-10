@@ -1,4 +1,4 @@
-// File: AdminChatBox.js
+// ChatPage/AdminChatBox.js
 import React, { useState, useEffect } from "react";
 import { Drawer, List, Input, Button, Avatar, message } from "antd";
 import axios from "axios";
@@ -9,7 +9,6 @@ const AdminChatBox = ({ visible, onClose, conversation, token }) => {
     const [messages, setMessages] = useState([]);
     const [newMsg, setNewMsg] = useState("");
 
-    // Log conversation data to verify it's being passed correctly
     useEffect(() => {
         if (conversation) {
             console.log("AdminChatBox conversation:", conversation);
@@ -18,7 +17,6 @@ const AdminChatBox = ({ visible, onClose, conversation, token }) => {
         }
     }, [conversation]);
 
-    // Fetch messages when the drawer is visible and conversation exists
     const fetchMessages = async () => {
         if (!conversation) return;
         try {
@@ -40,11 +38,10 @@ const AdminChatBox = ({ visible, onClose, conversation, token }) => {
             intervalId = setInterval(fetchMessages, 5000); // Poll every 5 seconds
         }
         return () => {
-            if (intervalId) clearInterval(intervalId); // Cleanup on unmount
+            if (intervalId) clearInterval(intervalId);
         };
     }, [visible, conversation]);
 
-    // Send a new message
     const sendMessage = async () => {
         if (!newMsg.trim() || !conversation) return;
         try {
@@ -58,33 +55,22 @@ const AdminChatBox = ({ visible, onClose, conversation, token }) => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             setMessages([...messages, response.data]);
-            setNewMsg(""); // Clear input after sending
+            setNewMsg("");
         } catch (error) {
             message.error("Failed to send message");
             console.error("Error sending message:", error);
         }
     };
 
-    // Guard clause to handle missing conversation data
     if (!conversation) {
         return <div>Loading conversation...</div>;
     }
 
-    // Extract and validate username and profile image with fallbacks
     const displayUsername = conversation?.username?.trim() || "Unknown";
     const profileImage =
         conversation?.profile_image?.trim() ||
         `https://via.placeholder.com/40?text=${displayUsername.charAt(0)}`;
 
-    // Log header data for debugging
-    console.log(
-        "Header - Username:",
-        displayUsername,
-        "Profile Image:",
-        profileImage
-    );
-
-    // Define header content with Avatar and username
     const headerContent = (
         <div style={{ display: "flex", alignItems: "center" }}>
             <Avatar src={profileImage} style={{ marginRight: 10 }} />

@@ -4,7 +4,6 @@ import axios from "axios";
 import { LockOutlined, UserOutlined, MailOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { isAuthenticated } from "../Auth";
-
 const Login = () => {
     const navigate = useNavigate();
     const [forgotPassword, setForgotPassword] = useState(false);
@@ -106,20 +105,27 @@ const Login = () => {
     };
 
     return (
-        <div className="auth-page">
-            <div className="login-container">
-                <div className="login-box">
-                    {!forgotPassword ? (
-                        <>
-                            <h2>Welcome Back</h2>
-                            <p className="sub-text">
-                                Please log in to your account
-                            </p>
-                            <Form
-                                name="login"
-                                onFinish={onFinishLogin}
-                                layout="vertical"
-                            >
+        <div className="test-container">
+            {/* Left Section with SVG */}
+            <div className="test-left">
+                <img
+                    src="/Images/test2.svg"
+                    alt="Timeless SVG"
+                    className="test-svg"
+                />
+            </div>
+
+            {/* Right Section with Form */}
+            <div className="test-right">
+                {!forgotPassword ? (
+                    <>
+                        <h2>WELCOME TO TIMELESS</h2>
+                        <Form
+                            name="login"
+                            onFinish={onFinishLogin}
+                            className="test-form"
+                        >
+                            <div className="input-group">
                                 <Form.Item
                                     name="email"
                                     rules={[
@@ -128,12 +134,17 @@ const Login = () => {
                                             message: "Please enter your email!",
                                         },
                                     ]}
+                                    noStyle
                                 >
                                     <Input
-                                        prefix={<UserOutlined />}
-                                        placeholder="Email"
+                                        prefix={
+                                            <UserOutlined className="input-icon" />
+                                        }
+                                        placeholder="ENTER YOUR EMAIL"
                                     />
                                 </Form.Item>
+                            </div>
+                            <div className="input-group">
                                 <Form.Item
                                     name="password"
                                     rules={[
@@ -143,197 +154,203 @@ const Login = () => {
                                                 "Please enter your password!",
                                         },
                                     ]}
+                                    noStyle
                                 >
                                     <Input.Password
-                                        prefix={<LockOutlined />}
-                                        placeholder="Password"
+                                        prefix={
+                                            <LockOutlined className="input-icon" />
+                                        }
+                                        placeholder="ENTER YOUR PASSWORD"
                                     />
                                 </Form.Item>
+                            </div>
+                            <Form.Item>
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    className="test-button"
+                                >
+                                    LOGIN
+                                </Button>
+                            </Form.Item>
+                            <a
+                                href="#"
+                                className="forgot-password"
+                                onClick={() => setForgotPassword(true)}
+                            >
+                                FORGOT PASSWORD?
+                            </a>
+                            <p className="register-link">
+                                NEW TO TIMELESS?{" "}
+                                <a href="/register">REGISTER HERE</a>
+                            </p>
+                        </Form>
+                    </>
+                ) : (
+                    <>
+                        <h2>RESET PASSWORD</h2>
+                        {resetStep === 1 ? (
+                            <Form
+                                name="forgot_password"
+                                onFinish={onEmailSubmit}
+                                className="test-form"
+                            >
+                                <div className="input-group">
+                                    <Form.Item
+                                        name="email"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message:
+                                                    "Please enter your email!",
+                                            },
+                                            {
+                                                type: "email",
+                                                message:
+                                                    "Please enter a valid email!",
+                                            },
+                                        ]}
+                                        noStyle
+                                    >
+                                        <Input
+                                            prefix={
+                                                <MailOutlined className="input-icon" />
+                                            }
+                                            placeholder="ENTER YOUR EMAIL"
+                                        />
+                                    </Form.Item>
+                                </div>
                                 <Form.Item>
                                     <Button
                                         type="primary"
                                         htmlType="submit"
-                                        className="login-button"
+                                        className="test-button"
                                     >
-                                        Login
+                                        SEND RESET CODE
                                     </Button>
                                 </Form.Item>
-                                <p className="register-text">
-                                    Don’t have an account?{" "}
-                                    <a href="/register">Register here</a>
-                                </p>
-                                <p className="forgot-password-text">
-                                    <a onClick={() => setForgotPassword(true)}>
-                                        Forgot Password?
+                                <p className="register-link">
+                                    <a onClick={() => setForgotPassword(false)}>
+                                        BACK TO LOGIN
                                     </a>
                                 </p>
                             </Form>
-                        </>
-                    ) : (
-                        <>
-                            <h2>Reset Password</h2>
-                            {resetStep === 1 ? (
-                                <>
-                                    <p>
-                                        Enter your email to receive a reset code
-                                    </p>
-                                    <Form
-                                        name="forgot_password"
-                                        onFinish={onEmailSubmit}
-                                        layout="vertical"
+                        ) : resetStep === 2 ? (
+                            <Form
+                                name="verify_code"
+                                onFinish={onCodeSubmit}
+                                className="test-form"
+                            >
+                                <div className="input-group">
+                                    <Form.Item
+                                        name="token"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message:
+                                                    "Please enter the reset code!",
+                                            },
+                                        ]}
+                                        noStyle
                                     >
-                                        <Form.Item
-                                            name="email"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message:
-                                                        "Please enter your email!",
-                                                },
-                                                {
-                                                    type: "email",
-                                                    message:
-                                                        "Please enter a valid email!",
-                                                },
-                                            ]}
-                                        >
-                                            <Input
-                                                prefix={<MailOutlined />}
-                                                placeholder="Email"
-                                            />
-                                        </Form.Item>
-                                        <Form.Item>
-                                            <Button
-                                                type="primary"
-                                                htmlType="submit"
-                                                className="login-button"
-                                            >
-                                                Send Reset Code
-                                            </Button>
-                                        </Form.Item>
-                                        <p>
-                                            <a
-                                                onClick={() =>
-                                                    setForgotPassword(false)
-                                                }
-                                            >
-                                                Back to Login
-                                            </a>
-                                        </p>
-                                    </Form>
-                                </>
-                            ) : resetStep === 2 ? (
-                                <>
-                                    <p>We have sent a code to {email}</p>
-                                    <Form
-                                        name="verify_code"
-                                        onFinish={onCodeSubmit}
-                                        layout="vertical"
+                                        <Input
+                                            placeholder="RESET CODE (e.g., AB5C87)"
+                                            maxLength={6}
+                                        />
+                                    </Form.Item>
+                                </div>
+                                <Form.Item>
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        className="test-button"
                                     >
-                                        <Form.Item
-                                            name="token"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message:
-                                                        "Please enter the reset code!",
-                                                },
-                                            ]}
-                                        >
-                                            <Input
-                                                placeholder="Reset Code (e.g., AB5C87)"
-                                                maxLength={6}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item>
-                                            <Button
-                                                type="primary"
-                                                htmlType="submit"
-                                                className="login-button"
-                                            >
-                                                Verify Code
-                                            </Button>
-                                        </Form.Item>
-                                        <p>
-                                            <a
-                                                onClick={() =>
-                                                    setForgotPassword(false)
-                                                }
-                                            >
-                                                Back to Login
-                                            </a>
-                                        </p>
-                                    </Form>
-                                </>
-                            ) : (
-                                <>
-                                    <p>Enter your new password for {email}</p>
-                                    <Form
-                                        name="reset_password"
-                                        onFinish={onResetSubmit}
-                                        layout="vertical"
+                                        VERIFY CODE
+                                    </Button>
+                                </Form.Item>
+                                <p className="register-link">
+                                    <a onClick={() => setForgotPassword(false)}>
+                                        BACK TO LOGIN
+                                    </a>
+                                </p>
+                            </Form>
+                        ) : (
+                            <Form
+                                name="reset_password"
+                                onFinish={onResetSubmit}
+                                className="test-form"
+                            >
+                                <Form.Item
+                                    name="token"
+                                    initialValue={email}
+                                    rules={[{ required: true }]}
+                                    style={{ display: "none" }}
+                                >
+                                    <Input type="hidden" />
+                                </Form.Item>
+                                <div className="input-group">
+                                    <Form.Item
+                                        name="password"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message:
+                                                    "Please enter new password!",
+                                            },
+                                            {
+                                                min: 8,
+                                                message:
+                                                    "Password must be at least 8 characters!",
+                                            },
+                                        ]}
+                                        noStyle
                                     >
-                                        <Form.Item
-                                            name="token"
-                                            initialValue={email} // Hidden field for token
-                                            rules={[{ required: true }]}
-                                            style={{ display: "none" }}
-                                        >
-                                            <Input type="hidden" />
-                                        </Form.Item>
-                                        <Form.Item
-                                            name="password"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message:
-                                                        "Please enter new password!",
-                                                },
-                                                {
-                                                    min: 8,
-                                                    message:
-                                                        "Password must be at least 8 characters!",
-                                                },
-                                            ]}
-                                        >
-                                            <Input.Password placeholder="New Password" />
-                                        </Form.Item>
-                                        <Form.Item
-                                            name="password_confirmation"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message:
-                                                        "Please confirm your password!",
-                                                },
-                                            ]}
-                                        >
-                                            <Input.Password placeholder="Confirm Password" />
-                                        </Form.Item>
-                                        <Form.Item>
-                                            <Button
-                                                type="primary"
-                                                htmlType="submit"
-                                                className="login-button"
-                                            >
-                                                Reset Password
-                                            </Button>
-                                        </Form.Item>
-                                        <p>
-                                            <a
-                                                onClick={() =>
-                                                    setForgotPassword(false)
-                                                }
-                                            >
-                                                Back to Login
-                                            </a>
-                                        </p>
-                                    </Form>
-                                </>
-                            )}
-                        </>
-                    )}
-                </div>
+                                        <Input.Password
+                                            prefix={
+                                                <LockOutlined className="input-icon" />
+                                            }
+                                            placeholder="NEW PASSWORD"
+                                        />
+                                    </Form.Item>
+                                </div>
+                                <div className="input-group">
+                                    <Form.Item
+                                        name="password_confirmation"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message:
+                                                    "Please confirm your password!",
+                                            },
+                                        ]}
+                                        noStyle
+                                    >
+                                        <Input.Password
+                                            prefix={
+                                                <LockOutlined className="input-icon" />
+                                            }
+                                            placeholder="CONFIRM PASSWORD"
+                                        />
+                                    </Form.Item>
+                                </div>
+                                <Form.Item>
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        className="test-button"
+                                    >
+                                        RESET PASSWORD
+                                    </Button>
+                                </Form.Item>
+                                <p className="register-link">
+                                    <a onClick={() => setForgotPassword(false)}>
+                                        BACK TO LOGIN
+                                    </a>
+                                </p>
+                            </Form>
+                        )}
+                    </>
+                )}
             </div>
         </div>
     );

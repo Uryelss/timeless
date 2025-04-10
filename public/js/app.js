@@ -199108,7 +199108,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   isAuthenticated: () => (/* binding */ isAuthenticated),
 /* harmony export */   logout: () => (/* binding */ logout)
 /* harmony export */ });
-// auth.js
+// AccessPage/Auth.js
 var getToken = function getToken() {
   return localStorage.getItem("token");
 };
@@ -199132,6 +199132,7 @@ var hasRole = function hasRole() {
 };
 var logout = function logout() {
   localStorage.removeItem("token");
+  localStorage.removeItem("user");
   window.history.pushState(null, "", "/");
   window.location.href = "/login";
 };
@@ -199266,198 +199267,224 @@ var Login = function Login() {
       });
     }
   };
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-    className: "auth-page",
-    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-      className: "login-container",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-        className: "login-box",
-        children: !forgotPassword ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h2", {
-            children: "Welcome Back"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
-            className: "sub-text",
-            children: "Please log in to your account"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
-            name: "login",
-            onFinish: onFinishLogin,
-            layout: "vertical",
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+    className: "test-container",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+      className: "test-left",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
+        src: "/Images/test2.svg",
+        alt: "Timeless SVG",
+        className: "test-svg"
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+      className: "test-right",
+      children: !forgotPassword ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h2", {
+          children: "WELCOME TO TIMELESS"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+          name: "login",
+          onFinish: onFinishLogin,
+          className: "test-form",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+            className: "input-group",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
               name: "email",
               rules: [{
                 required: true,
                 message: "Please enter your email!"
               }],
+              noStyle: true,
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-                prefix: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {}),
-                placeholder: "Email"
+                prefix: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {
+                  className: "input-icon"
+                }),
+                placeholder: "ENTER YOUR EMAIL"
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+            className: "input-group",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
               name: "password",
               rules: [{
                 required: true,
                 message: "Please enter your password!"
               }],
+              noStyle: true,
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Password, {
-                prefix: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {}),
-                placeholder: "Password"
+                prefix: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                  className: "input-icon"
+                }),
+                placeholder: "ENTER YOUR PASSWORD"
               })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-                type: "primary",
-                htmlType: "submit",
-                className: "login-button",
-                children: "Login"
-              })
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-              className: "register-text",
-              children: ["Don\u2019t have an account?", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
-                href: "/register",
-                children: "Register here"
-              })]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
-              className: "forgot-password-text",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
-                onClick: function onClick() {
-                  return setForgotPassword(true);
-                },
-                children: "Forgot Password?"
-              })
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+              type: "primary",
+              htmlType: "submit",
+              className: "test-button",
+              children: "LOGIN"
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
+            href: "#",
+            className: "forgot-password",
+            onClick: function onClick() {
+              return setForgotPassword(true);
+            },
+            children: "FORGOT PASSWORD?"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
+            className: "register-link",
+            children: ["NEW TO TIMELESS?", " ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
+              href: "/register",
+              children: "REGISTER HERE"
             })]
           })]
-        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h2", {
-            children: "Reset Password"
-          }), resetStep === 1 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
-              children: "Enter your email to receive a reset code"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
-              name: "forgot_password",
-              onFinish: onEmailSubmit,
-              layout: "vertical",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-                name: "email",
-                rules: [{
-                  required: true,
-                  message: "Please enter your email!"
-                }, {
-                  type: "email",
-                  message: "Please enter a valid email!"
-                }],
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-                  prefix: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {}),
-                  placeholder: "Email"
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-                  type: "primary",
-                  htmlType: "submit",
-                  className: "login-button",
-                  children: "Send Reset Code"
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
-                  onClick: function onClick() {
-                    return setForgotPassword(false);
-                  },
-                  children: "Back to Login"
-                })
-              })]
-            })]
-          }) : resetStep === 2 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-              children: ["We have sent a code to ", email]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
-              name: "verify_code",
-              onFinish: onCodeSubmit,
-              layout: "vertical",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-                name: "token",
-                rules: [{
-                  required: true,
-                  message: "Please enter the reset code!"
-                }],
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-                  placeholder: "Reset Code (e.g., AB5C87)",
-                  maxLength: 6
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-                  type: "primary",
-                  htmlType: "submit",
-                  className: "login-button",
-                  children: "Verify Code"
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
-                  onClick: function onClick() {
-                    return setForgotPassword(false);
-                  },
-                  children: "Back to Login"
-                })
-              })]
-            })]
-          }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
-              children: ["Enter your new password for ", email]
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
-              name: "reset_password",
-              onFinish: onResetSubmit,
-              layout: "vertical",
-              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-                name: "token",
-                initialValue: email // Hidden field for token
-                ,
-                rules: [{
-                  required: true
-                }],
-                style: {
-                  display: "none"
-                },
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-                  type: "hidden"
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-                name: "password",
-                rules: [{
-                  required: true,
-                  message: "Please enter new password!"
-                }, {
-                  min: 8,
-                  message: "Password must be at least 8 characters!"
-                }],
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Password, {
-                  placeholder: "New Password"
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-                name: "password_confirmation",
-                rules: [{
-                  required: true,
-                  message: "Please confirm your password!"
-                }],
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Password, {
-                  placeholder: "Confirm Password"
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
-                  type: "primary",
-                  htmlType: "submit",
-                  className: "login-button",
-                  children: "Reset Password"
-                })
-              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
-                children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
-                  onClick: function onClick() {
-                    return setForgotPassword(false);
-                  },
-                  children: "Back to Login"
-                })
-              })]
-            })]
+        })]
+      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("h2", {
+          children: "RESET PASSWORD"
+        }), resetStep === 1 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+          name: "forgot_password",
+          onFinish: onEmailSubmit,
+          className: "test-form",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+            className: "input-group",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+              name: "email",
+              rules: [{
+                required: true,
+                message: "Please enter your email!"
+              }, {
+                type: "email",
+                message: "Please enter a valid email!"
+              }],
+              noStyle: true,
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
+                prefix: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {
+                  className: "input-icon"
+                }),
+                placeholder: "ENTER YOUR EMAIL"
+              })
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+              type: "primary",
+              htmlType: "submit",
+              className: "test-button",
+              children: "SEND RESET CODE"
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+            className: "register-link",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
+              onClick: function onClick() {
+                return setForgotPassword(false);
+              },
+              children: "BACK TO LOGIN"
+            })
           })]
-        })
+        }) : resetStep === 2 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+          name: "verify_code",
+          onFinish: onCodeSubmit,
+          className: "test-form",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+            className: "input-group",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+              name: "token",
+              rules: [{
+                required: true,
+                message: "Please enter the reset code!"
+              }],
+              noStyle: true,
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
+                placeholder: "RESET CODE (e.g., AB5C87)",
+                maxLength: 6
+              })
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+              type: "primary",
+              htmlType: "submit",
+              className: "test-button",
+              children: "VERIFY CODE"
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+            className: "register-link",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
+              onClick: function onClick() {
+                return setForgotPassword(false);
+              },
+              children: "BACK TO LOGIN"
+            })
+          })]
+        }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+          name: "reset_password",
+          onFinish: onResetSubmit,
+          className: "test-form",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+            name: "token",
+            initialValue: email,
+            rules: [{
+              required: true
+            }],
+            style: {
+              display: "none"
+            },
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
+              type: "hidden"
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+            className: "input-group",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+              name: "password",
+              rules: [{
+                required: true,
+                message: "Please enter new password!"
+              }, {
+                min: 8,
+                message: "Password must be at least 8 characters!"
+              }],
+              noStyle: true,
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Password, {
+                prefix: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                  className: "input-icon"
+                }),
+                placeholder: "NEW PASSWORD"
+              })
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
+            className: "input-group",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+              name: "password_confirmation",
+              rules: [{
+                required: true,
+                message: "Please confirm your password!"
+              }],
+              noStyle: true,
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Password, {
+                prefix: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {
+                  className: "input-icon"
+                }),
+                placeholder: "CONFIRM PASSWORD"
+              })
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+              type: "primary",
+              htmlType: "submit",
+              className: "test-button",
+              children: "RESET PASSWORD"
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+            className: "register-link",
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
+              onClick: function onClick() {
+                return setForgotPassword(false);
+              },
+              children: "BACK TO LOGIN"
+            })
+          })]
+        })]
       })
-    })
+    })]
   });
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Login);
@@ -206623,7 +206650,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ChatPage_FloatingChatButton__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ChatPage/FloatingChatButton */ "./resources/js/components/ChatPage/FloatingChatButton.js");
 /* harmony import */ var _ChatPage_AdminChatInbox__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ChatPage/AdminChatInbox */ "./resources/js/components/ChatPage/AdminChatInbox.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
-// File: AppLayout.js
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+// AppLayout.js
 
 
 
@@ -206631,14 +206664,32 @@ __webpack_require__.r(__webpack_exports__);
 
 var AppLayout = function AppLayout(_ref) {
   var children = _ref.children;
-  var user = (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_1__.getUser)();
-  var userId = user ? user.id : null;
-  var role = (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_1__.getUserRole)(); // should return "admin" for admins, "user" for regular users
-
-  console.log("User:", user, "Role:", role, "Authenticated:", (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_1__.isAuthenticated)());
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      user: (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_1__.getUser)(),
+      role: (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_1__.getUserRole)()
+    }),
+    _useState2 = _slicedToArray(_useState, 2),
+    authInfo = _useState2[0],
+    setAuthInfo = _useState2[1];
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var handleAuthChange = function handleAuthChange() {
+      setAuthInfo({
+        user: (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_1__.getUser)(),
+        role: (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_1__.getUserRole)()
+      });
+    };
+    // Listen for changes from other tabs...
+    window.addEventListener("storage", handleAuthChange);
+    // Listen for our custom "authChange" event after login
+    window.addEventListener("authChange", handleAuthChange);
+    return function () {
+      window.removeEventListener("storage", handleAuthChange);
+      window.removeEventListener("authChange", handleAuthChange);
+    };
+  }, []);
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)("div", {
-    children: [children, (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_1__.isAuthenticated)() && (role === "admin" ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_ChatPage_AdminChatInbox__WEBPACK_IMPORTED_MODULE_3__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_ChatPage_FloatingChatButton__WEBPACK_IMPORTED_MODULE_2__["default"], {
-      userId: userId
+    children: [children, (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_1__.isAuthenticated)() && authInfo.user && (authInfo.role === "admin" ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_ChatPage_AdminChatInbox__WEBPACK_IMPORTED_MODULE_3__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_ChatPage_FloatingChatButton__WEBPACK_IMPORTED_MODULE_2__["default"], {
+      userId: authInfo.user.id
     }))]
   });
 };
@@ -206848,7 +206899,7 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-// File: AdminChatBox.js
+// ChatPage/AdminChatBox.js
 
 
 
@@ -206868,8 +206919,6 @@ var AdminChatBox = function AdminChatBox(_ref) {
     _useState4 = _slicedToArray(_useState3, 2),
     newMsg = _useState4[0],
     setNewMsg = _useState4[1];
-
-  // Log conversation data to verify it's being passed correctly
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (conversation) {
       console.log("AdminChatBox conversation:", conversation);
@@ -206877,8 +206926,6 @@ var AdminChatBox = function AdminChatBox(_ref) {
       console.log("No conversation data available.");
     }
   }, [conversation]);
-
-  // Fetch messages when the drawer is visible and conversation exists
   var fetchMessages = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var response;
@@ -206925,11 +206972,9 @@ var AdminChatBox = function AdminChatBox(_ref) {
       intervalId = setInterval(fetchMessages, 5000); // Poll every 5 seconds
     }
     return function () {
-      if (intervalId) clearInterval(intervalId); // Cleanup on unmount
+      if (intervalId) clearInterval(intervalId);
     };
   }, [visible, conversation]);
-
-  // Send a new message
   var sendMessage = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
       var response;
@@ -206956,7 +207001,7 @@ var AdminChatBox = function AdminChatBox(_ref) {
           case 5:
             response = _context2.sent;
             setMessages([].concat(_toConsumableArray(messages), [response.data]));
-            setNewMsg(""); // Clear input after sending
+            setNewMsg("");
             _context2.next = 14;
             break;
           case 10:
@@ -206974,22 +207019,13 @@ var AdminChatBox = function AdminChatBox(_ref) {
       return _ref3.apply(this, arguments);
     };
   }();
-
-  // Guard clause to handle missing conversation data
   if (!conversation) {
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
       children: "Loading conversation..."
     });
   }
-
-  // Extract and validate username and profile image with fallbacks
   var displayUsername = (conversation === null || conversation === void 0 || (_conversation$usernam = conversation.username) === null || _conversation$usernam === void 0 ? void 0 : _conversation$usernam.trim()) || "Unknown";
   var profileImage = (conversation === null || conversation === void 0 || (_conversation$profile = conversation.profile_image) === null || _conversation$profile === void 0 ? void 0 : _conversation$profile.trim()) || "https://via.placeholder.com/40?text=".concat(displayUsername.charAt(0));
-
-  // Log header data for debugging
-  console.log("Header - Username:", displayUsername, "Profile Image:", profileImage);
-
-  // Define header content with Avatar and username
   var headerContent = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
     style: {
       display: "flex",
@@ -207050,9 +207086,9 @@ var AdminChatBox = function AdminChatBox(_ref) {
 
 /***/ }),
 
-/***/ "./resources/js/components/ChatPage/Chatbox.js":
+/***/ "./resources/js/components/ChatPage/ChatBox.js":
 /*!*****************************************************!*\
-  !*** ./resources/js/components/ChatPage/Chatbox.js ***!
+  !*** ./resources/js/components/ChatPage/ChatBox.js ***!
   \*****************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -207084,7 +207120,7 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-// File: ChatBox.js
+// ChatPage/ChatBox.js
 
 
 
@@ -207162,20 +207198,18 @@ var ChatBox = function ChatBox(_ref) {
             });
           case 3:
             response = _context2.sent;
-            console.log("Fetched user profile:", response.data);
-            // Assumes the API returns an object with a "profile_image" field.
             setUserProfileImage(response.data.profile_image);
-            _context2.next = 11;
+            _context2.next = 10;
             break;
-          case 8:
-            _context2.prev = 8;
+          case 7:
+            _context2.prev = 7;
             _context2.t0 = _context2["catch"](0);
             console.error("Error fetching user profile:", _context2.t0);
-          case 11:
+          case 10:
           case "end":
             return _context2.stop();
         }
-      }, _callee2, null, [[0, 8]]);
+      }, _callee2, null, [[0, 7]]);
     }));
     return function fetchUserProfile() {
       return _ref3.apply(this, arguments);
@@ -207295,7 +207329,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/MessageOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/PhoneOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/QuestionCircleOutlined.js");
-/* harmony import */ var _Chatbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Chatbox */ "./resources/js/components/ChatPage/Chatbox.js");
+/* harmony import */ var _ChatBox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ChatBox */ "./resources/js/components/ChatPage/ChatBox.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -207303,11 +207337,11 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-// File: FloatingChatMenu.js
+// ChatPage/FloatingChatMenu.js
 
 
 
- // Make sure the casing matches your file
+ // Ensure the file name and casing match
 
 var FloatingChatMenu = function FloatingChatMenu(_ref) {
   var userId = _ref.userId;
@@ -207388,7 +207422,7 @@ var FloatingChatMenu = function FloatingChatMenu(_ref) {
           }, "order")]
         }, "support")]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_Chatbox__WEBPACK_IMPORTED_MODULE_1__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ChatBox__WEBPACK_IMPORTED_MODULE_1__["default"], {
       visible: chatVisible,
       onClose: function onClose() {
         return setChatVisible(false);
