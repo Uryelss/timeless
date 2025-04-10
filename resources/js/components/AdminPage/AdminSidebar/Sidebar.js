@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
     DashboardOutlined,
     ShoppingOutlined,
@@ -12,10 +12,10 @@ import {
     MenuUnfoldOutlined,
     LogoutOutlined,
     StarOutlined,
-    CreditCardOutlined, // New Transaction Icon
+    CreditCardOutlined,
 } from "@ant-design/icons";
 import { Button, Menu, Modal } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../../AccessPage/Auth";
 
 const items = [
@@ -63,7 +63,7 @@ const items = [
     },
     {
         key: "transaction",
-        icon: <CreditCardOutlined />, // Added Transaction Icon
+        icon: <CreditCardOutlined />,
         label: "Transaction",
         path: "/Transactions",
     },
@@ -92,6 +92,7 @@ const Sidebar = () => {
     const [collapsed, setCollapsed] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const toggleCollapsed = () => {
         setCollapsed(!collapsed);
@@ -115,6 +116,21 @@ const Sidebar = () => {
         return null;
     };
 
+    // Compute the selected key based on the current path
+    const selectedKey = useMemo(() => {
+        const findSelectedKey = (menuItems, pathname) => {
+            for (let item of menuItems) {
+                if (item.path === pathname) return item.key;
+                if (item.children) {
+                    const childKey = findSelectedKey(item.children, pathname);
+                    if (childKey) return childKey;
+                }
+            }
+            return null;
+        };
+        return findSelectedKey(items, location.pathname) || "dashboard";
+    }, [location.pathname]);
+
     const handleLogout = () => {
         setIsLoggingOut(true);
         setTimeout(() => {
@@ -132,7 +148,7 @@ const Sidebar = () => {
                 {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             </Button>
             <Menu
-                defaultSelectedKeys={["dashboard"]}
+                selectedKeys={[selectedKey]}
                 mode="inline"
                 theme="dark"
                 inlineCollapsed={collapsed}

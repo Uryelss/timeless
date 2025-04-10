@@ -200136,22 +200136,28 @@ var CustomerReview = function CustomerReview() {
     title: "Customer Image",
     key: "customerImage",
     render: function render(text, record) {
-      // Since your API doesn't return a nested profile with an image, we use a placeholder.
+      // Use profile_image from the API response, if available
+      var profileImage = record.profile_image || record.image;
+      // Construct the full URL, similar to product_image logic
+      var imageUrl = profileImage ? profileImage.startsWith("http") ? profileImage : "http://localhost:8000".concat(profileImage) : "https://via.placeholder.com/60?text=Customer"; // Fallback to placeholder
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-        src: "https://via.placeholder.com/60?text=Customer",
+        src: imageUrl,
         alt: "Customer",
         style: {
           width: 60,
           height: 60,
           objectFit: "cover",
           borderRadius: "50%"
+        },
+        onError: function onError(e) {
+          // Fallback to placeholder if image fails to load
+          e.target.src = "https://via.placeholder.com/60?text=Customer";
         }
       });
     }
   }, {
     title: "Customer Name",
     key: "customerName",
-    // Use the "username" field from your API response
     render: function render(text, record) {
       return record.username || "N/A";
     }
@@ -200159,8 +200165,6 @@ var CustomerReview = function CustomerReview() {
     title: "Product Image",
     key: "productImage",
     render: function render(text, record) {
-      // Ensure the product_image URL is correctly built.
-      // If the URL already starts with "http", use it; otherwise, prepend your API host.
       var productImage = record.product_image;
       var imageUrl = productImage.startsWith("http") ? productImage : "http://localhost:8000".concat(productImage);
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
@@ -200324,23 +200328,20 @@ var RecentOrders = function RecentOrders() {
     title: "Customer Image",
     key: "customerImage",
     render: function render(text, record) {
-      return record.profile && record.profile.profile_image ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-        src: "http://localhost:8000/storage/".concat(record.profile.profile_image),
+      // Use profile_image as a full URL or fallback to placeholder
+      var imageUrl = record.profile && record.profile.profile_image ? record.profile.profile_image : "https://via.placeholder.com/60?text=Customer";
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+        src: imageUrl,
         alt: "Customer",
         style: {
           width: 60,
           height: 60,
           objectFit: "cover",
           borderRadius: "50%"
-        }
-      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
-        src: "https://via.placeholder.com/60?text=Customer",
-        alt: "Customer",
-        style: {
-          width: 60,
-          height: 60,
-          objectFit: "cover",
-          borderRadius: "50%"
+        },
+        onError: function onError(e) {
+          // Fallback to placeholder if image fails to load
+          e.target.src = "https://via.placeholder.com/60?text=Customer";
         }
       });
     }
@@ -202056,7 +202057,6 @@ var items = [{
 }, {
   key: "transaction",
   icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {}),
-  // Added Transaction Icon
   label: "Transaction",
   path: "/Transactions"
 }, {
@@ -202085,6 +202085,7 @@ var Sidebar = function Sidebar() {
     isLoggingOut = _useState4[0],
     setIsLoggingOut = _useState4[1];
   var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_13__.useNavigate)();
+  var location = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_13__.useLocation)();
   var toggleCollapsed = function toggleCollapsed() {
     setCollapsed(!collapsed);
   };
@@ -202114,6 +202115,30 @@ var Sidebar = function Sidebar() {
     }
     return null;
   };
+
+  // Compute the selected key based on the current path
+  var selectedKey = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(function () {
+    var _findSelectedKey = function findSelectedKey(menuItems, pathname) {
+      var _iterator2 = _createForOfIteratorHelper(menuItems),
+        _step2;
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var item = _step2.value;
+          if (item.path === pathname) return item.key;
+          if (item.children) {
+            var childKey = _findSelectedKey(item.children, pathname);
+            if (childKey) return childKey;
+          }
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+      return null;
+    };
+    return _findSelectedKey(items, location.pathname) || "dashboard";
+  }, [location.pathname]);
   var handleLogout = function handleLogout() {
     setIsLoggingOut(true);
     setTimeout(function () {
@@ -202130,7 +202155,7 @@ var Sidebar = function Sidebar() {
       },
       children: collapsed ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {})
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
-      defaultSelectedKeys: ["dashboard"],
+      selectedKeys: [selectedKey],
       mode: "inline",
       theme: "dark",
       inlineCollapsed: collapsed,
