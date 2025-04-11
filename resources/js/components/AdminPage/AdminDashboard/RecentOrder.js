@@ -49,10 +49,15 @@ const RecentOrders = () => {
         {
             title: "Customer Image",
             key: "customerImage",
-            render: (text, record) =>
-                record.profile && record.profile.profile_image ? (
+            render: (text, record) => {
+                // Use profile_image as a full URL or fallback to placeholder
+                const imageUrl =
+                    record.profile && record.profile.profile_image
+                        ? record.profile.profile_image
+                        : "https://via.placeholder.com/60?text=Customer";
+                return (
                     <img
-                        src={`http://localhost:8000/storage/${record.profile.profile_image}`}
+                        src={imageUrl}
                         alt="Customer"
                         style={{
                             width: 60,
@@ -60,19 +65,13 @@ const RecentOrders = () => {
                             objectFit: "cover",
                             borderRadius: "50%",
                         }}
-                    />
-                ) : (
-                    <img
-                        src="https://via.placeholder.com/60?text=Customer"
-                        alt="Customer"
-                        style={{
-                            width: 60,
-                            height: 60,
-                            objectFit: "cover",
-                            borderRadius: "50%",
+                        onError={(e) => {
+                            // Fallback to placeholder if image fails to load
+                            e.target.src = "https://via.placeholder.com/60?text=Customer";
                         }}
                     />
-                ),
+                );
+            },
         },
         {
             title: "Customer Name",

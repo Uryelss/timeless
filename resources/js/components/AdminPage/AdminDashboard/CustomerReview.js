@@ -35,16 +35,27 @@ const CustomerReview = () => {
             title: "Customer Image",
             key: "customerImage",
             render: (text, record) => {
-                // Since your API doesn't return a nested profile with an image, we use a placeholder.
+                // Use profile_image from the API response, if available
+                const profileImage = record.profile_image || record.image;
+                // Construct the full URL, similar to product_image logic
+                const imageUrl = profileImage
+                    ? profileImage.startsWith("http")
+                        ? profileImage
+                        : `http://localhost:8000${profileImage}`
+                    : "https://via.placeholder.com/60?text=Customer"; // Fallback to placeholder
                 return (
                     <img
-                        src="https://via.placeholder.com/60?text=Customer"
+                        src={imageUrl}
                         alt="Customer"
                         style={{
                             width: 60,
                             height: 60,
                             objectFit: "cover",
                             borderRadius: "50%",
+                        }}
+                        onError={(e) => {
+                            // Fallback to placeholder if image fails to load
+                            e.target.src = "https://via.placeholder.com/60?text=Customer";
                         }}
                     />
                 );
@@ -53,15 +64,12 @@ const CustomerReview = () => {
         {
             title: "Customer Name",
             key: "customerName",
-            // Use the "username" field from your API response
             render: (text, record) => record.username || "N/A",
         },
         {
             title: "Product Image",
             key: "productImage",
             render: (text, record) => {
-                // Ensure the product_image URL is correctly built.
-                // If the URL already starts with "http", use it; otherwise, prepend your API host.
                 const productImage = record.product_image;
                 const imageUrl = productImage.startsWith("http")
                     ? productImage
@@ -119,4 +127,4 @@ const CustomerReview = () => {
     );
 };
 
-export default CustomerReview;
+export default CustomerReview;  

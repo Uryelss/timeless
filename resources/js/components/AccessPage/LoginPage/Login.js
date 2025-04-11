@@ -8,10 +8,9 @@ import { isAuthenticated } from "../Auth";
 const Login = () => {
     const navigate = useNavigate();
     const [forgotPassword, setForgotPassword] = useState(false);
-    const [resetStep, setResetStep] = useState(1); // 1: Email, 2: Code, 3: Password
+    const [resetStep, setResetStep] = useState(1);
     const [email, setEmail] = useState("");
 
-    // Redirect to dashboard or user-home if already authenticated
     useEffect(() => {
         if (isAuthenticated()) {
             const user = JSON.parse(localStorage.getItem("user"));
@@ -21,7 +20,6 @@ const Login = () => {
         }
     }, [navigate]);
 
-    // Attach popstate listener (for browser back/forward navigation)
     useEffect(() => {
         const handlePopState = () => {
             if (isAuthenticated()) {
@@ -38,7 +36,6 @@ const Login = () => {
         };
     }, [navigate]);
 
-    // Login form submission handler
     const onFinishLogin = (values) => {
         axios
             .post("http://localhost:8000/api/login", values)
@@ -51,11 +48,9 @@ const Login = () => {
                 localStorage.setItem("userId", response.data.user.id);
                 message.success("Login successful!");
 
-                // Dispatch custom event for auth change
                 window.dispatchEvent(new Event("authChange"));
 
                 const user = response.data.user;
-                // Update current URL in history if needed
                 window.history.pushState(null, "", window.location.href);
                 if (user.role && user.role.name === "admin") {
                     navigate("/dashboard", { replace: true });
@@ -68,7 +63,6 @@ const Login = () => {
             });
     };
 
-    // Forgot password step 1: Submit email
     const onEmailSubmit = (values) => {
         axios
             .post("http://localhost:8000/api/forgot-password", {
@@ -86,7 +80,6 @@ const Login = () => {
             });
     };
 
-    // Forgot password step 2: Verify reset code
     const onCodeSubmit = (values) => {
         axios
             .post("http://localhost:8000/api/verify-reset-code", {
@@ -95,14 +88,13 @@ const Login = () => {
             })
             .then((response) => {
                 message.success(response.data.message);
-                setResetStep(3); // Move to password step
+                setResetStep(3);
             })
             .catch((error) => {
                 message.error(error.response?.data?.message || "Invalid code");
             });
     };
 
-    // Forgot password step 3: Reset the password
     const onResetSubmit = (values) => {
         axios
             .post("http://localhost:8000/api/reset-password", {
@@ -125,7 +117,6 @@ const Login = () => {
 
     return (
         <div className="test-container">
-            {/* Left Section with SVG */}
             <div className="test-left">
                 <img
                     src="/Images/test2.svg"
@@ -134,7 +125,6 @@ const Login = () => {
                 />
             </div>
 
-            {/* Right Section with Form */}
             <div className="test-right">
                 {!forgotPassword ? (
                     <>

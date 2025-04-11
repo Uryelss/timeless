@@ -401,7 +401,7 @@ const OrderTracking = () => {
                                     </Button>
                                     {order?.shipping?.shipping_status_id !==
                                         5 &&
-                                        [1, 2, 3].includes(
+                                        [1, 2].includes(
                                             order?.shipping?.shipping_status_id
                                         ) && (
                                             <Button

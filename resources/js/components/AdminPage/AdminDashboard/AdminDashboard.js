@@ -297,7 +297,7 @@ const AdminDashboard = () => {
                         background: colorBgContainer,
                     }}
                 >
-                    Admin Dashboard ©{new Date().getFullYear()}
+                    TIMELESS ADMIN ©{new Date().getFullYear()}
                 </Footer>
             </Layout>
         </Layout>

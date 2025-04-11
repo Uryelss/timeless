@@ -23,7 +23,7 @@ const { Search } = Input;
 const { Option } = Select;
 
 const normalizeSize = (size) =>
-    size.toString().toLowerCase().replace(/\s+/g, "");
+    size ? size.toString().toLowerCase().replace(/\s+/g, "") : "";
 
 const CategoryCollection = () => {
     const { category } = useParams();
@@ -45,7 +45,6 @@ const CategoryCollection = () => {
     const [strapMaterialMapping, setStrapMaterialMapping] = useState({});
     const [searchTerm, setSearchTerm] = useState("");
     const [sortBy, setSortBy] = useState("default");
-    const [filterKey, setFilterKey] = useState(0);
     const [showAddToCartModal, setShowAddToCartModal] = useState(false);
     const [modalProduct, setModalProduct] = useState(null);
     const [modalCurrentMainImage, setModalCurrentMainImage] = useState("");
@@ -58,21 +57,19 @@ const CategoryCollection = () => {
     const baseUrl = "http://localhost:8000";
     const isLoggedIn = Boolean(localStorage.getItem("token"));
 
-    const fetchProducts = () => {
-        axios
-            .get(PRODUCTS_API)
-            .then((res) => {
-                const filtered = res.data.filter(
-                    (prod) =>
-                        prod.category_id &&
-                        prod.category_id.toString() === category.toString()
-                );
-                setProducts(filtered);
-            })
-            .catch((err) => {
-                message.error("Error fetching products");
-                console.error(err);
-            });
+    const fetchProducts = async () => {
+        try {
+            const res = await axios.get(PRODUCTS_API);
+            const filtered = res.data.filter(
+                (prod) =>
+                    prod.category_id &&
+                    prod.category_id.toString() === category.toString()
+            );
+            setProducts(filtered);
+        } catch (err) {
+            message.error("Error fetching products");
+            console.error(err);
+        }
     };
 
     useEffect(() => {
@@ -82,12 +79,18 @@ const CategoryCollection = () => {
     useEffect(() => {
         const brands = Array.from(
             new Set(
-                products.map((p) => p.brand?.name || p.brand).filter(Boolean)
+                products
+                    .map((p) => p.brand?.name || p.brand)
+                    .filter(Boolean)
+                    .map((b) => b.trim())
             )
         );
         const genders = Array.from(
             new Set(
-                products.map((p) => p.gender?.name || p.gender).filter(Boolean)
+                products
+                    .map((p) => p.gender?.name || p.gender)
+                    .filter(Boolean)
+                    .map((g) => g.trim())
             )
         );
         const movements = Array.from(
@@ -95,6 +98,7 @@ const CategoryCollection = () => {
                 products
                     .map((p) => p.movement?.name || p.movement)
                     .filter(Boolean)
+                    .map((m) => m.trim())
             )
         );
         setFilterOptions((prev) => ({
@@ -118,7 +122,7 @@ const CategoryCollection = () => {
                     const mapping = {};
                     const names = available.map((mat) => {
                         mapping[mat.id] = mat.name;
-                        return mat.name;
+                        return mat.name.trim();
                     });
                     setStrapMaterialMapping(mapping);
                     setFilterOptions((prev) => ({
@@ -155,27 +159,32 @@ const CategoryCollection = () => {
                 : [...prev[filterCategory], value];
             return { ...prev, [filterCategory]: updated };
         });
-        setFilterKey((prev) => prev + 1);
     };
 
     const getDisplayFilters = () => {
         const displays = [];
         Object.keys(filters).forEach((key) => {
-            if (filters[key].length > 0) {
-                filters[key].forEach((value) => {
-                    displays.push(value);
-                });
-            }
+            filters[key].forEach((value) => {
+                displays.push(value);
+            });
         });
         return displays;
     };
 
     const getFilteredProducts = () => {
         let filtered = products.filter((product) => {
-            const productBrand = (product.brand?.name || product.brand || "")
+            const productBrand = (
+                product.brand?.name ||
+                product.brand ||
+                ""
+            )
                 .toLowerCase()
                 .trim();
-            const productGender = (product.gender?.name || product.gender || "")
+            const productGender = (
+                product.gender?.name ||
+                product.gender ||
+                ""
+            )
                 .toLowerCase()
                 .trim();
             const productMovement = (
@@ -185,10 +194,11 @@ const CategoryCollection = () => {
             )
                 .toLowerCase()
                 .trim();
-            const productStrapMaterial =
-                strapMaterialMapping[product.strap_material_id]
-                    ?.toLowerCase()
-                    .trim() || "";
+            const productStrapMaterial = (
+                strapMaterialMapping[product.strap_material_id] || ""
+            )
+                .toLowerCase()
+                .trim();
             const matchesBrand =
                 filters.brand.length === 0 ||
                 filters.brand.some(
@@ -216,34 +226,37 @@ const CategoryCollection = () => {
                 matchesStrapMaterial
             );
         });
+
         if (searchTerm) {
             filtered = filtered.filter((product) =>
                 product.product_name
                     .toLowerCase()
-                    .includes(searchTerm.toLowerCase())
+                    .includes(searchTerm.toLowerCase().trim())
             );
         }
+
         if (sortBy === "priceAsc") {
             filtered.sort((a, b) => {
                 const priceA = parseFloat(
-                    a.price.toString().replace("P", "").replace(/,/g, "")
+                    a.price.toString().replace("P", "").replace(/,/g, "") || 0
                 );
                 const priceB = parseFloat(
-                    b.price.toString().replace("P", "").replace(/,/g, "")
+                    b.price.toString().replace("P", "").replace(/,/g, "") || 0
                 );
                 return priceA - priceB;
             });
         } else if (sortBy === "priceDesc") {
             filtered.sort((a, b) => {
                 const priceA = parseFloat(
-                    a.price.toString().replace("P", "").replace(/,/g, "")
+                    a.price.toString().replace("P", "").replace(/,/g, "") || 0
                 );
                 const priceB = parseFloat(
-                    b.price.toString().replace("P", "").replace(/,/g, "")
+                    b.price.toString().replace("P", "").replace(/,/g, "") || 0
                 );
                 return priceB - priceA;
             });
         }
+
         return filtered;
     };
 
@@ -256,7 +269,6 @@ const CategoryCollection = () => {
         });
         setSearchTerm("");
         setSortBy("default");
-        setFilterKey((prev) => prev + 1);
     };
 
     const handleDirectAddToCart = (product, size) => {
@@ -300,9 +312,13 @@ const CategoryCollection = () => {
                 ? `${baseUrl}/storage/${product.main_image}`
                 : "/placeholder.jpg",
             size: size,
-            price: product.price,
+            price: parseFloat(
+                product.price.toString().replace("P", "").replace(/,/g, "")
+            ),
             quantity: 1,
-            total: product.price,
+            total: parseFloat(
+                product.price.toString().replace("P", "").replace(/,/g, "")
+            ),
         };
         const storedCart = localStorage.getItem("cart");
         let cart = storedCart ? JSON.parse(storedCart) : [];
@@ -491,20 +507,14 @@ const CategoryCollection = () => {
                     <div
                         style={{
                             display: "flex",
-                            flexWrap: "nowrap",
+                            flexWrap: "wrap",
                             gap: "8px",
-                            flexDirection: "row",
-                            width: "90px",
                         }}
                     >
                         {renderSizeOptions(modalProduct)}
                     </div>
                     {modalSelectedSize && modalSelectedStock !== null && (
-                        <p
-                            style={{
-                                marginTop: "8px",
-                            }}
-                        >
+                        <p style={{ marginTop: "8px" }}>
                             Stock: {modalSelectedStock}
                             {modalSelectedStock === 0 && " (Out of Stock)"}
                         </p>
@@ -529,7 +539,7 @@ const CategoryCollection = () => {
     const displayFilters = getDisplayFilters();
 
     return (
-        <Layout style={{ minHeight: "100vh" }} key={filterKey}>
+        <Layout style={{ minHeight: "100vh" }}>
             <Navbar />
             <div style={{ margin: "24px" }}>
                 <BrandSlider />
@@ -561,78 +571,86 @@ const CategoryCollection = () => {
                     <div>
                         <div style={{ marginBottom: "16px" }}>
                             <h3>BRAND</h3>
-                            <div className="horizontal-checkboxes">
-                                {filterOptions.brand.map((brand) => (
-                                    <Checkbox
-                                        key={brand}
-                                        onChange={() =>
-                                            handleFilterChange("brand", brand)
-                                        }
-                                        checked={filters.brand.includes(brand)}
-                                    >
-                                        {brand}
-                                    </Checkbox>
-                                ))}
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                {filterOptions.brand.length > 0 ? (
+                                    filterOptions.brand.map((brand) => (
+                                        <Checkbox
+                                            key={brand}
+                                            onChange={() =>
+                                                handleFilterChange("brand", brand)
+                                            }
+                                            checked={filters.brand.includes(brand)}
+                                            style={{ marginBottom: "8px" }}
+                                        >
+                                            {brand}
+                                        </Checkbox>
+                                    ))
+                                ) : (
+                                    <span>No brands available</span>
+                                )}
                             </div>
                         </div>
                         <div style={{ marginBottom: "16px" }}>
                             <h3>GENDER</h3>
-                            <div className="horizontal-checkboxes">
-                                {filterOptions.gender.map((gender) => (
-                                    <Checkbox
-                                        key={gender}
-                                        onChange={() =>
-                                            handleFilterChange("gender", gender)
-                                        }
-                                        checked={filters.gender.includes(
-                                            gender
-                                        )}
-                                    >
-                                        {gender}
-                                    </Checkbox>
-                                ))}
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                {filterOptions.gender.length > 0 ? (
+                                    filterOptions.gender.map((gender) => (
+                                        <Checkbox
+                                            key={gender}
+                                            onChange={() =>
+                                                handleFilterChange("gender", gender)
+                                            }
+                                            checked={filters.gender.includes(gender)}
+                                            style={{ marginBottom: "8px" }}
+                                        >
+                                            {gender}
+                                        </Checkbox>
+                                    ))
+                                ) : (
+                                    <span>No genders available</span>
+                                )}
                             </div>
                         </div>
                         <div style={{ marginBottom: "16px" }}>
                             <h3>MOVEMENT</h3>
-                            <div className="horizontal-checkboxes">
-                                {filterOptions.movement.map((movement) => (
-                                    <Checkbox
-                                        key={movement}
-                                        onChange={() =>
-                                            handleFilterChange(
-                                                "movement",
-                                                movement
-                                            )
-                                        }
-                                        checked={filters.movement.includes(
-                                            movement
-                                        )}
-                                    >
-                                        {movement}
-                                    </Checkbox>
-                                ))}
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                {filterOptions.movement.length > 0 ? (
+                                    filterOptions.movement.map((movement) => (
+                                        <Checkbox
+                                            key={movement}
+                                            onChange={() =>
+                                                handleFilterChange("movement", movement)
+                                            }
+                                            checked={filters.movement.includes(movement)}
+                                            style={{ marginBottom: "8px" }}
+                                        >
+                                            {movement}
+                                        </Checkbox>
+                                    ))
+                                ) : (
+                                    <span>No movements available</span>
+                                )}
                             </div>
                         </div>
                         <div style={{ marginBottom: "16px" }}>
                             <h3>STRAP MATERIAL</h3>
-                            <div className="horizontal-checkboxes">
-                                {filterOptions.strapMaterial.map((material) => (
-                                    <Checkbox
-                                        key={material}
-                                        onChange={() =>
-                                            handleFilterChange(
-                                                "strapMaterial",
-                                                material
-                                            )
-                                        }
-                                        checked={filters.strapMaterial.includes(
-                                            material
-                                        )}
-                                    >
-                                        {material}
-                                    </Checkbox>
-                                ))}
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                {filterOptions.strapMaterial.length > 0 ? (
+                                    filterOptions.strapMaterial.map((material) => (
+                                        <Checkbox
+                                            key={material}
+                                            onChange={() =>
+                                                handleFilterChange("strapMaterial", material)
+                                            }
+                                            checked={filters.strapMaterial.includes(material)}
+                                            style={{ marginBottom: "8px" }}
+                                        >
+                                            {material}
+                                        </Checkbox>
+                                    ))
+                                ) : (
+                                    <span>No strap materials available</span>
+                                )}
                             </div>
                         </div>
                         <Button
@@ -643,6 +661,14 @@ const CategoryCollection = () => {
                                 borderColor: "#d9d9d9",
                             }}
                             onClick={clearFilters}
+                            disabled={
+                                !filters.brand.length &&
+                                !filters.gender.length &&
+                                !filters.movement.length &&
+                                !filters.strapMaterial.length &&
+                                !searchTerm &&
+                                sortBy === "default"
+                            }
                         >
                             Clear Filter
                         </Button>
@@ -664,119 +690,115 @@ const CategoryCollection = () => {
                                 style={{ width: 300 }}
                             />
                             <Select
-                                defaultValue="default"
+                                value={sortBy}
                                 style={{ width: 150 }}
                                 onChange={setSortBy}
                             >
                                 <Option value="default">Sort By</Option>
-                                <Option value="priceAsc">
-                                    Price: Low to High
-                                </Option>
-                                <Option value="priceDesc">
-                                    Price: High to Low
-                                </Option>
+                                <Option value="priceAsc">Price: Low to High</Option>
+                                <Option value="priceDesc">Price: High to Low</Option>
                             </Select>
                         </Space>
-                        <div
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns:
-                                    "repeat(auto-fill, minmax(250px, 1fr))",
-                                gap: "16px",
-                            }}
-                        >
-                            {filteredProducts.map((product) => (
-                                <Link
-                                    key={product.id}
-                                    to={`/product/${product.id}`}
-                                    style={{ textDecoration: "none" }}
-                                >
-                                    <Card
-                                        hoverable
-                                        cover={
-                                            <img
-                                                alt={product.product_name}
-                                                src={
-                                                    product.main_image
-                                                        ? `${baseUrl}/storage/${product.main_image}`
-                                                        : "/placeholder.jpg"
-                                                }
-                                                style={{
-                                                    width: "250px",
-                                                    height: "250px",
-                                                    objectFit: "cover",
-                                                    borderRadius: "8px 8px 0 0",
-                                                }}
-                                            />
-                                        }
-                                        style={{ width: 250 }}
+                        {filteredProducts.length === 0 ? (
+                            <div style={{ textAlign: "center", padding: "50px" }}>
+                                <p>No products match the selected filters.</p>
+                                <Button onClick={clearFilters}>Clear Filters</Button>
+                            </div>
+                        ) : (
+                            <div
+                                style={{
+                                    display: "grid",
+                                    gridTemplateColumns:
+                                        "repeat(auto-fill, minmax(250px, 1fr))",
+                                    gap: "16px",
+                                }}
+                            >
+                                {filteredProducts.map((product) => (
+                                    <Link
+                                        key={product.id}
+                                        to={`/product/${product.id}`}
+                                        style={{ textDecoration: "none" }}
                                     >
-                                        <Card.Meta
-                                            title={product.product_name}
-                                            description={
-                                                <div>
-                                                    <p>
-                                                        Price: {product.price}
-                                                    </p>
-                                                    <div
-                                                        style={{
-                                                            display: "flex",
-                                                            alignItems:
-                                                                "center",
-                                                        }}
-                                                    >
-                                                        <Rate
-                                                            disabled
-                                                            value={
-                                                                product.average_rating ||
-                                                                0
-                                                            }
-                                                            allowHalf
-                                                            style={{
-                                                                fontSize:
-                                                                    "14px",
-                                                                marginRight:
-                                                                    "8px",
-                                                            }}
-                                                        />
-                                                        <span>
-                                                            {product.average_rating ||
-                                                                0}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            }
-                                        />
-                                        <Button
-                                            type="link"
-                                            icon={
-                                                <ShoppingCartOutlined
-                                                    style={{ fontSize: "28px" }}
+                                        <Card
+                                            hoverable
+                                            cover={
+                                                <img
+                                                    alt={product.product_name}
+                                                    src={
+                                                        product.main_image
+                                                            ? `${baseUrl}/storage/${product.main_image}`
+                                                            : "/placeholder.jpg"
+                                                    }
+                                                    style={{
+                                                        width: "250px",
+                                                        height: "250px",
+                                                        objectFit: "cover",
+                                                        borderRadius: "8px 8px 0 0",
+                                                    }}
                                                 />
                                             }
-                                            disabled={!isLoggedIn}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                setModalProduct(product);
-                                                setModalCurrentMainImage(
-                                                    product.main_image
-                                                );
-                                                setModalSelectedSize(null);
-                                                setModalSelectedStock(null);
-                                                setShowAddToCartModal(true);
-                                            }}
-                                            style={{
-                                                padding: 0,
-                                                marginTop: "8px",
-                                                display: "block",
-                                                textAlign: "center",
-                                            }}
-                                        />
-                                    </Card>
-                                </Link>
-                            ))}
-                        </div>
+                                            style={{ width: 250 }}
+                                        >
+                                            <Card.Meta
+                                                title={product.product_name}
+                                                description={
+                                                    <div>
+                                                        <p>Price: {product.price}</p>
+                                                        <div
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                            }}
+                                                        >
+                                                            <Rate
+                                                                disabled
+                                                                value={
+                                                                    product.average_rating || 0
+                                                                }
+                                                                allowHalf
+                                                                style={{
+                                                                    fontSize: "14px",
+                                                                    marginRight: "8px",
+                                                                }}
+                                                            />
+                                                            <span>
+                                                                {product.average_rating || 0}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            />
+                                            <Button
+                                                type="link"
+                                                icon={
+                                                    <ShoppingCartOutlined
+                                                        style={{ fontSize: "28px" }}
+                                                    />
+                                                }
+                                                disabled={!isLoggedIn}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setModalProduct(product);
+                                                    setModalCurrentMainImage(
+                                                        product.main_image
+                                                    );
+                                                    setModalSelectedSize(null);
+                                                    setModalSelectedStock(null);
+                                                    setShowAddToCartModal(true);
+                                                }}
+                                                style={{
+                                                    padding: 0,
+                                                    marginTop: "8px",
+                                                    display: "block",
+                                                    textAlign: "center",
+                                                }}
+                                            />
+                                        </Card>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
                     </Content>
                 </Layout>
             </Layout>
@@ -786,7 +808,7 @@ const CategoryCollection = () => {
                         ? modalProduct.product_name
                         : "Product Overview"
                 }
-                visible={showAddToCartModal}
+                open={showAddToCartModal}
                 onCancel={() => {
                     setShowAddToCartModal(false);
                     setModalProduct(null);

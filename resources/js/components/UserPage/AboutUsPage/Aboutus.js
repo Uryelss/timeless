@@ -11,7 +11,7 @@ const developers = [
         Yearlevel: "3rd Year",
     },
     {
-        image: "/images/marco.png",
+        image: "/images/truth.jpg",
         brand: "Marco Morano",
         description: "UI Developer",
         Yearlevel: "3rd Year",
@@ -25,7 +25,7 @@ const developers = [
     {
         image: "/images/clark.jpg",
         brand: "Clark Magat",
-        description: "Full Stack Developer",
+        description: "UI Developer",
         Yearlevel: "3rd Year",
     },
 ];

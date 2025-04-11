@@ -1,4 +1,4 @@
-// General container styling
+/* General container styling */
 .test-container {
     display: flex;
     height: 100vh;
@@ -56,30 +56,39 @@
             flex-direction: column;
             gap: 1rem;
 
-            .input-group {
-                display: flex;
-                align-items: center;
-                background-color: #333; // Ensure dark gray background for all inputs
+            /* Target the Ant Design input wrapper */
+            .ant-input-affix-wrapper,
+            .ant-input-password {
+                background-color: #333 !important; /* Force dark gray background */
+                border: none !important;
                 border-radius: 5px;
                 padding: 0.5rem;
 
-                .input-icon {
-                    font-size: 1.2rem;
-                    color: #fff; // White icons
+                /* Ensure error state doesn't override background */
+                &.ant-input-affix-wrapper-status-error,
+                &.ant-input-status-error {
+                    background-color: #333 !important;
+                    border-color: #ff4d4f !important; /* Keep red border for error */
+                }
+
+                .ant-input-prefix {
                     margin-right: 0.5rem;
                 }
 
-                // Override Ant Design Input styles
+                .input-icon {
+                    font-size: 1.2rem;
+                    color: #fff !important; /* White icons */
+                }
+
                 .ant-input,
                 .ant-input-password {
-                    flex: 1;
-                    background: none !important; // Force no background
-                    border: none !important; // Force no border
-                    color: #fff; // White text
+                    background: transparent !important; /* Force no background */
+                    border: none !important;
+                    color: #fff !important; /* White text when typing */
                     font-size: 1rem;
                     outline: none;
-                    padding: 0; // Remove default padding
-                    box-shadow: none; // Remove Ant Design's default shadow
+                    padding: 0;
+                    box-shadow: none !important;
 
                     &::placeholder {
                         color: #aaa;
@@ -88,13 +97,12 @@
                     }
                 }
 
-                // Ensure password toggle icon aligns with design
-                .ant-input-password .ant-input-suffix {
-                    color: #fff; // White toggle icon
+                .ant-input-suffix {
+                    color: #fff !important; /* White toggle icon for password */
                 }
             }
 
-            // Button styles will be updated in the next step
+            /* Button styles */
             .test-button {
                 background-color: #fff;
                 color: #000;

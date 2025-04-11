@@ -1,5 +1,4 @@
-// src/components/Sidebar.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     DashboardOutlined,
     ShoppingOutlined,
@@ -16,7 +15,7 @@ import {
     CreditCardOutlined,
 } from "@ant-design/icons";
 import { Button, Menu, Modal } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../../AccessPage/Auth";
 import ShopNowButton from "../AdminSidebar/ShopNow"; // adjust the path as needed
 
@@ -94,23 +93,43 @@ const Sidebar = () => {
     const [collapsed, setCollapsed] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const [selectedKey, setSelectedKey] = useState("");
+
+    useEffect(() => {
+        const findMatchingItem = (menuItems, pathname) => {
+            for (let item of menuItems) {
+                if (item.path === pathname) {
+                    return item.key;
+                }
+                if (item.children) {
+                    const childKey = findMatchingItem(item.children, pathname);
+                    if (childKey) return childKey;
+                }
+            }
+            return "";
+        };
+
+        const key = findMatchingItem(items, location.pathname);
+        setSelectedKey(key);
+    }, [location.pathname]);
 
     const toggleCollapsed = () => {
         setCollapsed(!collapsed);
     };
 
-    const findItemByKey = (menuItems, key) => {
-        for (let item of menuItems) {
-            if (item.key === key) return item;
-            if (item.children) {
-                const child = findItemByKey(item.children, key);
-                if (child) return child;
-            }
-        }
-        return null;
-    };
-
     const handleMenuClick = ({ key }) => {
+        const findItemByKey = (menuItems, key) => {
+            for (let item of menuItems) {
+                if (item.key === key) return item;
+                if (item.children) {
+                    const child = findItemByKey(item.children, key);
+                    if (child) return child;
+                }
+            }
+            return null;
+        };
+
         const item = findItemByKey(items, key);
         if (item && item.path) {
             navigate(item.path);
@@ -125,33 +144,52 @@ const Sidebar = () => {
     };
 
     return (
-        <div className="sidebar-container">
-            <Button
-                type="primary"
-                onClick={toggleCollapsed}
-                style={{ margin: "16px" }}
+        <div
+            className="sidebar-container"
+            style={{
+                height: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+            }}
+        >
+            <div>
+                <Button
+                    type="primary"
+                    onClick={toggleCollapsed}
+                    style={{ margin: "16px" }}
+                >
+                    {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                </Button>
+                <Menu
+                    selectedKeys={[selectedKey]}
+                    mode="inline"
+                    theme="dark"
+                    inlineCollapsed={collapsed}
+                    items={items}
+                    onClick={handleMenuClick}
+                    style={{ borderRight: 0 }}
+                />
+            </div>
+            <div
+                className="sidebar-footer"
+                style={{
+                    padding: "16px",
+                    flexGrow: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
             >
-                {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            </Button>
-            <Menu
-                defaultSelectedKeys={["dashboard"]}
-                mode="inline"
-                theme="dark"
-                inlineCollapsed={collapsed}
-                items={items}
-                onClick={handleMenuClick}
-                style={{ borderRight: 0 }}
-            />
-            <div className="sidebar-footer" style={{ padding: "16px" }}>
-                {/* Shop Now Button */}
-                <ShopNowButton />
-                {/* Logout Button */}
+                <div style={{ marginBottom: "16px" }}>
+                    <ShopNowButton />
+                </div>
                 <Button
                     type="text"
                     icon={<LogoutOutlined />}
                     onClick={handleLogout}
                     className="logout-button"
-                    style={{ marginTop: "16px" }}
                 >
                     {!collapsed && "Log Out"}
                 </Button>

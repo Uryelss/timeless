@@ -12086,6 +12086,7 @@ textarea.form-control-lg {
   color: white;
 }
 
+/* General container styling */
 .test-container {
   display: flex;
   height: 100vh;
@@ -12139,43 +12140,60 @@ textarea.form-control-lg {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  /* Target the Ant Design input wrapper */
+  /* Button styles */
 }
-.test-container .test-right .test-form .input-group {
-  display: flex;
-  align-items: center;
-  background-color: #333;
+.test-container .test-right .test-form .ant-input-affix-wrapper,
+.test-container .test-right .test-form .ant-input-password {
+  background-color: #333 !important; /* Force dark gray background */
+  border: none !important;
   border-radius: 5px;
   padding: 0.5rem;
+  /* Ensure error state doesn't override background */
 }
-.test-container .test-right .test-form .input-group .input-icon {
-  font-size: 1.2rem;
-  color: #fff;
+.test-container .test-right .test-form .ant-input-affix-wrapper.ant-input-affix-wrapper-status-error, .test-container .test-right .test-form .ant-input-affix-wrapper.ant-input-status-error,
+.test-container .test-right .test-form .ant-input-password.ant-input-affix-wrapper-status-error,
+.test-container .test-right .test-form .ant-input-password.ant-input-status-error {
+  background-color: #333 !important;
+  border-color: #ff4d4f !important; /* Keep red border for error */
+}
+.test-container .test-right .test-form .ant-input-affix-wrapper .ant-input-prefix,
+.test-container .test-right .test-form .ant-input-password .ant-input-prefix {
   margin-right: 0.5rem;
 }
-.test-container .test-right .test-form .input-group .ant-input,
-.test-container .test-right .test-form .input-group .ant-input-password {
-  flex: 1;
-  background: none !important;
+.test-container .test-right .test-form .ant-input-affix-wrapper .input-icon,
+.test-container .test-right .test-form .ant-input-password .input-icon {
+  font-size: 1.2rem;
+  color: #fff !important; /* White icons */
+}
+.test-container .test-right .test-form .ant-input-affix-wrapper .ant-input,
+.test-container .test-right .test-form .ant-input-affix-wrapper .ant-input-password,
+.test-container .test-right .test-form .ant-input-password .ant-input,
+.test-container .test-right .test-form .ant-input-password .ant-input-password {
+  background: transparent !important; /* Force no background */
   border: none !important;
-  color: #fff;
+  color: #fff !important; /* White text when typing */
   font-size: 1rem;
   outline: none;
   padding: 0;
-  box-shadow: none;
+  box-shadow: none !important;
 }
-.test-container .test-right .test-form .input-group .ant-input::-moz-placeholder, .test-container .test-right .test-form .input-group .ant-input-password::-moz-placeholder {
+.test-container .test-right .test-form .ant-input-affix-wrapper .ant-input::-moz-placeholder, .test-container .test-right .test-form .ant-input-affix-wrapper .ant-input-password::-moz-placeholder, .test-container .test-right .test-form .ant-input-password .ant-input::-moz-placeholder, .test-container .test-right .test-form .ant-input-password .ant-input-password::-moz-placeholder {
   color: #aaa;
   text-transform: uppercase;
   font-size: 0.9rem;
 }
-.test-container .test-right .test-form .input-group .ant-input::placeholder,
-.test-container .test-right .test-form .input-group .ant-input-password::placeholder {
+.test-container .test-right .test-form .ant-input-affix-wrapper .ant-input::placeholder,
+.test-container .test-right .test-form .ant-input-affix-wrapper .ant-input-password::placeholder,
+.test-container .test-right .test-form .ant-input-password .ant-input::placeholder,
+.test-container .test-right .test-form .ant-input-password .ant-input-password::placeholder {
   color: #aaa;
   text-transform: uppercase;
   font-size: 0.9rem;
 }
-.test-container .test-right .test-form .input-group .ant-input-password .ant-input-suffix {
-  color: #fff;
+.test-container .test-right .test-form .ant-input-affix-wrapper .ant-input-suffix,
+.test-container .test-right .test-form .ant-input-password .ant-input-suffix {
+  color: #fff !important; /* White toggle icon for password */
 }
 .test-container .test-right .test-form .test-button {
   background-color: #fff;

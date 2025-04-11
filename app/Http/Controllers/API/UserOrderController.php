@@ -12,9 +12,58 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class UserOrderController extends Controller
 {
+    public function index(Request $request)
+    {
+        // Ensure only admins can access (adjust based on your auth logic)
+        $user = Auth::user();
+        if (!$user || !$user->hasRole('admin')) { // Example role check, replace with your logic
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $orders = Order::with([
+            'profile.user',
+            'shipping.shippingMethod',
+            'shipping.paymentMethod',
+            'shipping.address',
+            'shipping.shippingStatus',
+            'orderDetails.product',
+            'orderDetails.inventory',
+        ])
+            ->latest('order_date') // Sort by most recent first
+            ->get()
+            ->map(function ($order) {
+                $profileImage = $order->profile && $order->profile->profile_image
+                    ? (str_starts_with($order->profile->profile_image, 'http')
+                        ? $order->profile->profile_image
+                        : Storage::url($order->profile->profile_image))
+                    : null;
+
+                return [
+                    'id' => $order->id,
+                    'profile' => $order->profile ? [
+                        'first_name' => $order->profile->first_name ?? 'N/A',
+                        'last_name' => $order->profile->last_name ?? 'N/A',
+                        'profile_image' => $profileImage,
+                    ] : null,
+                    'total_amount' => $order->total_amount,
+                    'order_status' => $order->order_status,
+                    'order_date' => $order->order_date->toISOString(),
+                    'deleted_at' => $order->deleted_at ? $order->deleted_at->toISOString() : null,
+                    'shipping' => $order->shipping ? [
+                        'payment_method' => $order->shipping->paymentMethod ? [
+                            'name' => $order->shipping->paymentMethod->name,
+                        ] : null,
+                    ] : null,
+                ];
+            });
+
+        return response()->json($orders);
+    }
+
     public function store(Request $request)
     {
         $request->validate([

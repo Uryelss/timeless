@@ -16,7 +16,7 @@ import Navbar from "../Navbar/Navbar";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import BrandSlider from "../UserHome/BrandSlider";
-import Footer from "../UserHome/Footer"; // Added Footer import
+import Footer from "../UserHome/Footer";
 
 const { Content, Sider } = Layout;
 const { Search } = Input;
@@ -72,7 +72,7 @@ const Collection = () => {
             .get(`${SUBCATEGORIES_API}?type=${type}`)
             .then((res) => {
                 if (type === "strap_materials") {
-                    setter(res.data);
+                    setter(res.data); // Store full objects for strap materials
                 } else {
                     setter(res.data.map((item) => item.name));
                 }
@@ -131,9 +131,9 @@ const Collection = () => {
                 filters[key].forEach((value) => {
                     if (key === "strapMaterial") {
                         const match = filterOptions.strapMaterial.find(
-                            (item) => item.id === value || item === value
+                            (item) => item.id === value
                         );
-                        displays.push(match && match.name ? match.name : value);
+                        displays.push(match ? match.name : value);
                     } else {
                         displays.push(value);
                     }
@@ -158,12 +158,7 @@ const Collection = () => {
             )
                 .toLowerCase()
                 .trim();
-            const productStrapMaterial = (() => {
-                const mat = filterOptions.strapMaterial.find(
-                    (m) => m.id === product.strap_material_id
-                );
-                return mat ? mat.name.toLowerCase().trim() : "";
-            })();
+            const productStrapMaterialId = product.strap_material_id;
 
             const matchesBrand =
                 filters.brand.length === 0 ||
@@ -182,13 +177,8 @@ const Collection = () => {
                 );
             const matchesStrapMaterial =
                 filters.strapMaterial.length === 0 ||
-                filters.strapMaterial.some((sm) => {
-                    const selectedName =
-                        typeof sm === "object" && sm.name
-                            ? sm.name.toLowerCase().trim()
-                            : sm.toLowerCase().trim();
-                    return selectedName === productStrapMaterial;
-                });
+                filters.strapMaterial.includes(productStrapMaterialId);
+
             return (
                 matchesBrand &&
                 matchesGender &&
@@ -196,6 +186,7 @@ const Collection = () => {
                 matchesStrapMaterial
             );
         });
+
         if (searchTerm) {
             filtered = filtered.filter((product) =>
                 product.product_name
@@ -203,6 +194,7 @@ const Collection = () => {
                     .includes(searchTerm.toLowerCase())
             );
         }
+
         if (sortBy === "priceAsc") {
             filtered.sort((a, b) => {
                 const priceA = parseFloat(
@@ -224,6 +216,7 @@ const Collection = () => {
                 return priceB - priceA;
             });
         }
+
         return filtered;
     };
 
@@ -590,24 +583,18 @@ const Collection = () => {
                             <div className="horizontal-checkboxes">
                                 {filterOptions.strapMaterial.map((material) => (
                                     <Checkbox
-                                        key={
-                                            material.id ? material.id : material
-                                        }
+                                        key={material.id}
                                         onChange={() =>
                                             handleFilterChange(
                                                 "strapMaterial",
                                                 material.id
-                                                    ? material.id
-                                                    : material
                                             )
                                         }
                                         checked={filters.strapMaterial.includes(
-                                            material.id ? material.id : material
+                                            material.id
                                         )}
                                     >
-                                        {material.name
-                                            ? material.name
-                                            : material}
+                                        {material.name}
                                     </Checkbox>
                                 ))}
                             </div>
@@ -769,7 +756,7 @@ const Collection = () => {
             >
                 {modalProduct && renderModalOverview()}
             </Modal>
-            <Footer /> {/* Added Footer component */}
+            <Footer />
         </Layout>
     );
 };
