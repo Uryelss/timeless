@@ -1,3 +1,4 @@
+// src/components/Sidebar.js
 import React, { useState } from "react";
 import {
     DashboardOutlined,
@@ -12,11 +13,12 @@ import {
     MenuUnfoldOutlined,
     LogoutOutlined,
     StarOutlined,
-    CreditCardOutlined, // New Transaction Icon
+    CreditCardOutlined,
 } from "@ant-design/icons";
 import { Button, Menu, Modal } from "antd";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../AccessPage/Auth";
+import ShopNowButton from "../AdminSidebar/ShopNow"; // adjust the path as needed
 
 const items = [
     {
@@ -63,7 +65,7 @@ const items = [
     },
     {
         key: "transaction",
-        icon: <CreditCardOutlined />, // Added Transaction Icon
+        icon: <CreditCardOutlined />,
         label: "Transaction",
         path: "/Transactions",
     },
@@ -97,13 +99,6 @@ const Sidebar = () => {
         setCollapsed(!collapsed);
     };
 
-    const handleMenuClick = ({ key }) => {
-        const item = findItemByKey(items, key);
-        if (item && item.path) {
-            navigate(item.path);
-        }
-    };
-
     const findItemByKey = (menuItems, key) => {
         for (let item of menuItems) {
             if (item.key === key) return item;
@@ -113,6 +108,13 @@ const Sidebar = () => {
             }
         }
         return null;
+    };
+
+    const handleMenuClick = ({ key }) => {
+        const item = findItemByKey(items, key);
+        if (item && item.path) {
+            navigate(item.path);
+        }
     };
 
     const handleLogout = () => {
@@ -140,12 +142,16 @@ const Sidebar = () => {
                 onClick={handleMenuClick}
                 style={{ borderRight: 0 }}
             />
-            <div className="logout-container">
+            <div className="sidebar-footer" style={{ padding: "16px" }}>
+                {/* Shop Now Button */}
+                <ShopNowButton />
+                {/* Logout Button */}
                 <Button
                     type="text"
                     icon={<LogoutOutlined />}
                     onClick={handleLogout}
                     className="logout-button"
+                    style={{ marginTop: "16px" }}
                 >
                     {!collapsed && "Log Out"}
                 </Button>

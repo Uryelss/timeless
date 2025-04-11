@@ -199189,6 +199189,8 @@ var Login = function Login() {
     _useState6 = _slicedToArray(_useState5, 2),
     email = _useState6[0],
     setEmail = _useState6[1];
+
+  // Redirect to dashboard or user-home if already authenticated
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if ((0,_Auth__WEBPACK_IMPORTED_MODULE_1__.isAuthenticated)()) {
       var user = JSON.parse(localStorage.getItem("user"));
@@ -199198,13 +199200,36 @@ var Login = function Login() {
       });
     }
   }, [navigate]);
+
+  // Attach popstate listener (for browser back/forward navigation)
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var handlePopState = function handlePopState() {
+      if ((0,_Auth__WEBPACK_IMPORTED_MODULE_1__.isAuthenticated)()) {
+        var user = JSON.parse(localStorage.getItem("user"));
+        var redirectTo = user.role.name === "admin" ? "/dashboard" : "/user-home";
+        navigate(redirectTo, {
+          replace: true
+        });
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+    return function () {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [navigate]);
+
+  // Login form submission handler
   var onFinishLogin = function onFinishLogin(values) {
     axios__WEBPACK_IMPORTED_MODULE_4__["default"].post("http://localhost:8000/api/login", values).then(function (response) {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("userId", response.data.user.id);
       antd__WEBPACK_IMPORTED_MODULE_5__["default"].success("Login successful!");
+
+      // Dispatch custom event for auth change
+      window.dispatchEvent(new Event("authChange"));
       var user = response.data.user;
+      // Update current URL in history if needed
       window.history.pushState(null, "", window.location.href);
       if (user.role && user.role.name === "admin") {
         navigate("/dashboard", {
@@ -199219,6 +199244,8 @@ var Login = function Login() {
       antd__WEBPACK_IMPORTED_MODULE_5__["default"].error("Login failed! Check your credentials.");
     });
   };
+
+  // Forgot password step 1: Submit email
   var onEmailSubmit = function onEmailSubmit(values) {
     axios__WEBPACK_IMPORTED_MODULE_4__["default"].post("http://localhost:8000/api/forgot-password", {
       email: values.email
@@ -199231,6 +199258,8 @@ var Login = function Login() {
       antd__WEBPACK_IMPORTED_MODULE_5__["default"].error(((_error$response = error.response) === null || _error$response === void 0 || (_error$response = _error$response.data) === null || _error$response === void 0 ? void 0 : _error$response.message) || "Something went wrong");
     });
   };
+
+  // Forgot password step 2: Verify reset code
   var onCodeSubmit = function onCodeSubmit(values) {
     axios__WEBPACK_IMPORTED_MODULE_4__["default"].post("http://localhost:8000/api/verify-reset-code", {
       email: email,
@@ -199243,6 +199272,8 @@ var Login = function Login() {
       antd__WEBPACK_IMPORTED_MODULE_5__["default"].error(((_error$response2 = error.response) === null || _error$response2 === void 0 || (_error$response2 = _error$response2.data) === null || _error$response2 === void 0 ? void 0 : _error$response2.message) || "Invalid code");
     });
   };
+
+  // Forgot password step 3: Reset the password
   var onResetSubmit = function onResetSubmit(values) {
     axios__WEBPACK_IMPORTED_MODULE_4__["default"].post("http://localhost:8000/api/reset-password", {
       email: email,
@@ -199257,15 +199288,6 @@ var Login = function Login() {
       var _error$response3;
       antd__WEBPACK_IMPORTED_MODULE_5__["default"].error(((_error$response3 = error.response) === null || _error$response3 === void 0 || (_error$response3 = _error$response3.data) === null || _error$response3 === void 0 ? void 0 : _error$response3.message) || "Something went wrong");
     });
-  };
-  window.onpopstate = function () {
-    if ((0,_Auth__WEBPACK_IMPORTED_MODULE_1__.isAuthenticated)()) {
-      var user = JSON.parse(localStorage.getItem("user"));
-      var redirectTo = user.role.name === "admin" ? "/dashboard" : "/user-home";
-      navigate(redirectTo, {
-        replace: true
-      });
-    }
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
     className: "test-container",
@@ -199327,8 +199349,9 @@ var Login = function Login() {
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("a", {
             href: "#",
             className: "forgot-password",
-            onClick: function onClick() {
-              return setForgotPassword(true);
+            onClick: function onClick(e) {
+              e.preventDefault();
+              setForgotPassword(true);
             },
             children: "FORGOT PASSWORD?"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("p", {
@@ -201974,6 +201997,45 @@ var SubCategoryManagement = function SubCategoryManagement() {
 
 /***/ }),
 
+/***/ "./resources/js/components/AdminPage/AdminSidebar/ShopNow.js":
+/*!*******************************************************************!*\
+  !*** ./resources/js/components/AdminPage/AdminSidebar/ShopNow.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingOutlined.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+// src/components/ShopNowButton.js
+
+
+
+
+
+var ShopNowButton = function ShopNowButton() {
+  var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_2__.useNavigate)();
+  var handleShopNow = function handleShopNow() {
+    // Redirect to the user shop/home page
+    navigate("/user-home");
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
+    type: "primary",
+    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_4__["default"], {}),
+    onClick: handleShopNow,
+    children: "Shop Now"
+  });
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ShopNowButton);
+
+/***/ }),
+
 /***/ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js":
 /*!*******************************************************************!*\
   !*** ./resources/js/components/AdminPage/AdminSidebar/Sidebar.js ***!
@@ -201986,25 +202048,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DashboardOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingCartOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UserOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/TeamOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DatabaseOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/StarOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/CreditCardOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/SettingOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ProfileOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/MenuUnfoldOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/MenuFoldOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/LogoutOutlined.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/menu/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DashboardOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingCartOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UserOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/TeamOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DatabaseOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/StarOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/CreditCardOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/SettingOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ProfileOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/MenuUnfoldOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/MenuFoldOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/LogoutOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/menu/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var _AccessPage_Auth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../AccessPage/Auth */ "./resources/js/components/AccessPage/Auth.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var _AdminSidebar_ShopNow__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../AdminSidebar/ShopNow */ "./resources/js/components/AdminPage/AdminSidebar/ShopNow.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -202012,65 +202075,66 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+// src/components/Sidebar.js
 
 
 
 
 
+ // adjust the path as needed
 
 var items = [{
   key: "dashboard",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_3__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_4__["default"], {}),
   label: "Dashboard",
   path: "/dashboard"
 }, {
   key: "product",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_4__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__["default"], {}),
   label: "Product",
   path: "/products"
 }, {
   key: "order",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_6__["default"], {}),
   label: "Order",
   path: "/orders"
 }, {
   key: "customer",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_6__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_7__["default"], {}),
   label: "Customer",
   path: "/customers"
 }, {
   key: "user",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_7__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {}),
   label: "User",
   path: "/users"
 }, {
   key: "inventory",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {}),
   label: "Inventory",
   path: "/inventory"
 }, {
   key: "reviews",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {}),
   label: "Reviews",
   path: "/Reviews"
 }, {
   key: "transaction",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {}),
-  // Added Transaction Icon
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {}),
   label: "Transaction",
   path: "/Transactions"
 }, {
   key: "admin-settings",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
   label: "Admin Settings",
   children: [{
     key: "admin-profile",
-    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
+    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {}),
     label: "Admin Profile",
     path: "/admin-profile"
   }, {
     key: "sub-category",
-    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {}),
+    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
     label: "Sub Category",
     path: "/sub-category"
   }]
@@ -202084,16 +202148,9 @@ var Sidebar = function Sidebar() {
     _useState4 = _slicedToArray(_useState3, 2),
     isLoggingOut = _useState4[0],
     setIsLoggingOut = _useState4[1];
-  var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_13__.useNavigate)();
+  var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_14__.useNavigate)();
   var toggleCollapsed = function toggleCollapsed() {
     setCollapsed(!collapsed);
-  };
-  var handleMenuClick = function handleMenuClick(_ref) {
-    var key = _ref.key;
-    var item = _findItemByKey(items, key);
-    if (item && item.path) {
-      navigate(item.path);
-    }
   };
   var _findItemByKey = function findItemByKey(menuItems, key) {
     var _iterator = _createForOfIteratorHelper(menuItems),
@@ -202114,22 +202171,29 @@ var Sidebar = function Sidebar() {
     }
     return null;
   };
+  var handleMenuClick = function handleMenuClick(_ref) {
+    var key = _ref.key;
+    var item = _findItemByKey(items, key);
+    if (item && item.path) {
+      navigate(item.path);
+    }
+  };
   var handleLogout = function handleLogout() {
     setIsLoggingOut(true);
     setTimeout(function () {
       (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_1__.logout)();
     }, 1000);
   };
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
     className: "sidebar-container",
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
       type: "primary",
       onClick: toggleCollapsed,
       style: {
         margin: "16px"
       },
-      children: collapsed ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {})
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
+      children: collapsed ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {})
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
       defaultSelectedKeys: ["dashboard"],
       mode: "inline",
       theme: "dark",
@@ -202139,16 +202203,22 @@ var Sidebar = function Sidebar() {
       style: {
         borderRight: 0
       }
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-      className: "logout-container",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+      className: "sidebar-footer",
+      style: {
+        padding: "16px"
+      },
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminSidebar_ShopNow__WEBPACK_IMPORTED_MODULE_2__["default"], {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
         type: "text",
-        icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_18__["default"], {}),
+        icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_19__["default"], {}),
         onClick: handleLogout,
         className: "logout-button",
+        style: {
+          marginTop: "16px"
+        },
         children: !collapsed && "Log Out"
-      })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+      })]
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
       visible: isLoggingOut,
       footer: null,
       closable: false,
@@ -202158,7 +202228,7 @@ var Sidebar = function Sidebar() {
         textAlign: "center",
         padding: "20px"
       },
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
         children: "Redirecting you to login page..."
       })
     })]
@@ -206899,7 +206969,7 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-// ChatPage/AdminChatBox.js
+// File: AdminChatBox.js
 
 
 
@@ -206919,6 +206989,25 @@ var AdminChatBox = function AdminChatBox(_ref) {
     _useState4 = _slicedToArray(_useState3, 2),
     newMsg = _useState4[0],
     setNewMsg = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState6 = _slicedToArray(_useState5, 2),
+    attachedImage = _useState6[0],
+    setAttachedImage = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState8 = _slicedToArray(_useState7, 2),
+    imagePreview = _useState8[0],
+    setImagePreview = _useState8[1];
+  var fileInputRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
+
+  // Helper to return a full URL if needed
+  var getFullImageUrl = function getFullImageUrl(url) {
+    if (url && !url.startsWith("http")) {
+      return window.location.origin + url;
+    }
+    return url;
+  };
+
+  // Log conversation data for debugging
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (conversation) {
       console.log("AdminChatBox conversation:", conversation);
@@ -206926,6 +207015,8 @@ var AdminChatBox = function AdminChatBox(_ref) {
       console.log("No conversation data available.");
     }
   }, [conversation]);
+
+  // Fetch messages when visible and conversation exists
   var fetchMessages = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var response;
@@ -206975,20 +207066,57 @@ var AdminChatBox = function AdminChatBox(_ref) {
       if (intervalId) clearInterval(intervalId);
     };
   }, [visible, conversation]);
+
+  // File input change handler
+  var handleFileChange = function handleFileChange(e) {
+    var file = e.target.files[0];
+    if (file) {
+      setAttachedImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+  var triggerFileSelect = function triggerFileSelect() {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  // Send a new message (with optional image)
   var sendMessage = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      var response;
+      var response, formData;
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
-            if (!(!newMsg.trim() || !conversation)) {
+            if (!(!newMsg.trim() && !attachedImage)) {
               _context2.next = 2;
               break;
             }
             return _context2.abrupt("return");
           case 2:
             _context2.prev = 2;
-            _context2.next = 5;
+            if (!attachedImage) {
+              _context2.next = 14;
+              break;
+            }
+            formData = new FormData();
+            formData.append("user_id", conversation.user_id);
+            formData.append("sender_type", "admin");
+            formData.append("message", newMsg);
+            formData.append("image", attachedImage);
+            _context2.next = 11;
+            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/admin/chat", formData, {
+              headers: {
+                Authorization: "Bearer ".concat(token),
+                "Content-Type": "multipart/form-data"
+              }
+            });
+          case 11:
+            response = _context2.sent;
+            _context2.next = 17;
+            break;
+          case 14:
+            _context2.next = 16;
             return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/admin/chat", {
               user_id: conversation.user_id,
               sender_type: "admin",
@@ -206998,22 +207126,25 @@ var AdminChatBox = function AdminChatBox(_ref) {
                 Authorization: "Bearer ".concat(token)
               }
             });
-          case 5:
+          case 16:
             response = _context2.sent;
+          case 17:
             setMessages([].concat(_toConsumableArray(messages), [response.data]));
             setNewMsg("");
-            _context2.next = 14;
+            setAttachedImage(null);
+            setImagePreview(null);
+            _context2.next = 27;
             break;
-          case 10:
-            _context2.prev = 10;
+          case 23:
+            _context2.prev = 23;
             _context2.t0 = _context2["catch"](2);
             antd__WEBPACK_IMPORTED_MODULE_4__["default"].error("Failed to send message");
             console.error("Error sending message:", _context2.t0);
-          case 14:
+          case 27:
           case "end":
             return _context2.stop();
         }
-      }, _callee2, null, [[2, 10]]);
+      }, _callee2, null, [[2, 23]]);
     }));
     return function sendMessage() {
       return _ref3.apply(this, arguments);
@@ -207056,7 +207187,18 @@ var AdminChatBox = function AdminChatBox(_ref) {
               src: item.sender_type === "admin" ? "https://via.placeholder.com/40?text=Admin" : profileImage
             }),
             title: item.sender_type === "admin" ? "Admin" : displayUsername,
-            description: item.message
+            description: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                children: item.message
+              }), item.image && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                src: getFullImageUrl(item.image),
+                alt: "attachment",
+                style: {
+                  maxWidth: "100%",
+                  marginTop: 5
+                }
+              })]
+            })
           })
         });
       },
@@ -207065,6 +207207,17 @@ var AdminChatBox = function AdminChatBox(_ref) {
         maxHeight: 300,
         overflowY: "auto"
       }
+    }), imagePreview && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      style: {
+        marginBottom: 8
+      },
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+        src: imagePreview,
+        alt: "Preview",
+        style: {
+          maxWidth: "100%"
+        }
+      })
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(TextArea, {
       rows: 3,
       value: newMsg,
@@ -207072,13 +207225,30 @@ var AdminChatBox = function AdminChatBox(_ref) {
         return setNewMsg(e.target.value);
       },
       placeholder: "Type your message..."
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
-      type: "primary",
-      onClick: sendMessage,
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
       style: {
-        marginTop: 8
+        marginTop: 8,
+        display: "flex",
+        justifyContent: "space-between"
       },
-      children: "Send"
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+          onClick: triggerFileSelect,
+          children: "Attach Image"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+          type: "file",
+          accept: "image/*",
+          ref: fileInputRef,
+          style: {
+            display: "none"
+          },
+          onChange: handleFileChange
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+        type: "primary",
+        onClick: sendMessage,
+        children: "Send"
+      })]
     })]
   });
 };
@@ -207120,7 +207290,7 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-// ChatPage/ChatBox.js
+// File: ChatBox.js
 
 
 
@@ -207142,7 +207312,24 @@ var ChatBox = function ChatBox(_ref) {
     _useState6 = _slicedToArray(_useState5, 2),
     userProfileImage = _useState6[0],
     setUserProfileImage = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState8 = _slicedToArray(_useState7, 2),
+    attachedImage = _useState8[0],
+    setAttachedImage = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState10 = _slicedToArray(_useState9, 2),
+    imagePreview = _useState10[0],
+    setImagePreview = _useState10[1];
+  var fileInputRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
   var token = localStorage.getItem("token");
+
+  // Helper to return a full URL if needed
+  var getFullImageUrl = function getFullImageUrl(url) {
+    if (url && !url.startsWith("http")) {
+      return window.location.origin + url;
+    }
+    return url;
+  };
 
   // Fetch chat messages
   var fetchMessages = /*#__PURE__*/function () {
@@ -207182,7 +207369,7 @@ var ChatBox = function ChatBox(_ref) {
     };
   }();
 
-  // Fetch user profile info to get profile image
+  // Fetch user profile info
   var fetchUserProfile = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
       var response;
@@ -207198,18 +207385,19 @@ var ChatBox = function ChatBox(_ref) {
             });
           case 3:
             response = _context2.sent;
+            console.log("Fetched user profile:", response.data);
             setUserProfileImage(response.data.profile_image);
-            _context2.next = 10;
+            _context2.next = 11;
             break;
-          case 7:
-            _context2.prev = 7;
+          case 8:
+            _context2.prev = 8;
             _context2.t0 = _context2["catch"](0);
             console.error("Error fetching user profile:", _context2.t0);
-          case 10:
+          case 11:
           case "end":
             return _context2.stop();
         }
-      }, _callee2, null, [[0, 7]]);
+      }, _callee2, null, [[0, 8]]);
     }));
     return function fetchUserProfile() {
       return _ref3.apply(this, arguments);
@@ -207221,20 +207409,53 @@ var ChatBox = function ChatBox(_ref) {
       fetchUserProfile();
     }
   }, [visible, userId]);
+  var handleFileChange = function handleFileChange(e) {
+    var file = e.target.files[0];
+    if (file) {
+      setAttachedImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+  var triggerFileSelect = function triggerFileSelect() {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
   var sendMessage = /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-      var response;
+      var response, formData;
       return _regeneratorRuntime().wrap(function _callee3$(_context3) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
-            if (newMsg.trim()) {
+            if (!(!newMsg.trim() && !attachedImage)) {
               _context3.next = 2;
               break;
             }
             return _context3.abrupt("return");
           case 2:
             _context3.prev = 2;
-            _context3.next = 5;
+            if (!attachedImage) {
+              _context3.next = 14;
+              break;
+            }
+            formData = new FormData();
+            formData.append("user_id", userId);
+            formData.append("sender_type", "user");
+            formData.append("message", newMsg);
+            formData.append("image", attachedImage);
+            _context3.next = 11;
+            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/chat", formData, {
+              headers: {
+                Authorization: "Bearer ".concat(token),
+                "Content-Type": "multipart/form-data"
+              }
+            });
+          case 11:
+            response = _context3.sent;
+            _context3.next = 17;
+            break;
+          case 14:
+            _context3.next = 16;
             return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/chat", {
               user_id: userId,
               sender_type: "user",
@@ -207244,22 +207465,25 @@ var ChatBox = function ChatBox(_ref) {
                 Authorization: "Bearer ".concat(token)
               }
             });
-          case 5:
+          case 16:
             response = _context3.sent;
+          case 17:
             setMessages([].concat(_toConsumableArray(messages), [response.data]));
             setNewMsg("");
-            _context3.next = 14;
+            setAttachedImage(null);
+            setImagePreview(null);
+            _context3.next = 27;
             break;
-          case 10:
-            _context3.prev = 10;
+          case 23:
+            _context3.prev = 23;
             _context3.t0 = _context3["catch"](2);
             antd__WEBPACK_IMPORTED_MODULE_4__["default"].error("Failed to send message");
             console.error("Error sending message:", _context3.t0);
-          case 14:
+          case 27:
           case "end":
             return _context3.stop();
         }
-      }, _callee3, null, [[2, 10]]);
+      }, _callee3, null, [[2, 23]]);
     }));
     return function sendMessage() {
       return _ref4.apply(this, arguments);
@@ -207281,7 +207505,18 @@ var ChatBox = function ChatBox(_ref) {
               src: item.sender_type === "admin" ? "https://via.placeholder.com/40?text=Admin" : userProfileImage || "https://via.placeholder.com/40?text=You"
             }),
             title: item.sender_type === "admin" ? "Admin" : "You",
-            description: item.message
+            description: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+                children: item.message
+              }), item.image && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+                src: getFullImageUrl(item.image),
+                alt: "attachment",
+                style: {
+                  maxWidth: "100%",
+                  marginTop: 5
+                }
+              })]
+            })
           })
         });
       },
@@ -207290,6 +207525,17 @@ var ChatBox = function ChatBox(_ref) {
         maxHeight: 300,
         overflowY: "auto"
       }
+    }), imagePreview && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      style: {
+        marginBottom: 8
+      },
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+        src: imagePreview,
+        alt: "Preview",
+        style: {
+          maxWidth: "100%"
+        }
+      })
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(TextArea, {
       rows: 3,
       value: newMsg,
@@ -207297,13 +207543,30 @@ var ChatBox = function ChatBox(_ref) {
         return setNewMsg(e.target.value);
       },
       placeholder: "Type your message..."
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
-      type: "primary",
-      onClick: sendMessage,
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
       style: {
-        marginTop: 8
+        marginTop: 8,
+        display: "flex",
+        justifyContent: "space-between"
       },
-      children: "Send"
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+          onClick: triggerFileSelect,
+          children: "Attach Image"
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("input", {
+          type: "file",
+          accept: "image/*",
+          ref: fileInputRef,
+          style: {
+            display: "none"
+          },
+          onChange: handleFileChange
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
+        type: "primary",
+        onClick: sendMessage,
+        children: "Send"
+      })]
     })]
   });
 };
@@ -207337,11 +207600,11 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-// ChatPage/FloatingChatMenu.js
+// File: FloatingChatMenu.js
 
 
 
- // Ensure the file name and casing match
+
 
 var FloatingChatMenu = function FloatingChatMenu(_ref) {
   var userId = _ref.userId;
@@ -207622,26 +207885,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _AdminPage_AdminSettings_SubCategory__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./AdminPage/AdminSettings/SubCategory */ "./resources/js/components/AdminPage/AdminSettings/SubCategory.js");
 /* harmony import */ var _AdminPage_Customer_CustomerManagement__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./AdminPage/Customer/CustomerManagement */ "./resources/js/components/AdminPage/Customer/CustomerManagement.js");
 /* harmony import */ var _AdminPage_Transaction_Transaction__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./AdminPage/Transaction/Transaction */ "./resources/js/components/AdminPage/Transaction/Transaction.js");
-/* harmony import */ var _AccessPage_RegisterPage_Register__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./AccessPage/RegisterPage/Register */ "./resources/js/components/AccessPage/RegisterPage/Register.js");
-/* harmony import */ var _AccessPage_LoginPage_Login__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./AccessPage/LoginPage/Login */ "./resources/js/components/AccessPage/LoginPage/Login.js");
-/* harmony import */ var _UserPage_UserHome_HomePage__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./UserPage/UserHome/HomePage */ "./resources/js/components/UserPage/UserHome/HomePage.js");
-/* harmony import */ var _UserPage_CollectionPage_Collection__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./UserPage/CollectionPage/Collection */ "./resources/js/components/UserPage/CollectionPage/Collection.js");
-/* harmony import */ var _UserPage_CollectionPage_CategoryCollection__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./UserPage/CollectionPage/CategoryCollection */ "./resources/js/components/UserPage/CollectionPage/CategoryCollection.js");
-/* harmony import */ var _UserPage_ProfilePage_Profile__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./UserPage/ProfilePage/Profile */ "./resources/js/components/UserPage/ProfilePage/Profile.js");
-/* harmony import */ var _UserPage_ProductOverview_Productview__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./UserPage/ProductOverview/Productview */ "./resources/js/components/UserPage/ProductOverview/Productview.js");
-/* harmony import */ var _UserPage_AboutUsPage_Aboutus__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./UserPage/AboutUsPage/Aboutus */ "./resources/js/components/UserPage/AboutUsPage/Aboutus.js");
-/* harmony import */ var _UserPage_CartPage_Cart__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./UserPage/CartPage/Cart */ "./resources/js/components/UserPage/CartPage/Cart.js");
-/* harmony import */ var _UserPage_Checkout_Checkout__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./UserPage/Checkout/Checkout */ "./resources/js/components/UserPage/Checkout/Checkout.js");
-/* harmony import */ var _UserPage_OrderTrack_OrderTracking__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./UserPage/OrderTrack/OrderTracking */ "./resources/js/components/UserPage/OrderTrack/OrderTracking.js");
-/* harmony import */ var _UserPage_ProfilePage_MyPurchase_MyPurchase__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./UserPage/ProfilePage/MyPurchase/MyPurchase */ "./resources/js/components/UserPage/ProfilePage/MyPurchase/MyPurchase.js");
-/* harmony import */ var _UserPage_ProfilePage_Address_MyAddress__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./UserPage/ProfilePage/Address/MyAddress */ "./resources/js/components/UserPage/ProfilePage/Address/MyAddress.js");
-/* harmony import */ var _PrivateRoute__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./PrivateRoute */ "./resources/js/components/PrivateRoute.js");
-/* harmony import */ var _AdminPage_AdminReview_Reviews__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./AdminPage/AdminReview/Reviews */ "./resources/js/components/AdminPage/AdminReview/Reviews.js");
+/* harmony import */ var _AdminPage_AdminReview_Reviews__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./AdminPage/AdminReview/Reviews */ "./resources/js/components/AdminPage/AdminReview/Reviews.js");
+/* harmony import */ var _AccessPage_RegisterPage_Register__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./AccessPage/RegisterPage/Register */ "./resources/js/components/AccessPage/RegisterPage/Register.js");
+/* harmony import */ var _AccessPage_LoginPage_Login__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./AccessPage/LoginPage/Login */ "./resources/js/components/AccessPage/LoginPage/Login.js");
+/* harmony import */ var _UserPage_UserHome_HomePage__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./UserPage/UserHome/HomePage */ "./resources/js/components/UserPage/UserHome/HomePage.js");
+/* harmony import */ var _UserPage_CollectionPage_Collection__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./UserPage/CollectionPage/Collection */ "./resources/js/components/UserPage/CollectionPage/Collection.js");
+/* harmony import */ var _UserPage_CollectionPage_CategoryCollection__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./UserPage/CollectionPage/CategoryCollection */ "./resources/js/components/UserPage/CollectionPage/CategoryCollection.js");
+/* harmony import */ var _UserPage_ProfilePage_Profile__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./UserPage/ProfilePage/Profile */ "./resources/js/components/UserPage/ProfilePage/Profile.js");
+/* harmony import */ var _UserPage_ProductOverview_Productview__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./UserPage/ProductOverview/Productview */ "./resources/js/components/UserPage/ProductOverview/Productview.js");
+/* harmony import */ var _UserPage_AboutUsPage_Aboutus__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./UserPage/AboutUsPage/Aboutus */ "./resources/js/components/UserPage/AboutUsPage/Aboutus.js");
+/* harmony import */ var _UserPage_CartPage_Cart__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./UserPage/CartPage/Cart */ "./resources/js/components/UserPage/CartPage/Cart.js");
+/* harmony import */ var _UserPage_Checkout_Checkout__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./UserPage/Checkout/Checkout */ "./resources/js/components/UserPage/Checkout/Checkout.js");
+/* harmony import */ var _UserPage_OrderTrack_OrderTracking__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./UserPage/OrderTrack/OrderTracking */ "./resources/js/components/UserPage/OrderTrack/OrderTracking.js");
+/* harmony import */ var _UserPage_ProfilePage_MyPurchase_MyPurchase__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./UserPage/ProfilePage/MyPurchase/MyPurchase */ "./resources/js/components/UserPage/ProfilePage/MyPurchase/MyPurchase.js");
+/* harmony import */ var _UserPage_ProfilePage_Address_MyAddress__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! ./UserPage/ProfilePage/Address/MyAddress */ "./resources/js/components/UserPage/ProfilePage/Address/MyAddress.js");
+/* harmony import */ var _PrivateRoute__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! ./PrivateRoute */ "./resources/js/components/PrivateRoute.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+// src/routers.js
 
 
 
- // Import the layout component
+
 
 
 // Admin pages
@@ -207654,7 +207918,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
 // Auth pages
+
 
 
 // User pages
@@ -207669,8 +207936,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-// Single route protection component
 
+// Single route protection component
 
 
 function Routers() {
@@ -207682,17 +207949,17 @@ function Routers() {
           element: (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_3__.isAuthenticated)() ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Navigate, {
             to: (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_3__.getUserRole)() === "admin" ? "/dashboard" : "/user-home",
             replace: true
-          }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_AccessPage_LoginPage_Login__WEBPACK_IMPORTED_MODULE_14__["default"], {})
+          }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_AccessPage_LoginPage_Login__WEBPACK_IMPORTED_MODULE_15__["default"], {})
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
           path: "/register",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_AccessPage_RegisterPage_Register__WEBPACK_IMPORTED_MODULE_13__["default"], {})
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_AccessPage_RegisterPage_Register__WEBPACK_IMPORTED_MODULE_14__["default"], {})
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
           path: "/logout",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_26__["default"], {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_27__["default"], {
             isLogout: true
           })
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_26__["default"], {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_27__["default"], {
             allowedRoles: ["admin"]
           }),
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
@@ -207712,7 +207979,7 @@ function Routers() {
             element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_AdminPage_User_UserManagement__WEBPACK_IMPORTED_MODULE_7__["default"], {})
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
             path: "/Reviews",
-            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_AdminPage_AdminReview_Reviews__WEBPACK_IMPORTED_MODULE_27__["default"], {})
+            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_AdminPage_AdminReview_Reviews__WEBPACK_IMPORTED_MODULE_13__["default"], {})
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
             path: "/Transactions",
             element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_AdminPage_Transaction_Transaction__WEBPACK_IMPORTED_MODULE_12__["default"], {})
@@ -207727,46 +207994,46 @@ function Routers() {
             element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_AdminPage_AdminSettings_SubCategory__WEBPACK_IMPORTED_MODULE_10__["default"], {})
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsxs)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_26__["default"], {
-            allowedRoles: ["user"]
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_27__["default"], {
+            allowedRoles: ["user", "admin"]
           }),
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
             path: "/user-home",
-            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_UserHome_HomePage__WEBPACK_IMPORTED_MODULE_15__["default"], {})
+            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_UserHome_HomePage__WEBPACK_IMPORTED_MODULE_16__["default"], {})
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
             path: "/user-collection",
-            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_CollectionPage_Collection__WEBPACK_IMPORTED_MODULE_16__["default"], {})
+            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_CollectionPage_Collection__WEBPACK_IMPORTED_MODULE_17__["default"], {})
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
             path: "/user-category/:category",
-            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_CollectionPage_CategoryCollection__WEBPACK_IMPORTED_MODULE_17__["default"], {})
+            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_CollectionPage_CategoryCollection__WEBPACK_IMPORTED_MODULE_18__["default"], {})
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
             path: "/user-profile",
-            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_ProfilePage_Profile__WEBPACK_IMPORTED_MODULE_18__["default"], {})
+            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_ProfilePage_Profile__WEBPACK_IMPORTED_MODULE_19__["default"], {})
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
             path: "/product/:id",
-            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_ProductOverview_Productview__WEBPACK_IMPORTED_MODULE_19__["default"], {})
+            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_ProductOverview_Productview__WEBPACK_IMPORTED_MODULE_20__["default"], {})
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
             path: "/AboutUs",
-            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_AboutUsPage_Aboutus__WEBPACK_IMPORTED_MODULE_20__["default"], {})
+            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_AboutUsPage_Aboutus__WEBPACK_IMPORTED_MODULE_21__["default"], {})
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
             path: "/user-cart",
-            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_CartPage_Cart__WEBPACK_IMPORTED_MODULE_21__["default"], {})
+            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_CartPage_Cart__WEBPACK_IMPORTED_MODULE_22__["default"], {})
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
             path: "/user-checkout",
-            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_Checkout_Checkout__WEBPACK_IMPORTED_MODULE_22__["default"], {})
+            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_Checkout_Checkout__WEBPACK_IMPORTED_MODULE_23__["default"], {})
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
             path: "/user-Address",
-            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_ProfilePage_Address_MyAddress__WEBPACK_IMPORTED_MODULE_25__["default"], {})
+            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_ProfilePage_Address_MyAddress__WEBPACK_IMPORTED_MODULE_26__["default"], {})
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
             path: "/order-tracking/:orderId",
-            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_OrderTrack_OrderTracking__WEBPACK_IMPORTED_MODULE_23__["default"], {})
+            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_OrderTrack_OrderTracking__WEBPACK_IMPORTED_MODULE_24__["default"], {})
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
             path: "/user-purchase",
-            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_ProfilePage_MyPurchase_MyPurchase__WEBPACK_IMPORTED_MODULE_24__["default"], {})
+            element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_UserPage_ProfilePage_MyPurchase_MyPurchase__WEBPACK_IMPORTED_MODULE_25__["default"], {})
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_30__.Route, {
           path: "*",
-          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_26__["default"], {
+          element: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_28__.jsx)(_PrivateRoute__WEBPACK_IMPORTED_MODULE_27__["default"], {
             allowedRoles: []
           })
         })]

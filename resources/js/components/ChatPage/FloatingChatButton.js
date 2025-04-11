@@ -1,4 +1,4 @@
-// ChatPage/FloatingChatMenu.js
+// File: FloatingChatMenu.js
 import React, { useState } from "react";
 import { Button, Drawer, Menu } from "antd";
 import {
@@ -6,7 +6,7 @@ import {
     PhoneOutlined,
     QuestionCircleOutlined,
 } from "@ant-design/icons";
-import ChatBox from "./ChatBox"; // Ensure the file name and casing match
+import ChatBox from "./ChatBox";
 
 const FloatingChatMenu = ({ userId }) => {
     const [menuVisible, setMenuVisible] = useState(false);
@@ -84,7 +84,7 @@ const FloatingChatMenu = ({ userId }) => {
                 </Menu>
             </Drawer>
 
-            {/* Chat Box Drawer */}
+            {/* Chat Box Drawer (existing chat functionality) */}
             <ChatBox
                 visible={chatVisible}
                 onClose={() => setChatVisible(false)}

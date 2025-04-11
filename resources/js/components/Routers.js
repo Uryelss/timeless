@@ -1,3 +1,4 @@
+// src/routers.js
 import React from "react";
 import ReactDOM from "react-dom";
 import {
@@ -6,7 +7,7 @@ import {
     Route,
     Navigate,
 } from "react-router-dom";
-import AppLayout from "./AppLayout"; // Import the layout component
+import AppLayout from "./AppLayout";
 import { getUserRole, isAuthenticated } from "./AccessPage/Auth";
 
 // Admin pages
@@ -19,9 +20,12 @@ import AdminProfile from "./AdminPage/AdminSettings/AdminProfile";
 import SubCategory from "./AdminPage/AdminSettings/SubCategory";
 import CustomerManagement from "./AdminPage/Customer/CustomerManagement";
 import TransactionManagement from "./AdminPage/Transaction/Transaction";
+import ReviewsManagement from "./AdminPage/AdminReview/Reviews";
+
 // Auth pages
 import Register from "./AccessPage/RegisterPage/Register";
 import Login from "./AccessPage/LoginPage/Login";
+
 // User pages
 import UserHome from "./UserPage/UserHome/HomePage";
 import Collection from "./UserPage/CollectionPage/Collection";
@@ -34,9 +38,9 @@ import OrderCheckout from "./UserPage/Checkout/Checkout";
 import OrderTracking from "./UserPage/OrderTrack/OrderTracking";
 import MyPurchase from "./UserPage/ProfilePage/MyPurchase/MyPurchase";
 import MyAddress from "./UserPage/ProfilePage/Address/MyAddress";
+
 // Single route protection component
 import PrivateRoute from "./PrivateRoute";
-import ReviewsManagement from "./AdminPage/AdminReview/Reviews";
 
 function Routers() {
     return (
@@ -99,8 +103,12 @@ function Routers() {
                         <Route path="/sub-category" element={<SubCategory />} />
                     </Route>
 
-                    {/* User Protected Routes */}
-                    <Route element={<PrivateRoute allowedRoles={["user"]} />}>
+                    {/* User/admin Protected Routes */}
+                    <Route
+                        element={
+                            <PrivateRoute allowedRoles={["user", "admin"]} />
+                        }
+                    >
                         <Route path="/user-home" element={<UserHome />} />
                         <Route
                             path="/user-collection"
@@ -129,7 +137,7 @@ function Routers() {
                         <Route path="/user-purchase" element={<MyPurchase />} />
                     </Route>
 
-                    {/* Catch-all redirect */}
+                    {/* Catch-all Redirect */}
                     <Route
                         path="*"
                         element={<PrivateRoute allowedRoles={[]} />}

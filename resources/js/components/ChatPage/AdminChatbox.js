@@ -1,5 +1,5 @@
-// ChatPage/AdminChatBox.js
-import React, { useState, useEffect } from "react";
+// File: AdminChatBox.js
+import React, { useState, useEffect, useRef } from "react";
 import { Drawer, List, Input, Button, Avatar, message } from "antd";
 import axios from "axios";
 
@@ -8,7 +8,19 @@ const { TextArea } = Input;
 const AdminChatBox = ({ visible, onClose, conversation, token }) => {
     const [messages, setMessages] = useState([]);
     const [newMsg, setNewMsg] = useState("");
+    const [attachedImage, setAttachedImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    const fileInputRef = useRef(null);
 
+    // Helper to return a full URL if needed
+    const getFullImageUrl = (url) => {
+        if (url && !url.startsWith("http")) {
+            return window.location.origin + url;
+        }
+        return url;
+    };
+
+    // Log conversation data for debugging
     useEffect(() => {
         if (conversation) {
             console.log("AdminChatBox conversation:", conversation);
@@ -17,6 +29,7 @@ const AdminChatBox = ({ visible, onClose, conversation, token }) => {
         }
     }, [conversation]);
 
+    // Fetch messages when visible and conversation exists
     const fetchMessages = async () => {
         if (!conversation) return;
         try {
@@ -42,20 +55,57 @@ const AdminChatBox = ({ visible, onClose, conversation, token }) => {
         };
     }, [visible, conversation]);
 
+    // File input change handler
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setAttachedImage(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const triggerFileSelect = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
+    // Send a new message (with optional image)
     const sendMessage = async () => {
-        if (!newMsg.trim() || !conversation) return;
+        if (!newMsg.trim() && !attachedImage) return; // Require either text or an image
         try {
-            const response = await axios.post(
-                "http://localhost:8000/api/admin/chat",
-                {
-                    user_id: conversation.user_id,
-                    sender_type: "admin",
-                    message: newMsg,
-                },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            let response;
+            if (attachedImage) {
+                const formData = new FormData();
+                formData.append("user_id", conversation.user_id);
+                formData.append("sender_type", "admin");
+                formData.append("message", newMsg);
+                formData.append("image", attachedImage);
+                response = await axios.post(
+                    "http://localhost:8000/api/admin/chat",
+                    formData,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
+                );
+            } else {
+                response = await axios.post(
+                    "http://localhost:8000/api/admin/chat",
+                    {
+                        user_id: conversation.user_id,
+                        sender_type: "admin",
+                        message: newMsg,
+                    },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+            }
             setMessages([...messages, response.data]);
             setNewMsg("");
+            setAttachedImage(null);
+            setImagePreview(null);
         } catch (error) {
             message.error("Failed to send message");
             console.error("Error sending message:", error);
@@ -106,25 +156,65 @@ const AdminChatBox = ({ visible, onClose, conversation, token }) => {
                                     ? "Admin"
                                     : displayUsername
                             }
-                            description={item.message}
+                            description={
+                                <>
+                                    <div>{item.message}</div>
+                                    {item.image && (
+                                        <img
+                                            src={getFullImageUrl(item.image)}
+                                            alt="attachment"
+                                            style={{
+                                                maxWidth: "100%",
+                                                marginTop: 5,
+                                            }}
+                                        />
+                                    )}
+                                </>
+                            }
                         />
                     </List.Item>
                 )}
                 style={{ marginBottom: 16, maxHeight: 300, overflowY: "auto" }}
             />
+
+            {imagePreview && (
+                <div style={{ marginBottom: 8 }}>
+                    <img
+                        src={imagePreview}
+                        alt="Preview"
+                        style={{ maxWidth: "100%" }}
+                    />
+                </div>
+            )}
+
             <TextArea
                 rows={3}
                 value={newMsg}
                 onChange={(e) => setNewMsg(e.target.value)}
                 placeholder="Type your message..."
             />
-            <Button
-                type="primary"
-                onClick={sendMessage}
-                style={{ marginTop: 8 }}
+
+            <div
+                style={{
+                    marginTop: 8,
+                    display: "flex",
+                    justifyContent: "space-between",
+                }}
             >
-                Send
-            </Button>
+                <div>
+                    <Button onClick={triggerFileSelect}>Attach Image</Button>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        style={{ display: "none" }}
+                        onChange={handleFileChange}
+                    />
+                </div>
+                <Button type="primary" onClick={sendMessage}>
+                    Send
+                </Button>
+            </div>
         </Drawer>
     );
 };

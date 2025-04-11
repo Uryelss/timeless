@@ -4,12 +4,14 @@ import axios from "axios";
 import { LockOutlined, UserOutlined, MailOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { isAuthenticated } from "../Auth";
+
 const Login = () => {
     const navigate = useNavigate();
     const [forgotPassword, setForgotPassword] = useState(false);
     const [resetStep, setResetStep] = useState(1); // 1: Email, 2: Code, 3: Password
     const [email, setEmail] = useState("");
 
+    // Redirect to dashboard or user-home if already authenticated
     useEffect(() => {
         if (isAuthenticated()) {
             const user = JSON.parse(localStorage.getItem("user"));
@@ -19,6 +21,24 @@ const Login = () => {
         }
     }, [navigate]);
 
+    // Attach popstate listener (for browser back/forward navigation)
+    useEffect(() => {
+        const handlePopState = () => {
+            if (isAuthenticated()) {
+                const user = JSON.parse(localStorage.getItem("user"));
+                const redirectTo =
+                    user.role.name === "admin" ? "/dashboard" : "/user-home";
+                navigate(redirectTo, { replace: true });
+            }
+        };
+
+        window.addEventListener("popstate", handlePopState);
+        return () => {
+            window.removeEventListener("popstate", handlePopState);
+        };
+    }, [navigate]);
+
+    // Login form submission handler
     const onFinishLogin = (values) => {
         axios
             .post("http://localhost:8000/api/login", values)
@@ -30,7 +50,12 @@ const Login = () => {
                 );
                 localStorage.setItem("userId", response.data.user.id);
                 message.success("Login successful!");
+
+                // Dispatch custom event for auth change
+                window.dispatchEvent(new Event("authChange"));
+
                 const user = response.data.user;
+                // Update current URL in history if needed
                 window.history.pushState(null, "", window.location.href);
                 if (user.role && user.role.name === "admin") {
                     navigate("/dashboard", { replace: true });
@@ -43,6 +68,7 @@ const Login = () => {
             });
     };
 
+    // Forgot password step 1: Submit email
     const onEmailSubmit = (values) => {
         axios
             .post("http://localhost:8000/api/forgot-password", {
@@ -60,6 +86,7 @@ const Login = () => {
             });
     };
 
+    // Forgot password step 2: Verify reset code
     const onCodeSubmit = (values) => {
         axios
             .post("http://localhost:8000/api/verify-reset-code", {
@@ -75,6 +102,7 @@ const Login = () => {
             });
     };
 
+    // Forgot password step 3: Reset the password
     const onResetSubmit = (values) => {
         axios
             .post("http://localhost:8000/api/reset-password", {
@@ -93,15 +121,6 @@ const Login = () => {
                     error.response?.data?.message || "Something went wrong"
                 );
             });
-    };
-
-    window.onpopstate = () => {
-        if (isAuthenticated()) {
-            const user = JSON.parse(localStorage.getItem("user"));
-            const redirectTo =
-                user.role.name === "admin" ? "/dashboard" : "/user-home";
-            navigate(redirectTo, { replace: true });
-        }
     };
 
     return (
@@ -176,7 +195,10 @@ const Login = () => {
                             <a
                                 href="#"
                                 className="forgot-password"
-                                onClick={() => setForgotPassword(true)}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setForgotPassword(true);
+                                }}
                             >
                                 FORGOT PASSWORD?
                             </a>
