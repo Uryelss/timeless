@@ -17,6 +17,7 @@ use App\Http\Controllers\API\UserOrderController;
 use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\ForgotPasswordController;
 use App\Http\Controllers\API\ChatController;
+use App\Http\Controllers\API\CourierController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,7 +56,10 @@ Route::middleware('auth:api')->group(function () {
     // User chat endpoints
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
+
+    Route::get('/couriers', [CourierController::class, 'index'])->name('couriers.index');
 });
+
 
 
 /*

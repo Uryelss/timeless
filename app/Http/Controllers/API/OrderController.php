@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Courier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -19,6 +20,7 @@ class OrderController extends Controller
             'shipping.address',
             'shipping.shippingStatus',
             'orderDetails.product',
+            'courier',
         ]);
 
         if ($request->query('archived')) {
@@ -40,6 +42,7 @@ class OrderController extends Controller
             'shipping.address',
             'shipping.shippingStatus',
             'orderDetails.product',
+            'courier',
         ])
             ->withTrashed()
             ->findOrFail($id);
@@ -82,18 +85,17 @@ class OrderController extends Controller
 
             $shippingStatusId = $request->input('shipping.shipping_status_id');
 
-            // Update order status based on shipping status ID:
             switch ($shippingStatusId) {
                 case 1: // Order Placed
-                    $order->order_status = 'pending'; // Shows as "To Pay"
+                    $order->order_status = 'pending';
                     break;
                 case 2: // Payment Info Confirmed
                     $order->payment_confirmed_at = $order->payment_confirmed_at ?? now();
-                    $order->order_status = 'pending'; // Also "To Pay"
+                    $order->order_status = 'pending';
                     break;
                 case 3: // Shipped
                     $order->shipped_at = $order->shipped_at ?? now();
-                    $order->order_status = 'processing'; // Will show as "To Ship"
+                    $order->order_status = 'processing';
                     if (!$order->shipping->tracking_number) {
                         $date = now()->format('Ymd');
                         $random = strtoupper(substr(uniqid(), -5));
@@ -103,14 +105,14 @@ class OrderController extends Controller
                     break;
                 case 4: // Delivered
                     $order->delivered_at = $order->delivered_at ?? now();
-                    $order->order_status = 'shipped'; // Maps to "To Receive"
+                    $order->order_status = 'shipped';
                     break;
                 case 5: // Cancelled
-                    $order->order_status = 'cancelled'; // Maps to "Cancelled"
+                    $order->order_status = 'cancelled';
                     break;
                 case 6: // Completed
                     $order->completed_at = $order->completed_at ?? now();
-                    $order->order_status = 'completed'; // Maps to "Completed"
+                    $order->order_status = 'completed';
                     if (!$order->shipping->tracking_number) {
                         $date = now()->format('Ymd');
                         $random = strtoupper(substr(uniqid(), -5));
@@ -131,6 +133,7 @@ class OrderController extends Controller
                 'shipping.address',
                 'shipping.shippingStatus',
                 'orderDetails.product',
+                'courier',
             ]);
 
             return response()->json(['message' => 'Order updated successfully', 'order' => $order]);
@@ -139,7 +142,6 @@ class OrderController extends Controller
             return response()->json(['message' => 'Failed to update order', 'error' => $e->getMessage()], 500);
         }
     }
-
 
     public function archive($id)
     {
@@ -165,6 +167,7 @@ class OrderController extends Controller
             'shipping.address',
             'shipping.shippingStatus',
             'orderDetails.product',
+            'courier',
         ])
             ->whereHas('profile', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -201,6 +204,7 @@ class OrderController extends Controller
             ]);
 
             $order->order_status = 'cancelled';
+            $order->cancel_reason = $request->input('reason');
             $order->updated_at = now();
             $order->save();
 
@@ -213,6 +217,7 @@ class OrderController extends Controller
                 'shipping.address',
                 'shipping.shippingStatus',
                 'orderDetails.product',
+                'courier',
             ]);
 
             return response()->json([
@@ -234,42 +239,107 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
     public function confirmReceipt(Request $request, $id)
     {
         try {
-            // Retrieve the order along with its shipping details
             $order = Order::with('shipping')->findOrFail($id);
 
             if (!$order->shipping) {
                 return response()->json(['error' => 'Shipping details not found for this order.'], 404);
             }
 
-            // Ensure that the order is delivered.
-            // For example, assume shipping_status_id 4 means delivered.
             if ($order->shipping->shipping_status_id != 4) {
                 return response()->json(['error' => 'Order is not delivered yet.'], 400);
             }
 
-            // Update the order as completed.
             $order->completed_at = now();
             $order->order_status = 'completed';
-
-            // Update the shipping record to indicate "completed"
-            // (for example, assuming 6 is the status for completed)
             $order->shipping->update(['shipping_status_id' => 6]);
             $order->save();
 
             Log::info("Order {$id} receipt confirmed by user.");
             return response()->json([
                 'message' => 'Order receipt confirmed successfully',
-                'order'   => $order
+                'order' => $order,
             ]);
         } catch (\Exception $e) {
             Log::error("Confirm receipt failed for order {$id}: " . $e->getMessage());
             return response()->json([
-                'error'   => 'Failed to confirm receipt',
-                'message' => $e->getMessage()
+                'error' => 'Failed to confirm receipt',
+                'message' => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    public function unassignedOrders(Request $request)
+    {
+        try {
+            $orders = Order::with([
+                'profile.user',
+                'orderDetails.product',
+            ])
+                ->whereNull('courier_id')
+                ->whereNull('deleted_at')
+                ->whereIn('order_status', ['pending', 'processing'])
+                ->get()
+                ->map(function ($order) {
+                    $orderTotal = 0;
+                    $products = $order->orderDetails->map(function ($detail) use (&$orderTotal) {
+                        $product = $detail->product;
+                        $subtotal = $detail->quantity * ($detail->price ?? $product->price);
+                        $orderTotal += $subtotal;
+                        return [
+                            'name' => $product->product_name,
+                            'quantity' => $detail->quantity,
+                            'price' => $detail->price ?? $product->price,
+                            'subtotal' => $subtotal,
+                        ];
+                    });
+
+                    return [
+                        'id' => $order->id,
+                        'user' => $order->profile->user->name ?? 'N/A',
+                        'products' => $products,
+                        'total_amount' => $orderTotal,
+                        'order_date' => $order->order_date->toISOString(),
+                    ];
+                });
+
+            return response()->json($orders);
+        } catch (\Exception $e) {
+            Log::error("Failed to fetch unassigned orders: " . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch unassigned orders'], 500);
+        }
+    }
+
+    public function assignToCourier(Request $request, $orderId)
+    {
+        try {
+            $request->validate([
+                'courier_id' => 'required|exists:couriers,id',
+            ]);
+
+            $order = Order::with('shipping')->findOrFail($orderId);
+            if ($order->courier_id) {
+                return response()->json(['error' => 'Order is already assigned to a courier'], 400);
+            }
+
+            $order->courier_id = $request->courier_id;
+            $order->order_status = 'processing';
+            $order->save();
+
+            if ($order->shipping) {
+                $order->shipping->update(['shipping_status_id' => 3]);
+            }
+
+            Log::info("Order {$orderId} assigned to courier {$request->courier_id}");
+            return response()->json(['message' => 'Order assigned successfully']);
+        } catch (ValidationException $e) {
+            return response()->json(['error' => 'Validation failed', 'messages' => $e->errors()], 422);
+        } catch (\Exception $e) {
+            Log::error("Failed to assign order {$orderId}: " . $e->getMessage());
+            return response()->json(['error' => 'Failed to assign order'], 500);
         }
     }
 }

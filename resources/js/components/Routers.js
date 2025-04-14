@@ -1,4 +1,3 @@
-// src/routers.js
 import React from "react";
 import ReactDOM from "react-dom";
 import {
@@ -21,6 +20,7 @@ import SubCategory from "./AdminPage/AdminSettings/SubCategory";
 import CustomerManagement from "./AdminPage/Customer/CustomerManagement";
 import TransactionManagement from "./AdminPage/Transaction/Transaction";
 import ReviewsManagement from "./AdminPage/AdminReview/Reviews";
+import CourierManagement from "./AdminPage/Courier/CourierManagment";
 
 // Auth pages
 import Register from "./AccessPage/RegisterPage/Register";
@@ -101,6 +101,7 @@ function Routers() {
                             element={<AdminProfile />}
                         />
                         <Route path="/sub-category" element={<SubCategory />} />
+                        <Route path="/couriers" element={<CourierManagement />} />
                     </Route>
 
                     {/* User/admin Protected Routes */}

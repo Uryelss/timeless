@@ -13,11 +13,12 @@ import {
     LogoutOutlined,
     StarOutlined,
     CreditCardOutlined,
+    TruckOutlined, // Add icon for couriers
 } from "@ant-design/icons";
 import { Button, Menu, Modal } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../../AccessPage/Auth";
-import ShopNowButton from "../AdminSidebar/ShopNow"; // adjust the path as needed
+import ShopNowButton from "../AdminSidebar/ShopNow";
 
 const items = [
     {
@@ -56,6 +57,13 @@ const items = [
         label: "Inventory",
         path: "/inventory",
     },
+    // NEW: Add Courier menu item
+    {
+        key: "courier",
+        icon: <TruckOutlined />,
+        label: "Courier",
+        path: "/couriers",
+    },
     {
         key: "reviews",
         icon: <StarOutlined />,
@@ -89,6 +97,7 @@ const items = [
     },
 ];
 
+// Rest of the Sidebar component remains the same
 const Sidebar = () => {
     const [collapsed, setCollapsed] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
