@@ -35,8 +35,7 @@ const OrderTracking = () => {
     const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
     const [isCancelLoading, setIsCancelLoading] = useState(false);
-    const [isConfirmReceiptLoading, setIsConfirmReceiptLoading] =
-        useState(false);
+    const [isConfirmReceiptLoading, setIsConfirmReceiptLoading] = useState(false);
     const [isTrackingModalVisible, setIsTrackingModalVisible] = useState(false);
     const [trackingDetails, setTrackingDetails] = useState([]);
     const [isTrackingLoading, setIsTrackingLoading] = useState(false);
@@ -44,6 +43,14 @@ const OrderTracking = () => {
     const navigate = useNavigate();
     const { orderId } = useParams();
     const baseUrl = "http://localhost:8000";
+
+    // Fake locations for tracking
+    const fakeLocations = [
+        "Manila Sorting Facility, Philippines",
+        "Cebu Distribution Center, Philippines",
+        "Davao Logistics Hub, Philippines",
+        "Quezon City Warehouse, Philippines",
+    ];
 
     const fetchOrderDetails = async () => {
         if (!token) {
@@ -128,6 +135,13 @@ const OrderTracking = () => {
         if (token) {
             fetchOrderDetails();
             fetchUsername();
+            const handleOrderUpdate = () => {
+                fetchOrderDetails();
+            };
+            window.addEventListener("orderStatusUpdated", handleOrderUpdate);
+            return () => {
+                window.removeEventListener("orderStatusUpdated", handleOrderUpdate);
+            };
         }
     }, [orderId, token]);
 
@@ -169,8 +183,43 @@ const OrderTracking = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-            setTrackingDetails(res.data || []);
-            if (res.data.length === 0) {
+            let trackingData = res.data || [];
+
+            // If no tracking data, build mock tracking events
+            if (trackingData.length === 0 && order?.shipping?.shipping_status_id >= 1) {
+                trackingData = [
+                    {
+                        status: "Order Placed",
+                        location: fakeLocations[0], // e.g., "Quezon City Warehouse, Philippines"
+                        timestamp: order.created_at || new Date(Date.now() - 86400000).toISOString(),
+                    },
+                ];
+                if (order?.shipping?.shipping_status_id >= 2) {
+                    trackingData.push({
+                        status: "Payment Info Confirmed",
+                        location: fakeLocations[0],
+                        timestamp: order.payment_confirmed_at || new Date(Date.now() - 43200000).toISOString(),
+                    });
+                }
+                if (order?.shipping?.shipping_status_id >= 3) {
+                    trackingData.push({
+                        status: "Shipped",
+                        location: fakeLocations[1], // e.g., "Manila Sorting Facility, Philippines"
+                        timestamp: order.shipped_at || new Date().toISOString(),
+                    });
+                }
+                if (order?.shipping?.shipping_status_id >= 4) {
+                    // Use the user's actual address for "Delivered"
+                    const userAddress = formatAddress(order.shipping?.address) || "N/A";
+                    trackingData.push({
+                        status: "Delivered",
+                        location: userAddress,
+                        timestamp: order.delivered_at || new Date().toISOString(),
+                    });
+                }
+            }
+            setTrackingDetails(trackingData);
+            if (trackingData.length === 0) {
                 message.info("No tracking updates available yet.");
             }
         } catch (error) {
@@ -178,17 +227,38 @@ const OrderTracking = () => {
                 "Error fetching tracking details:",
                 error.response?.data || error
             );
-            message.error(
-                "Failed to fetch tracking details: " +
-                    (error.response?.data?.error || "Unknown error")
-            );
-            setTrackingDetails([
+            // Fallback to mock data if API fails
+            let fallbackData = [
                 {
-                    status: "Tracking Not Available",
-                    location: "N/A",
-                    timestamp: new Date().toISOString(),
+                    status: "Order Placed",
+                    location: fakeLocations[0],
+                    timestamp: order?.created_at || new Date(Date.now() - 86400000).toISOString(),
                 },
-            ]);
+            ];
+            if (order?.shipping?.shipping_status_id >= 2) {
+                fallbackData.push({
+                    status: "Payment Info Confirmed",
+                    location: fakeLocations[0],
+                    timestamp: order?.payment_confirmed_at || new Date(Date.now() - 43200000).toISOString(),
+                });
+            }
+            if (order?.shipping?.shipping_status_id >= 3) {
+                fallbackData.push({
+                    status: "Shipped",
+                    location: fakeLocations[1],
+                    timestamp: order?.shipped_at || new Date().toISOString(),
+                });
+            }
+            if (order?.shipping?.shipping_status_id >= 4) {
+                // Use the user's actual address for "Delivered"
+                const userAddress = formatAddress(order.shipping?.address) || "N/A";
+                fallbackData.push({
+                    status: "Delivered",
+                    location: userAddress,
+                    timestamp: order?.delivered_at || new Date().toISOString(),
+                });
+            }
+            setTrackingDetails(fallbackData);
         } finally {
             setIsTrackingLoading(false);
         }

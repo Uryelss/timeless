@@ -211877,7 +211877,7 @@ var Content = antd__WEBPACK_IMPORTED_MODULE_3__["default"].Content;
 var Text = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Text,
   Title = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Title;
 var OrderTracking = function OrderTracking() {
-  var _order$shipping3, _order$shipping4, _order$shipping5, _order$shipping6, _order$shipping7, _order$shipping8, _order$shipping9, _order$shipping10, _order$shipping11, _order$shipping12;
+  var _order$shipping12, _order$shipping13, _order$shipping14, _order$shipping15, _order$shipping16, _order$shipping17, _order$shipping18, _order$shipping19, _order$shipping20, _order$shipping21;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState2 = _slicedToArray(_useState, 2),
     order = _useState2[0],
@@ -211923,6 +211923,9 @@ var OrderTracking = function OrderTracking() {
   var _useParams = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_5__.useParams)(),
     orderId = _useParams.orderId;
   var baseUrl = "http://localhost:8000";
+
+  // Fake locations for tracking
+  var fakeLocations = ["Manila Sorting Facility, Philippines", "Cebu Distribution Center, Philippines", "Davao Logistics Hub, Philippines", "Quezon City Warehouse, Philippines"];
   var fetchOrderDetails = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var res, orderData, transformedOrder, _error$response, _error$response2;
@@ -212043,6 +212046,13 @@ var OrderTracking = function OrderTracking() {
     if (token) {
       fetchOrderDetails();
       fetchUsername();
+      var handleOrderUpdate = function handleOrderUpdate() {
+        fetchOrderDetails();
+      };
+      window.addEventListener("orderStatusUpdated", handleOrderUpdate);
+      return function () {
+        window.removeEventListener("orderStatusUpdated", handleOrderUpdate);
+      };
     }
   }, [orderId, token]);
   var handleBackToShipped = function handleBackToShipped() {
@@ -212088,7 +212098,7 @@ var OrderTracking = function OrderTracking() {
   var handleTrackOrder = /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
       var _order$shipping;
-      var res, _error$response6, _error$response7;
+      var _order$shipping2, res, trackingData, _order$shipping3, _order$shipping4, _order$shipping5, _order$shipping6, userAddress, _error$response6, _order$shipping7, _order$shipping8, _order$shipping9, fallbackData, _order$shipping10, _userAddress;
       return _regeneratorRuntime().wrap(function _callee4$(_context4) {
         while (1) switch (_context4.prev = _context4.next) {
           case 0:
@@ -212110,31 +212120,88 @@ var OrderTracking = function OrderTracking() {
             });
           case 8:
             res = _context4.sent;
-            setTrackingDetails(res.data || []);
-            if (res.data.length === 0) {
+            trackingData = res.data || []; // If no tracking data, build mock tracking events
+            if (trackingData.length === 0 && (order === null || order === void 0 || (_order$shipping2 = order.shipping) === null || _order$shipping2 === void 0 ? void 0 : _order$shipping2.shipping_status_id) >= 1) {
+              trackingData = [{
+                status: "Order Placed",
+                location: fakeLocations[0],
+                // e.g., "Quezon City Warehouse, Philippines"
+                timestamp: order.created_at || new Date(Date.now() - 86400000).toISOString()
+              }];
+              if ((order === null || order === void 0 || (_order$shipping3 = order.shipping) === null || _order$shipping3 === void 0 ? void 0 : _order$shipping3.shipping_status_id) >= 2) {
+                trackingData.push({
+                  status: "Payment Info Confirmed",
+                  location: fakeLocations[0],
+                  timestamp: order.payment_confirmed_at || new Date(Date.now() - 43200000).toISOString()
+                });
+              }
+              if ((order === null || order === void 0 || (_order$shipping4 = order.shipping) === null || _order$shipping4 === void 0 ? void 0 : _order$shipping4.shipping_status_id) >= 3) {
+                trackingData.push({
+                  status: "Shipped",
+                  location: fakeLocations[1],
+                  // e.g., "Manila Sorting Facility, Philippines"
+                  timestamp: order.shipped_at || new Date().toISOString()
+                });
+              }
+              if ((order === null || order === void 0 || (_order$shipping5 = order.shipping) === null || _order$shipping5 === void 0 ? void 0 : _order$shipping5.shipping_status_id) >= 4) {
+                // Use the user's actual address for "Delivered"
+                userAddress = formatAddress((_order$shipping6 = order.shipping) === null || _order$shipping6 === void 0 ? void 0 : _order$shipping6.address) || "N/A";
+                trackingData.push({
+                  status: "Delivered",
+                  location: userAddress,
+                  timestamp: order.delivered_at || new Date().toISOString()
+                });
+              }
+            }
+            setTrackingDetails(trackingData);
+            if (trackingData.length === 0) {
               antd__WEBPACK_IMPORTED_MODULE_6__["default"].info("No tracking updates available yet.");
             }
-            _context4.next = 18;
+            _context4.next = 23;
             break;
-          case 13:
-            _context4.prev = 13;
+          case 15:
+            _context4.prev = 15;
             _context4.t0 = _context4["catch"](5);
             console.error("Error fetching tracking details:", ((_error$response6 = _context4.t0.response) === null || _error$response6 === void 0 ? void 0 : _error$response6.data) || _context4.t0);
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Failed to fetch tracking details: " + (((_error$response7 = _context4.t0.response) === null || _error$response7 === void 0 || (_error$response7 = _error$response7.data) === null || _error$response7 === void 0 ? void 0 : _error$response7.error) || "Unknown error"));
-            setTrackingDetails([{
-              status: "Tracking Not Available",
-              location: "N/A",
-              timestamp: new Date().toISOString()
-            }]);
-          case 18:
-            _context4.prev = 18;
+            // Fallback to mock data if API fails
+            fallbackData = [{
+              status: "Order Placed",
+              location: fakeLocations[0],
+              timestamp: (order === null || order === void 0 ? void 0 : order.created_at) || new Date(Date.now() - 86400000).toISOString()
+            }];
+            if ((order === null || order === void 0 || (_order$shipping7 = order.shipping) === null || _order$shipping7 === void 0 ? void 0 : _order$shipping7.shipping_status_id) >= 2) {
+              fallbackData.push({
+                status: "Payment Info Confirmed",
+                location: fakeLocations[0],
+                timestamp: (order === null || order === void 0 ? void 0 : order.payment_confirmed_at) || new Date(Date.now() - 43200000).toISOString()
+              });
+            }
+            if ((order === null || order === void 0 || (_order$shipping8 = order.shipping) === null || _order$shipping8 === void 0 ? void 0 : _order$shipping8.shipping_status_id) >= 3) {
+              fallbackData.push({
+                status: "Shipped",
+                location: fakeLocations[1],
+                timestamp: (order === null || order === void 0 ? void 0 : order.shipped_at) || new Date().toISOString()
+              });
+            }
+            if ((order === null || order === void 0 || (_order$shipping9 = order.shipping) === null || _order$shipping9 === void 0 ? void 0 : _order$shipping9.shipping_status_id) >= 4) {
+              // Use the user's actual address for "Delivered"
+              _userAddress = formatAddress((_order$shipping10 = order.shipping) === null || _order$shipping10 === void 0 ? void 0 : _order$shipping10.address) || "N/A";
+              fallbackData.push({
+                status: "Delivered",
+                location: _userAddress,
+                timestamp: (order === null || order === void 0 ? void 0 : order.delivered_at) || new Date().toISOString()
+              });
+            }
+            setTrackingDetails(fallbackData);
+          case 23:
+            _context4.prev = 23;
             setIsTrackingLoading(false);
-            return _context4.finish(18);
-          case 21:
+            return _context4.finish(23);
+          case 26:
           case "end":
             return _context4.stop();
         }
-      }, _callee4, null, [[5, 13, 18, 21]]);
+      }, _callee4, null, [[5, 15, 23, 26]]);
     }));
     return function handleTrackOrder() {
       return _ref4.apply(this, arguments);
@@ -212142,7 +212209,7 @@ var OrderTracking = function OrderTracking() {
   }();
   var handleCancelOrder = /*#__PURE__*/function () {
     var _ref5 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-      var _error$response8, _error$response9, errorData, _errorData$messages;
+      var _error$response7, _error$response8, errorData, _errorData$messages;
       return _regeneratorRuntime().wrap(function _callee5$(_context5) {
         while (1) switch (_context5.prev = _context5.next) {
           case 0:
@@ -212174,8 +212241,8 @@ var OrderTracking = function OrderTracking() {
           case 14:
             _context5.prev = 14;
             _context5.t0 = _context5["catch"](4);
-            console.error("Error cancelling order:", ((_error$response8 = _context5.t0.response) === null || _error$response8 === void 0 ? void 0 : _error$response8.data) || _context5.t0);
-            errorData = ((_error$response9 = _context5.t0.response) === null || _error$response9 === void 0 ? void 0 : _error$response9.data) || {};
+            console.error("Error cancelling order:", ((_error$response7 = _context5.t0.response) === null || _error$response7 === void 0 ? void 0 : _error$response7.data) || _context5.t0);
+            errorData = ((_error$response8 = _context5.t0.response) === null || _error$response8 === void 0 ? void 0 : _error$response8.data) || {};
             if (errorData.error === "You can only cancel your own orders") {
               antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("You can only cancel your own orders.");
             } else if (errorData.error === "Order cannot be canceled at this stage") {
@@ -212202,8 +212269,8 @@ var OrderTracking = function OrderTracking() {
     };
   }();
   var getTimelineItems = function getTimelineItems(order) {
-    var _order$shipping2;
-    var shippingStatusId = (order === null || order === void 0 || (_order$shipping2 = order.shipping) === null || _order$shipping2 === void 0 ? void 0 : _order$shipping2.shipping_status_id) || 1;
+    var _order$shipping11;
+    var shippingStatusId = (order === null || order === void 0 || (_order$shipping11 = order.shipping) === null || _order$shipping11 === void 0 ? void 0 : _order$shipping11.shipping_status_id) || 1;
     var timestamps = {
       placed: (order === null || order === void 0 ? void 0 : order.created_at) || null,
       paymentConfirmed: (order === null || order === void 0 ? void 0 : order.payment_confirmed_at) || null,
@@ -212330,16 +212397,16 @@ var OrderTracking = function OrderTracking() {
                 className: "primary-btn",
                 onClick: handleTrackOrder,
                 icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {}),
-                disabled: !(order !== null && order !== void 0 && (_order$shipping3 = order.shipping) !== null && _order$shipping3 !== void 0 && _order$shipping3.tracking_number),
+                disabled: !(order !== null && order !== void 0 && (_order$shipping12 = order.shipping) !== null && _order$shipping12 !== void 0 && _order$shipping12.tracking_number),
                 children: "Track Order"
-              }), (order === null || order === void 0 || (_order$shipping4 = order.shipping) === null || _order$shipping4 === void 0 ? void 0 : _order$shipping4.shipping_status_id) !== 5 && [1, 2].includes(order === null || order === void 0 || (_order$shipping5 = order.shipping) === null || _order$shipping5 === void 0 ? void 0 : _order$shipping5.shipping_status_id) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+              }), (order === null || order === void 0 || (_order$shipping13 = order.shipping) === null || _order$shipping13 === void 0 ? void 0 : _order$shipping13.shipping_status_id) !== 5 && [1, 2].includes(order === null || order === void 0 || (_order$shipping14 = order.shipping) === null || _order$shipping14 === void 0 ? void 0 : _order$shipping14.shipping_status_id) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                 className: "danger-btn",
                 icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {}),
                 onClick: function onClick() {
                   return setIsCancelModalVisible(true);
                 },
                 children: "Cancel Order"
-              }), (order === null || order === void 0 || (_order$shipping6 = order.shipping) === null || _order$shipping6 === void 0 ? void 0 : _order$shipping6.shipping_status_id) !== 5 && (order === null || order === void 0 || (_order$shipping7 = order.shipping) === null || _order$shipping7 === void 0 ? void 0 : _order$shipping7.shipping_status_id) === 4 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+              }), (order === null || order === void 0 || (_order$shipping15 = order.shipping) === null || _order$shipping15 === void 0 ? void 0 : _order$shipping15.shipping_status_id) !== 5 && (order === null || order === void 0 || (_order$shipping16 = order.shipping) === null || _order$shipping16 === void 0 ? void 0 : _order$shipping16.shipping_status_id) === 4 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
                 className: "primary-btn",
                 onClick: handleConfirmReceipt,
                 loading: isConfirmReceiptLoading,
@@ -212357,7 +212424,7 @@ var OrderTracking = function OrderTracking() {
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                   children: ["Order Date:", " ", formatDate(order.order_date)]
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
-                  children: ["Status:", " ", ((_order$shipping8 = order.shipping) === null || _order$shipping8 === void 0 || (_order$shipping8 = _order$shipping8.shipping_status) === null || _order$shipping8 === void 0 ? void 0 : _order$shipping8.name) || "N/A"]
+                  children: ["Status:", " ", ((_order$shipping17 = order.shipping) === null || _order$shipping17 === void 0 || (_order$shipping17 = _order$shipping17.shipping_status) === null || _order$shipping17 === void 0 ? void 0 : _order$shipping17.name) || "N/A"]
                 })]
               }), order.order_details.map(function (detail) {
                 var _detail$product, _detail$product2, _detail$product3;
@@ -212400,16 +212467,16 @@ var OrderTracking = function OrderTracking() {
                 children: ["Username: ", username || "N/A"]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                 block: true,
-                children: ["Address:", " ", formatAddress((_order$shipping9 = order.shipping) === null || _order$shipping9 === void 0 ? void 0 : _order$shipping9.address) || "Not Available"]
+                children: ["Address:", " ", formatAddress((_order$shipping18 = order.shipping) === null || _order$shipping18 === void 0 ? void 0 : _order$shipping18.address) || "Not Available"]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                 block: true,
-                children: ["Phone:", " ", ((_order$shipping10 = order.shipping) === null || _order$shipping10 === void 0 || (_order$shipping10 = _order$shipping10.address) === null || _order$shipping10 === void 0 ? void 0 : _order$shipping10.phone) || "Not Available"]
+                children: ["Phone:", " ", ((_order$shipping19 = order.shipping) === null || _order$shipping19 === void 0 || (_order$shipping19 = _order$shipping19.address) === null || _order$shipping19 === void 0 ? void 0 : _order$shipping19.phone) || "Not Available"]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                 block: true,
-                children: ["Tracking Number:", " ", ((_order$shipping11 = order.shipping) === null || _order$shipping11 === void 0 ? void 0 : _order$shipping11.tracking_number) || "Not Available"]
+                children: ["Tracking Number:", " ", ((_order$shipping20 = order.shipping) === null || _order$shipping20 === void 0 ? void 0 : _order$shipping20.tracking_number) || "Not Available"]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Text, {
                 block: true,
-                children: ["Shipping Method:", " ", ((_order$shipping12 = order.shipping) === null || _order$shipping12 === void 0 || (_order$shipping12 = _order$shipping12.shipping_method) === null || _order$shipping12 === void 0 ? void 0 : _order$shipping12.name) || "N/A"]
+                children: ["Shipping Method:", " ", ((_order$shipping21 = order.shipping) === null || _order$shipping21 === void 0 || (_order$shipping21 = _order$shipping21.shipping_method) === null || _order$shipping21 === void 0 ? void 0 : _order$shipping21.name) || "N/A"]
               })]
             })]
           })]
