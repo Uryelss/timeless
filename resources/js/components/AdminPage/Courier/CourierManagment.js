@@ -10,15 +10,14 @@ import {
   Layout,
   message,
   Space,
-  Checkbox,
   Select,
   Typography,
-  Image,
   Descriptions,
+  Tag,
 } from "antd";
 import {
   EditOutlined,
-  FolderOpenOutlined,
+  DeleteOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
@@ -34,12 +33,9 @@ const CourierManagement = () => {
   const [error, setError] = useState(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [createModalVisible, setCreateModalVisible] = useState(false);
-  const [assignModalVisible, setAssignModalVisible] = useState(false);
   const [selectedCourier, setSelectedCourier] = useState(null);
-  const [unassignedOrders, setUnassignedOrders] = useState([]);
   const [form] = Form.useForm();
   const [createForm] = Form.useForm();
-  const [assignForm] = Form.useForm();
   const [ordersModalVisible, setOrdersModalVisible] = useState(false);
   const [selectedCourierOrders, setSelectedCourierOrders] = useState([]);
 
@@ -65,7 +61,7 @@ const CourierManagement = () => {
     }
   };
 
-  const fetchUnassignedOrders = async () => {
+  const fetchCourierOrders = async (courier) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(`${API_URL}/orders`, {
@@ -74,28 +70,7 @@ const CourierManagement = () => {
       const transformed = response.data.map((order) => ({
         ...order,
         order_date: order.order_date || order.created_at,
-        shipping: order.shipping || {},
-        selected: false,
-      }));
-      setUnassignedOrders(
-        transformed.filter((order) => !order.courier_id && !order.deleted_at)
-      );
-    } catch (error) {
-      message.error("Error fetching orders");
-      console.error(error.response?.data || error);
-    }
-  };
-
-  const handleViewOrders = async (courier) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_URL}/orders`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const transformed = response.data.map((order) => ({
-        ...order,
-        order_date: order.order_date || order.created_at,
-        shipping: order.shipping || {},
+        shipping: order.shipping || { paymentMethod: {}, shippingStatus: {} },
         selected: false,
       }));
       const courierOrders = transformed.filter(
@@ -110,6 +85,26 @@ const CourierManagement = () => {
     }
   };
 
+  const handleConfirmReceipt = async (orderId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `${API_URL}/orders/${orderId}/confirm-receipt`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      message.success(`Order #${orderId} receipt confirmed!`);
+      await fetchCourierOrders(selectedCourier);
+    } catch (error) {
+      message.error(
+        error.response?.data?.error || "Failed to confirm receipt"
+      );
+      console.error(error.response?.data || error);
+    }
+  };
+
   const handleCreate = () => {
     setCreateModalVisible(true);
   };
@@ -117,8 +112,18 @@ const CourierManagement = () => {
   const handleCreateSubmit = async (values) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post(`${API_URL}/couriers`, values, {
-        headers: { Authorization: `Bearer ${token}` },
+      const formData = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone_number,
+        address: values.address,
+        status: values.status,
+      };
+
+      const response = await axios.post(`${API_URL}/couriers`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       setCouriers([...couriers, response.data]);
@@ -136,6 +141,9 @@ const CourierManagement = () => {
     form.setFieldsValue({
       name: courier.name,
       email: courier.email,
+      phone: courier.phone_number,
+      address: courier.address,
+      status: courier.status,
     });
     setEditModalVisible(true);
   };
@@ -143,15 +151,28 @@ const CourierManagement = () => {
   const handleUpdate = async (values) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`${API_URL}/couriers/${selectedCourier.id}`, values, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const formData = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        address: values.address,
+        status: values.status,
+        _method: "PUT",
+      };
+
+      const response = await axios.post(
+        `${API_URL}/couriers/${selectedCourier.id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setCouriers(
         couriers.map((courier) =>
-          courier.id === selectedCourier.id
-            ? { ...courier, ...values }
-            : courier
+          courier.id === selectedCourier.id ? response.data : courier
         )
       );
 
@@ -159,9 +180,10 @@ const CourierManagement = () => {
       setEditModalVisible(false);
       form.resetFields();
       setSelectedCourier(null);
+      await fetchCouriers();
     } catch (error) {
       message.error("Failed to update courier.");
-      console.error(error.response?.data || error);
+      console.error("Update error:", error.response?.data || error);
     }
   };
 
@@ -186,37 +208,6 @@ const CourierManagement = () => {
     });
   };
 
-  const handleAssignOrders = () => {
-    fetchUnassignedOrders();
-    setAssignModalVisible(true);
-  };
-
-  const handleAssignSubmit = async (values) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `${API_URL}/orders/${values.order_id}/assign-courier`,
-        { courier_id: values.courier_id },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      setUnassignedOrders(
-        unassignedOrders.filter((order) => order.id !== values.order_id)
-      );
-      await fetchCouriers();
-      message.success(
-        `Order #${values.order_id} assigned successfully! View it in Order Tracking.`
-      );
-      assignForm.resetFields();
-      setAssignModalVisible(false);
-    } catch (error) {
-      message.error("Failed to assign order.");
-      console.error(error.response?.data || error);
-    }
-  };
-
   const renderOrderDetails = (items) => {
     return (
       <Table
@@ -226,14 +217,14 @@ const CourierManagement = () => {
             title: "Item",
             render: (detail) => (
               <Space>
-                <Image
+                <img
                   src={
                     detail.product?.main_image
-                      ? `http://127.0.0.1:8000/storage/${detail.product.main_image}`
+                      ? detail.product.main_image
                       : "https://via.placeholder.com/50"
                   }
                   width={40}
-                  preview={false}
+                  alt="product"
                 />
                 <Text>{detail.product?.product_name || "Unknown"}</Text>
               </Space>
@@ -258,29 +249,37 @@ const CourierManagement = () => {
     );
   };
 
+  const statusColors = {
+    active: "green",
+    inactive: "red",
+    "on delivery": "blue",
+    returned: "orange",
+  };
+
   const columns = [
     {
       title: "Actions",
       key: "action",
       render: (_, courier) => (
         <Space>
-          <Checkbox disabled />
-          <EditOutlined onClick={() => handleEdit(courier)} />
-          <FolderOpenOutlined
-            onClick={() => handleDelete(courier)}
-            style={{ color: "#ff4d4f" }}
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(courier)}
+            type="text"
           />
-          <EyeOutlined
-            onClick={() => handleViewOrders(courier)}
-            style={{ color: "#1890ff" }}
+          <Button
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(courier)}
+            type="text"
+            danger
+          />
+          <Button
+            icon={<EyeOutlined />}
+            onClick={() => fetchCourierOrders(courier)}
+            type="text"
           />
         </Space>
       ),
-    },
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
     },
     {
       title: "Name",
@@ -292,43 +291,41 @@ const CourierManagement = () => {
       dataIndex: "email",
       key: "email",
     },
-  ];
-
-  const unassignedOrderColumns = [
     {
-      title: "Order ID",
-      dataIndex: "id",
-      key: "id",
+      title: "Phone Number",
+      dataIndex: "phone_number",
+      key: "phone_number",
     },
     {
-      title: "Customer",
-      key: "profile",
-      render: (_, order) =>
-        order.profile
-          ? `${order.profile.first_name || ""} ${order.profile.last_name || ""}`
-              .trim() || "N/A"
-          : "N/A",
+      title: "Address",
+      dataIndex: "address",
+      key: "address",
+      ellipsis: true,
     },
     {
-      title: "Items",
-      key: "order_details",
-      render: (_, order) =>
-        order.order_details?.length
-          ? order.order_details
-              .map((detail) => detail.product?.product_name || "Unknown")
-              .join(", ")
-          : "No items",
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <Tag color={statusColors[status?.toLowerCase()] || "default"}>
+          {status ? status.toUpperCase() : "N/A"}
+        </Tag>
+      ),
     },
     {
-      title: "Total",
-      dataIndex: "total_amount",
-      key: "total_amount",
-      render: (total) => `₱${parseFloat(total || 0).toLocaleString()}`,
+      title: "Created At",
+      dataIndex: "created_at",
+      key: "created_at",
+      render: (date) => new Date(date).toLocaleDateString(),
     },
   ];
 
-  if (loading) return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
-  if (error) return <Alert message={error} type="error" style={{ margin: "20px" }} />;
+  if (loading)
+    return (
+      <Spin size="large" style={{ display: "block", margin: "50px auto" }} />
+    );
+  if (error)
+    return <Alert message={error} type="error" style={{ margin: "20px" }} />;
 
   return (
     <Layout>
@@ -356,14 +353,6 @@ const CourierManagement = () => {
           >
             <div style={{ display: "flex", alignItems: "center" }}></div>
             <div>
-              <Button
-                type="primary"
-                onClick={handleAssignOrders}
-                style={{ marginRight: 8 }}
-                disabled={couriers.length === 0}
-              >
-                Assign Orders
-              </Button>
               <Button type="primary" onClick={handleCreate}>
                 Create New Courier
               </Button>
@@ -374,71 +363,194 @@ const CourierManagement = () => {
             columns={columns}
             rowKey="id"
             pagination={{ pageSize: 10 }}
+            scroll={{ x: true }}
           />
+
+          {/* Create Courier Modal */}
           <Modal
             title="Create New Courier"
-            visible={createModalVisible}
+            open={createModalVisible}
             onCancel={() => {
               setCreateModalVisible(false);
               createForm.resetFields();
             }}
             onOk={() => createForm.submit()}
+            width={700}
           >
-            <Form form={createForm} onFinish={handleCreateSubmit} layout="vertical">
-              <Form.Item
-                name="name"
-                label="Name"
-                rules={[{ required: true, message: "Please enter the courier's name" }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                name="email"
-                label="Email"
-                rules={[
-                  { required: true, message: "Please enter the courier's email" },
-                  { type: "email", message: "Please enter a valid email" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
+            <Form
+              form={createForm}
+              onFinish={handleCreateSubmit}
+              layout="vertical"
+            >
+              <div style={{ display: "flex", gap: 16 }}>
+                <div style={{ flex: 1 }}>
+                  <Form.Item
+                    name="name"
+                    label="Name"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter the courier's name",
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    name="email"
+                    label="Email"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter the courier's email",
+                      },
+                      { type: "email", message: "Please enter a valid email" },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    name="phone_number"
+                    label="Phone Number"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter the courier's phone number",
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <Form.Item
+                    name="address"
+                    label="Address"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter the courier's address",
+                      },
+                    ]}
+                  >
+                    <Input.TextArea rows={3} />
+                  </Form.Item>
+                  <Form.Item
+                    name="status"
+                    label="Status"
+                    initialValue="active"
+                  >
+                    <Select>
+                      <Option value="active">Active</Option>
+                      <Option value="inactive">Inactive</Option>
+                      <Option value="on delivery">On Delivery</Option>
+                      <Option value="returned">Returned</Option>
+                    </Select>
+                  </Form.Item>
+                </div>
+              </div>
             </Form>
           </Modal>
+
+          {/* Edit Courier Modal */}
           <Modal
             title="Edit Courier"
-            visible={editModalVisible}
+            open={editModalVisible}
             onCancel={() => {
               setEditModalVisible(false);
               form.resetFields();
               setSelectedCourier(null);
             }}
             onOk={() => form.submit()}
+            width={700}
           >
             <Form form={form} onFinish={handleUpdate} layout="vertical">
-              <Form.Item
-                name="name"
-                label="Name"
-                rules={[{ required: true, message: "Please enter the courier's name" }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                name="email"
-                label="Email"
-                rules={[
-                  { required: true, message: "Please enter the courier's email" },
-                  { type: "email", message: "Please enter a valid email" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
+              <div style={{ display: "flex", gap: 16 }}>
+                <div style={{ flex: 1 }}>
+                  <Form.Item
+                    name="name"
+                    label="Name"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter the courier's name",
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    name="email"
+                    label="Email"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter the courier's email",
+                      },
+                      { type: "email", message: "Please enter a valid email" },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                  <Form.Item
+                    name="phone"
+                    label="Phone Number"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter the courier's phone number",
+                      },
+                    ]}
+                  >
+                    <Input />
+                  </Form.Item>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <Form.Item
+                    name="address"
+                    label="Address"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter the courier's address",
+                      },
+                    ]}
+                  >
+                    <Input.TextArea rows={3} />
+                  </Form.Item>
+                  <Form.Item name="status" label="Status">
+                    <Select>
+                      <Option value="active">Active</Option>
+                      <Option value="inactive">Inactive</Option>
+                      <Option value="on delivery">On Delivery</Option>
+                      <Option value="returned">Returned</Option>
+                    </Select>
+                  </Form.Item>
+                </div>
+              </div>
             </Form>
           </Modal>
+
+          {/* Orders Modal */}
           <Modal
             title={`Orders Assigned to ${selectedCourier?.name || "Courier"}`}
-            visible={ordersModalVisible}
-            onCancel={() => setOrdersModalVisible(false)}
-            footer={<Button onClick={() => setOrdersModalVisible(false)}>Close</Button>}
+            open={ordersModalVisible}
+            onCancel={() => {
+              setOrdersModalVisible(false);
+              setSelectedCourierOrders([]);
+              setSelectedCourier(null);
+            }}
+            footer={
+              <Button
+                onClick={() => {
+                  setOrdersModalVisible(false);
+                  setSelectedCourierOrders([]);
+                  setSelectedCourier(null);
+                }}
+              >
+                Close
+              </Button>
+            }
             width={800}
           >
             {selectedCourierOrders.length > 0 ? (
@@ -447,11 +559,16 @@ const CourierManagement = () => {
                   <div key={order.id} style={{ marginBottom: 24 }}>
                     <Title level={5}>Order #{order.id}</Title>
                     {renderOrderDetails(order.order_details || [])}
-                    <Descriptions bordered size="small" style={{ marginTop: 16 }}>
+                    <Descriptions
+                      bordered
+                      size="small"
+                      style={{ marginTop: 16 }}
+                    >
                       <Descriptions.Item label="Customer">
                         {order.profile
-                          ? `${order.profile.first_name || ""} ${order.profile.last_name || ""}`
-                              .trim() || "N/A"
+                          ? `${order.profile.first_name || ""} ${
+                              order.profile.last_name || ""
+                            }`.trim() || "N/A"
                           : "N/A"}
                       </Descriptions.Item>
                       <Descriptions.Item label="Total">
@@ -461,97 +578,23 @@ const CourierManagement = () => {
                         {order.shipping?.address?.full_address || "N/A"}
                       </Descriptions.Item>
                     </Descriptions>
+                    {order.shipping?.shipping_status_id === 4 &&
+                      order.order_status !== "completed" &&
+                      order.shipping?.payment_method_id === 1 && (
+                        <Button
+                          type="primary"
+                          onClick={() => handleConfirmReceipt(order.id)}
+                          style={{ marginTop: 8 }}
+                        >
+                          Confirm Receipt
+                        </Button>
+                      )}
                   </div>
                 ))}
               </>
             ) : (
               <Text>No orders assigned to this courier.</Text>
             )}
-          </Modal>
-          <Modal
-            title="Assign Orders to Courier"
-            visible={assignModalVisible}
-            onCancel={() => {
-              setAssignModalVisible(false);
-              assignForm.resetFields();
-            }}
-            footer={null}
-            width={1000}
-          >
-            <Form form={assignForm} onFinish={handleAssignSubmit} layout="vertical">
-              <Form.Item
-                name="order_id"
-                label="Select Order"
-                rules={[{ required: true, message: "Please select an order" }]}
-              >
-                <Select placeholder="Select an order">
-                  {unassignedOrders.length > 0 ? (
-                    unassignedOrders.map((order) => (
-                      <Option key={order.id} value={order.id}>
-                        Order #{order.id} -{" "}
-                        {order.profile
-                          ? `${order.profile.first_name || ""} ${order.profile.last_name || ""}`
-                              .trim() || "Unknown"
-                          : "Unknown"}
-                        {order.order_details?.length > 0
-                          ? ` (${
-                              order.order_details
-                                .map(
-                                  (d) =>
-                                    `${d.product?.product_name || "Unknown"} x${d.quantity}`
-                                )
-                                .join(", ")
-                            })`
-                          : " (No items)"}
-                      </Option>
-                    ))
-                  ) : (
-                    <Option disabled>No unassigned orders available</Option>
-                  )}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                name="courier_id"
-                label="Select Courier"
-                rules={[{ required: true, message: "Please select a courier" }]}
-              >
-                <Select placeholder="Select a courier">
-                  {couriers.map((courier) => (
-                    <Option key={courier.id} value={courier.id}>
-                      {courier.name} ({courier.email})
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary" htmlType="submit">
-                  Assign
-                </Button>
-              </Form.Item>
-            </Form>
-            <div style={{ marginTop: 16 }}>
-              {unassignedOrders.length > 0 ? (
-                unassignedOrders.map((order) => (
-                  <div key={order.id} style={{ marginBottom: 24 }}>
-                    <Title level={5}>Order #{order.id}</Title>
-                    {renderOrderDetails(order.order_details || [])}
-                    <Descriptions bordered size="small" style={{ marginTop: 16 }}>
-                      <Descriptions.Item label="Customer">
-                        {order.profile
-                          ? `${order.profile.first_name || ""} ${order.profile.last_name || ""}`
-                              .trim() || "N/A"
-                          : "N/A"}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Total">
-                        ₱{parseFloat(order.total_amount || 0).toLocaleString()}
-                      </Descriptions.Item>
-                    </Descriptions>
-                  </div>
-                ))
-              ) : (
-                <Text>No unassigned orders available.</Text>
-              )}
-            </div>
           </Modal>
         </Content>
       </Layout>

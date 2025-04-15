@@ -9,24 +9,32 @@ class CourierSeeder extends Seeder
 {
     public function run()
     {
+        // Define couriers without the 'status' field
         $fakeCouriers = [
             [
-                'name' => 'Jaypee Gecain',
-                'email' => 'GecainJaypee@gmail.com',
-                'is_fake' => true,
+                'name' => 'JNT EXPRESS',
+                'email' => 'JNTEXPRESS@gmail.com',
+                'phone_number' => '+63 912 345 6789',
+                'address' => '123 Main St, Quezon City, Metro Manila',
+                // 'status' field is omitted, will use the default value
             ],
             [
-                'name' => 'Arji Galabo',
-                'email' => 'GalaboArji@gmail.com',
-                'is_fake' => true,
+                'name' => 'LAZADA EXPRESS',
+                'email' => 'LAZADAEXPRESS@gmail.com',
+                'phone_number' => '+63 917 654 3210',
+                'address' => '456 Elm St, Makati City, Metro Manila',
+                // 'status' field is omitted, will use the default value
             ],
             [
-                'name' => 'Kyle Mahinay',
-                'email' => 'MahinayKyle@gmail.com',
-                'is_fake' => true,
+                'name' => 'TOKOK EXPRESS',
+                'email' => 'TOKOKEXPRESS@gmail.com',
+                'phone_number' => '+63 919 876 5432',
+                'address' => '789 Oak St, Pasig City, Metro Manila',
+                // 'status' field is omitted, will use the default value
             ],
         ];
 
+        // Loop through the array and create couriers in the database
         foreach ($fakeCouriers as $courier) {
             Courier::create($courier);
         }

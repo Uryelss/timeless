@@ -86,14 +86,14 @@ class OrderController extends Controller
             $shippingStatusId = $request->input('shipping.shipping_status_id');
 
             switch ($shippingStatusId) {
-                case 1: // Order Placed
+                case 1:
                     $order->order_status = 'pending';
                     break;
-                case 2: // Payment Info Confirmed
+                case 2:
                     $order->payment_confirmed_at = $order->payment_confirmed_at ?? now();
                     $order->order_status = 'pending';
                     break;
-                case 3: // Shipped
+                case 3:
                     $order->shipped_at = $order->shipped_at ?? now();
                     $order->order_status = 'processing';
                     if (!$order->shipping->tracking_number) {
@@ -103,14 +103,14 @@ class OrderController extends Controller
                         $order->shipping->save();
                     }
                     break;
-                case 4: // Delivered
+                case 4:
                     $order->delivered_at = $order->delivered_at ?? now();
                     $order->order_status = 'shipped';
                     break;
-                case 5: // Cancelled
+                case 5:
                     $order->order_status = 'cancelled';
                     break;
-                case 6: // Completed
+                case 6:
                     $order->completed_at = $order->completed_at ?? now();
                     $order->order_status = 'completed';
                     if (!$order->shipping->tracking_number) {
@@ -243,7 +243,7 @@ class OrderController extends Controller
     public function confirmReceipt(Request $request, $id)
     {
         try {
-            $order = Order::with('shipping')->findOrFail($id);
+            $order = Order::with(['shipping', 'courier'])->findOrFail($id);
 
             if (!$order->shipping) {
                 return response()->json(['error' => 'Shipping details not found for this order.'], 404);
@@ -253,12 +253,26 @@ class OrderController extends Controller
                 return response()->json(['error' => 'Order is not delivered yet.'], 400);
             }
 
+            if ($order->order_status === 'completed' || $order->shipping->shipping_status_id == 6) {
+                return response()->json(['error' => 'Order receipt already confirmed.'], 400);
+            }
+
             $order->completed_at = now();
             $order->order_status = 'completed';
             $order->shipping->update(['shipping_status_id' => 6]);
             $order->save();
 
-            Log::info("Order {$id} receipt confirmed by user.");
+            $order->load([
+                'profile.user',
+                'shipping.shippingMethod',
+                'shipping.paymentMethod',
+                'shipping.address',
+                'shipping.shippingStatus',
+                'orderDetails.product',
+                'courier',
+            ]);
+
+            Log::info("Order {$id} receipt confirmed.");
             return response()->json([
                 'message' => 'Order receipt confirmed successfully',
                 'order' => $order,
@@ -275,10 +289,7 @@ class OrderController extends Controller
     public function unassignedOrders(Request $request)
     {
         try {
-            $orders = Order::with([
-                'profile.user',
-                'orderDetails.product',
-            ])
+            $orders = Order::with(['profile.user', 'orderDetails.product'])
                 ->whereNull('courier_id')
                 ->whereNull('deleted_at')
                 ->whereIn('order_status', ['pending', 'processing'])
@@ -313,7 +324,7 @@ class OrderController extends Controller
         }
     }
 
-    public function assignToCourier(Request $request, $orderId)
+    public function assignCourier(Request $request, $orderId)
     {
         try {
             $request->validate([
@@ -340,6 +351,45 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             Log::error("Failed to assign order {$orderId}: " . $e->getMessage());
             return response()->json(['error' => 'Failed to assign order'], 500);
+        }
+    }
+
+    public function assignCourierAuto(Request $request, $orderId)
+    {
+        try {
+            $order = Order::with('shipping')->findOrFail($orderId);
+            if ($order->courier_id) {
+                return response()->json(['error' => 'Order is already assigned to a courier'], 400);
+            }
+
+            $courier = Courier::where('status', 'active')
+                ->withCount('orders')
+                ->orderBy('orders_count', 'asc')
+                ->first();
+
+            if (!$courier) {
+                return response()->json(['error' => 'No active couriers available'], 404);
+            }
+
+            $order->courier_id = $courier->id;
+            $order->order_status = 'processing';
+            $order->save();
+
+            if ($order->shipping) {
+                $order->shipping->update(['shipping_status_id' => 3]);
+            }
+
+            Log::info("Order {$orderId} automatically assigned to courier {$courier->id}");
+            return response()->json([
+                'message' => 'Courier assigned successfully',
+                'courier' => $courier,
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Failed to auto-assign courier for order {$orderId}: " . $e->getMessage());
+            return response()->json([
+                'error' => 'Failed to assign courier',
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
 }

@@ -21,7 +21,6 @@ import {
     EditOutlined,
     FolderOpenOutlined,
     EyeOutlined,
-    UndoOutlined,
 } from "@ant-design/icons";
 import Sidebar from "../AdminSidebar/Sidebar";
 import axios from "axios";
@@ -33,7 +32,6 @@ const { Search } = Input;
 
 const OrderManagement = () => {
     const [orders, setOrders] = useState([]);
-    const [archivedOrders, setArchivedOrders] = useState([]);
     const [openArchiveModal, setOpenArchiveModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [openViewModal, setOpenViewModal] = useState(false);
@@ -41,8 +39,8 @@ const OrderManagement = () => {
     const [searchText, setSearchText] = useState("");
     const [selectAllActive, setSelectAllActive] = useState(false);
     const [selectedActiveOrders, setSelectedActiveOrders] = useState([]);
-    const [selectAllArchived, setSelectAllArchived] = useState(false);
-    const [selectedArchivedOrders, setSelectedArchivedOrders] = useState([]);
+    const [isAssigningCourier, setIsAssigningCourier] = useState(false);
+    const [trackingNumber, setTrackingNumber] = useState("");
 
     const [form] = Form.useForm();
     const API_URL = "http://localhost:8000/api/orders";
@@ -61,9 +59,6 @@ const OrderManagement = () => {
                     selected: false,
                 }));
                 setOrders(transformed.filter((order) => !order.deleted_at));
-                setArchivedOrders(
-                    transformed.filter((order) => order.deleted_at)
-                );
             })
             .catch((err) => {
                 message.error("Error fetching orders");
@@ -133,64 +128,6 @@ const OrderManagement = () => {
         });
     };
 
-    const handleArchivedCheckboxChange = (orderId) => {
-        const updated = archivedOrders.map((order) =>
-            order.id === orderId
-                ? { ...order, selected: !order.selected }
-                : order
-        );
-        setArchivedOrders(updated);
-        setSelectedArchivedOrders(
-            updated.filter((o) => o.selected).map((o) => o.id)
-        );
-        setSelectAllArchived(updated.every((o) => o.selected));
-    };
-
-    const handleSelectAllArchivedChange = (e) => {
-        const checked = e.target.checked;
-        setSelectAllArchived(checked);
-        const updated = archivedOrders.map((order) => ({
-            ...order,
-            selected: checked,
-        }));
-        setArchivedOrders(updated);
-        setSelectedArchivedOrders(checked ? updated.map((o) => o.id) : []);
-    };
-
-    const handleRestoreAll = () => {
-        if (selectedArchivedOrders.length === 0) {
-            message.warning("Please select at least one order to restore");
-            return;
-        }
-        Modal.confirm({
-            title: `Are you sure you want to restore ${selectedArchivedOrders.length} selected order(s)?`,
-            onOk: () => {
-                Promise.all(
-                    selectedArchivedOrders.map((id) =>
-                        axios.post(
-                            `${API_URL}/${id}/restore`,
-                            {},
-                            { headers: { Authorization: `Bearer ${token}` } }
-                        )
-                    )
-                )
-                    .then(() => {
-                        message.success(
-                            "Selected orders restored successfully"
-                        );
-                        fetchOrders();
-                        setSelectedArchivedOrders([]);
-                        setSelectAllArchived(false);
-                    })
-                    .catch(() =>
-                        message.error("Failed to restore some orders")
-                    );
-            },
-            okButtonProps: { style: { width: "80px" } },
-            cancelButtonProps: { style: { width: "80px" } },
-        });
-    };
-
     const mainColumns = [
         {
             title: "Actions",
@@ -205,8 +142,10 @@ const OrderManagement = () => {
                         onClick={() => {
                             setSelectedOrder(record);
                             form.setFieldsValue({
-                                order_status: record.order_status,
+                                shipping_status_id:
+                                    record.shipping?.shipping_status_id || 1,
                             });
+                            setTrackingNumber(record.shipping?.tracking_number || "");
                             setOpenEditModal(true);
                         }}
                     />
@@ -265,27 +204,6 @@ const OrderManagement = () => {
         },
     ];
 
-    const archiveColumns = [
-        {
-            title: "Actions",
-            key: "actions",
-            render: (_, record) => (
-                <Space>
-                    <Checkbox
-                        checked={record.selected}
-                        onChange={() => handleArchivedCheckboxChange(record.id)}
-                    />
-                    <Button
-                        type="link"
-                        onClick={() => handleRestore(record.id)}
-                        icon={<UndoOutlined />}
-                    />
-                </Space>
-            ),
-        },
-        ...mainColumns.slice(1),
-    ];
-
     const handleArchive = (record) => {
         Modal.confirm({
             title: "Are you sure you want to archive this order?",
@@ -310,77 +228,85 @@ const OrderManagement = () => {
         });
     };
 
-    const handleRestore = (id) => {
-        axios
-            .post(
-                `${API_URL}/${id}/restore`,
-                {},
-                { headers: { Authorization: `Bearer ${token}` } }
-            )
-            .then(() => {
-                message.success("Order restored successfully");
-                fetchOrders();
-            })
-            .catch((err) => {
-                message.error("Failed to restore order");
-                console.error(err);
-            });
-    };
+    const handleUpdate = async () => {
+        try {
+            const values = await form.validateFields();
+            const shippingStatusId = values.shipping_status_id || 1;
+            let updatedOrderStatus;
 
-    const handleUpdate = () => {
-        const shippingStatusId =
-            selectedOrder.shipping?.shipping_status_id || 1;
-        let updatedOrderStatus;
+            switch (shippingStatusId) {
+                case 1:
+                    updatedOrderStatus = "pending";
+                    break;
+                case 2:
+                    updatedOrderStatus = "pending";
+                    break;
+                case 3:
+                    updatedOrderStatus = "shipped";
+                    break;
+                case 4:
+                    updatedOrderStatus = "delivered";
+                    break;
+                case 5:
+                    updatedOrderStatus = "cancelled";
+                    break;
+                case 6:
+                    updatedOrderStatus = "completed";
+                    break;
+                default:
+                    updatedOrderStatus = selectedOrder.order_status || "pending";
+            }
 
-        switch (shippingStatusId) {
-            case 1:
-                updatedOrderStatus = "pending";
-                break;
-            case 2:
-                updatedOrderStatus = "pending";
-                break;
-            case 3:
-                updatedOrderStatus = "shipped";
-                break;
-            case 4:
-                updatedOrderStatus = "delivered";
-                break;
-            case 5:
-                updatedOrderStatus = "cancelled";
-                break;
-            case 6:
-                updatedOrderStatus = "completed";
-                break;
-            default:
-                updatedOrderStatus = selectedOrder.order_status || "pending";
-        }
-
-        axios
-            .put(
-                `${API_URL}/${selectedOrder.id}`,
-                {
-                    order_status: updatedOrderStatus,
-                    shipping: {
-                        tracking_number:
-                            selectedOrder.shipping?.tracking_number || null,
-                        shipping_status_id: shippingStatusId,
+            setIsAssigningCourier(true);
+            try {
+                await axios.put(
+                    `${API_URL}/${selectedOrder.id}`,
+                    {
+                        order_status: updatedOrderStatus,
+                        shipping: {
+                            tracking_number: trackingNumber || null,
+                            shipping_status_id: shippingStatusId,
+                        },
                     },
-                },
-                { headers: { Authorization: `Bearer ${token}` } }
-            )
-            .then((response) => {
-                message.success("Order updated successfully");
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                if (shippingStatusId === 3) {
+                    try {
+                        await axios.post(
+                            `${API_URL}/${selectedOrder.id}/assign-courier-auto`,
+                            {},
+                            { headers: { Authorization: `Bearer ${token}` } }
+                        );
+                        message.success(
+                            "Order updated and courier assigned successfully"
+                        );
+                    } catch (error) {
+                        message.error(
+                            "Failed to assign courier: " +
+                                (error.response?.data?.error ||
+                                    "Unknown error")
+                        );
+                    }
+                } else {
+                    message.success("Order updated successfully");
+                }
+
                 setOpenEditModal(false);
                 fetchOrders();
                 window.dispatchEvent(new Event("orderStatusUpdated"));
-            })
-            .catch((err) => {
+            } catch (err) {
                 message.error(
                     "Failed to update order: " +
                         (err.response?.data?.message || "Unknown error")
                 );
                 console.error(err);
-            });
+            } finally {
+                setIsAssigningCourier(false);
+            }
+        } catch (err) {
+            message.error("Please fill in all required fields");
+        }
     };
 
     const handleView = (record) => {
@@ -511,11 +437,14 @@ const OrderManagement = () => {
                                     {shipping?.tracking_number ||
                                         "Not Available"}
                                 </Descriptions.Item>
+                                <Descriptions.Item label="Courier">
+                                    {selectedOrder.courier?.name || "Not Assigned"}
+                                </Descriptions.Item>
                                 <Descriptions.Item label="Payment Method">
                                     {shipping?.payment_method?.name || "N/A"}
                                 </Descriptions.Item>
                                 <Descriptions.Item label="Shipping Method">
-                                    {shipping?.shipping_method?.name || "N/A"}
+                                    {shipping?.shipping_method?.name || "NogradA"}
                                 </Descriptions.Item>
                             </Descriptions>
                         </Col>
@@ -539,19 +468,9 @@ const OrderManagement = () => {
         );
     });
 
-    const filteredArchivedOrders = archivedOrders.filter((order) => {
-        const lowerSearch = searchText.toLowerCase();
-        return (
-            order.id.toString().includes(lowerSearch) ||
-            (order.profile &&
-                `${order.profile.first_name || ""} ${
-                    order.profile.last_name || ""
-                }`
-                    .toLowerCase()
-                    .includes(lowerSearch)) ||
-            (order.order_status?.toLowerCase() || "").includes(lowerSearch)
-        );
-    });
+    const generateTrackingNumber = () => {
+        return `TRK${Date.now()}${Math.floor(Math.random() * 1000)}`;
+    };
 
     return (
         <Layout>
@@ -570,145 +489,132 @@ const OrderManagement = () => {
                             marginBottom: 16,
                         }}
                     >
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                            <Search
-                                placeholder="Search orders by ID, customer, or status"
-                                allowClear
-                                onChange={(e) => setSearchText(e.target.value)}
-                                style={{ width: 300, marginRight: 16 }}
-                            />
-                            <Checkbox
-                                checked={selectAllActive}
-                                onChange={handleSelectAllActiveChange}
-                                style={{ marginRight: 16 }}
+                        <Search
+                            placeholder="Search orders..."
+                            onChange={(e) => setSearchText(e.target.value)}
+                            style={{ width: 200 }}
+                        />
+                        <Space>
+                            <Button
+                                onClick={() => setOpenArchiveModal(true)}
+                                disabled={selectedActiveOrders.length === 0}
                             >
-                                Select All
-                            </Checkbox>
-                            {(selectAllActive ||
-                                selectedActiveOrders.length > 0) && (
-                                <Button
-                                    type="link"
-                                    onClick={handleArchiveAll}
-                                    icon={<FolderOpenOutlined />}
-                                />
-                            )}
-                        </div>
-                        <Button
-                            type="default"
-                            onClick={() => setOpenArchiveModal(true)}
-                            style={{ width: "131px" }}
-                        >
-                            Archived Orders
-                        </Button>
+                                Archive Selected
+                            </Button>
+                        </Space>
                     </div>
+                    <Checkbox
+                        checked={selectAllActive}
+                        onChange={handleSelectAllActiveChange}
+                        style={{ marginBottom: 8 }}
+                    >
+                        Select All Active Orders
+                    </Checkbox>
                     <Table
                         columns={mainColumns}
                         dataSource={filteredOrders}
                         rowKey="id"
-                        scroll={{ x: 1200 }}
+                        pagination={{ pageSize: 10 }}
                     />
+                    <Modal
+                        title="Edit Order"
+                        open={openEditModal}
+                        onCancel={() => setOpenEditModal(false)}
+                        footer={[
+                            <Button
+                                key="cancel"
+                                onClick={() => setOpenEditModal(false)}
+                                style={{ width: "131px" }}
+                            >
+                                Cancel
+                            </Button>,
+                            <Button
+                                key="save"
+                                type="primary"
+                                onClick={handleUpdate}
+                                style={{ width: "131px" }}
+                                loading={isAssigningCourier}
+                                disabled={isAssigningCourier}
+                            >
+                                Update Order
+                            </Button>,
+                        ]}
+                    >
+                        <Form form={form} layout="vertical">
+                            <Form.Item
+                                name="shipping_status_id"
+                                label="Shipping Status"
+                                rules={[
+                                    {
+                                        required: true,
+                                        message: "Please select a status",
+                                    },
+                                ]}
+                            >
+                                <Select
+                                    onChange={(value) => {
+                                        setSelectedOrder({
+                                            ...selectedOrder,
+                                            shipping: {
+                                                ...selectedOrder.shipping,
+                                                shipping_status_id: value,
+                                            },
+                                        });
+                                        if (value === 1) {
+                                            setTrackingNumber(generateTrackingNumber());
+                                        } else {
+                                            setTrackingNumber(selectedOrder.shipping?.tracking_number || "");
+                                        }
+                                    }}
+                                >
+                                    <Option value={1}>Order Placed</Option>
+                                    <Option value={2}>
+                                        Payment Info Confirmed
+                                    </Option>
+                                    <Option value={3}>Shipped</Option>
+                                    <Option value={4}>Delivered</Option>
+                                    <Option value={5}>Cancelled</Option>
+                                    <Option value={6}>Completed</Option>
+                                </Select>
+                            </Form.Item>
+                            {trackingNumber && (
+                                <Form.Item label="Tracking Number">
+                                    <Text>{trackingNumber}</Text>
+                                </Form.Item>
+                            )}
+                        </Form>
+                    </Modal>
+                    <Modal
+                        title="Order Details"
+                        open={openViewModal}
+                        onCancel={() => setOpenViewModal(false)}
+                        footer={[
+                            <Button
+                                key="close"
+                                onClick={() => setOpenViewModal(false)}
+                            >
+                                Close
+                            </Button>,
+                        ]}
+                        width={1000}
+                    >
+                        {renderOrderDetails()}
+                    </Modal>
+                    <Modal
+                        title="Confirm Archive"
+                        open={openArchiveModal}
+                        onOk={handleArchiveAll}
+                        onCancel={() => setOpenArchiveModal(false)}
+                        okButtonProps={{ style: { width: "80px" } }}
+                        cancelButtonProps={{ style: { width: "80px" } }}
+                    >
+                        <p>
+                            Are you sure you want to archive{" "}
+                            {selectedActiveOrders.length} selected order(s)?
+                        </p>
+                    </Modal>
                 </Content>
             </Layout>
-            <Modal
-                title="Archived Orders"
-                centered
-                open={openArchiveModal}
-                onCancel={() => setOpenArchiveModal(false)}
-                width={1200}
-                footer={[]}
-            >
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginBottom: 16,
-                    }}
-                >
-                    <Checkbox
-                        checked={selectAllArchived}
-                        onChange={handleSelectAllArchivedChange}
-                        style={{ marginRight: 16 }}
-                    >
-                        Select All
-                    </Checkbox>
-                    {(selectAllArchived ||
-                        selectedArchivedOrders.length > 0) && (
-                        <Button
-                            type="link"
-                            onClick={handleRestoreAll}
-                            icon={<UndoOutlined />}
-                        />
-                    )}
-                </div>
-                <Table
-                    columns={archiveColumns}
-                    dataSource={filteredArchivedOrders}
-                    rowKey="id"
-                    scroll={{ x: 1200 }}
-                    pagination={false}
-                />
-            </Modal>
-            <Modal
-                title="Edit Order"
-                open={openEditModal}
-                onCancel={() => setOpenEditModal(false)}
-                onOk={handleUpdate}
-                footer={[
-                    <Button
-                        key="cancel"
-                        onClick={() => setOpenEditModal(false)}
-                        style={{ width: "131px" }}
-                    >
-                        Cancel
-                    </Button>,
-                    <Button
-                        key="save"
-                        type="primary"
-                        onClick={handleUpdate}
-                        style={{ width: "131px" }}
-                    >
-                        Update Order
-                    </Button>,
-                ]}
-            >
-                {selectedOrder && (
-                    <div>
-                        <p>Order ID: {selectedOrder.id}</p>
-                        <Select
-                            value={
-                                selectedOrder.shipping?.shipping_status_id || 1
-                            }
-                            onChange={(value) =>
-                                setSelectedOrder({
-                                    ...selectedOrder,
-                                    shipping: {
-                                        ...selectedOrder.shipping,
-                                        shipping_status_id: value,
-                                    },
-                                })
-                            }
-                            style={{ width: "100%", marginBottom: 16 }}
-                        >
-                            <Option value={1}>Order Placed</Option>
-                            <Option value={2}>Payment Info Confirmed</Option>
-                            <Option value={3}>Shipped</Option>
-                            <Option value={4}>Delivered</Option>
-                            <Option value={5}>Cancelled</Option>
-                            <Option value={6}>Completed</Option>
-                        </Select>
-                    </div>
-                )}
-            </Modal>
-            <Modal
-                title="Order Details"
-                centered
-                open={openViewModal}
-                onCancel={() => setOpenViewModal(false)}
-                width={800}
-                footer={[]}
-            >
-                {renderOrderDetails()}
-            </Modal>
         </Layout>
     );
 };

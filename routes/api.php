@@ -50,7 +50,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/my-purchases', [UserOrderController::class, 'myPurchases'])->name('user.orders.my_purchases');
     Route::get('/users/me', [UserController::class, 'getCurrentUser'])->name('users.me');
 
-    // NEW: Route for fetching a single user's profile.
+    // Route for fetching a single user's profile
     Route::get('/user/{id}', [UserController::class, 'show']);
 
     // User chat endpoints
@@ -59,8 +59,6 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('/couriers', [CourierController::class, 'index'])->name('couriers.index');
 });
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -135,6 +133,17 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::put('/{id}', [OrderController::class, 'update'])->name('update');
         Route::post('/{id}/archive', [OrderController::class, 'archive'])->name('archive');
         Route::post('/{id}/restore', [OrderController::class, 'restore'])->name('restore');
+        Route::post('/{id}/assign-courier', [OrderController::class, 'assignCourier'])->name('assign-courier');
+        Route::post('/{id}/assign-courier-auto', [OrderController::class, 'assignCourierAuto'])->name('assign-courier-auto');
+    });
+
+    Route::prefix('couriers')->name('couriers.')->group(function () {
+        Route::get('/', [CourierController::class, 'index'])->name('index');
+        Route::post('/', [CourierController::class, 'store'])->name('store');
+        Route::get('/{id}', [CourierController::class, 'show'])->name('show');
+        Route::put('/{id}', [CourierController::class, 'update'])->name('update');
+        Route::delete('/{id}', [CourierController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/transfer', [CourierController::class, 'transfer'])->name('transfer');
     });
 
     Route::prefix('admin/reviews')->name('admin.reviews.')->group(function () {
@@ -145,10 +154,11 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::post('/{id}/restore', [ReviewController::class, 'restore'])->name('restore');
     });
 
-    // Admin Chat endpoints (placed outside of transactions)
-    Route::get('/admin/chat/inbox', [ChatController::class, 'inbox'])->name('chat.inbox');
-    Route::get('/admin/chat/{user_id}', [ChatController::class, 'adminConversation'])->name('chat.adminConversation');
-    Route::post('/admin/chat', [ChatController::class, 'store'])->name('chat.adminStore');
+    Route::prefix('admin/chat')->name('admin.chat.')->group(function () {
+        Route::get('/inbox', [ChatController::class, 'inbox'])->name('inbox');
+        Route::get('/{user_id}', [ChatController::class, 'adminConversation'])->name('conversation');
+        Route::post('/', [ChatController::class, 'store'])->name('store');
+    });
 
     Route::prefix('transactions')->name('transactions.')->group(function () {
         Route::get('/', [TransactionController::class, 'index'])->name('index');
