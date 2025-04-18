@@ -5621,6 +5621,24 @@ var QuestionCircleOutlined = { "icon": { "tag": "svg", "attrs": { "viewBox": "64
 
 /***/ }),
 
+/***/ "./node_modules/@ant-design/icons-svg/es/asn/ReloadOutlined.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@ant-design/icons-svg/es/asn/ReloadOutlined.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// This icon file is generated automatically.
+var ReloadOutlined = { "icon": { "tag": "svg", "attrs": { "viewBox": "64 64 896 896", "focusable": "false" }, "children": [{ "tag": "path", "attrs": { "d": "M909.1 209.3l-56.4 44.1C775.8 155.1 656.2 92 521.9 92 290 92 102.3 279.5 102 511.5 101.7 743.7 289.8 932 521.9 932c181.3 0 335.8-115 394.6-276.1 1.5-4.2-.7-8.9-4.9-10.3l-56.7-19.5a8 8 0 00-10.1 4.8c-1.8 5-3.8 10-5.9 14.9-17.3 41-42.1 77.8-73.7 109.4A344.77 344.77 0 01655.9 829c-42.3 17.9-87.4 27-133.8 27-46.5 0-91.5-9.1-133.8-27A341.5 341.5 0 01279 755.2a342.16 342.16 0 01-73.7-109.4c-17.9-42.4-27-87.4-27-133.9s9.1-91.5 27-133.9c17.3-41 42.1-77.8 73.7-109.4 31.6-31.6 68.4-56.4 109.3-73.8 42.3-17.9 87.4-27 133.8-27 46.5 0 91.5 9.1 133.8 27a341.5 341.5 0 01109.3 73.8c9.9 9.9 19.2 20.4 27.8 31.4l-60.2 47a8 8 0 003 14.1l175.6 43c5 1.2 9.9-2.6 9.9-7.7l.8-180.9c-.1-6.6-7.8-10.3-13-6.2z" } }] }, "name": "reload", "theme": "outlined" };
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ReloadOutlined);
+
+
+/***/ }),
+
 /***/ "./node_modules/@ant-design/icons-svg/es/asn/RightOutlined.js":
 /*!********************************************************************!*\
   !*** ./node_modules/@ant-design/icons-svg/es/asn/RightOutlined.js ***!
@@ -8201,6 +8219,44 @@ var QuestionCircleOutlined = function QuestionCircleOutlined(props, ref) {
 var RefIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(QuestionCircleOutlined);
 if (true) {
   RefIcon.displayName = 'QuestionCircleOutlined';
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RefIcon);
+
+/***/ }),
+
+/***/ "./node_modules/@ant-design/icons/es/icons/ReloadOutlined.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/@ant-design/icons/es/icons/ReloadOutlined.js ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _ant_design_icons_svg_es_asn_ReloadOutlined__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @ant-design/icons-svg/es/asn/ReloadOutlined */ "./node_modules/@ant-design/icons-svg/es/asn/ReloadOutlined.js");
+/* harmony import */ var _components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/AntdIcon */ "./node_modules/@ant-design/icons/es/components/AntdIcon.js");
+
+// GENERATE BY ./scripts/generate.ts
+// DON NOT EDIT IT MANUALLY
+
+
+
+
+var ReloadOutlined = function ReloadOutlined(props, ref) {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_components_AntdIcon__WEBPACK_IMPORTED_MODULE_2__["default"], (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, props, {
+    ref: ref,
+    icon: _ant_design_icons_svg_es_asn_ReloadOutlined__WEBPACK_IMPORTED_MODULE_3__["default"]
+  }));
+};
+
+/**![reload](data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIGZpbGw9IiNjYWNhY2EiIHZpZXdCb3g9IjY0IDY0IDg5NiA4OTYiIGZvY3VzYWJsZT0iZmFsc2UiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTkwOS4xIDIwOS4zbC01Ni40IDQ0LjFDNzc1LjggMTU1LjEgNjU2LjIgOTIgNTIxLjkgOTIgMjkwIDkyIDEwMi4zIDI3OS41IDEwMiA1MTEuNSAxMDEuNyA3NDMuNyAyODkuOCA5MzIgNTIxLjkgOTMyYzE4MS4zIDAgMzM1LjgtMTE1IDM5NC42LTI3Ni4xIDEuNS00LjItLjctOC45LTQuOS0xMC4zbC01Ni43LTE5LjVhOCA4IDAgMDAtMTAuMSA0LjhjLTEuOCA1LTMuOCAxMC01LjkgMTQuOS0xNy4zIDQxLTQyLjEgNzcuOC03My43IDEwOS40QTM0NC43NyAzNDQuNzcgMCAwMTY1NS45IDgyOWMtNDIuMyAxNy45LTg3LjQgMjctMTMzLjggMjctNDYuNSAwLTkxLjUtOS4xLTEzMy44LTI3QTM0MS41IDM0MS41IDAgMDEyNzkgNzU1LjJhMzQyLjE2IDM0Mi4xNiAwIDAxLTczLjctMTA5LjRjLTE3LjktNDIuNC0yNy04Ny40LTI3LTEzMy45czkuMS05MS41IDI3LTEzMy45YzE3LjMtNDEgNDIuMS03Ny44IDczLjctMTA5LjQgMzEuNi0zMS42IDY4LjQtNTYuNCAxMDkuMy03My44IDQyLjMtMTcuOSA4Ny40LTI3IDEzMy44LTI3IDQ2LjUgMCA5MS41IDkuMSAxMzMuOCAyN2EzNDEuNSAzNDEuNSAwIDAxMTA5LjMgNzMuOGM5LjkgOS45IDE5LjIgMjAuNCAyNy44IDMxLjRsLTYwLjIgNDdhOCA4IDAgMDAzIDE0LjFsMTc1LjYgNDNjNSAxLjIgOS45LTIuNiA5LjktNy43bC44LTE4MC45Yy0uMS02LjYtNy44LTEwLjMtMTMtNi4yeiIgLz48L3N2Zz4=) */
+var RefIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(ReloadOutlined);
+if (true) {
+  RefIcon.displayName = 'ReloadOutlined';
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RefIcon);
 
@@ -200205,6 +200261,7 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+// src/components/Login.jsx
 
 
 
@@ -200572,7 +200629,6 @@ var Register = function Register() {
       middle_name: values.middle_name,
       last_name: values.last_name,
       suffix: values.suffix === "None" ? undefined : values.suffix,
-      // Treat "None" as no suffix
       password: values.password,
       password_confirmation: values.password_confirmation
     };
@@ -200584,12 +200640,19 @@ var Register = function Register() {
       console.error(error);
     });
   };
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-    className: "auth-container",
-    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-      className: "auth-box",
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    className: "test-container",
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
+      className: "test-left",
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("img", {
+        src: "/Images/test2.svg",
+        alt: "Timeless SVG",
+        className: "test-svg"
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+      className: "test-right",
       children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-        children: "Register"
+        children: "JOIN TIMELESS"
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
         className: "sub-text",
         children: "Create an account to continue"
@@ -200597,6 +200660,7 @@ var Register = function Register() {
         name: "register",
         onFinish: onFinish,
         layout: "vertical",
+        className: "test-form register-form",
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
           gutter: 16,
           children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
@@ -200608,9 +200672,7 @@ var Register = function Register() {
                 required: true,
                 message: "Please enter a username!"
               }],
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-                className: "auth-input"
-              })
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {})
             })
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
             span: 12,
@@ -200622,9 +200684,7 @@ var Register = function Register() {
                 type: "email",
                 message: "Please enter a valid email!"
               }],
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-                className: "auth-input"
-              })
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {})
             })
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
@@ -200638,18 +200698,14 @@ var Register = function Register() {
                 required: true,
                 message: "Please enter your first name!"
               }],
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-                className: "auth-input"
-              })
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {})
             })
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
             span: 12,
             children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"].Item, {
               name: "middle_name",
               label: "Middle Name (optional)",
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-                className: "auth-input"
-              })
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {})
             })
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
@@ -200663,9 +200719,7 @@ var Register = function Register() {
                 required: true,
                 message: "Please enter your last name!"
               }],
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-                className: "auth-input"
-              })
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {})
             })
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
             span: 12,
@@ -200673,7 +200727,6 @@ var Register = function Register() {
               name: "suffix",
               label: "Suffix (optional)",
               children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_8__["default"], {
-                className: "auth-input",
                 placeholder: "Select suffix",
                 allowClear: true,
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_8__["default"].Option, {
@@ -200705,10 +200758,11 @@ var Register = function Register() {
               rules: [{
                 required: true,
                 message: "Please enter a password!"
+              }, {
+                min: 8,
+                message: "Password must be at least 8 characters!"
               }],
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Password, {
-                className: "auth-input"
-              })
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Password, {})
             })
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
             span: 12,
@@ -200726,31 +200780,29 @@ var Register = function Register() {
                     if (!value || getFieldValue("password") === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject("Passwords do not match!");
+                    return Promise.reject(new Error("Passwords do not match!"));
                   }
                 };
               }],
-              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Password, {
-                className: "auth-input"
-              })
+              children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Password, {})
             })
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_4__["default"].Item, {
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
             type: "primary",
             htmlType: "submit",
-            className: "auth-button",
-            children: "Register"
+            className: "test-button",
+            children: "REGISTER"
           })
         })]
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("p", {
-        className: "register-text",
+        className: "register-link",
         children: ["Already have an account? ", /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_router_dom__WEBPACK_IMPORTED_MODULE_10__.Link, {
           to: "/login",
           children: "Login"
         })]
       })]
-    })
+    })]
   });
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Register);
@@ -202532,7 +202584,7 @@ var AdminProfile = function AdminProfile() {
           while (1) switch (_context.prev = _context.next) {
             case 0:
               _context.prev = 0;
-              token = localStorage.getItem("authToken"); // Adjust based on your auth setup
+              token = localStorage.getItem("authToken");
               if (token) {
                 _context.next = 4;
                 break;
@@ -202614,7 +202666,7 @@ var AdminProfile = function AdminProfile() {
   var openEditModal = function openEditModal() {
     form.setFieldsValue({
       username: user === null || user === void 0 ? void 0 : user.username,
-      email: (user === null || user === void 0 ? void 0 : user.email) || "" // Email may not be available from getCurrentUser
+      email: (user === null || user === void 0 ? void 0 : user.email) || ""
     });
     setEditModalVisible(true);
   };
@@ -202652,8 +202704,7 @@ var AdminProfile = function AdminProfile() {
         children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
           size: 100,
           icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {}),
-          src: user.profile_image || null // Use profile_image if available
-          ,
+          src: user.profile_image || null,
           style: {
             marginBottom: "16px"
           }
@@ -202674,7 +202725,7 @@ var AdminProfile = function AdminProfile() {
       })
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
       title: "Edit Profile",
-      visible: editModalVisible,
+      open: editModalVisible,
       onCancel: function onCancel() {
         return setEditModalVisible(false);
       },
@@ -203594,15 +203645,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/table/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/space/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/tag/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/spin/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/image/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/tag/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/alert/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/descriptions/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EyeOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/descriptions/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DeleteOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EyeOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ReloadOutlined.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
@@ -203642,44 +203694,37 @@ var CourierManagement = function CourierManagement() {
     _useState2 = _slicedToArray(_useState, 2),
     couriers = _useState2[0],
     setCouriers = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState4 = _slicedToArray(_useState3, 2),
-    loading = _useState4[0],
-    setLoading = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    error = _useState4[0],
+    setError = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState6 = _slicedToArray(_useState5, 2),
-    error = _useState6[0],
-    setError = _useState6[1];
+    editModalVisible = _useState6[0],
+    setEditModalVisible = _useState6[1];
   var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState8 = _slicedToArray(_useState7, 2),
-    editModalVisible = _useState8[0],
-    setEditModalVisible = _useState8[1];
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    createModalVisible = _useState8[0],
+    setCreateModalVisible = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState10 = _slicedToArray(_useState9, 2),
-    createModalVisible = _useState10[0],
-    setCreateModalVisible = _useState10[1];
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
-    _useState12 = _slicedToArray(_useState11, 2),
-    selectedCourier = _useState12[0],
-    setSelectedCourier = _useState12[1];
+    selectedCourier = _useState10[0],
+    setSelectedCourier = _useState10[1];
   var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_6__["default"].useForm(),
     _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
     form = _Form$useForm2[0];
   var _Form$useForm3 = antd__WEBPACK_IMPORTED_MODULE_6__["default"].useForm(),
     _Form$useForm4 = _slicedToArray(_Form$useForm3, 1),
     createForm = _Form$useForm4[0];
-  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState12 = _slicedToArray(_useState11, 2),
+    ordersModalVisible = _useState12[0],
+    setOrdersModalVisible = _useState12[1];
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState14 = _slicedToArray(_useState13, 2),
-    ordersModalVisible = _useState14[0],
-    setOrdersModalVisible = _useState14[1];
-  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
-    _useState16 = _slicedToArray(_useState15, 2),
-    selectedCourierOrders = _useState16[0],
-    setSelectedCourierOrders = _useState16[1];
+    selectedCourierOrders = _useState14[0],
+    setSelectedCourierOrders = _useState14[1];
   var API_URL = "http://127.0.0.1:8000/api";
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    fetchCouriers();
-  }, []);
   var fetchCouriers = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var token, response, _error$response;
@@ -203687,38 +203732,36 @@ var CourierManagement = function CourierManagement() {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
-            setLoading(true);
             token = localStorage.getItem("token");
-            _context.next = 5;
+            _context.next = 4;
             return axios__WEBPACK_IMPORTED_MODULE_7__["default"].get("".concat(API_URL, "/couriers"), {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
-          case 5:
+          case 4:
             response = _context.sent;
             setCouriers(Array.isArray(response.data) ? response.data : []);
-            _context.next = 13;
+            _context.next = 12;
             break;
-          case 9:
-            _context.prev = 9;
+          case 8:
+            _context.prev = 8;
             _context.t0 = _context["catch"](0);
             setError("Error fetching couriers");
-            console.error(((_error$response = _context.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context.t0);
-          case 13:
-            _context.prev = 13;
-            setLoading(false);
-            return _context.finish(13);
-          case 16:
+            console.error("Error fetching couriers:", ((_error$response = _context.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context.t0);
+          case 12:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[0, 9, 13, 16]]);
+      }, _callee, null, [[0, 8]]);
     }));
     return function fetchCouriers() {
       return _ref.apply(this, arguments);
     };
   }();
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    fetchCouriers();
+  }, []);
   var fetchCourierOrders = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(courier) {
       var token, response, transformed, courierOrders, _error$response2;
@@ -203768,52 +203811,16 @@ var CourierManagement = function CourierManagement() {
       return _ref2.apply(this, arguments);
     };
   }();
-  var handleConfirmReceipt = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(orderId) {
-      var token, _error$response3, _error$response4;
-      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-        while (1) switch (_context3.prev = _context3.next) {
-          case 0:
-            _context3.prev = 0;
-            token = localStorage.getItem("token");
-            _context3.next = 4;
-            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/orders/").concat(orderId, "/confirm-receipt"), {}, {
-              headers: {
-                Authorization: "Bearer ".concat(token)
-              }
-            });
-          case 4:
-            antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Order #".concat(orderId, " receipt confirmed!"));
-            _context3.next = 7;
-            return fetchCourierOrders(selectedCourier);
-          case 7:
-            _context3.next = 13;
-            break;
-          case 9:
-            _context3.prev = 9;
-            _context3.t0 = _context3["catch"](0);
-            antd__WEBPACK_IMPORTED_MODULE_8__["default"].error(((_error$response3 = _context3.t0.response) === null || _error$response3 === void 0 || (_error$response3 = _error$response3.data) === null || _error$response3 === void 0 ? void 0 : _error$response3.error) || "Failed to confirm receipt");
-            console.error(((_error$response4 = _context3.t0.response) === null || _error$response4 === void 0 ? void 0 : _error$response4.data) || _context3.t0);
-          case 13:
-          case "end":
-            return _context3.stop();
-        }
-      }, _callee3, null, [[0, 9]]);
-    }));
-    return function handleConfirmReceipt(_x2) {
-      return _ref3.apply(this, arguments);
-    };
-  }();
   var handleCreate = function handleCreate() {
     setCreateModalVisible(true);
   };
   var handleCreateSubmit = /*#__PURE__*/function () {
-    var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(values) {
-      var token, formData, response, _error$response5;
-      return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-        while (1) switch (_context4.prev = _context4.next) {
+    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(values) {
+      var token, formData, response, _error$response3;
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
           case 0:
-            _context4.prev = 0;
+            _context3.prev = 0;
             token = localStorage.getItem("token");
             formData = {
               name: values.name,
@@ -203822,33 +203829,33 @@ var CourierManagement = function CourierManagement() {
               address: values.address,
               status: values.status
             };
-            _context4.next = 5;
+            _context3.next = 5;
             return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/couriers"), formData, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 5:
-            response = _context4.sent;
+            response = _context3.sent;
             setCouriers([].concat(_toConsumableArray(couriers), [response.data]));
             antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Courier created successfully!");
             setCreateModalVisible(false);
             createForm.resetFields();
-            _context4.next = 16;
+            _context3.next = 16;
             break;
           case 12:
-            _context4.prev = 12;
-            _context4.t0 = _context4["catch"](0);
+            _context3.prev = 12;
+            _context3.t0 = _context3["catch"](0);
             antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to create courier.");
-            console.error(((_error$response5 = _context4.t0.response) === null || _error$response5 === void 0 ? void 0 : _error$response5.data) || _context4.t0);
+            console.error(((_error$response3 = _context3.t0.response) === null || _error$response3 === void 0 ? void 0 : _error$response3.data) || _context3.t0);
           case 16:
           case "end":
-            return _context4.stop();
+            return _context3.stop();
         }
-      }, _callee4, null, [[0, 12]]);
+      }, _callee3, null, [[0, 12]]);
     }));
-    return function handleCreateSubmit(_x3) {
-      return _ref4.apply(this, arguments);
+    return function handleCreateSubmit(_x2) {
+      return _ref3.apply(this, arguments);
     };
   }();
   var handleEdit = function handleEdit(courier) {
@@ -203863,12 +203870,12 @@ var CourierManagement = function CourierManagement() {
     setEditModalVisible(true);
   };
   var handleUpdate = /*#__PURE__*/function () {
-    var _ref5 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5(values) {
-      var token, formData, response, _error$response6;
-      return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-        while (1) switch (_context5.prev = _context5.next) {
+    var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4(values) {
+      var token, formData, response, _error$response4;
+      return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+        while (1) switch (_context4.prev = _context4.next) {
           case 0:
-            _context5.prev = 0;
+            _context4.prev = 0;
             token = localStorage.getItem("token");
             formData = {
               name: values.name,
@@ -203878,14 +203885,14 @@ var CourierManagement = function CourierManagement() {
               status: values.status,
               _method: "PUT"
             };
-            _context5.next = 5;
+            _context4.next = 5;
             return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(API_URL, "/couriers/").concat(selectedCourier.id), formData, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 5:
-            response = _context5.sent;
+            response = _context4.sent;
             setCouriers(couriers.map(function (courier) {
               return courier.id === selectedCourier.id ? response.data : courier;
             }));
@@ -203893,24 +203900,21 @@ var CourierManagement = function CourierManagement() {
             setEditModalVisible(false);
             form.resetFields();
             setSelectedCourier(null);
-            _context5.next = 13;
-            return fetchCouriers();
-          case 13:
-            _context5.next = 19;
+            _context4.next = 17;
             break;
-          case 15:
-            _context5.prev = 15;
-            _context5.t0 = _context5["catch"](0);
+          case 13:
+            _context4.prev = 13;
+            _context4.t0 = _context4["catch"](0);
             antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to update courier.");
-            console.error("Update error:", ((_error$response6 = _context5.t0.response) === null || _error$response6 === void 0 ? void 0 : _error$response6.data) || _context5.t0);
-          case 19:
+            console.error("Update error:", ((_error$response4 = _context4.t0.response) === null || _error$response4 === void 0 ? void 0 : _error$response4.data) || _context4.t0);
+          case 17:
           case "end":
-            return _context5.stop();
+            return _context4.stop();
         }
-      }, _callee5, null, [[0, 15]]);
+      }, _callee4, null, [[0, 13]]);
     }));
-    return function handleUpdate(_x4) {
-      return _ref5.apply(this, arguments);
+    return function handleUpdate(_x3) {
+      return _ref4.apply(this, arguments);
     };
   }();
   var handleDelete = function handleDelete(courier) {
@@ -203918,14 +203922,14 @@ var CourierManagement = function CourierManagement() {
       title: "Are you sure you want to delete this courier?",
       content: "Courier: ".concat(courier.name),
       onOk: function () {
-        var _onOk = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
-          var token, _error$response7;
-          return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-            while (1) switch (_context6.prev = _context6.next) {
+        var _onOk = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+          var token, _error$response5;
+          return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+            while (1) switch (_context5.prev = _context5.next) {
               case 0:
-                _context6.prev = 0;
+                _context5.prev = 0;
                 token = localStorage.getItem("token");
-                _context6.next = 4;
+                _context5.next = 4;
                 return axios__WEBPACK_IMPORTED_MODULE_7__["default"]["delete"]("".concat(API_URL, "/couriers/").concat(courier.id), {
                   headers: {
                     Authorization: "Bearer ".concat(token)
@@ -203936,18 +203940,18 @@ var CourierManagement = function CourierManagement() {
                   return c.id !== courier.id;
                 }));
                 antd__WEBPACK_IMPORTED_MODULE_8__["default"].success("Courier deleted successfully!");
-                _context6.next = 12;
+                _context5.next = 12;
                 break;
               case 8:
-                _context6.prev = 8;
-                _context6.t0 = _context6["catch"](0);
+                _context5.prev = 8;
+                _context5.t0 = _context5["catch"](0);
                 antd__WEBPACK_IMPORTED_MODULE_8__["default"].error("Failed to delete courier.");
-                console.error(((_error$response7 = _context6.t0.response) === null || _error$response7 === void 0 ? void 0 : _error$response7.data) || _context6.t0);
+                console.error(((_error$response5 = _context5.t0.response) === null || _error$response5 === void 0 ? void 0 : _error$response5.data) || _context5.t0);
               case 12:
               case "end":
-                return _context6.stop();
+                return _context5.stop();
             }
-          }, _callee6, null, [[0, 8]]);
+          }, _callee5, null, [[0, 8]]);
         }));
         function onOk() {
           return _onOk.apply(this, arguments);
@@ -203957,19 +203961,29 @@ var CourierManagement = function CourierManagement() {
     });
   };
   var renderOrderDetails = function renderOrderDetails(items) {
+    if (!Array.isArray(items) || items.length === 0) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
+        children: "No items available"
+      });
+    }
     return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
       dataSource: items,
       columns: [{
         title: "Item",
         render: function render(detail) {
-          var _detail$product, _detail$product2;
+          var _detail$product, _detail$product3;
           return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("img", {
-              src: (_detail$product = detail.product) !== null && _detail$product !== void 0 && _detail$product.main_image ? detail.product.main_image : "https://via.placeholder.com/50",
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+              src: detail.product && detail.product.main_image ? "http://localhost:8000/storage/".concat(detail.product.main_image) : "https://via.placeholder.com/50",
               width: 40,
-              alt: "product"
+              preview: false,
+              alt: ((_detail$product = detail.product) === null || _detail$product === void 0 ? void 0 : _detail$product.product_name) || "product",
+              onError: function onError() {
+                var _detail$product2;
+                return console.warn("Failed to load image for product: ".concat((_detail$product2 = detail.product) === null || _detail$product2 === void 0 ? void 0 : _detail$product2.product_name));
+              }
             }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
-              children: ((_detail$product2 = detail.product) === null || _detail$product2 === void 0 ? void 0 : _detail$product2.product_name) || "Unknown"
+              children: ((_detail$product3 = detail.product) === null || _detail$product3 === void 0 ? void 0 : _detail$product3.product_name) || "Unknown"
             })]
           });
         }
@@ -203989,7 +204003,9 @@ var CourierManagement = function CourierManagement() {
         }
       }],
       pagination: false,
-      rowKey: "id",
+      rowKey: function rowKey(detail) {
+        return detail.id || Math.random();
+      },
       size: "small"
     });
   };
@@ -204004,21 +204020,21 @@ var CourierManagement = function CourierManagement() {
     key: "action",
     render: function render(_, courier) {
       return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {}),
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {}),
           onClick: function onClick() {
             return handleEdit(courier);
           },
           type: "text"
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {}),
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {}),
           onClick: function onClick() {
             return handleDelete(courier);
           },
           type: "text",
           danger: true
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_15__["default"], {}),
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {}),
           onClick: function onClick() {
             return fetchCourierOrders(courier);
           },
@@ -204048,33 +204064,38 @@ var CourierManagement = function CourierManagement() {
     dataIndex: "status",
     key: "status",
     render: function render(status) {
-      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
         color: statusColors[status === null || status === void 0 ? void 0 : status.toLowerCase()] || "default",
         children: status ? status.toUpperCase() : "N/A"
       });
     }
   }, {
-    title: "Created At",
-    dataIndex: "created_at",
-    key: "created_at",
+    title: "Transfer Method",
+    dataIndex: "transfer_method",
+    key: "transfer_method",
+    render: function render(method) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Text, {
+        children: method ? "".concat(method, " - Transferred") : "Pending Transfer"
+      });
+    }
+  }, {
+    title: "Total Transferred",
+    dataIndex: "total_transferred",
+    key: "total_transferred",
+    render: function render(amount) {
+      return "\u20B1".concat(parseFloat(amount || 0).toLocaleString("en-PH", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }));
+    }
+  }, {
+    title: "Last Updated",
+    dataIndex: "updated_at",
+    key: "updated_at",
     render: function render(date) {
-      return new Date(date).toLocaleDateString();
+      return date ? new Date(date).toLocaleDateString() : "N/A";
     }
   }];
-  if (loading) return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_17__["default"], {
-    size: "large",
-    style: {
-      display: "block",
-      margin: "50px auto"
-    }
-  });
-  if (error) return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
-    message: error,
-    type: "error",
-    style: {
-      margin: "20px"
-    }
-  });
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_3__["default"], {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Sider, {
       width: 256,
@@ -204096,33 +204117,38 @@ var CourierManagement = function CourierManagement() {
           padding: 24,
           background: "#fff"
         },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+        children: [error && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
+          message: error,
+          type: "error",
+          style: {
+            marginBottom: 16
+          }
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
           style: {
             display: "flex",
             justifyContent: "space-between",
             marginBottom: 16
           },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-            style: {
-              display: "flex",
-              alignItems: "center"
-            }
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-              type: "primary",
-              onClick: handleCreate,
-              children: "Create New Courier"
-            })
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            type: "primary",
+            icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_19__["default"], {}),
+            onClick: fetchCouriers,
+            children: "Refresh"
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+            type: "primary",
+            onClick: handleCreate,
+            children: "Create New Courier"
           })]
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
           dataSource: couriers,
           columns: columns,
           rowKey: "id",
-          pagination: {
-            pageSize: 10
-          },
+          pagination: false,
           scroll: {
             x: true
+          },
+          locale: {
+            emptyText: "Loading couriers..."
           }
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
           title: "Create New Courier",
@@ -204155,7 +204181,7 @@ var CourierManagement = function CourierManagement() {
                     required: true,
                     message: "Please enter the courier's name"
                   }],
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {})
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {})
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
                   name: "email",
                   label: "Email",
@@ -204166,7 +204192,7 @@ var CourierManagement = function CourierManagement() {
                     type: "email",
                     message: "Please enter a valid email"
                   }],
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {})
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {})
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
                   name: "phone_number",
                   label: "Phone Number",
@@ -204174,7 +204200,7 @@ var CourierManagement = function CourierManagement() {
                     required: true,
                     message: "Please enter the courier's phone number"
                   }],
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {})
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {})
                 })]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 style: {
@@ -204187,7 +204213,7 @@ var CourierManagement = function CourierManagement() {
                     required: true,
                     message: "Please enter the courier's address"
                   }],
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"].TextArea, {
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"].TextArea, {
                     rows: 3
                   })
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
@@ -204245,7 +204271,7 @@ var CourierManagement = function CourierManagement() {
                     required: true,
                     message: "Please enter the courier's name"
                   }],
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {})
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {})
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
                   name: "email",
                   label: "Email",
@@ -204256,7 +204282,7 @@ var CourierManagement = function CourierManagement() {
                     type: "email",
                     message: "Please enter a valid email"
                   }],
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {})
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {})
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
                   name: "phone",
                   label: "Phone Number",
@@ -204264,7 +204290,7 @@ var CourierManagement = function CourierManagement() {
                     required: true,
                     message: "Please enter the courier's phone number"
                   }],
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {})
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {})
                 })]
               }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 style: {
@@ -204277,7 +204303,7 @@ var CourierManagement = function CourierManagement() {
                     required: true,
                     message: "Please enter the courier's address"
                   }],
-                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"].TextArea, {
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"].TextArea, {
                     rows: 3
                   })
                 }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
@@ -204310,7 +204336,7 @@ var CourierManagement = function CourierManagement() {
             setSelectedCourierOrders([]);
             setSelectedCourier(null);
           },
-          footer: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+          footer: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
             onClick: function onClick() {
               setOrdersModalVisible(false);
               setSelectedCourierOrders([]);
@@ -204321,7 +204347,7 @@ var CourierManagement = function CourierManagement() {
           width: 800,
           children: selectedCourierOrders.length > 0 ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.Fragment, {
             children: selectedCourierOrders.map(function (order) {
-              var _order$shipping, _order$shipping2, _order$shipping3;
+              var _order$shipping;
               return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
                 style: {
                   marginBottom: 24
@@ -204329,31 +204355,22 @@ var CourierManagement = function CourierManagement() {
                 children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(Title, {
                   level: 5,
                   children: ["Order #", order.id]
-                }), renderOrderDetails(order.order_details || []), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
+                }), renderOrderDetails(order.order_details || []), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_21__["default"], {
                   bordered: true,
                   size: "small",
                   style: {
                     marginTop: 16
                   },
-                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"].Item, {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_21__["default"].Item, {
                     label: "Customer",
                     children: order.profile ? "".concat(order.profile.first_name || "", " ").concat(order.profile.last_name || "").trim() || "N/A" : "N/A"
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_20__["default"].Item, {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_21__["default"].Item, {
                     label: "Total",
                     children: ["\u20B1", parseFloat(order.total_amount || 0).toLocaleString()]
-                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"].Item, {
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_21__["default"].Item, {
                     label: "Address",
                     children: ((_order$shipping = order.shipping) === null || _order$shipping === void 0 || (_order$shipping = _order$shipping.address) === null || _order$shipping === void 0 ? void 0 : _order$shipping.full_address) || "N/A"
                   })]
-                }), ((_order$shipping2 = order.shipping) === null || _order$shipping2 === void 0 ? void 0 : _order$shipping2.shipping_status_id) === 4 && order.order_status !== "completed" && ((_order$shipping3 = order.shipping) === null || _order$shipping3 === void 0 ? void 0 : _order$shipping3.payment_method_id) === 1 && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
-                  type: "primary",
-                  onClick: function onClick() {
-                    return handleConfirmReceipt(order.id);
-                  },
-                  style: {
-                    marginTop: 8
-                  },
-                  children: "Confirm Receipt"
                 })]
               }, order.id);
             })
@@ -213748,14 +213765,12 @@ var OrderTracking = function OrderTracking() {
           case 9:
             res = _context.sent;
             orderData = res.data;
-            console.log("API Response:", orderData); // Existing log
-            console.log("Courier Data:", orderData.courier); // Added debug log
             if (!(!orderData || !orderData.id)) {
-              _context.next = 15;
+              _context.next = 13;
               break;
             }
             throw new Error("Order not found in response");
-          case 15:
+          case 13:
             transformedOrder = _objectSpread(_objectSpread({}, orderData), {}, {
               order_date: orderData.order_date || orderData.created_at,
               shipping: orderData.shipping || {},
@@ -213769,13 +213784,13 @@ var OrderTracking = function OrderTracking() {
               cancelled_at: orderData.cancelled_at || null,
               cancel_reason: orderData.cancel_reason || "",
               updated_at: orderData.updated_at || null,
-              courier: orderData.courier || null // Changed to null
+              courier: orderData.courier || null
             });
             setOrder(transformedOrder);
-            _context.next = 23;
+            _context.next = 21;
             break;
-          case 19:
-            _context.prev = 19;
+          case 17:
+            _context.prev = 17;
             _context.t0 = _context["catch"](6);
             console.error("Error fetching order details:", ((_error$response = _context.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context.t0);
             if (!retry) {
@@ -213787,15 +213802,15 @@ var OrderTracking = function OrderTracking() {
               antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Error fetching order details: " + (((_error$response2 = _context.t0.response) === null || _error$response2 === void 0 || (_error$response2 = _error$response2.data) === null || _error$response2 === void 0 ? void 0 : _error$response2.message) || _context.t0.message || "Unknown error"));
               navigate("/user-shipped");
             }
-          case 23:
-            _context.prev = 23;
+          case 21:
+            _context.prev = 21;
             setLoading(false);
-            return _context.finish(23);
-          case 26:
+            return _context.finish(21);
+          case 24:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[6, 19, 23, 26]]);
+      }, _callee, null, [[6, 17, 21, 24]]);
     }));
     return function fetchOrderDetails() {
       return _ref.apply(this, arguments);
@@ -213860,36 +213875,40 @@ var OrderTracking = function OrderTracking() {
   };
   var handleConfirmReceipt = /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-      var _error$response5;
+      var defaultTransferMethod, _error$response5, _error$response6;
       return _regeneratorRuntime().wrap(function _callee3$(_context3) {
         while (1) switch (_context3.prev = _context3.next) {
           case 0:
+            defaultTransferMethod = "Cash"; // Default transfer method
             setIsConfirmReceiptLoading(true);
-            _context3.prev = 1;
-            _context3.next = 4;
-            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(baseUrl, "/api/orders/").concat(orderId, "/confirm-receipt"), {}, {
+            _context3.prev = 2;
+            _context3.next = 5;
+            return axios__WEBPACK_IMPORTED_MODULE_7__["default"].post("".concat(baseUrl, "/api/orders/").concat(orderId, "/confirm-receipt"), {
+              transfer_method: defaultTransferMethod
+            }, {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
-          case 4:
+          case 5:
             antd__WEBPACK_IMPORTED_MODULE_6__["default"].success("Order receipt confirmed successfully");
             _fetchOrderDetails();
-            _context3.next = 11;
+            _context3.next = 13;
             break;
-          case 8:
-            _context3.prev = 8;
-            _context3.t0 = _context3["catch"](1);
-            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Failed to confirm receipt: " + (((_error$response5 = _context3.t0.response) === null || _error$response5 === void 0 || (_error$response5 = _error$response5.data) === null || _error$response5 === void 0 ? void 0 : _error$response5.error) || "Unknown error"));
-          case 11:
-            _context3.prev = 11;
+          case 9:
+            _context3.prev = 9;
+            _context3.t0 = _context3["catch"](2);
+            console.error("Error confirming receipt:", ((_error$response5 = _context3.t0.response) === null || _error$response5 === void 0 ? void 0 : _error$response5.data) || _context3.t0);
+            antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("Failed to confirm receipt: " + (((_error$response6 = _context3.t0.response) === null || _error$response6 === void 0 || (_error$response6 = _error$response6.data) === null || _error$response6 === void 0 ? void 0 : _error$response6.error) || "Unknown error"));
+          case 13:
+            _context3.prev = 13;
             setIsConfirmReceiptLoading(false);
-            return _context3.finish(11);
-          case 14:
+            return _context3.finish(13);
+          case 16:
           case "end":
             return _context3.stop();
         }
-      }, _callee3, null, [[1, 8, 11, 14]]);
+      }, _callee3, null, [[2, 9, 13, 16]]);
     }));
     return function handleConfirmReceipt() {
       return _ref3.apply(this, arguments);
@@ -213898,7 +213917,7 @@ var OrderTracking = function OrderTracking() {
   var handleTrackOrder = /*#__PURE__*/function () {
     var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
       var _order$shipping;
-      var _order$courier, _order$shipping2, res, trackingData, _order$shipping3, _order$shipping4, _order$shipping5, _order$shipping6, userAddress, _error$response6, _order$courier2, _order$shipping7, _order$shipping8, _order$shipping9, fallbackData, _order$shipping10, _userAddress;
+      var _order$courier, _order$shipping2, res, trackingData, _order$shipping3, _order$shipping4, _order$shipping5, _order$shipping6, userAddress, _error$response7, _order$courier2, _order$shipping7, _order$shipping8, _order$shipping9, fallbackData, _order$shipping10, _userAddress;
       return _regeneratorRuntime().wrap(function _callee4$(_context4) {
         while (1) switch (_context4.prev = _context4.next) {
           case 0:
@@ -213921,7 +213940,6 @@ var OrderTracking = function OrderTracking() {
           case 8:
             res = _context4.sent;
             trackingData = res.data || [];
-            console.log("Tracking Data:", trackingData);
             if (order !== null && order !== void 0 && (_order$courier = order.courier) !== null && _order$courier !== void 0 && _order$courier.name) {
               trackingData.unshift({
                 status: "Assigned to ".concat(order.courier.name),
@@ -213962,12 +213980,12 @@ var OrderTracking = function OrderTracking() {
             if (trackingData.length === 0) {
               antd__WEBPACK_IMPORTED_MODULE_6__["default"].info("No tracking updates available yet.");
             }
-            _context4.next = 25;
+            _context4.next = 24;
             break;
-          case 17:
-            _context4.prev = 17;
+          case 16:
+            _context4.prev = 16;
             _context4.t0 = _context4["catch"](5);
-            console.error("Error fetching tracking details:", ((_error$response6 = _context4.t0.response) === null || _error$response6 === void 0 ? void 0 : _error$response6.data) || _context4.t0);
+            console.error("Error fetching tracking details:", ((_error$response7 = _context4.t0.response) === null || _error$response7 === void 0 ? void 0 : _error$response7.data) || _context4.t0);
             fallbackData = [{
               status: order !== null && order !== void 0 && (_order$courier2 = order.courier) !== null && _order$courier2 !== void 0 && _order$courier2.name ? "Assigned to ".concat(order.courier.name) : "Order Placed",
               location: fakeLocations[0],
@@ -213996,15 +214014,15 @@ var OrderTracking = function OrderTracking() {
               });
             }
             setTrackingDetails(fallbackData);
-          case 25:
-            _context4.prev = 25;
+          case 24:
+            _context4.prev = 24;
             setIsTrackingLoading(false);
-            return _context4.finish(25);
-          case 28:
+            return _context4.finish(24);
+          case 27:
           case "end":
             return _context4.stop();
         }
-      }, _callee4, null, [[5, 17, 25, 28]]);
+      }, _callee4, null, [[5, 16, 24, 27]]);
     }));
     return function handleTrackOrder() {
       return _ref4.apply(this, arguments);
@@ -214012,7 +214030,7 @@ var OrderTracking = function OrderTracking() {
   }();
   var handleCancelOrder = /*#__PURE__*/function () {
     var _ref5 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-      var _error$response7, _error$response8, errorData, _errorData$messages;
+      var _error$response8, _error$response9, errorData, _errorData$messages;
       return _regeneratorRuntime().wrap(function _callee5$(_context5) {
         while (1) switch (_context5.prev = _context5.next) {
           case 0:
@@ -214044,8 +214062,8 @@ var OrderTracking = function OrderTracking() {
           case 14:
             _context5.prev = 14;
             _context5.t0 = _context5["catch"](4);
-            console.error("Error cancelling order:", ((_error$response7 = _context5.t0.response) === null || _error$response7 === void 0 ? void 0 : _error$response7.data) || _context5.t0);
-            errorData = ((_error$response8 = _context5.t0.response) === null || _error$response8 === void 0 ? void 0 : _error$response8.data) || {};
+            console.error("Error cancelling order:", ((_error$response8 = _context5.t0.response) === null || _error$response8 === void 0 ? void 0 : _error$response8.data) || _context5.t0);
+            errorData = ((_error$response9 = _context5.t0.response) === null || _error$response9 === void 0 ? void 0 : _error$response9.data) || {};
             if (errorData.error === "You can only cancel your own orders") {
               antd__WEBPACK_IMPORTED_MODULE_6__["default"].error("You can only cancel your own orders.");
             } else if (errorData.error === "Order cannot be canceled at this stage") {

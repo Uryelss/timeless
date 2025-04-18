@@ -6,11 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateCouriersTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
         Schema::create('couriers', function (Blueprint $table) {
@@ -20,16 +15,11 @@ class CreateCouriersTable extends Migration
             $table->string('phone_number');
             $table->text('address');
             $table->enum('status', ['active', 'inactive', 'on delivery'])->default('active');
+            $table->string('transfer_method')->nullable(); // Nullable for logical transfer
             $table->timestamps();
         });
-        
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
         Schema::dropIfExists('couriers');

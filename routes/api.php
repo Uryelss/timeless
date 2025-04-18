@@ -18,18 +18,18 @@ use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\ForgotPasswordController;
 use App\Http\Controllers\API\ChatController;
 use App\Http\Controllers\API\CourierController;
+use App\Http\Controllers\API\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
 | Public Routes (No Authentication Required)
 |--------------------------------------------------------------------------
 */
-
+Route::post('/register', [AccessController::class, 'register'])->name('register');
+Route::post('/login', [AccessController::class, 'login'])->name('login');
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/verify-reset-code', [ForgotPasswordController::class, 'verifyResetCode']);
 Route::post('/reset-password', [ForgotPasswordController::class, 'reset']);
-Route::post('/register', [AccessController::class, 'register'])->name('register');
-Route::post('/login', [AccessController::class, 'login'])->name('login');
 Route::get('/products/public', [ProductController::class, 'publicIndex'])->name('products.public');
 Route::get('/sub-categories/public', [SubCategoryController::class, 'publicIndex'])->name('subcategories.public');
 Route::get('/products/{id}', [ProductViewController::class, 'show'])->name('products.show');
@@ -42,21 +42,16 @@ Route::get('/products/{id}', [ProductViewController::class, 'show'])->name('prod
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AccessController::class, 'logout'])->name('logout');
     Route::get('/validate-token', [AccessController::class, 'validateToken'])->name('validate.token');
-    Route::get('/reviews/{product_id}', [ReviewController::class, 'index'])->name('reviews.index');
-    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::get('/users/me', [UserController::class, 'getCurrentUser'])->name('users.me');
+    Route::get('/user/{id}', [UserController::class, 'show']);
+    Route::get('/my-purchases', [UserOrderController::class, 'myPurchases'])->name('user.orders.my_purchases');
     Route::get('/inventory-public', [InventoryController::class, 'index'])->name('inventory.public');
     Route::get('/payment-methods', [PaymentMethodController::class, 'index'])->name('payment.methods.index');
     Route::get('/shipping-methods', fn() => App\Models\ShippingMethod::all())->name('shipping.methods');
-    Route::get('/my-purchases', [UserOrderController::class, 'myPurchases'])->name('user.orders.my_purchases');
-    Route::get('/users/me', [UserController::class, 'getCurrentUser'])->name('users.me');
-
-    // Route for fetching a single user's profile
-    Route::get('/user/{id}', [UserController::class, 'show']);
-
-    // User chat endpoints
+    Route::get('/reviews/{product_id}', [ReviewController::class, 'index'])->name('reviews.index');
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
-
     Route::get('/couriers', [CourierController::class, 'index'])->name('couriers.index');
 });
 
@@ -66,12 +61,12 @@ Route::middleware('auth:api')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth:api', 'check.role:user'])->group(function () {
-    Route::post('/orders/{id}/confirm-receipt', [OrderController::class, 'confirmReceipt'])->name('orders.confirm-receipt');
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/orders/create', [UserOrderController::class, 'store'])->name('orders.store');
     Route::get('/orders', [OrderController::class, 'userOrders'])->name('orders.user');
     Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::post('/orders/{id}/confirm-receipt', [OrderController::class, 'confirmReceipt'])->name('orders.confirm-receipt');
     Route::get('/addresses', [AddressController::class, 'index'])->name('addresses.index');
     Route::post('/addresses', [AddressController::class, 'store'])->name('addresses.store');
     Route::put('/addresses/{id}', [AddressController::class, 'update'])->name('addresses.update');
@@ -129,7 +124,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
 
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('index');
-        Route::get('/{id}', [OrderController::class, 'show'])->name('show');
+        Route::get('/{_id}', [OrderController::class, 'show'])->name('show');
         Route::put('/{id}', [OrderController::class, 'update'])->name('update');
         Route::post('/{id}/archive', [OrderController::class, 'archive'])->name('archive');
         Route::post('/{id}/restore', [OrderController::class, 'restore'])->name('restore');
@@ -144,6 +139,11 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::put('/{id}', [CourierController::class, 'update'])->name('update');
         Route::delete('/{id}', [CourierController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/transfer', [CourierController::class, 'transfer'])->name('transfer');
+    });
+
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::post('/', [NotificationController::class, 'store'])->name('store');
     });
 
     Route::prefix('admin/reviews')->name('admin.reviews.')->group(function () {

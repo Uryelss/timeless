@@ -64,8 +64,6 @@ const OrderTracking = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const orderData = res.data;
-      console.log("API Response:", orderData); // Existing log
-      console.log("Courier Data:", orderData.courier); // Added debug log
 
       if (!orderData || !orderData.id) {
         throw new Error("Order not found in response");
@@ -85,7 +83,7 @@ const OrderTracking = () => {
         cancelled_at: orderData.cancelled_at || null,
         cancel_reason: orderData.cancel_reason || "",
         updated_at: orderData.updated_at || null,
-        courier: orderData.courier || null, // Changed to null
+        courier: orderData.courier || null,
       };
       setOrder(transformedOrder);
     } catch (error) {
@@ -141,16 +139,18 @@ const OrderTracking = () => {
   };
 
   const handleConfirmReceipt = async () => {
+    const defaultTransferMethod = "Cash"; // Default transfer method
     setIsConfirmReceiptLoading(true);
     try {
       await axios.post(
         `${baseUrl}/api/orders/${orderId}/confirm-receipt`,
-        {},
+        { transfer_method: defaultTransferMethod },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       message.success("Order receipt confirmed successfully");
       fetchOrderDetails();
     } catch (error) {
+      console.error("Error confirming receipt:", error.response?.data || error);
       message.error(
         "Failed to confirm receipt: " +
           (error.response?.data?.error || "Unknown error")
@@ -172,7 +172,6 @@ const OrderTracking = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       let trackingData = res.data || [];
-      console.log("Tracking Data:", trackingData);
 
       if (order?.courier?.name) {
         trackingData.unshift({

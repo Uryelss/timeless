@@ -15,23 +15,17 @@ const AdminProfile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("authToken"); // Adjust based on your auth setup
-        if (!token) {
-          throw new Error("No authentication token found");
-        }
+        const token = localStorage.getItem("authToken");
+        if (!token) throw new Error("No authentication token found");
 
         const response = await axios.get(`${API_BASE_URL}/current-user`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         setUser(response.data);
       } catch (error) {
         console.error("Error fetching user:", error);
-        message.error(
-          error.response?.data?.message || "Failed to load profile"
-        );
+        message.error(error.response?.data?.message || "Failed to load profile");
       } finally {
         setLoading(false);
       }
@@ -47,11 +41,7 @@ const AdminProfile = () => {
       const response = await axios.put(
         `${API_BASE_URL}/users/${user.id}`,
         values,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setUser(response.data);
@@ -59,9 +49,7 @@ const AdminProfile = () => {
       message.success("Profile updated successfully");
     } catch (error) {
       console.error("Error updating profile:", error);
-      message.error(
-        error.response?.data?.message || "Failed to update profile"
-      );
+      message.error(error.response?.data?.message || "Failed to update profile");
     }
   };
 
@@ -69,7 +57,7 @@ const AdminProfile = () => {
   const openEditModal = () => {
     form.setFieldsValue({
       username: user?.username,
-      email: user?.email || "", // Email may not be available from getCurrentUser
+      email: user?.email || "",
     });
     setEditModalVisible(true);
   };
@@ -100,13 +88,11 @@ const AdminProfile = () => {
               <Avatar
                 size={100}
                 icon={<UserOutlined />}
-                src={user.profile_image || null} // Use profile_image if available
+                src={user.profile_image || null}
                 style={{ marginBottom: "16px" }}
               />
               <h2>{user.username}</h2>
-              <p style={{ color: "#888" }}>
-                {user.email || "Email not provided"}
-              </p>
+              <p style={{ color: "#888" }}>{user.email || "Email not provided"}</p>
             </div>
           ) : (
             <p style={{ textAlign: "center", color: "red" }}>
@@ -119,15 +105,11 @@ const AdminProfile = () => {
       {/* Edit Profile Modal */}
       <Modal
         title="Edit Profile"
-        visible={editModalVisible}
+        open={editModalVisible}
         onCancel={() => setEditModalVisible(false)}
         footer={null}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleEditProfile}
-        >
+        <Form form={form} layout="vertical" onFinish={handleEditProfile}>
           <Form.Item
             name="username"
             label="Username"
@@ -148,9 +130,7 @@ const AdminProfile = () => {
           <Form.Item
             name="password"
             label="Password (leave blank to keep unchanged)"
-            rules={[
-              { min: 6, message: "Password must be at least 6 characters", required: false },
-            ]}
+            rules={[{ min: 6, message: "Password must be at least 6 characters", required: false }]}
           >
             <Input.Password />
           </Form.Item>

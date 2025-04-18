@@ -5,7 +5,6 @@ import {
   Modal,
   Form,
   Input,
-  Spin,
   Alert,
   Layout,
   message,
@@ -14,11 +13,13 @@ import {
   Typography,
   Descriptions,
   Tag,
+  Image,
 } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
   EyeOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 import Sidebar from "../AdminSidebar/Sidebar";
@@ -29,7 +30,6 @@ const { Option } = Select;
 
 const CourierManagement = () => {
   const [couriers, setCouriers] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [createModalVisible, setCreateModalVisible] = useState(false);
@@ -41,13 +41,8 @@ const CourierManagement = () => {
 
   const API_URL = "http://127.0.0.1:8000/api";
 
-  useEffect(() => {
-    fetchCouriers();
-  }, []);
-
   const fetchCouriers = async () => {
     try {
-      setLoading(true);
       const token = localStorage.getItem("token");
       const response = await axios.get(`${API_URL}/couriers`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -55,11 +50,13 @@ const CourierManagement = () => {
       setCouriers(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       setError("Error fetching couriers");
-      console.error(error.response?.data || error);
-    } finally {
-      setLoading(false);
+      console.error("Error fetching couriers:", error.response?.data || error);
     }
   };
+
+  useEffect(() => {
+    fetchCouriers();
+  }, []);
 
   const fetchCourierOrders = async (courier) => {
     try {
@@ -85,26 +82,6 @@ const CourierManagement = () => {
     }
   };
 
-  const handleConfirmReceipt = async (orderId) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `${API_URL}/orders/${orderId}/confirm-receipt`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      message.success(`Order #${orderId} receipt confirmed!`);
-      await fetchCourierOrders(selectedCourier);
-    } catch (error) {
-      message.error(
-        error.response?.data?.error || "Failed to confirm receipt"
-      );
-      console.error(error.response?.data || error);
-    }
-  };
-
   const handleCreate = () => {
     setCreateModalVisible(true);
   };
@@ -121,9 +98,7 @@ const CourierManagement = () => {
       };
 
       const response = await axios.post(`${API_URL}/couriers`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       setCouriers([...couriers, response.data]);
@@ -163,11 +138,7 @@ const CourierManagement = () => {
       const response = await axios.post(
         `${API_URL}/couriers/${selectedCourier.id}`,
         formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setCouriers(
@@ -180,7 +151,6 @@ const CourierManagement = () => {
       setEditModalVisible(false);
       form.resetFields();
       setSelectedCourier(null);
-      await fetchCouriers();
     } catch (error) {
       message.error("Failed to update courier.");
       console.error("Update error:", error.response?.data || error);
@@ -209,6 +179,10 @@ const CourierManagement = () => {
   };
 
   const renderOrderDetails = (items) => {
+    if (!Array.isArray(items) || items.length === 0) {
+      return <Text>No items available</Text>;
+    }
+
     return (
       <Table
         dataSource={items}
@@ -217,14 +191,18 @@ const CourierManagement = () => {
             title: "Item",
             render: (detail) => (
               <Space>
-                <img
+                <Image
                   src={
-                    detail.product?.main_image
-                      ? detail.product.main_image
+                    detail.product && detail.product.main_image
+                      ? `http://localhost:8000/storage/${detail.product.main_image}`
                       : "https://via.placeholder.com/50"
                   }
                   width={40}
-                  alt="product"
+                  preview={false}
+                  alt={detail.product?.product_name || "product"}
+                  onError={() =>
+                    console.warn(`Failed to load image for product: ${detail.product?.product_name}`)
+                  }
                 />
                 <Text>{detail.product?.product_name || "Unknown"}</Text>
               </Space>
@@ -243,7 +221,7 @@ const CourierManagement = () => {
           },
         ]}
         pagination={false}
-        rowKey="id"
+        rowKey={(detail) => detail.id || Math.random()}
         size="small"
       />
     );
@@ -281,27 +259,10 @@ const CourierManagement = () => {
         </Space>
       ),
     },
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "Phone Number",
-      dataIndex: "phone_number",
-      key: "phone_number",
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-      ellipsis: true,
-    },
+    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Email", dataIndex: "email", key: "email" },
+    { title: "Phone Number", dataIndex: "phone_number", key: "phone_number" },
+    { title: "Address", dataIndex: "address", key: "address", ellipsis: true },
     {
       title: "Status",
       dataIndex: "status",
@@ -313,19 +274,26 @@ const CourierManagement = () => {
       ),
     },
     {
-      title: "Created At",
-      dataIndex: "created_at",
-      key: "created_at",
-      render: (date) => new Date(date).toLocaleDateString(),
+      title: "Transfer Method",
+      dataIndex: "transfer_method",
+      key: "transfer_method",
+      render: (method) => (
+        <Text>{method ? `${method} - Transferred` : "Pending Transfer"}</Text>
+      ),
+    },
+    {
+      title: "Total Transferred",
+      dataIndex: "total_transferred",
+      key: "total_transferred",
+      render: (amount) => `₱${parseFloat(amount || 0).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    },
+    {
+      title: "Last Updated",
+      dataIndex: "updated_at",
+      key: "updated_at",
+      render: (date) => (date ? new Date(date).toLocaleDateString() : "N/A"),
     },
   ];
-
-  if (loading)
-    return (
-      <Spin size="large" style={{ display: "block", margin: "50px auto" }} />
-    );
-  if (error)
-    return <Alert message={error} type="error" style={{ margin: "20px" }} />;
 
   return (
     <Layout>
@@ -344,6 +312,7 @@ const CourierManagement = () => {
           COURIER MANAGEMENT
         </Header>
         <Content style={{ padding: 24, background: "#fff" }}>
+          {error && <Alert message={error} type="error" style={{ marginBottom: 16 }} />}
           <div
             style={{
               display: "flex",
@@ -351,22 +320,26 @@ const CourierManagement = () => {
               marginBottom: 16,
             }}
           >
-            <div style={{ display: "flex", alignItems: "center" }}></div>
-            <div>
-              <Button type="primary" onClick={handleCreate}>
-                Create New Courier
-              </Button>
-            </div>
+            <Button
+              type="primary"
+              icon={<ReloadOutlined />}
+              onClick={fetchCouriers}
+            >
+              Refresh
+            </Button>
+            <Button type="primary" onClick={handleCreate}>
+              Create New Courier
+            </Button>
           </div>
           <Table
             dataSource={couriers}
             columns={columns}
             rowKey="id"
-            pagination={{ pageSize: 10 }}
+            pagination={false}
             scroll={{ x: true }}
+            locale={{ emptyText: "Loading couriers..." }}
           />
 
-          {/* Create Courier Modal */}
           <Modal
             title="Create New Courier"
             open={createModalVisible}
@@ -387,12 +360,7 @@ const CourierManagement = () => {
                   <Form.Item
                     name="name"
                     label="Name"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter the courier's name",
-                      },
-                    ]}
+                    rules={[{ required: true, message: "Please enter the courier's name" }]}
                   >
                     <Input />
                   </Form.Item>
@@ -400,10 +368,7 @@ const CourierManagement = () => {
                     name="email"
                     label="Email"
                     rules={[
-                      {
-                        required: true,
-                        message: "Please enter the courier's email",
-                      },
+                      { required: true, message: "Please enter the courier's email" },
                       { type: "email", message: "Please enter a valid email" },
                     ]}
                   >
@@ -412,12 +377,7 @@ const CourierManagement = () => {
                   <Form.Item
                     name="phone_number"
                     label="Phone Number"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter the courier's phone number",
-                      },
-                    ]}
+                    rules={[{ required: true, message: "Please enter the courier's phone number" }]}
                   >
                     <Input />
                   </Form.Item>
@@ -426,20 +386,11 @@ const CourierManagement = () => {
                   <Form.Item
                     name="address"
                     label="Address"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter the courier's address",
-                      },
-                    ]}
+                    rules={[{ required: true, message: "Please enter the courier's address" }]}
                   >
                     <Input.TextArea rows={3} />
                   </Form.Item>
-                  <Form.Item
-                    name="status"
-                    label="Status"
-                    initialValue="active"
-                  >
+                  <Form.Item name="status" label="Status" initialValue="active">
                     <Select>
                       <Option value="active">Active</Option>
                       <Option value="inactive">Inactive</Option>
@@ -452,7 +403,6 @@ const CourierManagement = () => {
             </Form>
           </Modal>
 
-          {/* Edit Courier Modal */}
           <Modal
             title="Edit Courier"
             open={editModalVisible}
@@ -470,12 +420,7 @@ const CourierManagement = () => {
                   <Form.Item
                     name="name"
                     label="Name"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter the courier's name",
-                      },
-                    ]}
+                    rules={[{ required: true, message: "Please enter the courier's name" }]}
                   >
                     <Input />
                   </Form.Item>
@@ -483,10 +428,7 @@ const CourierManagement = () => {
                     name="email"
                     label="Email"
                     rules={[
-                      {
-                        required: true,
-                        message: "Please enter the courier's email",
-                      },
+                      { required: true, message: "Please enter the courier's email" },
                       { type: "email", message: "Please enter a valid email" },
                     ]}
                   >
@@ -495,12 +437,7 @@ const CourierManagement = () => {
                   <Form.Item
                     name="phone"
                     label="Phone Number"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter the courier's phone number",
-                      },
-                    ]}
+                    rules={[{ required: true, message: "Please enter the courier's phone number" }]}
                   >
                     <Input />
                   </Form.Item>
@@ -509,12 +446,7 @@ const CourierManagement = () => {
                   <Form.Item
                     name="address"
                     label="Address"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter the courier's address",
-                      },
-                    ]}
+                    rules={[{ required: true, message: "Please enter the courier's address" }]}
                   >
                     <Input.TextArea rows={3} />
                   </Form.Item>
@@ -531,7 +463,6 @@ const CourierManagement = () => {
             </Form>
           </Modal>
 
-          {/* Orders Modal */}
           <Modal
             title={`Orders Assigned to ${selectedCourier?.name || "Courier"}`}
             open={ordersModalVisible}
@@ -578,17 +509,6 @@ const CourierManagement = () => {
                         {order.shipping?.address?.full_address || "N/A"}
                       </Descriptions.Item>
                     </Descriptions>
-                    {order.shipping?.shipping_status_id === 4 &&
-                      order.order_status !== "completed" &&
-                      order.shipping?.payment_method_id === 1 && (
-                        <Button
-                          type="primary"
-                          onClick={() => handleConfirmReceipt(order.id)}
-                          style={{ marginTop: 8 }}
-                        >
-                          Confirm Receipt
-                        </Button>
-                      )}
                   </div>
                 ))}
               </>

@@ -8,6 +8,7 @@ use App\Models\Courier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -243,25 +244,46 @@ class OrderController extends Controller
     public function confirmReceipt(Request $request, $id)
     {
         try {
-            $order = Order::with(['shipping', 'courier'])->findOrFail($id);
+            // Validate the transfer_method
+            $request->validate([
+                'transfer_method' => 'required|in:GCash,PayMaya,Bank Transfer,Cash',
+            ]);
 
+            // Find the order with related data
+            $order = Order::with(['shipping', 'shipping.paymentMethod', 'courier'])
+                ->whereHas('profile', function ($query) {
+                    $query->where('user_id', Auth::id());
+                })
+                ->findOrFail($id);
+
+            // Check if shipping details exist
             if (!$order->shipping) {
-                return response()->json(['error' => 'Shipping details not found for this order.'], 404);
+                return response()->json(['error' => 'Shipping details not found for this order'], 404);
             }
 
+            // Check if the order is in a confirmable state (delivered)
             if ($order->shipping->shipping_status_id != 4) {
-                return response()->json(['error' => 'Order is not delivered yet.'], 400);
+                return response()->json(['error' => 'Order cannot be confirmed at this stage'], 400);
             }
 
-            if ($order->order_status === 'completed' || $order->shipping->shipping_status_id == 6) {
-                return response()->json(['error' => 'Order receipt already confirmed.'], 400);
-            }
-
+            // Update order status to completed
             $order->completed_at = now();
             $order->order_status = 'completed';
             $order->shipping->update(['shipping_status_id' => 6]);
             $order->save();
 
+            // Update courier's transfer_method and total_transferred
+            if ($order->courier_id) {
+                $courier = Courier::findOrFail($order->courier_id);
+                $courier->transfer_method = $request->input('transfer_method');
+                $courier->total_transferred += $order->total_amount;
+                $courier->save();
+                Log::info("Courier {$courier->id} transfer method updated to {$request->input('transfer_method')} and total_transferred incremented by {$order->total_amount} for order {$id}");
+            }
+
+            Log::info("Order {$id} receipt confirmed by user " . Auth::id());
+
+            // Reload order with related data
             $order->load([
                 'profile.user',
                 'shipping.shippingMethod',
@@ -272,11 +294,17 @@ class OrderController extends Controller
                 'courier',
             ]);
 
-            Log::info("Order {$id} receipt confirmed.");
             return response()->json([
                 'message' => 'Order receipt confirmed successfully',
                 'order' => $order,
-            ]);
+            ], 200);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'error' => 'Validation failed',
+                'messages' => $e->errors(),
+            ], 422);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Order not found or not yours'], 404);
         } catch (\Exception $e) {
             Log::error("Confirm receipt failed for order {$id}: " . $e->getMessage());
             return response()->json([

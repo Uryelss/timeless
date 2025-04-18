@@ -11,7 +11,7 @@ const Register = () => {
             first_name: values.first_name,
             middle_name: values.middle_name,
             last_name: values.last_name,
-            suffix: values.suffix === "None" ? undefined : values.suffix, // Treat "None" as no suffix
+            suffix: values.suffix === "None" ? undefined : values.suffix,
             password: values.password,
             password_confirmation: values.password_confirmation,
         };
@@ -29,12 +29,23 @@ const Register = () => {
     };
 
     return (
-        <div className="auth-container">
-            <div className="auth-box">
-                <h2>Register</h2>
+        <div className="test-container">
+            <div className="test-left">
+                <img
+                    src="/Images/test2.svg"
+                    alt="Timeless SVG"
+                    className="test-svg"
+                />
+            </div>
+            <div className="test-right">
+                <h2>JOIN TIMELESS</h2>
                 <p className="sub-text">Create an account to continue</p>
-
-                <Form name="register" onFinish={onFinish} layout="vertical">
+                <Form
+                    name="register"
+                    onFinish={onFinish}
+                    layout="vertical"
+                    className="test-form register-form"
+                >
                     <Row gutter={16}>
                         <Col span={12}>
                             <Form.Item
@@ -47,7 +58,7 @@ const Register = () => {
                                     },
                                 ]}
                             >
-                                <Input className="auth-input" />
+                                <Input />
                             </Form.Item>
                         </Col>
                         <Col span={12}>
@@ -62,7 +73,7 @@ const Register = () => {
                                     },
                                 ]}
                             >
-                                <Input className="auth-input" />
+                                <Input />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -75,12 +86,11 @@ const Register = () => {
                                 rules={[
                                     {
                                         required: true,
-                                        message:
-                                            "Please enter your first name!",
+                                        message: "Please enter your first name!",
                                     },
                                 ]}
                             >
-                                <Input className="auth-input" />
+                                <Input />
                             </Form.Item>
                         </Col>
                         <Col span={12}>
@@ -88,7 +98,7 @@ const Register = () => {
                                 name="middle_name"
                                 label="Middle Name (optional)"
                             >
-                                <Input className="auth-input" />
+                                <Input />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -105,16 +115,12 @@ const Register = () => {
                                     },
                                 ]}
                             >
-                                <Input className="auth-input" />
+                                <Input />
                             </Form.Item>
                         </Col>
                         <Col span={12}>
                             <Form.Item name="suffix" label="Suffix (optional)">
-                                <Select
-                                    className="auth-input"
-                                    placeholder="Select suffix"
-                                    allowClear
-                                >
+                                <Select placeholder="Select suffix" allowClear>
                                     <Select.Option value="None">
                                         None
                                     </Select.Option>
@@ -139,9 +145,14 @@ const Register = () => {
                                         required: true,
                                         message: "Please enter a password!",
                                     },
+                                    {
+                                        min: 8,
+                                        message:
+                                            "Password must be at least 8 characters!",
+                                    },
                                 ]}
                             >
-                                <Input.Password className="auth-input" />
+                                <Input.Password />
                             </Form.Item>
                         </Col>
                         <Col span={12}>
@@ -165,13 +176,15 @@ const Register = () => {
                                                 return Promise.resolve();
                                             }
                                             return Promise.reject(
-                                                "Passwords do not match!"
+                                                new Error(
+                                                    "Passwords do not match!"
+                                                )
                                             );
                                         },
                                     }),
                                 ]}
                             >
-                                <Input.Password className="auth-input" />
+                                <Input.Password />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -180,14 +193,14 @@ const Register = () => {
                         <Button
                             type="primary"
                             htmlType="submit"
-                            className="auth-button"
+                            className="test-button"
                         >
-                            Register
+                            REGISTER
                         </Button>
                     </Form.Item>
                 </Form>
 
-                <p className="register-text">
+                <p className="register-link">
                     Already have an account? <Link to="/login">Login</Link>
                 </p>
             </div>
