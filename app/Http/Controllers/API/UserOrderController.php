@@ -18,9 +18,8 @@ class UserOrderController extends Controller
 {
     public function index(Request $request)
     {
-        // Ensure only admins can access (adjust based on your auth logic)
         $user = Auth::user();
-        if (!$user || !$user->hasRole('admin')) { // Example role check, replace with your logic
+        if (!$user || !$user->hasRole('admin')) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -32,8 +31,11 @@ class UserOrderController extends Controller
             'shipping.shippingStatus',
             'orderDetails.product',
             'orderDetails.inventory',
+            'courier' => function ($query) {
+                $query->select('id', 'name', 'phone', 'address', 'transfer_method');
+            },
         ])
-            ->latest('order_date') // Sort by most recent first
+            ->latest('order_date')
             ->get()
             ->map(function ($order) {
                 $profileImage = $order->profile && $order->profile->profile_image
@@ -57,6 +59,12 @@ class UserOrderController extends Controller
                         'payment_method' => $order->shipping->paymentMethod ? [
                             'name' => $order->shipping->paymentMethod->name,
                         ] : null,
+                    ] : null,
+                    'courier' => $order->courier ? [
+                        'name' => $order->courier->name,
+                        'phone' => $order->courier->phone,
+                        'address' => $order->courier->address,
+                        'transfer_method' => $order->courier->transfer_method,
                     ] : null,
                 ];
             });
@@ -85,6 +93,7 @@ class UserOrderController extends Controller
             'total' => 'required|numeric',
             'payment_method_id' => 'required|exists:payment_methods,id',
             'shipping_method_id' => 'required|exists:shipping_methods,id',
+            'courier_id' => 'sometimes|exists:couriers,id', // Validate courier_id
         ]);
 
         $user = Auth::user();
@@ -116,6 +125,7 @@ class UserOrderController extends Controller
                 'total_amount' => $request->total,
                 'order_status' => 'pending',
                 'order_date' => now(),
+                'courier_id' => $request->input('courier_id', 1), // Default to courier ID 1 if not provided
             ]);
 
             foreach ($request->cart_items as $item) {
@@ -145,10 +155,10 @@ class UserOrderController extends Controller
             $shipping = Shipping::create([
                 'order_id' => $order->id,
                 'payment_method_id' => $request->payment_method_id,
-                'payment_status_id' => 1, // Pending
+                'payment_status_id' => 1,
                 'address_id' => $address->id,
                 'shipping_method_id' => $request->shipping_method_id,
-                'shipping_status_id' => 1, // Order Placed
+                'shipping_status_id' => 1,
                 'shipping_total_amount' => $request->shipping_cost,
             ]);
 
@@ -158,7 +168,7 @@ class UserOrderController extends Controller
                 'profile_id' => $profile->id,
                 'order_id' => $order->id,
                 'payment_method_id' => $request->payment_method_id,
-                'payment_status_id' => 1, // Pending
+                'payment_status_id' => 1,
                 'transaction_status' => 'pending',
                 'payment_option' => $request->payment_option ?? null,
             ]);
@@ -171,6 +181,9 @@ class UserOrderController extends Controller
                 'shipping.shippingStatus',
                 'orderDetails.product',
                 'orderDetails.inventory',
+                'courier' => function ($query) {
+                    $query->select('id', 'name', 'phone', 'address', 'transfer_method');
+                },
             ]);
 
             return response()->json([
@@ -195,6 +208,9 @@ class UserOrderController extends Controller
             'shipping.shippingStatus',
             'orderDetails.product',
             'orderDetails.inventory',
+            'courier' => function ($query) {
+                $query->select('id', 'name', 'phone', 'address', 'transfer_method');
+            },
         ])
             ->whereHas('profile', function ($query) use ($user) {
                 $query->where('user_id', $user->id);

@@ -16,6 +16,7 @@ class Order extends Model
         'order_date',
         'shipping_id',
         'payment_confirmed_at',
+        'courier_id',
         'shipped_at',
         'delivered_at',
         // 'cancelled_at', // Uncomment if added in the migration
@@ -34,5 +35,10 @@ class Order extends Model
     public function orderDetails()
     {
         return $this->hasMany(OrderDetail::class);
+    }
+
+    public function courier()
+    {
+        return $this->belongsTo(Courier::class);
     }
 }

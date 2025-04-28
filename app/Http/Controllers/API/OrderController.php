@@ -19,6 +19,9 @@ class OrderController extends Controller
             'shipping.address',
             'shipping.shippingStatus',
             'orderDetails.product',
+            'courier' => function ($query) {
+                $query->select('id', 'name', 'phone', 'address', 'transfer_method');
+            },
         ]);
 
         if ($request->query('archived')) {
@@ -40,6 +43,9 @@ class OrderController extends Controller
             'shipping.address',
             'shipping.shippingStatus',
             'orderDetails.product',
+            'courier' => function ($query) {
+                $query->select('id', 'name', 'phone', 'address', 'transfer_method');
+            },
         ])
             ->withTrashed()
             ->findOrFail($id);
@@ -56,6 +62,7 @@ class OrderController extends Controller
             $request->validate([
                 'shipping.shipping_status_id' => 'sometimes|required|exists:shipping_statuses,id',
                 'shipping.tracking_number' => 'sometimes|string|nullable',
+                'courier_id' => 'sometimes|exists:couriers,id', // Validate courier_id if provided
             ]);
 
             $shippingData = [
@@ -80,9 +87,14 @@ class OrderController extends Controller
                 ]);
             }
 
+            // Update courier_id if provided
+            if ($request->has('courier_id')) {
+                $order->courier_id = $request->input('courier_id');
+            }
+
             $shippingStatusId = $request->input('shipping.shipping_status_id');
 
-            // Update order status based on shipping status ID:
+            // Update order status based on shipping status ID
             switch ($shippingStatusId) {
                 case 1: // Order Placed
                     $order->order_status = 'pending'; // Shows as "To Pay"
@@ -131,6 +143,9 @@ class OrderController extends Controller
                 'shipping.address',
                 'shipping.shippingStatus',
                 'orderDetails.product',
+                'courier' => function ($query) {
+                    $query->select('id', 'name', 'phone', 'address', 'transfer_method');
+                },
             ]);
 
             return response()->json(['message' => 'Order updated successfully', 'order' => $order]);
@@ -139,7 +154,6 @@ class OrderController extends Controller
             return response()->json(['message' => 'Failed to update order', 'error' => $e->getMessage()], 500);
         }
     }
-
 
     public function archive($id)
     {
@@ -165,6 +179,9 @@ class OrderController extends Controller
             'shipping.address',
             'shipping.shippingStatus',
             'orderDetails.product',
+            'courier' => function ($query) {
+                $query->select('id', 'name', 'phone', 'address', 'transfer_method');
+            },
         ])
             ->whereHas('profile', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -213,6 +230,9 @@ class OrderController extends Controller
                 'shipping.address',
                 'shipping.shippingStatus',
                 'orderDetails.product',
+                'courier' => function ($query) {
+                    $query->select('id', 'name', 'phone', 'address', 'transfer_method');
+                },
             ]);
 
             return response()->json([
@@ -234,41 +254,36 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
     public function confirmReceipt(Request $request, $id)
     {
         try {
-            // Retrieve the order along with its shipping details
             $order = Order::with('shipping')->findOrFail($id);
 
             if (!$order->shipping) {
                 return response()->json(['error' => 'Shipping details not found for this order.'], 404);
             }
 
-            // Ensure that the order is delivered.
-            // For example, assume shipping_status_id 4 means delivered.
             if ($order->shipping->shipping_status_id != 4) {
                 return response()->json(['error' => 'Order is not delivered yet.'], 400);
             }
 
-            // Update the order as completed.
             $order->completed_at = now();
             $order->order_status = 'completed';
 
-            // Update the shipping record to indicate "completed"
-            // (for example, assuming 6 is the status for completed)
             $order->shipping->update(['shipping_status_id' => 6]);
             $order->save();
 
             Log::info("Order {$id} receipt confirmed by user.");
             return response()->json([
                 'message' => 'Order receipt confirmed successfully',
-                'order'   => $order
+                'order' => $order,
             ]);
         } catch (\Exception $e) {
             Log::error("Confirm receipt failed for order {$id}: " . $e->getMessage());
             return response()->json([
-                'error'   => 'Failed to confirm receipt',
-                'message' => $e->getMessage()
+                'error' => 'Failed to confirm receipt',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

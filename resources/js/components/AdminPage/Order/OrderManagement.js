@@ -392,7 +392,7 @@ const OrderManagement = () => {
         if (!selectedOrder) return null;
         const items =
             selectedOrder.order_details || selectedOrder.orderDetails || [];
-        const { shipping, profile } = selectedOrder;
+        const { shipping, profile, courier } = selectedOrder;
         const subtotal = items.reduce(
             (sum, detail) => sum + detail.quantity * detail.price,
             0
@@ -400,6 +400,7 @@ const OrderManagement = () => {
         const deliveryCharge = shipping?.shipping_total_amount || 0;
         const totalAmount =
             selectedOrder.total_amount || subtotal + deliveryCharge;
+        const isShipped = [3, 4, 6].includes(shipping?.shipping_status_id);
 
         return (
             <div style={{ padding: "16px" }}>
@@ -520,6 +521,38 @@ const OrderManagement = () => {
                             </Descriptions>
                         </Col>
                     </Row>
+                    {isShipped && (
+                        <Row style={{ marginTop: 16 }}>
+                            <Col span={24}>
+                                <Title level={5}>Courier Information</Title>
+                                <Descriptions bordered size="small" column={1}>
+                                    <Descriptions.Item label="Courier Name">
+                                        {courier?.name || "N/A"}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Phone">
+                                        {courier?.phone || "N/A"}
+                                    </Descriptions.Item>
+                                    <Descriptions.Item label="Address">
+                                        {courier?.address || "N/A"}
+                                    </Descriptions.Item>
+                                    {[4, 6].includes(shipping?.shipping_status_id) && (
+                                        <Descriptions.Item label="Transfer Method">
+                                            {courier?.transfer_method
+                                                ? courier.transfer_method
+                                                      .replace(/\b\w/g, (c) =>
+                                                          c.toUpperCase()
+                                                      )
+                                                      .replace(
+                                                          /Transferred/,
+                                                          "Transfer"
+                                                      )
+                                                : "N/A"}
+                                        </Descriptions.Item>
+                                    )}
+                                </Descriptions>
+                            </Col>
+                        </Row>
+                    )}
                 </div>
             </div>
         );
@@ -696,6 +729,53 @@ const OrderManagement = () => {
                             <Option value={5}>Cancelled</Option>
                             <Option value={6}>Completed</Option>
                         </Select>
+
+                        {[3, 4, 6].includes(
+                            selectedOrder.shipping?.shipping_status_id
+                        ) &&
+                            selectedOrder.courier && (
+                                <div style={{ marginTop: 16 }}>
+                                    <Typography.Title level={5}>
+                                        Assigned Courier
+                                    </Typography.Title>
+                                    <Descriptions
+                                        bordered
+                                        size="small"
+                                        column={1}
+                                    >
+                                        <Descriptions.Item label="Courier Name">
+                                            {selectedOrder.courier?.name ||
+                                                "N/A"}
+                                        </Descriptions.Item>
+                                        <Descriptions.Item label="Phone">
+                                            {selectedOrder.courier?.phone ||
+                                                "N/A"}
+                                        </Descriptions.Item>
+                                        <Descriptions.Item label="Address">
+                                            {selectedOrder.courier?.address ||
+                                                "N/A"}
+                                        </Descriptions.Item>
+                                        {[4, 6].includes(
+                                            selectedOrder.shipping
+                                                ?.shipping_status_id
+                                        ) && (
+                                            <Descriptions.Item label="Transfer Method">
+                                                {selectedOrder.courier
+                                                    ?.transfer_method
+                                                    ? selectedOrder.courier.transfer_method
+                                                          .replace(/\b\w/g, (c) =>
+                                                              c.toUpperCase()
+                                                          )
+                                                          .replace(
+                                                              /Transferred/,
+                                                              "Transfer"
+                                                          )
+                                                    : "N/A"}
+                                            </Descriptions.Item>
+                                        )}
+                                    </Descriptions>
+                                </div>
+                            )}
                     </div>
                 )}
             </Modal>

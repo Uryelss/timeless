@@ -17,6 +17,7 @@ use App\Http\Controllers\API\UserOrderController;
 use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\ForgotPasswordController;
 use App\Http\Controllers\API\ChatController;
+use App\Http\Controllers\API\CourierController; // Added CourierController import
 
 /*
 |--------------------------------------------------------------------------
@@ -57,7 +58,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
 });
 
-
 /*
 |--------------------------------------------------------------------------
 | User Routes (Requires 'user' Role)
@@ -75,6 +75,9 @@ Route::middleware(['auth:api', 'check.role:user'])->group(function () {
     Route::put('/addresses/{id}', [AddressController::class, 'update'])->name('addresses.update');
     Route::delete('/addresses/{id}', [AddressController::class, 'destroy'])->name('addresses.destroy');
     Route::put('/addresses/{id}/set-default', [AddressController::class, 'setDefault'])->name('addresses.set-default');
+
+    // NEW: Route for users to view couriers
+    Route::get('/couriers', [CourierController::class, 'indexForUsers'])->name('couriers.user');
 });
 
 /*
@@ -151,5 +154,10 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::put('/{id}', [TransactionController::class, 'update'])->name('update');
         Route::post('/{id}/archive', [TransactionController::class, 'archive'])->name('archive');
         Route::post('/{id}/restore', [TransactionController::class, 'restore'])->name('restore');
+    });
+
+    // NEW: Route for admins to view couriers
+    Route::prefix('couriers')->name('couriers.')->group(function () {
+        Route::get('/', [CourierController::class, 'indexForAdmins'])->name('index');
     });
 });
