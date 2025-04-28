@@ -729,53 +729,6 @@ const OrderManagement = () => {
                             <Option value={5}>Cancelled</Option>
                             <Option value={6}>Completed</Option>
                         </Select>
-
-                        {[3, 4, 6].includes(
-                            selectedOrder.shipping?.shipping_status_id
-                        ) &&
-                            selectedOrder.courier && (
-                                <div style={{ marginTop: 16 }}>
-                                    <Typography.Title level={5}>
-                                        Assigned Courier
-                                    </Typography.Title>
-                                    <Descriptions
-                                        bordered
-                                        size="small"
-                                        column={1}
-                                    >
-                                        <Descriptions.Item label="Courier Name">
-                                            {selectedOrder.courier?.name ||
-                                                "N/A"}
-                                        </Descriptions.Item>
-                                        <Descriptions.Item label="Phone">
-                                            {selectedOrder.courier?.phone ||
-                                                "N/A"}
-                                        </Descriptions.Item>
-                                        <Descriptions.Item label="Address">
-                                            {selectedOrder.courier?.address ||
-                                                "N/A"}
-                                        </Descriptions.Item>
-                                        {[4, 6].includes(
-                                            selectedOrder.shipping
-                                                ?.shipping_status_id
-                                        ) && (
-                                            <Descriptions.Item label="Transfer Method">
-                                                {selectedOrder.courier
-                                                    ?.transfer_method
-                                                    ? selectedOrder.courier.transfer_method
-                                                          .replace(/\b\w/g, (c) =>
-                                                              c.toUpperCase()
-                                                          )
-                                                          .replace(
-                                                              /Transferred/,
-                                                              "Transfer"
-                                                          )
-                                                    : "N/A"}
-                                            </Descriptions.Item>
-                                        )}
-                                    </Descriptions>
-                                </div>
-                            )}
                     </div>
                 )}
             </Modal>

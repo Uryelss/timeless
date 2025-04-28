@@ -203807,7 +203807,7 @@ var Title = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Title,
   Text = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Text;
 var Search = antd__WEBPACK_IMPORTED_MODULE_6__["default"].Search;
 var OrderManagement = function OrderManagement() {
-  var _selectedOrder$shippi3, _selectedOrder$shippi4, _selectedOrder$courie, _selectedOrder$courie2, _selectedOrder$courie3, _selectedOrder$shippi5, _selectedOrder$courie4;
+  var _selectedOrder$shippi3;
   var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
     _useState2 = _slicedToArray(_useState, 2),
     orders = _useState2[0],
@@ -204555,33 +204555,6 @@ var OrderManagement = function OrderManagement() {
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(Option, {
             value: 6,
             children: "Completed"
-          })]
-        }), [3, 4, 6].includes((_selectedOrder$shippi4 = selectedOrder.shipping) === null || _selectedOrder$shippi4 === void 0 ? void 0 : _selectedOrder$shippi4.shipping_status_id) && selectedOrder.courier && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
-          style: {
-            marginTop: 16
-          },
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Title, {
-            level: 5,
-            children: "Assigned Courier"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_22__["default"], {
-            bordered: true,
-            size: "small",
-            column: 1,
-            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
-              label: "Courier Name",
-              children: ((_selectedOrder$courie = selectedOrder.courier) === null || _selectedOrder$courie === void 0 ? void 0 : _selectedOrder$courie.name) || "N/A"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
-              label: "Phone",
-              children: ((_selectedOrder$courie2 = selectedOrder.courier) === null || _selectedOrder$courie2 === void 0 ? void 0 : _selectedOrder$courie2.phone) || "N/A"
-            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
-              label: "Address",
-              children: ((_selectedOrder$courie3 = selectedOrder.courier) === null || _selectedOrder$courie3 === void 0 ? void 0 : _selectedOrder$courie3.address) || "N/A"
-            }), [4, 6].includes((_selectedOrder$shippi5 = selectedOrder.shipping) === null || _selectedOrder$shippi5 === void 0 ? void 0 : _selectedOrder$shippi5.shipping_status_id) && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_22__["default"].Item, {
-              label: "Transfer Method",
-              children: (_selectedOrder$courie4 = selectedOrder.courier) !== null && _selectedOrder$courie4 !== void 0 && _selectedOrder$courie4.transfer_method ? selectedOrder.courier.transfer_method.replace(/\b\w/g, function (c) {
-                return c.toUpperCase();
-              }).replace(/Transferred/, "Transfer") : "N/A"
-            })]
           })]
         })]
       })
