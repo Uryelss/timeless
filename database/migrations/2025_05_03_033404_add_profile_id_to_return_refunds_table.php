@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('return_refunds', function (Blueprint $table) {
-            $table->timestamp('archived_at')->nullable()->after('updated_at');
+            $table->foreignId('profile_id')->after('order_id')->constrained()->onDelete('cascade');
         });
     }
 
@@ -22,7 +22,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('return_refunds', function (Blueprint $table) {
-            $table->dropColumn('archived_at');
+            $table->dropForeign(['profile_id']);
+            $table->dropColumn('profile_id');
         });
     }
 };
