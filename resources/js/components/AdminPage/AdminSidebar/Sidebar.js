@@ -13,6 +13,7 @@ import {
     LogoutOutlined,
     StarOutlined,
     CreditCardOutlined,
+    RollbackOutlined,
 } from "@ant-design/icons";
 import { Button, Menu, Modal } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -67,6 +68,12 @@ const items = [
         icon: <CreditCardOutlined />,
         label: "Transaction",
         path: "/Transactions",
+    },
+    {
+        key: "return-refund",
+        icon: <RollbackOutlined />,
+        label: "Return/Refund",
+        path: "/Refund",
     },
     {
         key: "admin-settings",

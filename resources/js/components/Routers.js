@@ -41,6 +41,7 @@ import MyAddress from "./UserPage/ProfilePage/Address/MyAddress";
 
 // Single route protection component
 import PrivateRoute from "./PrivateRoute";
+import ReturnRefundManagement from "./AdminPage/Returnfund/ReturnRefund";
 
 function Routers() {
     return (
@@ -74,6 +75,10 @@ function Routers() {
                     {/* Admin Protected Routes */}
                     <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
                         <Route path="/dashboard" element={<AdminDashboard />} />
+                        <Route
+                            path="/Refund"
+                            element={<ReturnRefundManagement />}
+                        />
                         <Route
                             path="/products"
                             element={<ProductManagement />}

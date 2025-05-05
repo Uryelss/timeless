@@ -9,37 +9,51 @@ import {
     Button,
     Pagination,
     Image,
+    Modal,
+    Form,
+    InputNumber,
+    Select,
+    Checkbox,
+    Upload,
+    message,
 } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, UploadOutlined } from "@ant-design/icons";
 import Navbar from "../../Navbar/Navbar";
-import Sidebar from "../Sidebar/Sidebar"; // Import the Sidebar component
+import Sidebar from "../Sidebar/Sidebar";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const { TabPane } = Tabs;
+const { Option } = Select;
 
 const MyPurchase = () => {
     const [orders, setOrders] = useState([]);
     const [searchText, setSearchText] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [totalOrders, setTotalOrders] = useState(0);
-    const API_URL = "http://localhost:8000/api/my-purchases";
+    const [isOrderIdModalOpen, setIsOrderIdModalOpen] = useState(false);
+    const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    const [issueType, setIssueType] = useState(null);
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [form] = Form.useForm();
+    const API_URL = "http://localhost:8000/api";
     const navigate = useNavigate();
 
     const fetchOrders = (page = 1) => {
         axios
-            .get(`${API_URL}?page=${page}`, {
+            .get(`${API_URL}/my-purchases?page=${page}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             })
             .then((res) => {
                 const ordersArray = res.data.data || res.data;
-                console.log("Fetched orders:", ordersArray);
                 const transformedOrders = ordersArray.map((order) => ({
                     id: order.id,
                     products:
                         order.order_details?.map((detail) => ({
+                            id: detail.id,
                             name:
                                 detail.product?.product_name ||
                                 "Unknown Product",
@@ -90,6 +104,8 @@ const MyPurchase = () => {
                 return "Completed";
             case "cancelled":
                 return "Cancelled";
+            case "return/refunded":
+                return "Return/Refund";
             default:
                 console.warn(
                     `Unrecognized status: ${status}, defaulting to 'To Pay'`
@@ -117,15 +133,85 @@ const MyPurchase = () => {
     });
 
     const handleTrackOrder = (orderId) => {
-        // Navigate to the external tracking URL using window.location.href
         window.location.href = `http://localhost:8000/order-tracking/${orderId}`;
+    };
+
+    const handleReturnRefund = (order) => {
+        setSelectedOrder(order);
+        setIsOrderIdModalOpen(true);
+    };
+
+    const validateOrderId = (values) => {
+        if (values.orderId === selectedOrder.id) {
+            setIsOrderIdModalOpen(false);
+            setIsRequestModalOpen(true);
+        } else {
+            message.error("Invalid Order ID");
+        }
+    };
+
+    const handleIssueTypeSelect = (type) => {
+        setIssueType(type);
+        setSelectedProducts([]);
+        form.resetFields(["products", "reason", "description", "images"]);
+    };
+
+    const handleProductSelect = (productIds) => {
+        setSelectedProducts(
+            selectedOrder.products.filter((p) => productIds.includes(p.id))
+        );
+    };
+
+    const calculateRefundAmount = () => {
+        return selectedProducts.reduce((sum, p) => sum + p.total, 0);
+    };
+
+    const handleSubmitRequest = async (values) => {
+        try {
+            const formData = new FormData();
+            formData.append("order_id", selectedOrder.id);
+            formData.append("issue_type", issueType);
+            formData.append("products", JSON.stringify(selectedProducts));
+            formData.append("reason", values.reason);
+            formData.append("refund_method", values.refund_method);
+            formData.append("refund_amount", calculateRefundAmount());
+            formData.append("description", values.description || "");
+            formData.append(
+                "policy_confirmed",
+                values.policy_confirmed ? 1 : 0
+            );
+
+            if (values.images && values.images.length > 0) {
+                values.images.forEach((file) => {
+                    formData.append("images[]", file.originFileObj);
+                });
+            }
+
+            await axios.post(`${API_URL}/return-refunds`, formData, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            message.success("Return/Refund request submitted successfully");
+            setIsRequestModalOpen(false);
+            setSelectedOrder(null);
+            setIssueType(null);
+            setSelectedProducts([]);
+            form.resetFields();
+            fetchOrders();
+        } catch (err) {
+            message.error("Failed to submit request");
+            console.error(err.response?.data || err);
+        }
     };
 
     return (
         <div>
             <Navbar />
             <div style={{ display: "flex" }}>
-                <Sidebar /> {/* Add the Sidebar component */}
+                <Sidebar />
                 <div style={{ flex: 1, padding: "20px" }}>
                     <Input
                         placeholder="Search by Order ID or Product Name"
@@ -171,6 +257,8 @@ const MyPurchase = () => {
                         <TabPane tab="Completed" key="5">
                             <OrderList
                                 orders={filterOrdersByStatus("Completed")}
+                                showReturnRefundButton={true}
+                                onReturnRefund={handleReturnRefund}
                             />
                         </TabPane>
                         <TabPane tab="Cancelled" key="6">
@@ -196,11 +284,241 @@ const MyPurchase = () => {
                     </div>
                 </div>
             </div>
+
+            <Modal
+                title="Validate Order ID"
+                open={isOrderIdModalOpen}
+                onCancel={() => setIsOrderIdModalOpen(false)}
+                footer={null}
+            >
+                <Form onFinish={validateOrderId}>
+                    <Form.Item
+                        name="orderId"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please enter Order ID",
+                            },
+                        ]}
+                    >
+                        <InputNumber
+                            placeholder="Enter Order ID"
+                            style={{ width: "100%" }}
+                        />
+                    </Form.Item>
+                    <Button type="primary" htmlType="submit">
+                        Validate
+                    </Button>
+                </Form>
+            </Modal>
+
+            <Modal
+                title="Request Return/Refund"
+                open={isRequestModalOpen}
+                onCancel={() => {
+                    setIsRequestModalOpen(false);
+                    setIssueType(null);
+                    setSelectedProducts([]);
+                    form.resetFields();
+                }}
+                footer={null}
+                widthiuos
+                Request
+            >
+                {!issueType ? (
+                    <div>
+                        <h3>Select Issue Type</h3>
+                        <Button
+                            onClick={() =>
+                                handleIssueTypeSelect("received_with_issues")
+                            }
+                            style={{ marginRight: 10 }}
+                        >
+                            I received all items but there are issues
+                        </Button>
+                        <Button
+                            onClick={() =>
+                                handleIssueTypeSelect("not_received")
+                            }
+                        >
+                            I didn’t receive some/all items
+                        </Button>
+                    </div>
+                ) : (
+                    <Form
+                        form={form}
+                        onFinish={handleSubmitRequest}
+                        layout="vertical"
+                    >
+                        <Form.Item
+                            name="products"
+                            label="Select Products"
+                            rules={[
+                                {
+                                    required: true,
+                                    message:
+                                        "Please select at least one product",
+                                },
+                            ]}
+                        >
+                            <Select
+                                mode="multiple"
+                                onChange={handleProductSelect}
+                                placeholder="Select products to return/refund"
+                            >
+                                {selectedOrder?.products.map((product) => (
+                                    <Option key={product.id} value={product.id}>
+                                        {product.name} (Size: {product.size})
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+
+                        {selectedProducts.length > 0 && (
+                            <>
+                                <h3>Selected Products</h3>
+                                {selectedProducts.map((product) => (
+                                    <Row
+                                        key={product.id}
+                                        style={{ marginBottom: 10 }}
+                                    >
+                                        <Col span={4}>
+                                            <Image
+                                                src={product.image}
+                                                alt={product.name}
+                                                style={{
+                                                    width: "50px",
+                                                    height: "50px",
+                                                }}
+                                            />
+                                        </Col>
+                                        <Col span={20}>
+                                            <p>
+                                                <strong>{product.name}</strong>
+                                            </p>
+                                            <p>Size: {product.size}</p>
+                                            <p>Quantity: {product.quantity}</p>
+                                            <p>
+                                                Price: ₱
+                                                {product.total.toLocaleString()}
+                                            </p>
+                                        </Col>
+                                    </Row>
+                                ))}
+                            </>
+                        )}
+
+                        <Form.Item
+                            name="reason"
+                            label="Reason for Return/Refund"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please select a reason",
+                                },
+                            ]}
+                        >
+                            <Select placeholder="Select reason">
+                                <Option value="missing_part">
+                                    Missing part of order
+                                </Option>
+                                <Option value="wrong_item">
+                                    Sent wrong item (e.g., wrong size, model)
+                                </Option>
+                                <Option value="damaged">Damaged item</Option>
+                                <Option value="defective">
+                                    Product is defective or does not work
+                                </Option>
+                            </Select>
+                        </Form.Item>
+
+                        <Form.Item
+                            name="policy_confirmed"
+                            valuePropName="checked"
+                            rules={[
+                                {
+                                    validator: (_, value) =>
+                                        value
+                                            ? Promise.resolve()
+                                            : Promise.reject(
+                                                  "You must confirm the return policy"
+                                              ),
+                                },
+                            ]}
+                        >
+                            <Checkbox>
+                                I confirm that I want to return item(s) in
+                                original/sealed condition, in brand new
+                                condition, and in original packaging. Sealed
+                                items must remain sealed and unopened.
+                            </Checkbox>
+                        </Form.Item>
+
+                        <Form.Item
+                            name="refund_method"
+                            label="Refund Method"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please select a refund method",
+                                },
+                            ]}
+                        >
+                            <Select placeholder="Select refund method">
+                                <Option value="gcash">Gcash</Option>
+                                <Option value="reorder">
+                                    Reorder (without additional payment)
+                                </Option>
+                            </Select>
+                        </Form.Item>
+
+                        <Form.Item label="Refund Amount">
+                            <p>₱{calculateRefundAmount().toLocaleString()}</p>
+                        </Form.Item>
+
+                        <Form.Item
+                            name="description"
+                            label="Description (Optional)"
+                        >
+                            <Input.TextArea rows={4} />
+                        </Form.Item>
+
+                        <Form.Item
+                            name="images"
+                            label="Upload Images (Proof of Issue)"
+                            valuePropName="fileList"
+                            getValueFromEvent={(e) =>
+                                Array.isArray(e) ? e : e && e.fileList
+                            }
+                        >
+                            <Upload
+                                beforeUpload={() => false}
+                                accept="image/*"
+                                multiple
+                            >
+                                <Button icon={<UploadOutlined />}>
+                                    Upload Images
+                                </Button>
+                            </Upload>
+                        </Form.Item>
+
+                        <Button type="primary" htmlType="submit">
+                            Submit Request
+                        </Button>
+                    </Form>
+                )}
+            </Modal>
         </div>
     );
 };
 
-const OrderList = ({ orders, showTrackButton = false, onTrackOrder }) => (
+const OrderList = ({
+    orders,
+    showTrackButton = false,
+    onTrackOrder,
+    showReturnRefundButton = false,
+    onReturnRefund,
+}) => (
     <>
         {orders.length === 0 ? (
             <p>No orders found.</p>
@@ -246,7 +564,6 @@ const OrderList = ({ orders, showTrackButton = false, onTrackOrder }) => (
                         </Row>
                     ))}
                     <hr />
-
                     <Row style={{ marginTop: "10px" }}>
                         <Col span={24} style={{ textAlign: "right" }}>
                             <strong>
@@ -264,9 +581,22 @@ const OrderList = ({ orders, showTrackButton = false, onTrackOrder }) => (
                                     style={{
                                         backgroundColor: "#000000",
                                         borderColor: "#black",
+                                        marginRight: 10,
                                     }}
                                 >
                                     Track Order
+                                </Button>
+                            )}
+                            {showReturnRefundButton && (
+                                <Button
+                                    type="primary"
+                                    onClick={() => onReturnRefund(order)}
+                                    style={{
+                                        backgroundColor: "#f5222d",
+                                        borderColor: "#f5222d",
+                                    }}
+                                >
+                                    Return/Refund
                                 </Button>
                             )}
                         </Col>

@@ -17,7 +17,7 @@ use App\Http\Controllers\API\UserOrderController;
 use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\ForgotPasswordController;
 use App\Http\Controllers\API\ChatController;
-use App\Http\Controllers\API\CourierController; // Added CourierController import
+use App\Http\Controllers\API\ReturnRefundController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,13 +49,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/shipping-methods', fn() => App\Models\ShippingMethod::all())->name('shipping.methods');
     Route::get('/my-purchases', [UserOrderController::class, 'myPurchases'])->name('user.orders.my_purchases');
     Route::get('/users/me', [UserController::class, 'getCurrentUser'])->name('users.me');
-
-    // NEW: Route for fetching a single user's profile.
     Route::get('/user/{id}', [UserController::class, 'show']);
-
-    // User chat endpoints
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
+    Route::post('/return-refunds', [ReturnRefundController::class, 'store'])->name('return-refunds.store');
 });
 
 /*
@@ -75,9 +72,6 @@ Route::middleware(['auth:api', 'check.role:user'])->group(function () {
     Route::put('/addresses/{id}', [AddressController::class, 'update'])->name('addresses.update');
     Route::delete('/addresses/{id}', [AddressController::class, 'destroy'])->name('addresses.destroy');
     Route::put('/addresses/{id}/set-default', [AddressController::class, 'setDefault'])->name('addresses.set-default');
-
-    // NEW: Route for users to view couriers
-    Route::get('/couriers', [CourierController::class, 'indexForUsers'])->name('couriers.user');
 });
 
 /*
@@ -136,6 +130,14 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::post('/{id}/restore', [OrderController::class, 'restore'])->name('restore');
     });
 
+    Route::prefix('return-refunds')->name('return-refunds.')->group(function () {
+        Route::get('/', [ReturnRefundController::class, 'index'])->name('index');
+        Route::get('/archived', [ReturnRefundController::class, 'index'])->defaults('archived', true)->name('archived');
+        Route::put('/{id}', [ReturnRefundController::class, 'update'])->name('update');
+        Route::post('/{id}/archive', [ReturnRefundController::class, 'archive'])->name('archive');
+        Route::post('/{id}/restore', [ReturnRefundController::class, 'restore'])->name('restore');
+    });
+
     Route::prefix('admin/reviews')->name('admin.reviews.')->group(function () {
         Route::get('/', [ReviewController::class, 'adminIndex'])->name('index');
         Route::put('/{id}', [ReviewController::class, 'update'])->name('update');
@@ -144,7 +146,6 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::post('/{id}/restore', [ReviewController::class, 'restore'])->name('restore');
     });
 
-    // Admin Chat endpoints (placed outside of transactions)
     Route::get('/admin/chat/inbox', [ChatController::class, 'inbox'])->name('chat.inbox');
     Route::get('/admin/chat/{user_id}', [ChatController::class, 'adminConversation'])->name('chat.adminConversation');
     Route::post('/admin/chat', [ChatController::class, 'store'])->name('chat.adminStore');
@@ -154,10 +155,5 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::put('/{id}', [TransactionController::class, 'update'])->name('update');
         Route::post('/{id}/archive', [TransactionController::class, 'archive'])->name('archive');
         Route::post('/{id}/restore', [TransactionController::class, 'restore'])->name('restore');
-    });
-
-    // NEW: Route for admins to view couriers
-    Route::prefix('couriers')->name('couriers.')->group(function () {
-        Route::get('/', [CourierController::class, 'indexForAdmins'])->name('index');
     });
 });

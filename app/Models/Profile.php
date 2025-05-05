@@ -47,4 +47,8 @@ class Profile extends Model
         $last = ucfirst($this->last_name);
         return trim("$first $middle$last");
     }
+    public function returnRefunds()
+    {
+        return $this->hasMany(ReturnRefund::class);
+    }
 }

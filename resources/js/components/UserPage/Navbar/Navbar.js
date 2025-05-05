@@ -14,22 +14,19 @@ import { useNavigate } from "react-router-dom";
 const { Header: AntHeader } = Layout;
 
 const Header = () => {
-    // State for dynamic categories
     const [categories, setCategories] = useState([]);
-    // Other states
     const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
     const [profile, setProfile] = useState(null);
     const [avatarKey, setAvatarKey] = useState(0);
     const [cartCount, setCartCount] = useState(0);
     const [orders, setOrders] = useState([]);
+    const [returnRefunds, setReturnRefunds] = useState([]);
     const [notifications, setNotifications] = useState([]);
     const [notificationCount, setNotificationCount] = useState(0);
     const [readNotifications, setReadNotifications] = useState([]);
-
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
 
-    // Load read notifications from localStorage
     useEffect(() => {
         const storedReadNotifications =
             localStorage.getItem("readNotifications");
@@ -38,7 +35,6 @@ const Header = () => {
         }
     }, []);
 
-    // Update read notifications in localStorage and recalc unread count
     useEffect(() => {
         localStorage.setItem(
             "readNotifications",
@@ -51,7 +47,6 @@ const Header = () => {
         );
     }, [readNotifications, notifications]);
 
-    // Fetch user profile
     useEffect(() => {
         if (token) {
             axios
@@ -63,7 +58,6 @@ const Header = () => {
         }
     }, [token]);
 
-    // Listen for profile updates
     useEffect(() => {
         const handleProfileUpdated = (e) => {
             setProfile(e.detail);
@@ -74,7 +68,6 @@ const Header = () => {
             window.removeEventListener("profileUpdated", handleProfileUpdated);
     }, []);
 
-    // Update cart count from localStorage
     useEffect(() => {
         const updateCartCount = () => {
             const storedCart = localStorage.getItem("cart");
@@ -94,25 +87,19 @@ const Header = () => {
         return () => window.removeEventListener("cartUpdated", updateCartCount);
     }, []);
 
-    // Fetch orders (and generate notifications)
-    useEffect(() => {
-        if (token) {
-            fetchOrders();
-        }
-    }, [token]);
-
     const fetchOrders = async () => {
         try {
             const response = await axios.get(
                 "http://localhost:8000/api/my-purchases",
-                { headers: { Authorization: `Bearer ${token}` } }
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
             );
             const orderData = response.data.data || response.data;
             const allOrders = Array.isArray(orderData) ? orderData : [];
             setOrders(allOrders);
 
-            // Generate notifications based on order status
-            const newNotifications = allOrders.flatMap((order) => {
+            const orderNotifications = allOrders.flatMap((order) => {
                 const status = order.order_status.toLowerCase();
                 const trackingNumber =
                     order.shipping?.tracking_number || "Not Available";
@@ -194,13 +181,23 @@ const Header = () => {
                             : "/images/default-product.png",
                         timestamp: new Date().toISOString(),
                     });
+                } else if (status === "return/refunded") {
+                    notifs.push({
+                        id: order.id,
+                        type: "return-refunded",
+                        message: `Your order #${order.id} has been processed for return/refunded.`,
+                        image: order.order_details?.[0]?.product?.main_image
+                            ? `http://localhost:8000/storage/${order.order_details[0].product.main_image}`
+                            : "/images/default-product.png",
+                        timestamp: order.updated_at || new Date().toISOString(),
+                    });
                 }
                 return notifs;
             });
 
             setNotifications((prev) => {
                 const merged = [...prev];
-                newNotifications.forEach((newNotif) => {
+                orderNotifications.forEach((newNotif) => {
                     const exists = merged.find(
                         (n) =>
                             n.id === newNotif.id &&
@@ -215,23 +212,112 @@ const Header = () => {
                     (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
                 );
             });
-
-            setNotificationCount(
-                newNotifications.filter(
-                    (n) => !readNotifications.includes(`${n.id}-${n.type}`)
-                ).length
-            );
         } catch (err) {
             console.error(
                 "Error fetching orders:",
                 err.response?.data || err.message
             );
-            setOrders([]);
-            setNotificationCount(0);
         }
     };
 
-    // Listen for order events to refresh notifications
+    const fetchReturnRefunds = async () => {
+        try {
+            const response = await axios.get(
+                "http://localhost:8000/api/return-refunds",
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            const returnRefundData = response.data || [];
+            setReturnRefunds(returnRefundData);
+
+            const returnNotifications = returnRefundData.flatMap((request) => {
+                const notifs = [];
+                if (request.status === "denied") {
+                    notifs.push({
+                        id: request.id,
+                        type: "return-denied",
+                        message: `Your return/refund request for order #${request.order_id} has been denied because your proof of issue is not clear or insufficient.`,
+                        image:
+                            request.products?.[0]?.image ||
+                            "/images/default-product.png",
+                        timestamp:
+                            request.updated_at || new Date().toISOString(),
+                    });
+                } else if (
+                    request.status === "approved" &&
+                    request.refund_method === "reorder"
+                ) {
+                    notifs.push({
+                        id: request.id,
+                        type: "return-reorder",
+                        message: `Your return/refund request for order #${request.order_id} has been approved and will be reordered without additional payment.`,
+                        image:
+                            request.products?.[0]?.image ||
+                            "/images/default-product.png",
+                        timestamp:
+                            request.updated_at || new Date().toISOString(),
+                    });
+                } else if (
+                    request.status === "completed" &&
+                    request.refund_method === "reorder"
+                ) {
+                    // Find the new order created for this return/refund
+                    const newOrder = orders.find(
+                        (order) => order.order_date === request.updated_at
+                    );
+                    const newOrderId = newOrder ? order.id : request.order_id;
+                    notifs.push({
+                        id: request.id,
+                        type: "return-reordered",
+                        message: `Your new order #${newOrderId} has been successfully placed as part of your return/refund request.`,
+                        image:
+                            request.products?.[0]?.image ||
+                            "/images/default-product.png",
+                        timestamp:
+                            request.updated_at || new Date().toISOString(),
+                    });
+                }
+                return notifs;
+            });
+
+            setNotifications((prev) => {
+                const merged = [...prev];
+                returnNotifications.forEach((newNotif) => {
+                    const exists = merged.find(
+                        (n) =>
+                            n.id === newNotif.id &&
+                            n.type === newNotif.type &&
+                            n.timestamp === newNotif.timestamp
+                    );
+                    if (!exists) {
+                        merged.push(newNotif);
+                    }
+                });
+                return merged.sort(
+                    (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+                );
+            });
+        } catch (err) {
+            console.error(
+                "Error fetching return/refunds:",
+                err.response?.data || err.message
+            );
+        }
+    };
+
+    useEffect(() => {
+        if (token) {
+            fetchOrders();
+            fetchReturnRefunds();
+            const interval = setInterval(() => {
+                fetchOrders();
+                fetchReturnRefunds();
+            }, 30000);
+            return () => clearInterval(interval);
+        }
+    }, [token]);
+
     useEffect(() => {
         const handleOrderPlaced = () => {
             console.log("Order placed event received");
@@ -240,6 +326,7 @@ const Header = () => {
         const handleOrderStatusUpdate = () => {
             console.log("Order status updated event received");
             fetchOrders();
+            fetchReturnRefunds();
         };
         window.addEventListener("orderPlaced", handleOrderPlaced);
         window.addEventListener("orderStatusUpdated", handleOrderStatusUpdate);
@@ -260,7 +347,11 @@ const Header = () => {
                 setNotificationCount((prev) => Math.max(0, prev - 1));
             });
         }
-        navigate(`/order-tracking/${notifId}`);
+        if (notifType.includes("return")) {
+            navigate(`/user-purchase`);
+        } else {
+            navigate(`/order-tracking/${notifId}`);
+        }
     };
 
     const avatarSrc = profile?.profile_image
@@ -268,7 +359,6 @@ const Header = () => {
         : "/images/default-avatar.png";
     const username = profile ? profile.username : "Guest";
 
-    // Fetch categories dynamically from the public endpoint (for type 'categories')
     useEffect(() => {
         axios
             .get(
@@ -282,14 +372,12 @@ const Header = () => {
             });
     }, []);
 
-    // Generate the dynamic categories dropdown menu
     const categoriesMenu = (
         <Menu className="white-dropdown">
             {categories.length > 0 ? (
                 categories.map((cat) => (
                     <Menu.Item
                         key={cat.id}
-                        // Navigate using the /user-category/:category route, using the category ID
                         onClick={() => navigate(`/user-category/${cat.id}`)}
                     >
                         {cat.name}
