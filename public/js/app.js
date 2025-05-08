@@ -19652,7 +19652,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   UNSAFE_ErrorResponseImpl: () => (/* binding */ ErrorResponseImpl),
 /* harmony export */   UNSAFE_convertRouteMatchToUiMatch: () => (/* binding */ convertRouteMatchToUiMatch),
 /* harmony export */   UNSAFE_convertRoutesToDataRoutes: () => (/* binding */ convertRoutesToDataRoutes),
-/* harmony export */   UNSAFE_getPathContributingMatches: () => (/* binding */ getPathContributingMatches),
+/* harmony export */   UNSAFE_decodePath: () => (/* binding */ decodePath),
+/* harmony export */   UNSAFE_getResolveToMatches: () => (/* binding */ getResolveToMatches),
 /* harmony export */   UNSAFE_invariant: () => (/* binding */ invariant),
 /* harmony export */   UNSAFE_warning: () => (/* binding */ warning),
 /* harmony export */   createBrowserHistory: () => (/* binding */ createBrowserHistory),
@@ -19661,10 +19662,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   createPath: () => (/* binding */ createPath),
 /* harmony export */   createRouter: () => (/* binding */ createRouter),
 /* harmony export */   createStaticHandler: () => (/* binding */ createStaticHandler),
+/* harmony export */   data: () => (/* binding */ data),
 /* harmony export */   defer: () => (/* binding */ defer),
 /* harmony export */   generatePath: () => (/* binding */ generatePath),
 /* harmony export */   getStaticContextFromError: () => (/* binding */ getStaticContextFromError),
 /* harmony export */   getToPathname: () => (/* binding */ getToPathname),
+/* harmony export */   isDataWithResponseInit: () => (/* binding */ isDataWithResponseInit),
 /* harmony export */   isDeferredData: () => (/* binding */ isDeferredData),
 /* harmony export */   isRouteErrorResponse: () => (/* binding */ isRouteErrorResponse),
 /* harmony export */   joinPaths: () => (/* binding */ joinPaths),
@@ -19675,12 +19678,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   parsePath: () => (/* binding */ parsePath),
 /* harmony export */   redirect: () => (/* binding */ redirect),
 /* harmony export */   redirectDocument: () => (/* binding */ redirectDocument),
+/* harmony export */   replace: () => (/* binding */ replace),
 /* harmony export */   resolvePath: () => (/* binding */ resolvePath),
 /* harmony export */   resolveTo: () => (/* binding */ resolveTo),
 /* harmony export */   stripBasename: () => (/* binding */ stripBasename)
 /* harmony export */ });
 /**
- * @remix-run/router v1.10.0
+ * @remix-run/router v1.23.0
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -20098,6 +20102,10 @@ function getUrlBasedHistory(getLocation, createHref, validateLocation, options) 
     // See https://bugzilla.mozilla.org/show_bug.cgi?id=878297
     let base = window.location.origin !== "null" ? window.location.origin : window.location.href;
     let href = typeof to === "string" ? to : createPath(to);
+    // Treating this as a full URL will strip any trailing spaces so we need to
+    // pre-encode them since they might be part of a matching splat param from
+    // an ancestor route
+    href = href.replace(/ $/, "%20");
     invariant(base, "No window.location.(origin|href) available to create URL for href: " + href);
     return new URL(href, base);
   }
@@ -20163,7 +20171,7 @@ function convertRoutesToDataRoutes(routes, mapRouteProperties, parentPath, manif
     manifest = {};
   }
   return routes.map((route, index) => {
-    let treePath = [...parentPath, index];
+    let treePath = [...parentPath, String(index)];
     let id = typeof route.id === "string" ? route.id : treePath.join("-");
     invariant(route.index !== true || !route.children, "Cannot specify children on an index route");
     invariant(!manifest[id], "Found a route id collision on id \"" + id + "\".  Route " + "id's must be globally unique within Data Router usages");
@@ -20189,12 +20197,15 @@ function convertRoutesToDataRoutes(routes, mapRouteProperties, parentPath, manif
 /**
  * Matches the given routes to a location and returns the match data.
  *
- * @see https://reactrouter.com/utils/match-routes
+ * @see https://reactrouter.com/v6/utils/match-routes
  */
 function matchRoutes(routes, locationArg, basename) {
   if (basename === void 0) {
     basename = "/";
   }
+  return matchRoutesImpl(routes, locationArg, basename, false);
+}
+function matchRoutesImpl(routes, locationArg, basename, allowPartial) {
   let location = typeof locationArg === "string" ? parsePath(locationArg) : locationArg;
   let pathname = stripBasename(location.pathname || "/", basename);
   if (pathname == null) {
@@ -20204,14 +20215,14 @@ function matchRoutes(routes, locationArg, basename) {
   rankRouteBranches(branches);
   let matches = null;
   for (let i = 0; matches == null && i < branches.length; ++i) {
-    matches = matchRouteBranch(branches[i],
     // Incoming pathnames are generally encoded from either window.location
     // or from router.navigate, but we want to match against the unencoded
     // paths in the route definitions.  Memory router locations won't be
     // encoded here but there also shouldn't be anything to decode so this
     // should be a safe operation.  This avoids needing matchRoutes to be
     // history-aware.
-    safelyDecodeURI(pathname));
+    let decoded = decodePath(pathname);
+    matches = matchRouteBranch(branches[i], decoded, allowPartial);
   }
   return matches;
 }
@@ -20334,7 +20345,7 @@ function rankRouteBranches(branches) {
   branches.sort((a, b) => a.score !== b.score ? b.score - a.score // Higher score first
   : compareIndexes(a.routesMeta.map(meta => meta.childrenIndex), b.routesMeta.map(meta => meta.childrenIndex)));
 }
-const paramRe = /^:\w+$/;
+const paramRe = /^:[\w-]+$/;
 const dynamicSegmentValue = 3;
 const indexRouteValue = 2;
 const emptySegmentValue = 1;
@@ -20364,7 +20375,10 @@ function compareIndexes(a, b) {
   // so they sort equally.
   0;
 }
-function matchRouteBranch(branch, pathname) {
+function matchRouteBranch(branch, pathname, allowPartial) {
+  if (allowPartial === void 0) {
+    allowPartial = false;
+  }
   let {
     routesMeta
   } = branch;
@@ -20380,9 +20394,18 @@ function matchRouteBranch(branch, pathname) {
       caseSensitive: meta.caseSensitive,
       end
     }, remainingPathname);
-    if (!match) return null;
-    Object.assign(matchedParams, match.params);
     let route = meta.route;
+    if (!match && end && allowPartial && !routesMeta[routesMeta.length - 1].route.index) {
+      match = matchPath({
+        path: meta.relativePath,
+        caseSensitive: meta.caseSensitive,
+        end: false
+      }, remainingPathname);
+    }
+    if (!match) {
+      return null;
+    }
+    Object.assign(matchedParams, match.params);
     matches.push({
       // TODO: Can this as be avoided?
       params: matchedParams,
@@ -20399,7 +20422,7 @@ function matchRouteBranch(branch, pathname) {
 /**
  * Returns a path with params interpolated.
  *
- * @see https://reactrouter.com/utils/generate-path
+ * @see https://reactrouter.com/v6/utils/generate-path
  */
 function generatePath(originalPath, params) {
   if (params === void 0) {
@@ -20421,7 +20444,7 @@ function generatePath(originalPath, params) {
       // Apply the splat
       return stringify(params[star]);
     }
-    const keyMatch = segment.match(/^:(\w+)(\??)$/);
+    const keyMatch = segment.match(/^:([\w-]+)(\??)$/);
     if (keyMatch) {
       const [, key, optional] = keyMatch;
       let param = params[key];
@@ -20439,7 +20462,7 @@ function generatePath(originalPath, params) {
  * Performs pattern matching on a URL pathname and returns information about
  * the match.
  *
- * @see https://reactrouter.com/utils/match-path
+ * @see https://reactrouter.com/v6/utils/match-path
  */
 function matchPath(pattern, pathname) {
   if (typeof pattern === "string") {
@@ -20449,20 +20472,29 @@ function matchPath(pattern, pathname) {
       end: true
     };
   }
-  let [matcher, paramNames] = compilePath(pattern.path, pattern.caseSensitive, pattern.end);
+  let [matcher, compiledParams] = compilePath(pattern.path, pattern.caseSensitive, pattern.end);
   let match = pathname.match(matcher);
   if (!match) return null;
   let matchedPathname = match[0];
   let pathnameBase = matchedPathname.replace(/(.)\/+$/, "$1");
   let captureGroups = match.slice(1);
-  let params = paramNames.reduce((memo, paramName, index) => {
+  let params = compiledParams.reduce((memo, _ref, index) => {
+    let {
+      paramName,
+      isOptional
+    } = _ref;
     // We need to compute the pathnameBase here using the raw splat value
     // instead of using params["*"] later because it will be decoded then
     if (paramName === "*") {
       let splatValue = captureGroups[index] || "";
       pathnameBase = matchedPathname.slice(0, matchedPathname.length - splatValue.length).replace(/(.)\/+$/, "$1");
     }
-    memo[paramName] = safelyDecodeURIComponent(captureGroups[index] || "", paramName);
+    const value = captureGroups[index];
+    if (isOptional && !value) {
+      memo[paramName] = undefined;
+    } else {
+      memo[paramName] = (value || "").replace(/%2F/g, "/");
+    }
     return memo;
   }, {});
   return {
@@ -20480,16 +20512,21 @@ function compilePath(path, caseSensitive, end) {
     end = true;
   }
   warning(path === "*" || !path.endsWith("*") || path.endsWith("/*"), "Route path \"" + path + "\" will be treated as if it were " + ("\"" + path.replace(/\*$/, "/*") + "\" because the `*` character must ") + "always follow a `/` in the pattern. To get rid of this warning, " + ("please change the route path to \"" + path.replace(/\*$/, "/*") + "\"."));
-  let paramNames = [];
+  let params = [];
   let regexpSource = "^" + path.replace(/\/*\*?$/, "") // Ignore trailing / and /*, we'll handle it below
   .replace(/^\/*/, "/") // Make sure it has a leading /
-  .replace(/[\\.*+^$?{}|()[\]]/g, "\\$&") // Escape special regex chars
-  .replace(/\/:(\w+)/g, (_, paramName) => {
-    paramNames.push(paramName);
-    return "/([^\\/]+)";
+  .replace(/[\\.*+^${}|()[\]]/g, "\\$&") // Escape special regex chars
+  .replace(/\/:([\w-]+)(\?)?/g, (_, paramName, isOptional) => {
+    params.push({
+      paramName,
+      isOptional: isOptional != null
+    });
+    return isOptional ? "/?([^\\/]+)?" : "/([^\\/]+)";
   });
   if (path.endsWith("*")) {
-    paramNames.push("*");
+    params.push({
+      paramName: "*"
+    });
     regexpSource += path === "*" || path === "/*" ? "(.*)$" // Already matched the initial /, just match the rest
     : "(?:\\/(.+)|\\/*)$"; // Don't include the / in params["*"]
   } else if (end) {
@@ -20506,21 +20543,13 @@ function compilePath(path, caseSensitive, end) {
     regexpSource += "(?:(?=\\/|$))";
   } else ;
   let matcher = new RegExp(regexpSource, caseSensitive ? undefined : "i");
-  return [matcher, paramNames];
+  return [matcher, params];
 }
-function safelyDecodeURI(value) {
+function decodePath(value) {
   try {
-    return decodeURI(value);
+    return value.split("/").map(v => decodeURIComponent(v).replace(/\//g, "%2F")).join("/");
   } catch (error) {
     warning(false, "The URL path \"" + value + "\" could not be decoded because it is is a " + "malformed URL segment. This is probably due to a bad percent " + ("encoding (" + error + ")."));
-    return value;
-  }
-}
-function safelyDecodeURIComponent(value, paramName) {
-  try {
-    return decodeURIComponent(value);
-  } catch (error) {
-    warning(false, "The value for the URL param \"" + paramName + "\" will not be decoded because" + (" the string \"" + value + "\" is a malformed URL segment. This is probably") + (" due to a bad percent encoding (" + error + ")."));
     return value;
   }
 }
@@ -20545,7 +20574,7 @@ function stripBasename(pathname, basename) {
 /**
  * Returns a resolved path object relative to the given pathname.
  *
- * @see https://reactrouter.com/utils/resolve-path
+ * @see https://reactrouter.com/v6/utils/resolve-path
  */
 function resolvePath(to, fromPathname) {
   if (fromPathname === void 0) {
@@ -20605,6 +20634,18 @@ function getInvalidPathError(char, field, dest, path) {
 function getPathContributingMatches(matches) {
   return matches.filter((match, index) => index === 0 || match.route.path && match.route.path.length > 0);
 }
+// Return the array of pathnames for the current route matches - used to
+// generate the routePathnames input for resolveTo()
+function getResolveToMatches(matches, v7_relativeSplatPath) {
+  let pathMatches = getPathContributingMatches(matches);
+  // When v7_relativeSplatPath is enabled, use the full pathname for the leaf
+  // match so we include splat values for "." links.  See:
+  // https://github.com/remix-run/react-router/issues/11052#issuecomment-1836589329
+  if (v7_relativeSplatPath) {
+    return pathMatches.map((match, idx) => idx === pathMatches.length - 1 ? match.pathname : match.pathnameBase);
+  }
+  return pathMatches.map(match => match.pathnameBase);
+}
 /**
  * @private
  */
@@ -20633,23 +20674,22 @@ function resolveTo(toArg, routePathnames, locationPathname, isPathRelative) {
   // `to` values that do not provide a pathname. `to` can simply be a search or
   // hash string, in which case we should assume that the navigation is relative
   // to the current location's pathname and *not* the route pathname.
-  if (isPathRelative || toPathname == null) {
+  if (toPathname == null) {
     from = locationPathname;
   } else {
     let routePathnameIndex = routePathnames.length - 1;
-    if (toPathname.startsWith("..")) {
+    // With relative="route" (the default), each leading .. segment means
+    // "go up one route" instead of "go up one URL segment".  This is a key
+    // difference from how <a href> works and a major reason we call this a
+    // "to" value instead of a "href".
+    if (!isPathRelative && toPathname.startsWith("..")) {
       let toSegments = toPathname.split("/");
-      // Each leading .. segment means "go up one route" instead of "go up one
-      // URL segment".  This is a key difference from how <a href> works and a
-      // major reason we call this a "to" value instead of a "href".
       while (toSegments[0] === "..") {
         toSegments.shift();
         routePathnameIndex -= 1;
       }
       to.pathname = toSegments.join("/");
     }
-    // If there are more ".." segments than parent routes, resolve relative to
-    // the root / URL.
     from = routePathnameIndex >= 0 ? routePathnames[routePathnameIndex] : "/";
   }
   let path = resolvePath(to, from);
@@ -20688,6 +20728,9 @@ const normalizeHash = hash => !hash || hash === "#" ? "" : hash.startsWith("#") 
 /**
  * This is a shortcut for creating `application/json` responses. Converts `data`
  * to JSON and sets the `Content-Type` header.
+ *
+ * @deprecated The `json` method is deprecated in favor of returning raw objects.
+ * This method will be removed in v7.
  */
 const json = function json(data, init) {
   if (init === void 0) {
@@ -20704,6 +20747,22 @@ const json = function json(data, init) {
     headers
   }));
 };
+class DataWithResponseInit {
+  constructor(data, init) {
+    this.type = "DataWithResponseInit";
+    this.data = data;
+    this.init = init || null;
+  }
+}
+/**
+ * Create "responses" that contain `status`/`headers` without forcing
+ * serialization into an actual `Response` - used by Remix single fetch
+ */
+function data(data, init) {
+  return new DataWithResponseInit(data, typeof init === "number" ? {
+    status: init
+  } : init);
+}
 class AbortedDeferredError extends Error {}
 class DeferredData {
   constructor(data, responseInit) {
@@ -20719,8 +20778,8 @@ class DeferredData {
     let onAbort = () => reject(new AbortedDeferredError("Deferred data aborted"));
     this.unlistenAbortSignal = () => this.controller.signal.removeEventListener("abort", onAbort);
     this.controller.signal.addEventListener("abort", onAbort);
-    this.data = Object.entries(data).reduce((acc, _ref) => {
-      let [key, value] = _ref;
+    this.data = Object.entries(data).reduce((acc, _ref2) => {
+      let [key, value] = _ref2;
       return Object.assign(acc, {
         [key]: this.trackPromise(key, value)
       });
@@ -20817,8 +20876,8 @@ class DeferredData {
   }
   get unwrappedData() {
     invariant(this.data !== null && this.done, "Can only unwrap data on initialized and settled deferreds");
-    return Object.entries(this.data).reduce((acc, _ref2) => {
-      let [key, value] = _ref2;
+    return Object.entries(this.data).reduce((acc, _ref3) => {
+      let [key, value] = _ref3;
       return Object.assign(acc, {
         [key]: unwrapTrackedPromise(value)
       });
@@ -20840,6 +20899,10 @@ function unwrapTrackedPromise(value) {
   }
   return value._data;
 }
+/**
+ * @deprecated The `defer` method is deprecated in favor of returning raw
+ * objects. This method will be removed in v7.
+ */
 const defer = function defer(data, init) {
   if (init === void 0) {
     init = {};
@@ -20879,6 +20942,17 @@ const redirect = function redirect(url, init) {
 const redirectDocument = (url, init) => {
   let response = redirect(url, init);
   response.headers.set("X-Remix-Reload-Document", "true");
+  return response;
+};
+/**
+ * A redirect response that will perform a `history.replaceState` instead of a
+ * `history.pushState` for client-side navigation redirects.
+ * Sets the status code and the `Location` header.
+ * Defaults to "302 Found".
+ */
+const replace = (url, init) => {
+  let response = redirect(url, init);
+  response.headers.set("X-Remix-Replace", "true");
   return response;
 };
 /**
@@ -20980,10 +21054,16 @@ function createRouter(init) {
   let dataRoutes = convertRoutesToDataRoutes(init.routes, mapRouteProperties, undefined, manifest);
   let inFlightDataRoutes;
   let basename = init.basename || "/";
+  let dataStrategyImpl = init.dataStrategy || defaultDataStrategy;
+  let patchRoutesOnNavigationImpl = init.patchRoutesOnNavigation;
   // Config driven behavior flags
   let future = _extends({
+    v7_fetcherPersist: false,
     v7_normalizeFormMethod: false,
-    v7_prependBasename: false
+    v7_partialHydration: false,
+    v7_prependBasename: false,
+    v7_relativeSplatPath: false,
+    v7_skipActionErrorRevalidation: false
   }, init.future);
   // Cleanup function for history
   let unlistenHistory = null;
@@ -21003,8 +21083,9 @@ function createRouter(init) {
   // SSR did the initial scroll restoration.
   let initialScrollRestored = init.hydrationData != null;
   let initialMatches = matchRoutes(dataRoutes, init.history.location, basename);
+  let initialMatchesIsFOW = false;
   let initialErrors = null;
-  if (initialMatches == null) {
+  if (initialMatches == null && !patchRoutesOnNavigationImpl) {
     // If we do not match a user-provided-route, fall back to the root
     // to allow the error boundary to take over
     let error = getInternalRouterError(404, {
@@ -21019,12 +21100,57 @@ function createRouter(init) {
       [route.id]: error
     };
   }
-  let initialized =
-  // All initialMatches need to be loaded before we're ready.  If we have lazy
-  // functions around still then we'll need to run them in initialize()
-  !initialMatches.some(m => m.route.lazy) && (
-  // And we have to either have no loaders or have been provided hydrationData
-  !initialMatches.some(m => m.route.loader) || init.hydrationData != null);
+  // In SPA apps, if the user provided a patchRoutesOnNavigation implementation and
+  // our initial match is a splat route, clear them out so we run through lazy
+  // discovery on hydration in case there's a more accurate lazy route match.
+  // In SSR apps (with `hydrationData`), we expect that the server will send
+  // up the proper matched routes so we don't want to run lazy discovery on
+  // initial hydration and want to hydrate into the splat route.
+  if (initialMatches && !init.hydrationData) {
+    let fogOfWar = checkFogOfWar(initialMatches, dataRoutes, init.history.location.pathname);
+    if (fogOfWar.active) {
+      initialMatches = null;
+    }
+  }
+  let initialized;
+  if (!initialMatches) {
+    initialized = false;
+    initialMatches = [];
+    // If partial hydration and fog of war is enabled, we will be running
+    // `patchRoutesOnNavigation` during hydration so include any partial matches as
+    // the initial matches so we can properly render `HydrateFallback`'s
+    if (future.v7_partialHydration) {
+      let fogOfWar = checkFogOfWar(null, dataRoutes, init.history.location.pathname);
+      if (fogOfWar.active && fogOfWar.matches) {
+        initialMatchesIsFOW = true;
+        initialMatches = fogOfWar.matches;
+      }
+    }
+  } else if (initialMatches.some(m => m.route.lazy)) {
+    // All initialMatches need to be loaded before we're ready.  If we have lazy
+    // functions around still then we'll need to run them in initialize()
+    initialized = false;
+  } else if (!initialMatches.some(m => m.route.loader)) {
+    // If we've got no loaders to run, then we're good to go
+    initialized = true;
+  } else if (future.v7_partialHydration) {
+    // If partial hydration is enabled, we're initialized so long as we were
+    // provided with hydrationData for every route with a loader, and no loaders
+    // were marked for explicit hydration
+    let loaderData = init.hydrationData ? init.hydrationData.loaderData : null;
+    let errors = init.hydrationData ? init.hydrationData.errors : null;
+    // If errors exist, don't consider routes below the boundary
+    if (errors) {
+      let idx = initialMatches.findIndex(m => errors[m.route.id] !== undefined);
+      initialized = initialMatches.slice(0, idx + 1).every(m => !shouldLoadRouteOnHydration(m.route, loaderData, errors));
+    } else {
+      initialized = initialMatches.every(m => !shouldLoadRouteOnHydration(m.route, loaderData, errors));
+    }
+  } else {
+    // Without partial hydration - we're initialized if we were provided any
+    // hydrationData - which is expected to be complete
+    initialized = init.hydrationData != null;
+  }
   let router;
   let state = {
     historyAction: init.history.action,
@@ -21069,7 +21195,7 @@ function createRouter(init) {
   let cancelledDeferredRoutes = [];
   // Use this internal array to capture fetcher loads that were cancelled by an
   // action navigation and require revalidation
-  let cancelledFetcherLoads = [];
+  let cancelledFetcherLoads = new Set();
   // AbortControllers for any in-flight fetchers
   let fetchControllers = new Map();
   // Track loads based on the order in which they started
@@ -21084,6 +21210,11 @@ function createRouter(init) {
   let fetchRedirectIds = new Set();
   // Most recent href/match for fetcher.load calls for fetchers
   let fetchLoadMatches = new Map();
+  // Ref-count mounted fetchers so we know when it's ok to clean them up
+  let activeFetchers = new Map();
+  // Fetchers that have requested a delete when using v7_fetcherPersist,
+  // they'll be officially removed after they return to idle
+  let deletedFetchers = new Set();
   // Store DeferredData instances for active route matches.  When a
   // route loader returns defer() we stick one in here.  Then, when a nested
   // promise resolves we update loaderData.  If a new navigation starts we
@@ -21094,7 +21225,7 @@ function createRouter(init) {
   let blockerFunctions = new Map();
   // Flag to ignore the next history update, so we can revert the URL change on
   // a POP navigation that was blocked by the user without touching router state
-  let ignoreNextHistoryUpdate = false;
+  let unblockBlockerHistoryUpdate = undefined;
   // Initialize the router, all side effects should be kicked off from here.
   // Implemented as a Fluent API for ease of:
   //   let router = createRouter(init).initialize();
@@ -21109,8 +21240,9 @@ function createRouter(init) {
       } = _ref;
       // Ignore this event if it was just us resetting the URL from a
       // blocked POP navigation
-      if (ignoreNextHistoryUpdate) {
-        ignoreNextHistoryUpdate = false;
+      if (unblockBlockerHistoryUpdate) {
+        unblockBlockerHistoryUpdate();
+        unblockBlockerHistoryUpdate = undefined;
         return;
       }
       warning(blockerFunctions.size === 0 || delta != null, "You are trying to use a blocker on a POP navigation to a location " + "that was not created by @remix-run/router. This will fail silently in " + "production. This can happen if you are navigating outside the router " + "via `window.history.pushState`/`window.location.hash` instead of using " + "router navigation APIs.  This can also happen if you are using " + "createHashRouter and the user manually changes the URL.");
@@ -21121,7 +21253,9 @@ function createRouter(init) {
       });
       if (blockerKey && delta != null) {
         // Restore the URL to match the current UI, but don't update router state
-        ignoreNextHistoryUpdate = true;
+        let nextHistoryUpdatePromise = new Promise(resolve => {
+          unblockBlockerHistoryUpdate = resolve;
+        });
         init.history.go(delta * -1);
         // Put the blocker into a blocked state
         updateBlocker(blockerKey, {
@@ -21134,8 +21268,10 @@ function createRouter(init) {
               reset: undefined,
               location
             });
-            // Re-do the same POP navigation we just blocked
-            init.history.go(delta);
+            // Re-do the same POP navigation we just blocked, after the url
+            // restoration is also complete.  See:
+            // https://github.com/remix-run/react-router/issues/11613
+            nextHistoryUpdatePromise.then(() => init.history.go(delta));
           },
           reset() {
             let blockers = new Map(state.blockers);
@@ -21163,7 +21299,9 @@ function createRouter(init) {
     // resolved prior to router creation since we can't go into a fallbackElement
     // UI for SSR'd apps
     if (!state.initialized) {
-      startNavigation(Action.Pop, state.location);
+      startNavigation(Action.Pop, state.location, {
+        initialHydration: true
+      });
     }
     return router;
   }
@@ -21186,19 +21324,64 @@ function createRouter(init) {
     return () => subscribers.delete(fn);
   }
   // Update our state and notify the calling context of the change
-  function updateState(newState, viewTransitionOpts) {
+  function updateState(newState, opts) {
+    if (opts === void 0) {
+      opts = {};
+    }
     state = _extends({}, state, newState);
-    subscribers.forEach(subscriber => subscriber(state, {
-      unstable_viewTransitionOpts: viewTransitionOpts
+    // Prep fetcher cleanup so we can tell the UI which fetcher data entries
+    // can be removed
+    let completedFetchers = [];
+    let deletedFetchersKeys = [];
+    if (future.v7_fetcherPersist) {
+      state.fetchers.forEach((fetcher, key) => {
+        if (fetcher.state === "idle") {
+          if (deletedFetchers.has(key)) {
+            // Unmounted from the UI and can be totally removed
+            deletedFetchersKeys.push(key);
+          } else {
+            // Returned to idle but still mounted in the UI, so semi-remains for
+            // revalidations and such
+            completedFetchers.push(key);
+          }
+        }
+      });
+    }
+    // Remove any lingering deleted fetchers that have already been removed
+    // from state.fetchers
+    deletedFetchers.forEach(key => {
+      if (!state.fetchers.has(key) && !fetchControllers.has(key)) {
+        deletedFetchersKeys.push(key);
+      }
+    });
+    // Iterate over a local copy so that if flushSync is used and we end up
+    // removing and adding a new subscriber due to the useCallback dependencies,
+    // we don't get ourselves into a loop calling the new subscriber immediately
+    [...subscribers].forEach(subscriber => subscriber(state, {
+      deletedFetchers: deletedFetchersKeys,
+      viewTransitionOpts: opts.viewTransitionOpts,
+      flushSync: opts.flushSync === true
     }));
+    // Remove idle fetchers from state since we only care about in-flight fetchers.
+    if (future.v7_fetcherPersist) {
+      completedFetchers.forEach(key => state.fetchers.delete(key));
+      deletedFetchersKeys.forEach(key => deleteFetcher(key));
+    } else {
+      // We already called deleteFetcher() on these, can remove them from this
+      // Set now that we've handed the keys off to the data layer
+      deletedFetchersKeys.forEach(key => deletedFetchers.delete(key));
+    }
   }
   // Complete a navigation returning the state.navigation back to the IDLE_NAVIGATION
   // and setting state.[historyAction/location/matches] to the new route.
   // - Location is a required param
   // - Navigation will always be set to IDLE_NAVIGATION
   // - Can pass any other state in newState
-  function completeNavigation(location, newState) {
+  function completeNavigation(location, newState, _temp) {
     var _location$state, _location$state2;
+    let {
+      flushSync
+    } = _temp === void 0 ? {} : _temp;
     // Deduce if we're in a loading/actionReload state:
     // - We have committed actionData in the store
     // - The current navigation was a mutation submission
@@ -21232,6 +21415,7 @@ function createRouter(init) {
     // Always respect the user flag.  Otherwise don't reset on mutation
     // submission navigations unless they redirect
     let preventScrollReset = pendingPreventScrollReset === true || state.navigation.formMethod != null && isMutationMethod(state.navigation.formMethod) && ((_location$state2 = location.state) == null ? void 0 : _location$state2._isRedirect) !== true;
+    // Commit any in-flight routes at the end of the HMR revalidation "navigation"
     if (inFlightDataRoutes) {
       dataRoutes = inFlightDataRoutes;
       inFlightDataRoutes = undefined;
@@ -21284,7 +21468,10 @@ function createRouter(init) {
       restoreScrollPosition: getSavedScrollPosition(location, newState.matches || state.matches),
       preventScrollReset,
       blockers
-    }), viewTransitionOpts);
+    }), {
+      viewTransitionOpts,
+      flushSync: flushSync === true
+    });
     // Reset stateful navigation vars
     pendingAction = Action.Pop;
     pendingPreventScrollReset = false;
@@ -21292,7 +21479,6 @@ function createRouter(init) {
     isUninterruptedRevalidation = false;
     isRevalidationRequired = false;
     cancelledDeferredRoutes = [];
-    cancelledFetcherLoads = [];
   }
   // Trigger a navigation event, which can either be a numerical POP or a PUSH
   // replace with an optional submission
@@ -21301,7 +21487,7 @@ function createRouter(init) {
       init.history.go(to);
       return;
     }
-    let normalizedPath = normalizeTo(state.location, state.matches, basename, future.v7_prependBasename, to, opts == null ? void 0 : opts.fromRouteId, opts == null ? void 0 : opts.relative);
+    let normalizedPath = normalizeTo(state.location, state.matches, basename, future.v7_prependBasename, to, future.v7_relativeSplatPath, opts == null ? void 0 : opts.fromRouteId, opts == null ? void 0 : opts.relative);
     let {
       path,
       submission,
@@ -21327,6 +21513,7 @@ function createRouter(init) {
       historyAction = Action.Replace;
     }
     let preventScrollReset = opts && "preventScrollReset" in opts ? opts.preventScrollReset === true : undefined;
+    let flushSync = (opts && opts.flushSync) === true;
     let blockerKey = shouldBlockNavigation({
       currentLocation,
       nextLocation,
@@ -21364,7 +21551,8 @@ function createRouter(init) {
       pendingError: error,
       preventScrollReset,
       replace: opts && opts.replace,
-      enableViewTransition: opts && opts.unstable_viewTransition
+      enableViewTransition: opts && opts.viewTransition,
+      flushSync
     });
   }
   // Revalidate all current loaders.  If a navigation is in progress or if this
@@ -21393,7 +21581,9 @@ function createRouter(init) {
     // navigation to the navigation.location but do not trigger an uninterrupted
     // revalidation so that history correctly updates once the navigation completes
     startNavigation(pendingAction || state.historyAction, state.navigation.location, {
-      overrideNavigation: state.navigation
+      overrideNavigation: state.navigation,
+      // Proxy through any rending view transition
+      enableViewTransition: pendingViewTransitionEnabled === true
     });
   }
   // Start a navigation to the given action/location.  Can optionally provide a
@@ -21414,74 +21604,100 @@ function createRouter(init) {
     pendingViewTransitionEnabled = (opts && opts.enableViewTransition) === true;
     let routesToUse = inFlightDataRoutes || dataRoutes;
     let loadingNavigation = opts && opts.overrideNavigation;
-    let matches = matchRoutes(routesToUse, location, basename);
+    let matches = opts != null && opts.initialHydration && state.matches && state.matches.length > 0 && !initialMatchesIsFOW ?
+    // `matchRoutes()` has already been called if we're in here via `router.initialize()`
+    state.matches : matchRoutes(routesToUse, location, basename);
+    let flushSync = (opts && opts.flushSync) === true;
+    // Short circuit if it's only a hash change and not a revalidation or
+    // mutation submission.
+    //
+    // Ignore on initial page loads because since the initial hydration will always
+    // be "same hash".  For example, on /page#hash and submit a <Form method="post">
+    // which will default to a navigation to /page
+    if (matches && state.initialized && !isRevalidationRequired && isHashChangeOnly(state.location, location) && !(opts && opts.submission && isMutationMethod(opts.submission.formMethod))) {
+      completeNavigation(location, {
+        matches
+      }, {
+        flushSync
+      });
+      return;
+    }
+    let fogOfWar = checkFogOfWar(matches, routesToUse, location.pathname);
+    if (fogOfWar.active && fogOfWar.matches) {
+      matches = fogOfWar.matches;
+    }
     // Short circuit with a 404 on the root error boundary if we match nothing
     if (!matches) {
-      let error = getInternalRouterError(404, {
-        pathname: location.pathname
-      });
       let {
-        matches: notFoundMatches,
+        error,
+        notFoundMatches,
         route
-      } = getShortCircuitMatches(routesToUse);
-      // Cancel all pending deferred on 404s since we don't keep any routes
-      cancelActiveDeferreds();
+      } = handleNavigational404(location.pathname);
       completeNavigation(location, {
         matches: notFoundMatches,
         loaderData: {},
         errors: {
           [route.id]: error
         }
-      });
-      return;
-    }
-    // Short circuit if it's only a hash change and not a revalidation or
-    // mutation submission.
-    //
-    // Ignore on initial page loads because since the initial load will always
-    // be "same hash".  For example, on /page#hash and submit a <Form method="post">
-    // which will default to a navigation to /page
-    if (state.initialized && !isRevalidationRequired && isHashChangeOnly(state.location, location) && !(opts && opts.submission && isMutationMethod(opts.submission.formMethod))) {
-      completeNavigation(location, {
-        matches
+      }, {
+        flushSync
       });
       return;
     }
     // Create a controller/Request for this navigation
     pendingNavigationController = new AbortController();
     let request = createClientSideRequest(init.history, location, pendingNavigationController.signal, opts && opts.submission);
-    let pendingActionData;
-    let pendingError;
+    let pendingActionResult;
     if (opts && opts.pendingError) {
       // If we have a pendingError, it means the user attempted a GET submission
       // with binary FormData so assign here and skip to handleLoaders.  That
       // way we handle calling loaders above the boundary etc.  It's not really
       // different from an actionError in that sense.
-      pendingError = {
-        [findNearestBoundary(matches).route.id]: opts.pendingError
-      };
+      pendingActionResult = [findNearestBoundary(matches).route.id, {
+        type: ResultType.error,
+        error: opts.pendingError
+      }];
     } else if (opts && opts.submission && isMutationMethod(opts.submission.formMethod)) {
       // Call action if we received an action submission
-      let actionOutput = await handleAction(request, location, opts.submission, matches, {
-        replace: opts.replace
+      let actionResult = await handleAction(request, location, opts.submission, matches, fogOfWar.active, {
+        replace: opts.replace,
+        flushSync
       });
-      if (actionOutput.shortCircuited) {
+      if (actionResult.shortCircuited) {
         return;
       }
-      pendingActionData = actionOutput.pendingActionData;
-      pendingError = actionOutput.pendingActionError;
+      // If we received a 404 from handleAction, it's because we couldn't lazily
+      // discover the destination route so we don't want to call loaders
+      if (actionResult.pendingActionResult) {
+        let [routeId, result] = actionResult.pendingActionResult;
+        if (isErrorResult(result) && isRouteErrorResponse(result.error) && result.error.status === 404) {
+          pendingNavigationController = null;
+          completeNavigation(location, {
+            matches: actionResult.matches,
+            loaderData: {},
+            errors: {
+              [routeId]: result.error
+            }
+          });
+          return;
+        }
+      }
+      matches = actionResult.matches || matches;
+      pendingActionResult = actionResult.pendingActionResult;
       loadingNavigation = getLoadingNavigation(location, opts.submission);
+      flushSync = false;
+      // No need to do fog of war matching again on loader execution
+      fogOfWar.active = false;
       // Create a GET request for the loaders
-      request = new Request(request.url, {
-        signal: request.signal
-      });
+      request = createClientSideRequest(init.history, request.url, request.signal);
     }
     // Call loaders
     let {
       shortCircuited,
+      matches: updatedMatches,
       loaderData,
       errors
-    } = await handleLoaders(request, location, matches, loadingNavigation, opts && opts.submission, opts && opts.fetcherSubmission, opts && opts.replace, pendingActionData, pendingError);
+    } = await handleLoaders(request, location, matches, fogOfWar.active, loadingNavigation, opts && opts.submission, opts && opts.fetcherSubmission, opts && opts.replace, opts && opts.initialHydration === true, flushSync, pendingActionResult);
     if (shortCircuited) {
       return;
     }
@@ -21490,17 +21706,15 @@ function createRouter(init) {
     // been assigned to a new controller for the next navigation
     pendingNavigationController = null;
     completeNavigation(location, _extends({
-      matches
-    }, pendingActionData ? {
-      actionData: pendingActionData
-    } : {}, {
+      matches: updatedMatches || matches
+    }, getActionDataForCommit(pendingActionResult), {
       loaderData,
       errors
     }));
   }
   // Call the action matched by the leaf route for this navigation and handle
   // redirects/errors
-  async function handleAction(request, location, submission, matches, opts) {
+  async function handleAction(request, location, submission, matches, isFogOfWar, opts) {
     if (opts === void 0) {
       opts = {};
     }
@@ -21509,7 +21723,41 @@ function createRouter(init) {
     let navigation = getSubmittingNavigation(location, submission);
     updateState({
       navigation
+    }, {
+      flushSync: opts.flushSync === true
     });
+    if (isFogOfWar) {
+      let discoverResult = await discoverRoutes(matches, location.pathname, request.signal);
+      if (discoverResult.type === "aborted") {
+        return {
+          shortCircuited: true
+        };
+      } else if (discoverResult.type === "error") {
+        let boundaryId = findNearestBoundary(discoverResult.partialMatches).route.id;
+        return {
+          matches: discoverResult.partialMatches,
+          pendingActionResult: [boundaryId, {
+            type: ResultType.error,
+            error: discoverResult.error
+          }]
+        };
+      } else if (!discoverResult.matches) {
+        let {
+          notFoundMatches,
+          error,
+          route
+        } = handleNavigational404(location.pathname);
+        return {
+          matches: notFoundMatches,
+          pendingActionResult: [route.id, {
+            type: ResultType.error,
+            error
+          }]
+        };
+      } else {
+        matches = discoverResult.matches;
+      }
+    }
     // Call our action and get the result
     let result;
     let actionMatch = getTargetMatch(matches, location);
@@ -21523,7 +21771,8 @@ function createRouter(init) {
         })
       };
     } else {
-      result = await callLoaderOrAction("action", request, actionMatch, matches, manifest, mapRouteProperties, basename);
+      let results = await callDataStrategy("action", state, request, [actionMatch], matches, null);
+      result = results[actionMatch.route.id];
       if (request.signal.aborted) {
         return {
           shortCircuited: true
@@ -21538,9 +21787,10 @@ function createRouter(init) {
         // If the user didn't explicity indicate replace behavior, replace if
         // we redirected to the exact same location we're currently at to avoid
         // double back-buttons
-        replace = result.location === state.location.pathname + state.location.search;
+        let location = normalizeRedirectLocation(result.response.headers.get("Location"), new URL(request.url), basename);
+        replace = location === state.location.pathname + state.location.search;
       }
-      await startRedirectNavigation(state, result, {
+      await startRedirectNavigation(request, result, true, {
         submission,
         replace
       });
@@ -21548,46 +21798,97 @@ function createRouter(init) {
         shortCircuited: true
       };
     }
-    if (isErrorResult(result)) {
-      // Store off the pending error - we use it to determine which loaders
-      // to call and will commit it when we complete the navigation
-      let boundaryMatch = findNearestBoundary(matches, actionMatch.route.id);
-      // By default, all submissions are REPLACE navigations, but if the
-      // action threw an error that'll be rendered in an errorElement, we fall
-      // back to PUSH so that the user can use the back button to get back to
-      // the pre-submission form location to try again
-      if ((opts && opts.replace) !== true) {
-        pendingAction = Action.Push;
-      }
-      return {
-        // Send back an empty object we can use to clear out any prior actionData
-        pendingActionData: {},
-        pendingActionError: {
-          [boundaryMatch.route.id]: result.error
-        }
-      };
-    }
     if (isDeferredResult(result)) {
       throw getInternalRouterError(400, {
         type: "defer-action"
       });
     }
-    return {
-      pendingActionData: {
-        [actionMatch.route.id]: result.data
+    if (isErrorResult(result)) {
+      // Store off the pending error - we use it to determine which loaders
+      // to call and will commit it when we complete the navigation
+      let boundaryMatch = findNearestBoundary(matches, actionMatch.route.id);
+      // By default, all submissions to the current location are REPLACE
+      // navigations, but if the action threw an error that'll be rendered in
+      // an errorElement, we fall back to PUSH so that the user can use the
+      // back button to get back to the pre-submission form location to try
+      // again
+      if ((opts && opts.replace) !== true) {
+        pendingAction = Action.Push;
       }
+      return {
+        matches,
+        pendingActionResult: [boundaryMatch.route.id, result]
+      };
+    }
+    return {
+      matches,
+      pendingActionResult: [actionMatch.route.id, result]
     };
   }
   // Call all applicable loaders for the given matches, handling redirects,
   // errors, etc.
-  async function handleLoaders(request, location, matches, overrideNavigation, submission, fetcherSubmission, replace, pendingActionData, pendingError) {
+  async function handleLoaders(request, location, matches, isFogOfWar, overrideNavigation, submission, fetcherSubmission, replace, initialHydration, flushSync, pendingActionResult) {
     // Figure out the right navigation we want to use for data loading
     let loadingNavigation = overrideNavigation || getLoadingNavigation(location, submission);
     // If this was a redirect from an action we don't have a "submission" but
     // we have it on the loading navigation so use that if available
     let activeSubmission = submission || fetcherSubmission || getSubmissionFromNavigation(loadingNavigation);
+    // If this is an uninterrupted revalidation, we remain in our current idle
+    // state.  If not, we need to switch to our loading state and load data,
+    // preserving any new action data or existing action data (in the case of
+    // a revalidation interrupting an actionReload)
+    // If we have partialHydration enabled, then don't update the state for the
+    // initial data load since it's not a "navigation"
+    let shouldUpdateNavigationState = !isUninterruptedRevalidation && (!future.v7_partialHydration || !initialHydration);
+    // When fog of war is enabled, we enter our `loading` state earlier so we
+    // can discover new routes during the `loading` state.  We skip this if
+    // we've already run actions since we would have done our matching already.
+    // If the children() function threw then, we want to proceed with the
+    // partial matches it discovered.
+    if (isFogOfWar) {
+      if (shouldUpdateNavigationState) {
+        let actionData = getUpdatedActionData(pendingActionResult);
+        updateState(_extends({
+          navigation: loadingNavigation
+        }, actionData !== undefined ? {
+          actionData
+        } : {}), {
+          flushSync
+        });
+      }
+      let discoverResult = await discoverRoutes(matches, location.pathname, request.signal);
+      if (discoverResult.type === "aborted") {
+        return {
+          shortCircuited: true
+        };
+      } else if (discoverResult.type === "error") {
+        let boundaryId = findNearestBoundary(discoverResult.partialMatches).route.id;
+        return {
+          matches: discoverResult.partialMatches,
+          loaderData: {},
+          errors: {
+            [boundaryId]: discoverResult.error
+          }
+        };
+      } else if (!discoverResult.matches) {
+        let {
+          error,
+          notFoundMatches,
+          route
+        } = handleNavigational404(location.pathname);
+        return {
+          matches: notFoundMatches,
+          loaderData: {},
+          errors: {
+            [route.id]: error
+          }
+        };
+      } else {
+        matches = discoverResult.matches;
+      }
+    }
     let routesToUse = inFlightDataRoutes || dataRoutes;
-    let [matchesToLoad, revalidatingFetchers] = getMatchesToLoad(init.history, state, matches, activeSubmission, location, isRevalidationRequired, cancelledDeferredRoutes, cancelledFetcherLoads, fetchLoadMatches, fetchRedirectIds, routesToUse, basename, pendingActionData, pendingError);
+    let [matchesToLoad, revalidatingFetchers] = getMatchesToLoad(init.history, state, matches, activeSubmission, location, future.v7_partialHydration && initialHydration === true, future.v7_skipActionErrorRevalidation, isRevalidationRequired, cancelledDeferredRoutes, cancelledFetcherLoads, deletedFetchers, fetchLoadMatches, fetchRedirectIds, routesToUse, basename, pendingActionResult);
     // Cancel pending deferreds for no-longer-matched routes or routes we're
     // about to reload.  Note that if this is an action reload we would have
     // already cancelled all pending deferreds so this would be a no-op
@@ -21600,41 +21901,37 @@ function createRouter(init) {
         matches,
         loaderData: {},
         // Commit pending error if we're short circuiting
-        errors: pendingError || null
-      }, pendingActionData ? {
-        actionData: pendingActionData
-      } : {}, updatedFetchers ? {
+        errors: pendingActionResult && isErrorResult(pendingActionResult[1]) ? {
+          [pendingActionResult[0]]: pendingActionResult[1].error
+        } : null
+      }, getActionDataForCommit(pendingActionResult), updatedFetchers ? {
         fetchers: new Map(state.fetchers)
-      } : {}));
+      } : {}), {
+        flushSync
+      });
       return {
         shortCircuited: true
       };
     }
-    // If this is an uninterrupted revalidation, we remain in our current idle
-    // state.  If not, we need to switch to our loading state and load data,
-    // preserving any new action data or existing action data (in the case of
-    // a revalidation interrupting an actionReload)
-    if (!isUninterruptedRevalidation) {
-      revalidatingFetchers.forEach(rf => {
-        let fetcher = state.fetchers.get(rf.key);
-        let revalidatingFetcher = getLoadingFetcher(undefined, fetcher ? fetcher.data : undefined);
-        state.fetchers.set(rf.key, revalidatingFetcher);
+    if (shouldUpdateNavigationState) {
+      let updates = {};
+      if (!isFogOfWar) {
+        // Only update navigation/actionNData if we didn't already do it above
+        updates.navigation = loadingNavigation;
+        let actionData = getUpdatedActionData(pendingActionResult);
+        if (actionData !== undefined) {
+          updates.actionData = actionData;
+        }
+      }
+      if (revalidatingFetchers.length > 0) {
+        updates.fetchers = getUpdatedRevalidatingFetchers(revalidatingFetchers);
+      }
+      updateState(updates, {
+        flushSync
       });
-      let actionData = pendingActionData || state.actionData;
-      updateState(_extends({
-        navigation: loadingNavigation
-      }, actionData ? Object.keys(actionData).length === 0 ? {
-        actionData: null
-      } : {
-        actionData
-      } : {}, revalidatingFetchers.length > 0 ? {
-        fetchers: new Map(state.fetchers)
-      } : {}));
     }
     revalidatingFetchers.forEach(rf => {
-      if (fetchControllers.has(rf.key)) {
-        abortFetcher(rf.key);
-      }
+      abortFetcher(rf.key);
       if (rf.controller) {
         // Fetchers use an independent AbortController so that aborting a fetcher
         // (via deleteFetcher) does not abort the triggering navigation that
@@ -21648,10 +21945,9 @@ function createRouter(init) {
       pendingNavigationController.signal.addEventListener("abort", abortPendingFetchRevalidations);
     }
     let {
-      results,
       loaderResults,
       fetcherResults
-    } = await callLoadersAndMaybeResolveData(state.matches, matches, matchesToLoad, revalidatingFetchers, request);
+    } = await callLoadersAndMaybeResolveData(state, matches, matchesToLoad, revalidatingFetchers, request);
     if (request.signal.aborted) {
       return {
         shortCircuited: true
@@ -21665,16 +21961,22 @@ function createRouter(init) {
     }
     revalidatingFetchers.forEach(rf => fetchControllers.delete(rf.key));
     // If any loaders returned a redirect Response, start a new REPLACE navigation
-    let redirect = findRedirect(results);
+    let redirect = findRedirect(loaderResults);
     if (redirect) {
-      if (redirect.idx >= matchesToLoad.length) {
-        // If this redirect came from a fetcher make sure we mark it in
-        // fetchRedirectIds so it doesn't get revalidated on the next set of
-        // loader executions
-        let fetcherKey = revalidatingFetchers[redirect.idx - matchesToLoad.length].key;
-        fetchRedirectIds.add(fetcherKey);
-      }
-      await startRedirectNavigation(state, redirect.result, {
+      await startRedirectNavigation(request, redirect.result, true, {
+        replace
+      });
+      return {
+        shortCircuited: true
+      };
+    }
+    redirect = findRedirect(fetcherResults);
+    if (redirect) {
+      // If this redirect came from a fetcher make sure we mark it in
+      // fetchRedirectIds so it doesn't get revalidated on the next set of
+      // loader executions
+      fetchRedirectIds.add(redirect.key);
+      await startRedirectNavigation(request, redirect.result, true, {
         replace
       });
       return {
@@ -21685,7 +21987,7 @@ function createRouter(init) {
     let {
       loaderData,
       errors
-    } = processLoaderData(state, matches, matchesToLoad, loaderResults, pendingError, revalidatingFetchers, fetcherResults, activeDeferreds);
+    } = processLoaderData(state, matches, loaderResults, pendingActionResult, revalidatingFetchers, fetcherResults, activeDeferreds);
     // Wire up subscribers to update loaderData as promises settle
     activeDeferreds.forEach((deferredData, routeId) => {
       deferredData.subscribe(aborted => {
@@ -21697,32 +21999,65 @@ function createRouter(init) {
         }
       });
     });
+    // Preserve SSR errors during partial hydration
+    if (future.v7_partialHydration && initialHydration && state.errors) {
+      errors = _extends({}, state.errors, errors);
+    }
     let updatedFetchers = markFetchRedirectsDone();
     let didAbortFetchLoads = abortStaleFetchLoads(pendingNavigationLoadId);
     let shouldUpdateFetchers = updatedFetchers || didAbortFetchLoads || revalidatingFetchers.length > 0;
     return _extends({
+      matches,
       loaderData,
       errors
     }, shouldUpdateFetchers ? {
       fetchers: new Map(state.fetchers)
     } : {});
   }
-  function getFetcher(key) {
-    return state.fetchers.get(key) || IDLE_FETCHER;
+  function getUpdatedActionData(pendingActionResult) {
+    if (pendingActionResult && !isErrorResult(pendingActionResult[1])) {
+      // This is cast to `any` currently because `RouteData`uses any and it
+      // would be a breaking change to use any.
+      // TODO: v7 - change `RouteData` to use `unknown` instead of `any`
+      return {
+        [pendingActionResult[0]]: pendingActionResult[1].data
+      };
+    } else if (state.actionData) {
+      if (Object.keys(state.actionData).length === 0) {
+        return null;
+      } else {
+        return state.actionData;
+      }
+    }
+  }
+  function getUpdatedRevalidatingFetchers(revalidatingFetchers) {
+    revalidatingFetchers.forEach(rf => {
+      let fetcher = state.fetchers.get(rf.key);
+      let revalidatingFetcher = getLoadingFetcher(undefined, fetcher ? fetcher.data : undefined);
+      state.fetchers.set(rf.key, revalidatingFetcher);
+    });
+    return new Map(state.fetchers);
   }
   // Trigger a fetcher load/submit for the given fetcher key
   function fetch(key, routeId, href, opts) {
     if (isServer) {
       throw new Error("router.fetch() was called during the server render, but it shouldn't be. " + "You are likely calling a useFetcher() method in the body of your component. " + "Try moving it to a useEffect or a callback.");
     }
-    if (fetchControllers.has(key)) abortFetcher(key);
+    abortFetcher(key);
+    let flushSync = (opts && opts.flushSync) === true;
     let routesToUse = inFlightDataRoutes || dataRoutes;
-    let normalizedPath = normalizeTo(state.location, state.matches, basename, future.v7_prependBasename, href, routeId, opts == null ? void 0 : opts.relative);
+    let normalizedPath = normalizeTo(state.location, state.matches, basename, future.v7_prependBasename, href, future.v7_relativeSplatPath, routeId, opts == null ? void 0 : opts.relative);
     let matches = matchRoutes(routesToUse, normalizedPath, basename);
+    let fogOfWar = checkFogOfWar(matches, routesToUse, normalizedPath);
+    if (fogOfWar.active && fogOfWar.matches) {
+      matches = fogOfWar.matches;
+    }
     if (!matches) {
       setFetcherError(key, routeId, getInternalRouterError(404, {
         pathname: normalizedPath
-      }));
+      }), {
+        flushSync
+      });
       return;
     }
     let {
@@ -21731,13 +22066,15 @@ function createRouter(init) {
       error
     } = normalizeNavigateOptions(future.v7_normalizeFormMethod, true, normalizedPath, opts);
     if (error) {
-      setFetcherError(key, routeId, error);
+      setFetcherError(key, routeId, error, {
+        flushSync
+      });
       return;
     }
     let match = getTargetMatch(matches, path);
-    pendingPreventScrollReset = (opts && opts.preventScrollReset) === true;
+    let preventScrollReset = (opts && opts.preventScrollReset) === true;
     if (submission && isMutationMethod(submission.formMethod)) {
-      handleFetcherAction(key, routeId, path, match, matches, submission);
+      handleFetcherAction(key, routeId, path, match, matches, fogOfWar.active, flushSync, preventScrollReset, submission);
       return;
     }
     // Store off the match so we can call it's shouldRevalidate on subsequent
@@ -21746,72 +22083,107 @@ function createRouter(init) {
       routeId,
       path
     });
-    handleFetcherLoader(key, routeId, path, match, matches, submission);
+    handleFetcherLoader(key, routeId, path, match, matches, fogOfWar.active, flushSync, preventScrollReset, submission);
   }
   // Call the action for the matched fetcher.submit(), and then handle redirects,
   // errors, and revalidation
-  async function handleFetcherAction(key, routeId, path, match, requestMatches, submission) {
+  async function handleFetcherAction(key, routeId, path, match, requestMatches, isFogOfWar, flushSync, preventScrollReset, submission) {
     interruptActiveLoads();
     fetchLoadMatches.delete(key);
-    if (!match.route.action && !match.route.lazy) {
-      let error = getInternalRouterError(405, {
-        method: submission.formMethod,
-        pathname: path,
-        routeId: routeId
-      });
-      setFetcherError(key, routeId, error);
+    function detectAndHandle405Error(m) {
+      if (!m.route.action && !m.route.lazy) {
+        let error = getInternalRouterError(405, {
+          method: submission.formMethod,
+          pathname: path,
+          routeId: routeId
+        });
+        setFetcherError(key, routeId, error, {
+          flushSync
+        });
+        return true;
+      }
+      return false;
+    }
+    if (!isFogOfWar && detectAndHandle405Error(match)) {
       return;
     }
     // Put this fetcher into it's submitting state
     let existingFetcher = state.fetchers.get(key);
-    let fetcher = getSubmittingFetcher(submission, existingFetcher);
-    state.fetchers.set(key, fetcher);
-    updateState({
-      fetchers: new Map(state.fetchers)
+    updateFetcherState(key, getSubmittingFetcher(submission, existingFetcher), {
+      flushSync
     });
-    // Call the action for the fetcher
     let abortController = new AbortController();
     let fetchRequest = createClientSideRequest(init.history, path, abortController.signal, submission);
+    if (isFogOfWar) {
+      let discoverResult = await discoverRoutes(requestMatches, new URL(fetchRequest.url).pathname, fetchRequest.signal, key);
+      if (discoverResult.type === "aborted") {
+        return;
+      } else if (discoverResult.type === "error") {
+        setFetcherError(key, routeId, discoverResult.error, {
+          flushSync
+        });
+        return;
+      } else if (!discoverResult.matches) {
+        setFetcherError(key, routeId, getInternalRouterError(404, {
+          pathname: path
+        }), {
+          flushSync
+        });
+        return;
+      } else {
+        requestMatches = discoverResult.matches;
+        match = getTargetMatch(requestMatches, path);
+        if (detectAndHandle405Error(match)) {
+          return;
+        }
+      }
+    }
+    // Call the action for the fetcher
     fetchControllers.set(key, abortController);
     let originatingLoadId = incrementingLoadId;
-    let actionResult = await callLoaderOrAction("action", fetchRequest, match, requestMatches, manifest, mapRouteProperties, basename);
+    let actionResults = await callDataStrategy("action", state, fetchRequest, [match], requestMatches, key);
+    let actionResult = actionResults[match.route.id];
     if (fetchRequest.signal.aborted) {
-      // We can delete this so long as we weren't aborted by ou our own fetcher
+      // We can delete this so long as we weren't aborted by our own fetcher
       // re-submit which would have put _new_ controller is in fetchControllers
       if (fetchControllers.get(key) === abortController) {
         fetchControllers.delete(key);
       }
       return;
     }
-    if (isRedirectResult(actionResult)) {
-      fetchControllers.delete(key);
-      if (pendingNavigationLoadId > originatingLoadId) {
-        // A new navigation was kicked off after our action started, so that
-        // should take precedence over this redirect navigation.  We already
-        // set isRevalidationRequired so all loaders for the new route should
-        // fire unless opted out via shouldRevalidate
-        let doneFetcher = getDoneFetcher(undefined);
-        state.fetchers.set(key, doneFetcher);
-        updateState({
-          fetchers: new Map(state.fetchers)
-        });
+    // When using v7_fetcherPersist, we don't want errors bubbling up to the UI
+    // or redirects processed for unmounted fetchers so we just revert them to
+    // idle
+    if (future.v7_fetcherPersist && deletedFetchers.has(key)) {
+      if (isRedirectResult(actionResult) || isErrorResult(actionResult)) {
+        updateFetcherState(key, getDoneFetcher(undefined));
         return;
-      } else {
-        fetchRedirectIds.add(key);
-        let loadingFetcher = getLoadingFetcher(submission);
-        state.fetchers.set(key, loadingFetcher);
-        updateState({
-          fetchers: new Map(state.fetchers)
-        });
-        return startRedirectNavigation(state, actionResult, {
-          fetcherSubmission: submission
-        });
       }
-    }
-    // Process any non-redirect errors thrown
-    if (isErrorResult(actionResult)) {
-      setFetcherError(key, routeId, actionResult.error);
-      return;
+      // Let SuccessResult's fall through for revalidation
+    } else {
+      if (isRedirectResult(actionResult)) {
+        fetchControllers.delete(key);
+        if (pendingNavigationLoadId > originatingLoadId) {
+          // A new navigation was kicked off after our action started, so that
+          // should take precedence over this redirect navigation.  We already
+          // set isRevalidationRequired so all loaders for the new route should
+          // fire unless opted out via shouldRevalidate
+          updateFetcherState(key, getDoneFetcher(undefined));
+          return;
+        } else {
+          fetchRedirectIds.add(key);
+          updateFetcherState(key, getLoadingFetcher(submission));
+          return startRedirectNavigation(fetchRequest, actionResult, false, {
+            fetcherSubmission: submission,
+            preventScrollReset
+          });
+        }
+      }
+      // Process any non-redirect errors thrown
+      if (isErrorResult(actionResult)) {
+        setFetcherError(key, routeId, actionResult.error);
+        return;
+      }
     }
     if (isDeferredResult(actionResult)) {
       throw getInternalRouterError(400, {
@@ -21829,10 +22201,7 @@ function createRouter(init) {
     fetchReloadIds.set(key, loadId);
     let loadFetcher = getLoadingFetcher(submission, actionResult.data);
     state.fetchers.set(key, loadFetcher);
-    let [matchesToLoad, revalidatingFetchers] = getMatchesToLoad(init.history, state, matches, submission, nextLocation, isRevalidationRequired, cancelledDeferredRoutes, cancelledFetcherLoads, fetchLoadMatches, fetchRedirectIds, routesToUse, basename, {
-      [match.route.id]: actionResult.data
-    }, undefined // No need to send through errors since we short circuit above
-    );
+    let [matchesToLoad, revalidatingFetchers] = getMatchesToLoad(init.history, state, matches, submission, nextLocation, false, future.v7_skipActionErrorRevalidation, isRevalidationRequired, cancelledDeferredRoutes, cancelledFetcherLoads, deletedFetchers, fetchLoadMatches, fetchRedirectIds, routesToUse, basename, [match.route.id, actionResult]);
     // Put all revalidating fetchers into the loading state, except for the
     // current fetcher which we want to keep in it's current loading state which
     // contains it's action submission info + action data
@@ -21841,9 +22210,7 @@ function createRouter(init) {
       let existingFetcher = state.fetchers.get(staleKey);
       let revalidatingFetcher = getLoadingFetcher(undefined, existingFetcher ? existingFetcher.data : undefined);
       state.fetchers.set(staleKey, revalidatingFetcher);
-      if (fetchControllers.has(staleKey)) {
-        abortFetcher(staleKey);
-      }
+      abortFetcher(staleKey);
       if (rf.controller) {
         fetchControllers.set(staleKey, rf.controller);
       }
@@ -21854,10 +22221,9 @@ function createRouter(init) {
     let abortPendingFetchRevalidations = () => revalidatingFetchers.forEach(rf => abortFetcher(rf.key));
     abortController.signal.addEventListener("abort", abortPendingFetchRevalidations);
     let {
-      results,
       loaderResults,
       fetcherResults
-    } = await callLoadersAndMaybeResolveData(state.matches, matches, matchesToLoad, revalidatingFetchers, revalidationRequest);
+    } = await callLoadersAndMaybeResolveData(state, matches, matchesToLoad, revalidatingFetchers, revalidationRequest);
     if (abortController.signal.aborted) {
       return;
     }
@@ -21865,29 +22231,34 @@ function createRouter(init) {
     fetchReloadIds.delete(key);
     fetchControllers.delete(key);
     revalidatingFetchers.forEach(r => fetchControllers.delete(r.key));
-    let redirect = findRedirect(results);
+    let redirect = findRedirect(loaderResults);
     if (redirect) {
-      if (redirect.idx >= matchesToLoad.length) {
-        // If this redirect came from a fetcher make sure we mark it in
-        // fetchRedirectIds so it doesn't get revalidated on the next set of
-        // loader executions
-        let fetcherKey = revalidatingFetchers[redirect.idx - matchesToLoad.length].key;
-        fetchRedirectIds.add(fetcherKey);
-      }
-      return startRedirectNavigation(state, redirect.result);
+      return startRedirectNavigation(revalidationRequest, redirect.result, false, {
+        preventScrollReset
+      });
+    }
+    redirect = findRedirect(fetcherResults);
+    if (redirect) {
+      // If this redirect came from a fetcher make sure we mark it in
+      // fetchRedirectIds so it doesn't get revalidated on the next set of
+      // loader executions
+      fetchRedirectIds.add(redirect.key);
+      return startRedirectNavigation(revalidationRequest, redirect.result, false, {
+        preventScrollReset
+      });
     }
     // Process and commit output from loaders
     let {
       loaderData,
       errors
-    } = processLoaderData(state, state.matches, matchesToLoad, loaderResults, undefined, revalidatingFetchers, fetcherResults, activeDeferreds);
+    } = processLoaderData(state, matches, loaderResults, undefined, revalidatingFetchers, fetcherResults, activeDeferreds);
     // Since we let revalidations complete even if the submitting fetcher was
     // deleted, only put it back to idle if it hasn't been deleted
     if (state.fetchers.has(key)) {
       let doneFetcher = getDoneFetcher(actionResult.data);
       state.fetchers.set(key, doneFetcher);
     }
-    let didAbortFetchLoads = abortStaleFetchLoads(loadId);
+    abortStaleFetchLoads(loadId);
     // If we are currently in a navigation loading state and this fetcher is
     // more recent than the navigation, we want the newer data so abort the
     // navigation and complete it with the fetcher data
@@ -21904,30 +22275,48 @@ function createRouter(init) {
       // otherwise just update with the fetcher data, preserving any existing
       // loaderData for loaders that did not need to reload.  We have to
       // manually merge here since we aren't going through completeNavigation
-      updateState(_extends({
+      updateState({
         errors,
-        loaderData: mergeLoaderData(state.loaderData, loaderData, matches, errors)
-      }, didAbortFetchLoads || revalidatingFetchers.length > 0 ? {
+        loaderData: mergeLoaderData(state.loaderData, loaderData, matches, errors),
         fetchers: new Map(state.fetchers)
-      } : {}));
+      });
       isRevalidationRequired = false;
     }
   }
   // Call the matched loader for fetcher.load(), handling redirects, errors, etc.
-  async function handleFetcherLoader(key, routeId, path, match, matches, submission) {
+  async function handleFetcherLoader(key, routeId, path, match, matches, isFogOfWar, flushSync, preventScrollReset, submission) {
     let existingFetcher = state.fetchers.get(key);
-    // Put this fetcher into it's loading state
-    let loadingFetcher = getLoadingFetcher(submission, existingFetcher ? existingFetcher.data : undefined);
-    state.fetchers.set(key, loadingFetcher);
-    updateState({
-      fetchers: new Map(state.fetchers)
+    updateFetcherState(key, getLoadingFetcher(submission, existingFetcher ? existingFetcher.data : undefined), {
+      flushSync
     });
-    // Call the loader for this fetcher route match
     let abortController = new AbortController();
     let fetchRequest = createClientSideRequest(init.history, path, abortController.signal);
+    if (isFogOfWar) {
+      let discoverResult = await discoverRoutes(matches, new URL(fetchRequest.url).pathname, fetchRequest.signal, key);
+      if (discoverResult.type === "aborted") {
+        return;
+      } else if (discoverResult.type === "error") {
+        setFetcherError(key, routeId, discoverResult.error, {
+          flushSync
+        });
+        return;
+      } else if (!discoverResult.matches) {
+        setFetcherError(key, routeId, getInternalRouterError(404, {
+          pathname: path
+        }), {
+          flushSync
+        });
+        return;
+      } else {
+        matches = discoverResult.matches;
+        match = getTargetMatch(matches, path);
+      }
+    }
+    // Call the loader for this fetcher route match
     fetchControllers.set(key, abortController);
     let originatingLoadId = incrementingLoadId;
-    let result = await callLoaderOrAction("loader", fetchRequest, match, matches, manifest, mapRouteProperties, basename);
+    let results = await callDataStrategy("loader", state, fetchRequest, [match], matches, key);
+    let result = results[match.route.id];
     // Deferred isn't supported for fetcher loads, await everything and treat it
     // as a normal load.  resolveDeferredData will return undefined if this
     // fetcher gets aborted, so we just leave result untouched and short circuit
@@ -21943,45 +22332,35 @@ function createRouter(init) {
     if (fetchRequest.signal.aborted) {
       return;
     }
+    // We don't want errors bubbling up or redirects followed for unmounted
+    // fetchers, so short circuit here if it was removed from the UI
+    if (deletedFetchers.has(key)) {
+      updateFetcherState(key, getDoneFetcher(undefined));
+      return;
+    }
     // If the loader threw a redirect Response, start a new REPLACE navigation
     if (isRedirectResult(result)) {
       if (pendingNavigationLoadId > originatingLoadId) {
         // A new navigation was kicked off after our loader started, so that
         // should take precedence over this redirect navigation
-        let doneFetcher = getDoneFetcher(undefined);
-        state.fetchers.set(key, doneFetcher);
-        updateState({
-          fetchers: new Map(state.fetchers)
-        });
+        updateFetcherState(key, getDoneFetcher(undefined));
         return;
       } else {
         fetchRedirectIds.add(key);
-        await startRedirectNavigation(state, result);
+        await startRedirectNavigation(fetchRequest, result, false, {
+          preventScrollReset
+        });
         return;
       }
     }
     // Process any non-redirect errors thrown
     if (isErrorResult(result)) {
-      let boundaryMatch = findNearestBoundary(state.matches, routeId);
-      state.fetchers.delete(key);
-      // TODO: In remix, this would reset to IDLE_NAVIGATION if it was a catch -
-      // do we need to behave any differently with our non-redirect errors?
-      // What if it was a non-redirect Response?
-      updateState({
-        fetchers: new Map(state.fetchers),
-        errors: {
-          [boundaryMatch.route.id]: result.error
-        }
-      });
+      setFetcherError(key, routeId, result.error);
       return;
     }
     invariant(!isDeferredResult(result), "Unhandled fetcher deferred data");
     // Put the fetcher back into an idle state
-    let doneFetcher = getDoneFetcher(result.data);
-    state.fetchers.set(key, doneFetcher);
-    updateState({
-      fetchers: new Map(state.fetchers)
-    });
+    updateFetcherState(key, getDoneFetcher(result.data));
   }
   /**
    * Utility function to handle redirects returned from an action or loader.
@@ -22002,26 +22381,29 @@ function createRouter(init) {
    * actually touch history until we've processed redirects, so we just use
    * the history action from the original navigation (PUSH or REPLACE).
    */
-  async function startRedirectNavigation(state, redirect, _temp) {
+  async function startRedirectNavigation(request, redirect, isNavigation, _temp2) {
     let {
       submission,
       fetcherSubmission,
+      preventScrollReset,
       replace
-    } = _temp === void 0 ? {} : _temp;
-    if (redirect.revalidate) {
+    } = _temp2 === void 0 ? {} : _temp2;
+    if (redirect.response.headers.has("X-Remix-Revalidate")) {
       isRevalidationRequired = true;
     }
-    let redirectLocation = createLocation(state.location, redirect.location, {
+    let location = redirect.response.headers.get("Location");
+    invariant(location, "Expected a Location header on the redirect Response");
+    location = normalizeRedirectLocation(location, new URL(request.url), basename);
+    let redirectLocation = createLocation(state.location, location, {
       _isRedirect: true
     });
-    invariant(redirectLocation, "Expected a location on the redirect navigation");
     if (isBrowser) {
       let isDocumentReload = false;
-      if (redirect.reloadDocument) {
+      if (redirect.response.headers.has("X-Remix-Reload-Document")) {
         // Hard reload if the response contained X-Remix-Reload-Document
         isDocumentReload = true;
-      } else if (ABSOLUTE_URL_REGEX.test(redirect.location)) {
-        const url = init.history.createURL(redirect.location);
+      } else if (ABSOLUTE_URL_REGEX.test(location)) {
+        const url = init.history.createURL(location);
         isDocumentReload =
         // Hard reload if it's an absolute URL to a new origin
         url.origin !== routerWindow.location.origin ||
@@ -22030,9 +22412,9 @@ function createRouter(init) {
       }
       if (isDocumentReload) {
         if (replace) {
-          routerWindow.location.replace(redirect.location);
+          routerWindow.location.replace(location);
         } else {
-          routerWindow.location.assign(redirect.location);
+          routerWindow.location.assign(location);
         }
         return;
       }
@@ -22040,7 +22422,7 @@ function createRouter(init) {
     // There's no need to abort on redirects, since we don't detect the
     // redirect until the action/loaders have settled
     pendingNavigationController = null;
-    let redirectHistoryAction = replace === true ? Action.Replace : Action.Push;
+    let redirectHistoryAction = replace === true || redirect.response.headers.has("X-Remix-Replace") ? Action.Replace : Action.Push;
     // Use the incoming submission if provided, fallback on the active one in
     // state.navigation
     let {
@@ -22055,13 +22437,14 @@ function createRouter(init) {
     // re-submit the GET/POST/PUT/PATCH/DELETE as a submission navigation to the
     // redirected location
     let activeSubmission = submission || fetcherSubmission;
-    if (redirectPreserveMethodStatusCodes.has(redirect.status) && activeSubmission && isMutationMethod(activeSubmission.formMethod)) {
+    if (redirectPreserveMethodStatusCodes.has(redirect.response.status) && activeSubmission && isMutationMethod(activeSubmission.formMethod)) {
       await startNavigation(redirectHistoryAction, redirectLocation, {
         submission: _extends({}, activeSubmission, {
-          formAction: redirect.location
+          formAction: location
         }),
-        // Preserve this flag across redirects
-        preventScrollReset: pendingPreventScrollReset
+        // Preserve these flags across redirects
+        preventScrollReset: preventScrollReset || pendingPreventScrollReset,
+        enableViewTransition: isNavigation ? pendingViewTransitionEnabled : undefined
       });
     } else {
       // If we have a navigation submission, we will preserve it through the
@@ -22071,33 +22454,70 @@ function createRouter(init) {
         overrideNavigation,
         // Send fetcher submissions through for shouldRevalidate
         fetcherSubmission,
-        // Preserve this flag across redirects
-        preventScrollReset: pendingPreventScrollReset
+        // Preserve these flags across redirects
+        preventScrollReset: preventScrollReset || pendingPreventScrollReset,
+        enableViewTransition: isNavigation ? pendingViewTransitionEnabled : undefined
       });
     }
   }
-  async function callLoadersAndMaybeResolveData(currentMatches, matches, matchesToLoad, fetchersToLoad, request) {
-    // Call all navigation loaders and revalidating fetcher loaders in parallel,
-    // then slice off the results into separate arrays so we can handle them
-    // accordingly
-    let results = await Promise.all([...matchesToLoad.map(match => callLoaderOrAction("loader", request, match, matches, manifest, mapRouteProperties, basename)), ...fetchersToLoad.map(f => {
-      if (f.matches && f.match && f.controller) {
-        return callLoaderOrAction("loader", createClientSideRequest(init.history, f.path, f.controller.signal), f.match, f.matches, manifest, mapRouteProperties, basename);
-      } else {
-        let error = {
+  // Utility wrapper for calling dataStrategy client-side without having to
+  // pass around the manifest, mapRouteProperties, etc.
+  async function callDataStrategy(type, state, request, matchesToLoad, matches, fetcherKey) {
+    let results;
+    let dataResults = {};
+    try {
+      results = await callDataStrategyImpl(dataStrategyImpl, type, state, request, matchesToLoad, matches, fetcherKey, manifest, mapRouteProperties);
+    } catch (e) {
+      // If the outer dataStrategy method throws, just return the error for all
+      // matches - and it'll naturally bubble to the root
+      matchesToLoad.forEach(m => {
+        dataResults[m.route.id] = {
           type: ResultType.error,
-          error: getInternalRouterError(404, {
-            pathname: f.path
-          })
+          error: e
         };
-        return error;
+      });
+      return dataResults;
+    }
+    for (let [routeId, result] of Object.entries(results)) {
+      if (isRedirectDataStrategyResultResult(result)) {
+        let response = result.result;
+        dataResults[routeId] = {
+          type: ResultType.redirect,
+          response: normalizeRelativeRoutingRedirectResponse(response, request, routeId, matches, basename, future.v7_relativeSplatPath)
+        };
+      } else {
+        dataResults[routeId] = await convertDataStrategyResultToDataResult(result);
       }
-    })]);
-    let loaderResults = results.slice(0, matchesToLoad.length);
-    let fetcherResults = results.slice(matchesToLoad.length);
-    await Promise.all([resolveDeferredResults(currentMatches, matchesToLoad, loaderResults, loaderResults.map(() => request.signal), false, state.loaderData), resolveDeferredResults(currentMatches, fetchersToLoad.map(f => f.match), fetcherResults, fetchersToLoad.map(f => f.controller ? f.controller.signal : null), true)]);
+    }
+    return dataResults;
+  }
+  async function callLoadersAndMaybeResolveData(state, matches, matchesToLoad, fetchersToLoad, request) {
+    let currentMatches = state.matches;
+    // Kick off loaders and fetchers in parallel
+    let loaderResultsPromise = callDataStrategy("loader", state, request, matchesToLoad, matches, null);
+    let fetcherResultsPromise = Promise.all(fetchersToLoad.map(async f => {
+      if (f.matches && f.match && f.controller) {
+        let results = await callDataStrategy("loader", state, createClientSideRequest(init.history, f.path, f.controller.signal), [f.match], f.matches, f.key);
+        let result = results[f.match.route.id];
+        // Fetcher results are keyed by fetcher key from here on out, not routeId
+        return {
+          [f.key]: result
+        };
+      } else {
+        return Promise.resolve({
+          [f.key]: {
+            type: ResultType.error,
+            error: getInternalRouterError(404, {
+              pathname: f.path
+            })
+          }
+        });
+      }
+    }));
+    let loaderResults = await loaderResultsPromise;
+    let fetcherResults = (await fetcherResultsPromise).reduce((acc, r) => Object.assign(acc, r), {});
+    await Promise.all([resolveNavigationDeferredResults(matches, loaderResults, request.signal, currentMatches, state.loaderData), resolveFetcherDeferredResults(matches, fetcherResults, fetchersToLoad)]);
     return {
-      results,
       loaderResults,
       fetcherResults
     };
@@ -22111,12 +22531,26 @@ function createRouter(init) {
     // Abort in-flight fetcher loads
     fetchLoadMatches.forEach((_, key) => {
       if (fetchControllers.has(key)) {
-        cancelledFetcherLoads.push(key);
-        abortFetcher(key);
+        cancelledFetcherLoads.add(key);
       }
+      abortFetcher(key);
     });
   }
-  function setFetcherError(key, routeId, error) {
+  function updateFetcherState(key, fetcher, opts) {
+    if (opts === void 0) {
+      opts = {};
+    }
+    state.fetchers.set(key, fetcher);
+    updateState({
+      fetchers: new Map(state.fetchers)
+    }, {
+      flushSync: (opts && opts.flushSync) === true
+    });
+  }
+  function setFetcherError(key, routeId, error, opts) {
+    if (opts === void 0) {
+      opts = {};
+    }
     let boundaryMatch = findNearestBoundary(state.matches, routeId);
     deleteFetcher(key);
     updateState({
@@ -22124,7 +22558,18 @@ function createRouter(init) {
         [boundaryMatch.route.id]: error
       },
       fetchers: new Map(state.fetchers)
+    }, {
+      flushSync: (opts && opts.flushSync) === true
     });
+  }
+  function getFetcher(key) {
+    activeFetchers.set(key, (activeFetchers.get(key) || 0) + 1);
+    // If this fetcher was previously marked for deletion, unmark it since we
+    // have a new instance
+    if (deletedFetchers.has(key)) {
+      deletedFetchers.delete(key);
+    }
+    return state.fetchers.get(key) || IDLE_FETCHER;
   }
   function deleteFetcher(key) {
     let fetcher = state.fetchers.get(key);
@@ -22137,13 +22582,39 @@ function createRouter(init) {
     fetchLoadMatches.delete(key);
     fetchReloadIds.delete(key);
     fetchRedirectIds.delete(key);
+    // If we opted into the flag we can clear this now since we're calling
+    // deleteFetcher() at the end of updateState() and we've already handed the
+    // deleted fetcher keys off to the data layer.
+    // If not, we're eagerly calling deleteFetcher() and we need to keep this
+    // Set populated until the next updateState call, and we'll clear
+    // `deletedFetchers` then
+    if (future.v7_fetcherPersist) {
+      deletedFetchers.delete(key);
+    }
+    cancelledFetcherLoads.delete(key);
     state.fetchers.delete(key);
+  }
+  function deleteFetcherAndUpdateState(key) {
+    let count = (activeFetchers.get(key) || 0) - 1;
+    if (count <= 0) {
+      activeFetchers.delete(key);
+      deletedFetchers.add(key);
+      if (!future.v7_fetcherPersist) {
+        deleteFetcher(key);
+      }
+    } else {
+      activeFetchers.set(key, count);
+    }
+    updateState({
+      fetchers: new Map(state.fetchers)
+    });
   }
   function abortFetcher(key) {
     let controller = fetchControllers.get(key);
-    invariant(controller, "Expected fetch controller: " + key);
-    controller.abort();
-    fetchControllers.delete(key);
+    if (controller) {
+      controller.abort();
+      fetchControllers.delete(key);
+    }
   }
   function markFetchersDone(keys) {
     for (let key of keys) {
@@ -22238,6 +22709,23 @@ function createRouter(init) {
       return blockerKey;
     }
   }
+  function handleNavigational404(pathname) {
+    let error = getInternalRouterError(404, {
+      pathname
+    });
+    let routesToUse = inFlightDataRoutes || dataRoutes;
+    let {
+      matches,
+      route
+    } = getShortCircuitMatches(routesToUse);
+    // Cancel all pending deferred on 404s since we don't keep any routes
+    cancelActiveDeferreds();
+    return {
+      notFoundMatches: matches,
+      route,
+      error
+    };
+  }
   function cancelActiveDeferreds(predicate) {
     let cancelledRouteIds = [];
     activeDeferreds.forEach((dfd, routeId) => {
@@ -22299,13 +22787,119 @@ function createRouter(init) {
     }
     return null;
   }
+  function checkFogOfWar(matches, routesToUse, pathname) {
+    if (patchRoutesOnNavigationImpl) {
+      if (!matches) {
+        let fogMatches = matchRoutesImpl(routesToUse, pathname, basename, true);
+        return {
+          active: true,
+          matches: fogMatches || []
+        };
+      } else {
+        if (Object.keys(matches[0].params).length > 0) {
+          // If we matched a dynamic param or a splat, it might only be because
+          // we haven't yet discovered other routes that would match with a
+          // higher score.  Call patchRoutesOnNavigation just to be sure
+          let partialMatches = matchRoutesImpl(routesToUse, pathname, basename, true);
+          return {
+            active: true,
+            matches: partialMatches
+          };
+        }
+      }
+    }
+    return {
+      active: false,
+      matches: null
+    };
+  }
+  async function discoverRoutes(matches, pathname, signal, fetcherKey) {
+    if (!patchRoutesOnNavigationImpl) {
+      return {
+        type: "success",
+        matches
+      };
+    }
+    let partialMatches = matches;
+    while (true) {
+      let isNonHMR = inFlightDataRoutes == null;
+      let routesToUse = inFlightDataRoutes || dataRoutes;
+      let localManifest = manifest;
+      try {
+        await patchRoutesOnNavigationImpl({
+          signal,
+          path: pathname,
+          matches: partialMatches,
+          fetcherKey,
+          patch: (routeId, children) => {
+            if (signal.aborted) return;
+            patchRoutesImpl(routeId, children, routesToUse, localManifest, mapRouteProperties);
+          }
+        });
+      } catch (e) {
+        return {
+          type: "error",
+          error: e,
+          partialMatches
+        };
+      } finally {
+        // If we are not in the middle of an HMR revalidation and we changed the
+        // routes, provide a new identity so when we `updateState` at the end of
+        // this navigation/fetch `router.routes` will be a new identity and
+        // trigger a re-run of memoized `router.routes` dependencies.
+        // HMR will already update the identity and reflow when it lands
+        // `inFlightDataRoutes` in `completeNavigation`
+        if (isNonHMR && !signal.aborted) {
+          dataRoutes = [...dataRoutes];
+        }
+      }
+      if (signal.aborted) {
+        return {
+          type: "aborted"
+        };
+      }
+      let newMatches = matchRoutes(routesToUse, pathname, basename);
+      if (newMatches) {
+        return {
+          type: "success",
+          matches: newMatches
+        };
+      }
+      let newPartialMatches = matchRoutesImpl(routesToUse, pathname, basename, true);
+      // Avoid loops if the second pass results in the same partial matches
+      if (!newPartialMatches || partialMatches.length === newPartialMatches.length && partialMatches.every((m, i) => m.route.id === newPartialMatches[i].route.id)) {
+        return {
+          type: "success",
+          matches: null
+        };
+      }
+      partialMatches = newPartialMatches;
+    }
+  }
   function _internalSetRoutes(newRoutes) {
     manifest = {};
     inFlightDataRoutes = convertRoutesToDataRoutes(newRoutes, mapRouteProperties, undefined, manifest);
   }
+  function patchRoutes(routeId, children) {
+    let isNonHMR = inFlightDataRoutes == null;
+    let routesToUse = inFlightDataRoutes || dataRoutes;
+    patchRoutesImpl(routeId, children, routesToUse, manifest, mapRouteProperties);
+    // If we are not in the middle of an HMR revalidation and we changed the
+    // routes, provide a new identity and trigger a reflow via `updateState`
+    // to re-run memoized `router.routes` dependencies.
+    // HMR will already update the identity and reflow when it lands
+    // `inFlightDataRoutes` in `completeNavigation`
+    if (isNonHMR) {
+      dataRoutes = [...dataRoutes];
+      updateState({});
+    }
+  }
   router = {
     get basename() {
       return basename;
+    },
+    get future() {
+      return future;
     },
     get state() {
       return state;
@@ -22327,10 +22921,11 @@ function createRouter(init) {
     createHref: to => init.history.createHref(to),
     encodeLocation: to => init.history.encodeLocation(to),
     getFetcher,
-    deleteFetcher,
+    deleteFetcher: deleteFetcherAndUpdateState,
     dispose,
     getBlocker,
     deleteBlocker,
+    patchRoutes,
     _internalFetchControllers: fetchControllers,
     _internalActiveDeferreds: activeDeferreds,
     // TODO: Remove setRoutes, it's temporary to avoid dealing with
@@ -22360,6 +22955,11 @@ function createStaticHandler(routes, opts) {
   } else {
     mapRouteProperties = defaultMapRouteProperties;
   }
+  // Config driven behavior flags
+  let future = _extends({
+    v7_relativeSplatPath: false,
+    v7_throwAbortReason: false
+  }, opts ? opts.future : null);
   let dataRoutes = convertRoutesToDataRoutes(routes, mapRouteProperties, undefined, manifest);
   /**
    * The query() method is intended for document requests, in which we want to
@@ -22379,11 +22979,20 @@ function createStaticHandler(routes, opts) {
    * redirect response is returned or thrown from any action/loader.  We
    * propagate that out and return the raw Response so the HTTP server can
    * return it directly.
+   *
+   * - `opts.requestContext` is an optional server context that will be passed
+   *   to actions/loaders in the `context` parameter
+   * - `opts.skipLoaderErrorBubbling` is an optional parameter that will prevent
+   *   the bubbling of errors which allows single-fetch-type implementations
+   *   where the client will handle the bubbling and we may need to return data
+   *   for the handling route
    */
-  async function query(request, _temp2) {
+  async function query(request, _temp3) {
     let {
-      requestContext
-    } = _temp2 === void 0 ? {} : _temp2;
+      requestContext,
+      skipLoaderErrorBubbling,
+      dataStrategy
+    } = _temp3 === void 0 ? {} : _temp3;
     let url = new URL(request.url);
     let method = request.method;
     let location = createLocation("", createPath(url), null, "default");
@@ -22434,7 +23043,7 @@ function createStaticHandler(routes, opts) {
         activeDeferreds: null
       };
     }
-    let result = await queryImpl(request, location, matches, requestContext);
+    let result = await queryImpl(request, location, matches, requestContext, dataStrategy || null, skipLoaderErrorBubbling === true, null);
     if (isResponse(result)) {
       return result;
     }
@@ -22465,12 +23074,19 @@ function createStaticHandler(routes, opts) {
    * serialize the error as they see fit while including the proper response
    * code.  Examples here are 404 and 405 errors that occur prior to reaching
    * any user-defined loaders.
+   *
+   * - `opts.routeId` allows you to specify the specific route handler to call.
+   *   If not provided the handler will determine the proper route by matching
+   *   against `request.url`
+   * - `opts.requestContext` is an optional server context that will be passed
+   *    to actions/loaders in the `context` parameter
    */
-  async function queryRoute(request, _temp3) {
+  async function queryRoute(request, _temp4) {
     let {
       routeId,
-      requestContext
-    } = _temp3 === void 0 ? {} : _temp3;
+      requestContext,
+      dataStrategy
+    } = _temp4 === void 0 ? {} : _temp4;
     let url = new URL(request.url);
     let method = request.method;
     let location = createLocation("", createPath(url), null, "default");
@@ -22497,7 +23113,7 @@ function createStaticHandler(routes, opts) {
         pathname: location.pathname
       });
     }
-    let result = await queryImpl(request, location, matches, requestContext, match);
+    let result = await queryImpl(request, location, matches, requestContext, dataStrategy || null, false, match);
     if (isResponse(result)) {
       return result;
     }
@@ -22523,27 +23139,27 @@ function createStaticHandler(routes, opts) {
     }
     return undefined;
   }
-  async function queryImpl(request, location, matches, requestContext, routeMatch) {
+  async function queryImpl(request, location, matches, requestContext, dataStrategy, skipLoaderErrorBubbling, routeMatch) {
     invariant(request.signal, "query()/queryRoute() requests must contain an AbortController signal");
     try {
       if (isMutationMethod(request.method.toLowerCase())) {
-        let result = await submit(request, matches, routeMatch || getTargetMatch(matches, location), requestContext, routeMatch != null);
+        let result = await submit(request, matches, routeMatch || getTargetMatch(matches, location), requestContext, dataStrategy, skipLoaderErrorBubbling, routeMatch != null);
         return result;
       }
-      let result = await loadRouteData(request, matches, requestContext, routeMatch);
+      let result = await loadRouteData(request, matches, requestContext, dataStrategy, skipLoaderErrorBubbling, routeMatch);
       return isResponse(result) ? result : _extends({}, result, {
         actionData: null,
         actionHeaders: {}
       });
     } catch (e) {
-      // If the user threw/returned a Response in callLoaderOrAction, we throw
-      // it to bail out and then return or throw here based on whether the user
-      // returned or threw
-      if (isQueryRouteResponse(e)) {
+      // If the user threw/returned a Response in callLoaderOrAction for a
+      // `queryRoute` call, we throw the `DataStrategyResult` to bail out early
+      // and then return or throw the raw Response here accordingly
+      if (isDataStrategyResult(e) && isResponse(e.result)) {
         if (e.type === ResultType.error) {
-          throw e.response;
+          throw e.result;
         }
-        return e.response;
+        return e.result;
       }
       // Redirects are always returned since they don't propagate to catch
       // boundaries
@@ -22553,7 +23169,7 @@ function createStaticHandler(routes, opts) {
       throw e;
     }
   }
-  async function submit(request, matches, actionMatch, requestContext, isRouteRequest) {
+  async function submit(request, matches, actionMatch, requestContext, dataStrategy, skipLoaderErrorBubbling, isRouteRequest) {
     let result;
     if (!actionMatch.route.action && !actionMatch.route.lazy) {
       let error = getInternalRouterError(405, {
@@ -22569,14 +23185,10 @@ function createStaticHandler(routes, opts) {
         error
       };
     } else {
-      result = await callLoaderOrAction("action", request, actionMatch, matches, manifest, mapRouteProperties, basename, {
-        isStaticRequest: true,
-        isRouteRequest,
-        requestContext
-      });
+      let results = await callDataStrategy("action", request, [actionMatch], matches, isRouteRequest, requestContext, dataStrategy);
+      result = results[actionMatch.route.id];
       if (request.signal.aborted) {
-        let method = isRouteRequest ? "queryRoute" : "query";
-        throw new Error(method + "() call aborted: " + request.method + " " + request.url);
+        throwStaticHandlerAbortedError(request, isRouteRequest, future);
       }
     }
     if (isRedirectResult(result)) {
@@ -22585,9 +23197,9 @@ function createStaticHandler(routes, opts) {
       // can get back on the "throw all redirect responses" train here should
       // this ever happen :/
       throw new Response(null, {
-        status: result.status,
+        status: result.response.status,
         headers: {
-          Location: result.location
+          Location: result.response.headers.get("Location")
         }
       });
     }
@@ -22624,41 +23236,40 @@ function createStaticHandler(routes, opts) {
         activeDeferreds: null
       };
     }
-    if (isErrorResult(result)) {
-      // Store off the pending error - we use it to determine which loaders
-      // to call and will commit it when we complete the navigation
-      let boundaryMatch = findNearestBoundary(matches, actionMatch.route.id);
-      let context = await loadRouteData(request, matches, requestContext, undefined, {
-        [boundaryMatch.route.id]: result.error
-      });
-      // action status codes take precedence over loader status codes
-      return _extends({}, context, {
-        statusCode: isRouteErrorResponse(result.error) ? result.error.status : 500,
-        actionData: null,
-        actionHeaders: _extends({}, result.headers ? {
-          [actionMatch.route.id]: result.headers
-        } : {})
-      });
-    }
     // Create a GET request for the loaders
     let loaderRequest = new Request(request.url, {
       headers: request.headers,
       redirect: request.redirect,
       signal: request.signal
     });
-    let context = await loadRouteData(loaderRequest, matches, requestContext);
-    return _extends({}, context, result.statusCode ? {
-      statusCode: result.statusCode
-    } : {}, {
+    if (isErrorResult(result)) {
+      // Store off the pending error - we use it to determine which loaders
+      // to call and will commit it when we complete the navigation
+      let boundaryMatch = skipLoaderErrorBubbling ? actionMatch : findNearestBoundary(matches, actionMatch.route.id);
+      let context = await loadRouteData(loaderRequest, matches, requestContext, dataStrategy, skipLoaderErrorBubbling, null, [boundaryMatch.route.id, result]);
+      // action status codes take precedence over loader status codes
+      return _extends({}, context, {
+        statusCode: isRouteErrorResponse(result.error) ? result.error.status : result.statusCode != null ? result.statusCode : 500,
+        actionData: null,
+        actionHeaders: _extends({}, result.headers ? {
+          [actionMatch.route.id]: result.headers
+        } : {})
+      });
+    }
+    let context = await loadRouteData(loaderRequest, matches, requestContext, dataStrategy, skipLoaderErrorBubbling, null);
+    return _extends({}, context, {
       actionData: {
         [actionMatch.route.id]: result.data
-      },
-      actionHeaders: _extends({}, result.headers ? {
+      }
+    }, result.statusCode ? {
+      statusCode: result.statusCode
+    } : {}, {
+      actionHeaders: result.headers ? {
         [actionMatch.route.id]: result.headers
-      } : {})
+      } : {}
     });
   }
-  async function loadRouteData(request, matches, requestContext, routeMatch, pendingActionError) {
+  async function loadRouteData(request, matches, requestContext, dataStrategy, skipLoaderErrorBubbling, routeMatch, pendingActionResult) {
     let isRouteRequest = routeMatch != null;
     // Short circuit if we have no loaders to run (queryRoute())
     if (isRouteRequest && !(routeMatch != null && routeMatch.route.loader) && !(routeMatch != null && routeMatch.route.lazy)) {
@@ -22668,7 +23279,7 @@ function createStaticHandler(routes, opts) {
         routeId: routeMatch == null ? void 0 : routeMatch.route.id
       });
     }
-    let requestMatches = routeMatch ? [routeMatch] : getLoaderMatchesUntilBoundary(matches, Object.keys(pendingActionError || {})[0]);
+    let requestMatches = routeMatch ? [routeMatch] : pendingActionResult && isErrorResult(pendingActionResult[1]) ? getLoaderMatchesUntilBoundary(matches, pendingActionResult[0]) : matches;
     let matchesToLoad = requestMatches.filter(m => m.route.loader || m.route.lazy);
     // Short circuit if we have no loaders to run (query())
     if (matchesToLoad.length === 0) {
@@ -22678,24 +23289,21 @@ function createStaticHandler(routes, opts) {
         loaderData: matches.reduce((acc, m) => Object.assign(acc, {
           [m.route.id]: null
         }), {}),
-        errors: pendingActionError || null,
+        errors: pendingActionResult && isErrorResult(pendingActionResult[1]) ? {
+          [pendingActionResult[0]]: pendingActionResult[1].error
+        } : null,
         statusCode: 200,
         loaderHeaders: {},
         activeDeferreds: null
       };
     }
-    let results = await Promise.all([...matchesToLoad.map(match => callLoaderOrAction("loader", request, match, matches, manifest, mapRouteProperties, basename, {
-      isStaticRequest: true,
-      isRouteRequest,
-      requestContext
-    }))]);
+    let results = await callDataStrategy("loader", request, matchesToLoad, matches, isRouteRequest, requestContext, dataStrategy);
     if (request.signal.aborted) {
-      let method = isRouteRequest ? "queryRoute" : "query";
-      throw new Error(method + "() call aborted: " + request.method + " " + request.url);
+      throwStaticHandlerAbortedError(request, isRouteRequest, future);
     }
     // Process and commit output from loaders
     let activeDeferreds = new Map();
-    let context = processRouteLoaderData(matches, matchesToLoad, results, pendingActionError, activeDeferreds);
+    let context = processRouteLoaderData(matches, results, pendingActionResult, activeDeferreds, skipLoaderErrorBubbling);
     // Add a null for any non-loader matches for proper revalidation on the client
     let executedLoaders = new Set(matchesToLoad.map(match => match.route.id));
     matches.forEach(match => {
@@ -22707,6 +23315,30 @@ function createStaticHandler(routes, opts) {
       matches,
       activeDeferreds: activeDeferreds.size > 0 ? Object.fromEntries(activeDeferreds.entries()) : null
     });
+  }
+  // Utility wrapper for calling dataStrategy server-side without having to
+  // pass around the manifest, mapRouteProperties, etc.
+  async function callDataStrategy(type, request, matchesToLoad, matches, isRouteRequest, requestContext, dataStrategy) {
+    let results = await callDataStrategyImpl(dataStrategy || defaultDataStrategy, type, null, request, matchesToLoad, matches, null, manifest, mapRouteProperties, requestContext);
+    let dataResults = {};
+    await Promise.all(matches.map(async match => {
+      if (!(match.route.id in results)) {
+        return;
+      }
+      let result = results[match.route.id];
+      if (isRedirectDataStrategyResultResult(result)) {
+        let response = result.result;
+        // Throw redirects and let the server handle them with an HTTP redirect
+        throw normalizeRelativeRoutingRedirectResponse(response, request, match.route.id, matches, basename, future.v7_relativeSplatPath);
+      }
+      if (isResponse(result.result) && isRouteRequest) {
+        // For SSR single-route requests, we want to hand Responses back
+        // directly without unwrapping
+        throw result;
+      }
+      dataResults[match.route.id] = await convertDataStrategyResultToDataResult(result);
+    }));
+    return dataResults;
   }
   return {
     dataRoutes,
@@ -22724,24 +23356,29 @@ function createStaticHandler(routes, opts) {
  */
 function getStaticContextFromError(routes, context, error) {
   let newContext = _extends({}, context, {
-    statusCode: 500,
+    statusCode: isRouteErrorResponse(error) ? error.status : 500,
     errors: {
       [context._deepestRenderedBoundaryId || routes[0].id]: error
     }
   });
   return newContext;
 }
+function throwStaticHandlerAbortedError(request, isRouteRequest, future) {
+  if (future.v7_throwAbortReason && request.signal.reason !== undefined) {
+    throw request.signal.reason;
+  }
+  let method = isRouteRequest ? "queryRoute" : "query";
+  throw new Error(method + "() call aborted: " + request.method + " " + request.url);
+}
 function isSubmissionNavigation(opts) {
   return opts != null && ("formData" in opts && opts.formData != null || "body" in opts && opts.body !== undefined);
 }
-function normalizeTo(location, matches, basename, prependBasename, to, fromRouteId, relative) {
+function normalizeTo(location, matches, basename, prependBasename, to, v7_relativeSplatPath, fromRouteId, relative) {
   let contextualMatches;
   let activeRouteMatch;
-  if (fromRouteId != null && relative !== "path") {
+  if (fromRouteId) {
     // Grab matches up to the calling route so our route-relative logic is
-    // relative to the correct source route.  When using relative:path,
-    // fromRouteId is ignored since that is always relative to the current
-    // location path
+    // relative to the correct source route
     contextualMatches = [];
     for (let match of matches) {
       contextualMatches.push(match);
@@ -22755,7 +23392,7 @@ function normalizeTo(location, matches, basename, prependBasename, to, fromRoute
     activeRouteMatch = matches[matches.length - 1];
   }
   // Resolve the relative path
-  let path = resolveTo(to ? to : ".", getPathContributingMatches(contextualMatches).map(m => m.pathnameBase), stripBasename(location.pathname, basename) || location.pathname, relative === "path");
+  let path = resolveTo(to ? to : ".", getResolveToMatches(contextualMatches, v7_relativeSplatPath), stripBasename(location.pathname, basename) || location.pathname, relative === "path");
   // When `to` is not specified we inherit search/hash from the current
   // location, unlike when to="." and we just inherit the path.
   // See https://github.com/remix-run/remix/issues/927
@@ -22763,9 +23400,21 @@ function normalizeTo(location, matches, basename, prependBasename, to, fromRoute
     path.search = location.search;
     path.hash = location.hash;
   }
-  // Add an ?index param for matched index routes if we don't already have one
-  if ((to == null || to === "" || to === ".") && activeRouteMatch && activeRouteMatch.route.index && !hasNakedIndexQuery(path.search)) {
-    path.search = path.search ? path.search.replace(/^\?/, "?index&") : "?index";
+  // Account for `?index` params when routing to the current location
+  if ((to == null || to === "" || to === ".") && activeRouteMatch) {
+    let nakedIndex = hasNakedIndexQuery(path.search);
+    if (activeRouteMatch.route.index && !nakedIndex) {
+      // Add one when we're targeting an index route
+      path.search = path.search ? path.search.replace(/^\?/, "?index&") : "?index";
+    } else if (!activeRouteMatch.route.index && nakedIndex) {
+      // Remove existing ones when we're not
+      let params = new URLSearchParams(path.search);
+      let indexValues = params.getAll("index");
+      params.delete("index");
+      indexValues.filter(v => v).forEach(v => params.append("index", v));
+      let qs = params.toString();
+      path.search = qs ? "?" + qs : "";
+    }
   }
   // If we're operating within a basename, prepend it to the pathname.  If
   // this is a root navigation, then just use the raw basename which allows
@@ -22900,32 +23549,54 @@ function normalizeNavigateOptions(normalizeFormMethod, isFetcher, path, opts) {
     submission
   };
 }
-// Filter out all routes below any caught error as they aren't going to
+// Filter out all routes at/below any caught error as they aren't going to
 // render so we don't need to load them
-function getLoaderMatchesUntilBoundary(matches, boundaryId) {
-  let boundaryMatches = matches;
-  if (boundaryId) {
-    let index = matches.findIndex(m => m.route.id === boundaryId);
-    if (index >= 0) {
-      boundaryMatches = matches.slice(0, index);
-    }
+function getLoaderMatchesUntilBoundary(matches, boundaryId, includeBoundary) {
+  if (includeBoundary === void 0) {
+    includeBoundary = false;
   }
-  return boundaryMatches;
+  let index = matches.findIndex(m => m.route.id === boundaryId);
+  if (index >= 0) {
+    return matches.slice(0, includeBoundary ? index + 1 : index);
+  }
+  return matches;
 }
-function getMatchesToLoad(history, state, matches, submission, location, isRevalidationRequired, cancelledDeferredRoutes, cancelledFetcherLoads, fetchLoadMatches, fetchRedirectIds, routesToUse, basename, pendingActionData, pendingError) {
-  let actionResult = pendingError ? Object.values(pendingError)[0] : pendingActionData ? Object.values(pendingActionData)[0] : undefined;
+function getMatchesToLoad(history, state, matches, submission, location, initialHydration, skipActionErrorRevalidation, isRevalidationRequired, cancelledDeferredRoutes, cancelledFetcherLoads, deletedFetchers, fetchLoadMatches, fetchRedirectIds, routesToUse, basename, pendingActionResult) {
+  let actionResult = pendingActionResult ? isErrorResult(pendingActionResult[1]) ? pendingActionResult[1].error : pendingActionResult[1].data : undefined;
   let currentUrl = history.createURL(state.location);
   let nextUrl = history.createURL(location);
   // Pick navigation matches that are net-new or qualify for revalidation
-  let boundaryId = pendingError ? Object.keys(pendingError)[0] : undefined;
-  let boundaryMatches = getLoaderMatchesUntilBoundary(matches, boundaryId);
+  let boundaryMatches = matches;
+  if (initialHydration && state.errors) {
+    // On initial hydration, only consider matches up to _and including_ the boundary.
+    // This is inclusive to handle cases where a server loader ran successfully,
+    // a child server loader bubbled up to this route, but this route has
+    // `clientLoader.hydrate` so we want to still run the `clientLoader` so that
+    // we have a complete version of `loaderData`
+    boundaryMatches = getLoaderMatchesUntilBoundary(matches, Object.keys(state.errors)[0], true);
+  } else if (pendingActionResult && isErrorResult(pendingActionResult[1])) {
+    // If an action threw an error, we call loaders up to, but not including the
+    // boundary
+    boundaryMatches = getLoaderMatchesUntilBoundary(matches, pendingActionResult[0]);
+  }
+  // Don't revalidate loaders by default after action 4xx/5xx responses
+  // when the flag is enabled.  They can still opt-into revalidation via
+  // `shouldRevalidate` via `actionResult`
+  let actionStatus = pendingActionResult ? pendingActionResult[1].statusCode : undefined;
+  let shouldSkipRevalidation = skipActionErrorRevalidation && actionStatus && actionStatus >= 400;
   let navigationMatches = boundaryMatches.filter((match, index) => {
-    if (match.route.lazy) {
+    let {
+      route
+    } = match;
+    if (route.lazy) {
       // We haven't loaded this route yet so we don't know if it's got a loader!
       return true;
     }
-    if (match.route.loader == null) {
+    if (route.loader == null) {
       return false;
+    }
+    if (initialHydration) {
+      return shouldLoadRouteOnHydration(route, state.loaderData, state.errors);
     }
     // Always call the loader on new route instances and pending defer cancellations
     if (isNewLoader(state.loaderData, state.matches[index], match) || cancelledDeferredRoutes.some(id => id === match.route.id)) {
@@ -22944,11 +23615,10 @@ function getMatchesToLoad(history, state, matches, submission, location, isReval
       nextParams: nextRouteMatch.params
     }, submission, {
       actionResult,
-      defaultShouldRevalidate:
+      actionStatus,
+      defaultShouldRevalidate: shouldSkipRevalidation ? false :
       // Forced revalidation due to submission, useRevalidator, or X-Remix-Revalidate
-      isRevalidationRequired ||
-      // Clicked the same link, resubmitted a GET form
-      currentUrl.pathname + currentUrl.search === nextUrl.pathname + nextUrl.search ||
+      isRevalidationRequired || currentUrl.pathname + currentUrl.search === nextUrl.pathname + nextUrl.search ||
       // Search params affect all loaders
       currentUrl.search !== nextUrl.search || isNewRouteInstance(currentRouteMatch, nextRouteMatch)
     }));
@@ -22956,8 +23626,12 @@ function getMatchesToLoad(history, state, matches, submission, location, isReval
   // Pick fetcher.loads that need to be revalidated
   let revalidatingFetchers = [];
   fetchLoadMatches.forEach((f, key) => {
-    // Don't revalidate if fetcher won't be present in the subsequent render
-    if (!matches.some(m => m.route.id === f.routeId)) {
+    // Don't revalidate:
+    //  - on initial hydration (shouldn't be any fetchers then anyway)
+    //  - if fetcher won't be present in the subsequent render
+    //    - no longer matches the URL (v7_fetcherPersist=false)
+    //    - was unmounted but persisted due to v7_fetcherPersist=true
+    if (initialHydration || !matches.some(m => m.route.id === f.routeId) || deletedFetchers.has(key)) {
       return;
     }
     let fetcherMatches = matchRoutes(routesToUse, f.path, basename);
@@ -22985,8 +23659,9 @@ function getMatchesToLoad(history, state, matches, submission, location, isReval
     if (fetchRedirectIds.has(key)) {
       // Never trigger a revalidation of an actively redirecting fetcher
       shouldRevalidate = false;
-    } else if (cancelledFetcherLoads.includes(key)) {
-      // Always revalidate if the fetcher was cancelled
+    } else if (cancelledFetcherLoads.has(key)) {
+      // Always mark for revalidation if the fetcher was cancelled
+      cancelledFetcherLoads.delete(key);
       shouldRevalidate = true;
     } else if (fetcher && fetcher.state !== "idle" && fetcher.data === undefined) {
       // If the fetcher hasn't ever completed loading yet, then this isn't a
@@ -23003,7 +23678,8 @@ function getMatchesToLoad(history, state, matches, submission, location, isReval
         nextParams: matches[matches.length - 1].params
       }, submission, {
         actionResult,
-        defaultShouldRevalidate: isRevalidationRequired
+        actionStatus,
+        defaultShouldRevalidate: shouldSkipRevalidation ? false : isRevalidationRequired
       }));
     }
     if (shouldRevalidate) {
@@ -23018,6 +23694,28 @@ function getMatchesToLoad(history, state, matches, submission, location, isReval
     }
   });
   return [navigationMatches, revalidatingFetchers];
+}
+function shouldLoadRouteOnHydration(route, loaderData, errors) {
+  // We dunno if we have a loader - gotta find out!
+  if (route.lazy) {
+    return true;
+  }
+  // No loader, nothing to initialize
+  if (!route.loader) {
+    return false;
+  }
+  let hasData = loaderData != null && loaderData[route.id] !== undefined;
+  let hasError = errors != null && errors[route.id] !== undefined;
+  // Don't run if we error'd during SSR
+  if (!hasData && hasError) {
+    return false;
+  }
+  // Explicitly opting-in to running on hydration
+  if (typeof route.loader === "function" && route.loader.hydrate === true) {
+    return true;
+  }
+  // Otherwise, run if we're not yet initialized with anything
+  return !hasData && !hasError;
 }
 function isNewLoader(currentLoaderData, currentMatch, match) {
   let isNew =
@@ -23049,6 +23747,47 @@ function shouldRevalidateLoader(loaderMatch, arg) {
     }
   }
   return arg.defaultShouldRevalidate;
+}
+function patchRoutesImpl(routeId, children, routesToUse, manifest, mapRouteProperties) {
+  var _childrenToPatch;
+  let childrenToPatch;
+  if (routeId) {
+    let route = manifest[routeId];
+    invariant(route, "No route found to patch children into: routeId = " + routeId);
+    if (!route.children) {
+      route.children = [];
+    }
+    childrenToPatch = route.children;
+  } else {
+    childrenToPatch = routesToUse;
+  }
+  // Don't patch in routes we already know about so that `patch` is idempotent
+  // to simplify user-land code. This is useful because we re-call the
+  // `patchRoutesOnNavigation` function for matched routes with params.
+  let uniqueChildren = children.filter(newRoute => !childrenToPatch.some(existingRoute => isSameRoute(newRoute, existingRoute)));
+  let newRoutes = convertRoutesToDataRoutes(uniqueChildren, mapRouteProperties, [routeId || "_", "patch", String(((_childrenToPatch = childrenToPatch) == null ? void 0 : _childrenToPatch.length) || "0")], manifest);
+  childrenToPatch.push(...newRoutes);
+}
+function isSameRoute(newRoute, existingRoute) {
+  // Most optimal check is by id
+  if ("id" in newRoute && "id" in existingRoute && newRoute.id === existingRoute.id) {
+    return true;
+  }
+  // Second is by pathing differences
+  if (!(newRoute.index === existingRoute.index && newRoute.path === existingRoute.path && newRoute.caseSensitive === existingRoute.caseSensitive)) {
+    return false;
+  }
+  // Pathless layout routes are trickier since we need to check children.
+  // If they have no children then they're the same as far as we can tell
+  if ((!newRoute.children || newRoute.children.length === 0) && (!existingRoute.children || existingRoute.children.length === 0)) {
+    return true;
+  }
+  // Otherwise, we look to see if every child in the new route is already
+  // represented in the existing route's children
+  return newRoute.children.every((aChild, i) => {
+    var _existingRoute$childr;
+    return (_existingRoute$childr = existingRoute.children) == null ? void 0 : _existingRoute$childr.some(bChild => isSameRoute(aChild, bChild));
+  });
 }
 /**
  * Execute route.lazy() methods to lazily load route modules (loader, action,
@@ -23098,48 +23837,122 @@ async function loadLazyRouteModule(route, mapRouteProperties, manifest) {
     lazy: undefined
   }));
 }
-async function callLoaderOrAction(type, request, match, matches, manifest, mapRouteProperties, basename, opts) {
-  if (opts === void 0) {
-    opts = {};
+// Default implementation of `dataStrategy` which fetches all loaders in parallel
+async function defaultDataStrategy(_ref4) {
+  let {
+    matches
+  } = _ref4;
+  let matchesToLoad = matches.filter(m => m.shouldLoad);
+  let results = await Promise.all(matchesToLoad.map(m => m.resolve()));
+  return results.reduce((acc, result, i) => Object.assign(acc, {
+    [matchesToLoad[i].route.id]: result
+  }), {});
+}
+async function callDataStrategyImpl(dataStrategyImpl, type, state, request, matchesToLoad, matches, fetcherKey, manifest, mapRouteProperties, requestContext) {
+  let loadRouteDefinitionsPromises = matches.map(m => m.route.lazy ? loadLazyRouteModule(m.route, mapRouteProperties, manifest) : undefined);
+  let dsMatches = matches.map((match, i) => {
+    let loadRoutePromise = loadRouteDefinitionsPromises[i];
+    let shouldLoad = matchesToLoad.some(m => m.route.id === match.route.id);
+    // `resolve` encapsulates route.lazy(), executing the loader/action,
+    // and mapping return values/thrown errors to a `DataStrategyResult`.  Users
+    // can pass a callback to take fine-grained control over the execution
+    // of the loader/action
+    let resolve = async handlerOverride => {
+      if (handlerOverride && request.method === "GET" && (match.route.lazy || match.route.loader)) {
+        shouldLoad = true;
+      }
+      return shouldLoad ? callLoaderOrAction(type, request, match, loadRoutePromise, handlerOverride, requestContext) : Promise.resolve({
+        type: ResultType.data,
+        result: undefined
+      });
+    };
+    return _extends({}, match, {
+      shouldLoad,
+      resolve
+    });
+  });
+  // Send all matches here to allow for a middleware-type implementation.
+  // handler will be a no-op for unneeded routes and we filter those results
+  // back out below.
+  let results = await dataStrategyImpl({
+    matches: dsMatches,
+    request,
+    params: matches[0].params,
+    fetcherKey,
+    context: requestContext
+  });
+  // Wait for all routes to load here but 'swallow the error since we want
+  // it to bubble up from the `await loadRoutePromise` in `callLoaderOrAction` -
+  // called from `match.resolve()`
+  try {
+    await Promise.all(loadRouteDefinitionsPromises);
+  } catch (e) {
+    // No-op
   }
-  let resultType;
+  return results;
+}
+// Default logic for calling a loader/action is the user has no specified a dataStrategy
+async function callLoaderOrAction(type, request, match, loadRoutePromise, handlerOverride, staticContext) {
   let result;
   let onReject;
   let runHandler = handler => {
     // Setup a promise we can race against so that abort signals short circuit
     let reject;
+    // This will never resolve so safe to type it as Promise<DataStrategyResult> to
+    // satisfy the function return value
     let abortPromise = new Promise((_, r) => reject = r);
     onReject = () => reject();
     request.signal.addEventListener("abort", onReject);
-    return Promise.race([handler({
-      request,
-      params: match.params,
-      context: opts.requestContext
-    }), abortPromise]);
+    let actualHandler = ctx => {
+      if (typeof handler !== "function") {
+        return Promise.reject(new Error("You cannot call the handler for a route which defines a boolean " + ("\"" + type + "\" [routeId: " + match.route.id + "]")));
+      }
+      return handler({
+        request,
+        params: match.params,
+        context: staticContext
+      }, ...(ctx !== undefined ? [ctx] : []));
+    };
+    let handlerPromise = (async () => {
+      try {
+        let val = await (handlerOverride ? handlerOverride(ctx => actualHandler(ctx)) : actualHandler());
+        return {
+          type: "data",
+          result: val
+        };
+      } catch (e) {
+        return {
+          type: "error",
+          result: e
+        };
+      }
+    })();
+    return Promise.race([handlerPromise, abortPromise]);
   };
   try {
     let handler = match.route[type];
-    if (match.route.lazy) {
+    // If we have a route.lazy promise, await that first
+    if (loadRoutePromise) {
       if (handler) {
         // Run statically defined handler in parallel with lazy()
         let handlerError;
-        let values = await Promise.all([
+        let [value] = await Promise.all([
         // If the handler throws, don't let it immediately bubble out,
         // since we need to let the lazy() execution finish so we know if this
         // route has a boundary that can handle the error
         runHandler(handler).catch(e => {
           handlerError = e;
-        }), loadLazyRouteModule(match.route, mapRouteProperties, manifest)]);
-        if (handlerError) {
+        }), loadRoutePromise]);
+        if (handlerError !== undefined) {
           throw handlerError;
         }
-        result = values[0];
+        result = value;
       } else {
         // Load lazy route module, then run any returned handler
-        await loadLazyRouteModule(match.route, mapRouteProperties, manifest);
+        await loadRoutePromise;
         handler = match.route[type];
         if (handler) {
-          // Handler still run even if we got interrupted to maintain consistency
+          // Handler still runs even if we got interrupted to maintain consistency
           // with un-abortable behavior of handler execution on non-lazy or
           // previously-lazy-loaded routes
           result = await runHandler(handler);
@@ -23156,7 +23969,7 @@ async function callLoaderOrAction(type, request, match, matches, manifest, mapRo
           // hit the invariant below that errors on returning undefined.
           return {
             type: ResultType.data,
-            data: undefined
+            result: undefined
           };
         }
       }
@@ -23169,74 +23982,53 @@ async function callLoaderOrAction(type, request, match, matches, manifest, mapRo
     } else {
       result = await runHandler(handler);
     }
-    invariant(result !== undefined, "You defined " + (type === "action" ? "an action" : "a loader") + " for route " + ("\"" + match.route.id + "\" but didn't return anything from your `" + type + "` ") + "function. Please return a value or `null`.");
+    invariant(result.result !== undefined, "You defined " + (type === "action" ? "an action" : "a loader") + " for route " + ("\"" + match.route.id + "\" but didn't return anything from your `" + type + "` ") + "function. Please return a value or `null`.");
   } catch (e) {
-    resultType = ResultType.error;
-    result = e;
+    // We should already be catching and converting normal handler executions to
+    // DataStrategyResults and returning them, so anything that throws here is an
+    // unexpected error we still need to wrap
+    return {
+      type: ResultType.error,
+      result: e
+    };
   } finally {
     if (onReject) {
       request.signal.removeEventListener("abort", onReject);
     }
   }
+  return result;
+}
+async function convertDataStrategyResultToDataResult(dataStrategyResult) {
+  let {
+    result,
+    type
+  } = dataStrategyResult;
   if (isResponse(result)) {
-    let status = result.status;
-    // Process redirects
-    if (redirectStatusCodes.has(status)) {
-      let location = result.headers.get("Location");
-      invariant(location, "Redirects returned/thrown from loaders/actions must have a Location header");
-      // Support relative routing in internal redirects
-      if (!ABSOLUTE_URL_REGEX.test(location)) {
-        location = normalizeTo(new URL(request.url), matches.slice(0, matches.indexOf(match) + 1), basename, true, location);
-      } else if (!opts.isStaticRequest) {
-        // Strip off the protocol+origin for same-origin + same-basename absolute
-        // redirects. If this is a static request, we can let it go back to the
-        // browser as-is
-        let currentUrl = new URL(request.url);
-        let url = location.startsWith("//") ? new URL(currentUrl.protocol + location) : new URL(location);
-        let isSameBasename = stripBasename(url.pathname, basename) != null;
-        if (url.origin === currentUrl.origin && isSameBasename) {
-          location = url.pathname + url.search + url.hash;
-        }
-      }
-      // Don't process redirects in the router during static requests requests.
-      // Instead, throw the Response and let the server handle it with an HTTP
-      // redirect.  We also update the Location header in place in this flow so
-      // basename and relative routing is taken into account
-      if (opts.isStaticRequest) {
-        result.headers.set("Location", location);
-        throw result;
-      }
-      return {
-        type: ResultType.redirect,
-        status,
-        location,
-        revalidate: result.headers.get("X-Remix-Revalidate") !== null,
-        reloadDocument: result.headers.get("X-Remix-Reload-Document") !== null
-      };
-    }
-    // For SSR single-route requests, we want to hand Responses back directly
-    // without unwrapping.  We do this with the QueryRouteResponse wrapper
-    // interface so we can know whether it was returned or thrown
-    if (opts.isRouteRequest) {
-      let queryRouteResponse = {
-        type: resultType === ResultType.error ? ResultType.error : ResultType.data,
-        response: result
-      };
-      throw queryRouteResponse;
-    }
     let data;
-    let contentType = result.headers.get("Content-Type");
-    // Check between word boundaries instead of startsWith() due to the last
-    // paragraph of https://httpwg.org/specs/rfc9110.html#field.content-type
-    if (contentType && /\bapplication\/json\b/.test(contentType)) {
-      data = await result.json();
-    } else {
-      data = await result.text();
-    }
-    if (resultType === ResultType.error) {
+    try {
+      let contentType = result.headers.get("Content-Type");
+      // Check between word boundaries instead of startsWith() due to the last
+      // paragraph of https://httpwg.org/specs/rfc9110.html#field.content-type
+      if (contentType && /\bapplication\/json\b/.test(contentType)) {
+        if (result.body == null) {
+          data = null;
+        } else {
+          data = await result.json();
+        }
+      } else {
+        data = await result.text();
+      }
+    } catch (e) {
       return {
-        type: resultType,
-        error: new ErrorResponseImpl(status, result.statusText, data),
+        type: ResultType.error,
+        error: e
+      };
+    }
+    if (type === ResultType.error) {
+      return {
+        type: ResultType.error,
+        error: new ErrorResponseImpl(result.status, result.statusText, data),
+        statusCode: result.status,
         headers: result.headers
       };
     }
@@ -23247,25 +24039,77 @@ async function callLoaderOrAction(type, request, match, matches, manifest, mapRo
       headers: result.headers
     };
   }
-  if (resultType === ResultType.error) {
+  if (type === ResultType.error) {
+    if (isDataWithResponseInit(result)) {
+      var _result$init3, _result$init4;
+      if (result.data instanceof Error) {
+        var _result$init, _result$init2;
+        return {
+          type: ResultType.error,
+          error: result.data,
+          statusCode: (_result$init = result.init) == null ? void 0 : _result$init.status,
+          headers: (_result$init2 = result.init) != null && _result$init2.headers ? new Headers(result.init.headers) : undefined
+        };
+      }
+      // Convert thrown data() to ErrorResponse instances
+      return {
+        type: ResultType.error,
+        error: new ErrorResponseImpl(((_result$init3 = result.init) == null ? void 0 : _result$init3.status) || 500, undefined, result.data),
+        statusCode: isRouteErrorResponse(result) ? result.status : undefined,
+        headers: (_result$init4 = result.init) != null && _result$init4.headers ? new Headers(result.init.headers) : undefined
+      };
+    }
     return {
-      type: resultType,
-      error: result
+      type: ResultType.error,
+      error: result,
+      statusCode: isRouteErrorResponse(result) ? result.status : undefined
     };
   }
   if (isDeferredData(result)) {
-    var _result$init, _result$init2;
+    var _result$init5, _result$init6;
     return {
       type: ResultType.deferred,
       deferredData: result,
-      statusCode: (_result$init = result.init) == null ? void 0 : _result$init.status,
-      headers: ((_result$init2 = result.init) == null ? void 0 : _result$init2.headers) && new Headers(result.init.headers)
+      statusCode: (_result$init5 = result.init) == null ? void 0 : _result$init5.status,
+      headers: ((_result$init6 = result.init) == null ? void 0 : _result$init6.headers) && new Headers(result.init.headers)
+    };
+  }
+  if (isDataWithResponseInit(result)) {
+    var _result$init7, _result$init8;
+    return {
+      type: ResultType.data,
+      data: result.data,
+      statusCode: (_result$init7 = result.init) == null ? void 0 : _result$init7.status,
+      headers: (_result$init8 = result.init) != null && _result$init8.headers ? new Headers(result.init.headers) : undefined
     };
   }
   return {
     type: ResultType.data,
     data: result
   };
+}
+// Support relative routing in internal redirects
+function normalizeRelativeRoutingRedirectResponse(response, request, routeId, matches, basename, v7_relativeSplatPath) {
+  let location = response.headers.get("Location");
+  invariant(location, "Redirects returned/thrown from loaders/actions must have a Location header");
+  if (!ABSOLUTE_URL_REGEX.test(location)) {
+    let trimmedMatches = matches.slice(0, matches.findIndex(m => m.route.id === routeId) + 1);
+    location = normalizeTo(new URL(request.url), trimmedMatches, basename, true, location, v7_relativeSplatPath);
+    response.headers.set("Location", location);
+  }
+  return response;
+}
+function normalizeRedirectLocation(location, currentUrl, basename) {
+  if (ABSOLUTE_URL_REGEX.test(location)) {
+    // Strip off the protocol+origin for same-origin + same-basename absolute redirects
+    let normalizedLocation = location;
+    let url = normalizedLocation.startsWith("//") ? new URL(currentUrl.protocol + normalizedLocation) : new URL(normalizedLocation);
+    let isSameBasename = stripBasename(url.pathname, basename) != null;
+    if (url.origin === currentUrl.origin && isSameBasename) {
+      return url.pathname + url.search + url.hash;
+    }
+  }
+  return location;
 }
 // Utility method for creating the Request instances for loaders/actions during
 // client-side navigations and fetches.  During SSR we will always have a
@@ -23317,33 +24161,42 @@ function convertSearchParamsToFormData(searchParams) {
   }
   return formData;
 }
-function processRouteLoaderData(matches, matchesToLoad, results, pendingError, activeDeferreds) {
+function processRouteLoaderData(matches, results, pendingActionResult, activeDeferreds, skipLoaderErrorBubbling) {
   // Fill in loaderData/errors from our loaders
   let loaderData = {};
   let errors = null;
   let statusCode;
   let foundError = false;
   let loaderHeaders = {};
+  let pendingError = pendingActionResult && isErrorResult(pendingActionResult[1]) ? pendingActionResult[1].error : undefined;
   // Process loader results into state.loaderData/state.errors
-  results.forEach((result, index) => {
-    let id = matchesToLoad[index].route.id;
+  matches.forEach(match => {
+    if (!(match.route.id in results)) {
+      return;
+    }
+    let id = match.route.id;
+    let result = results[id];
     invariant(!isRedirectResult(result), "Cannot handle redirect results in processLoaderData");
     if (isErrorResult(result)) {
-      // Look upwards from the matched route for the closest ancestor
-      // error boundary, defaulting to the root match
-      let boundaryMatch = findNearestBoundary(matches, id);
       let error = result.error;
       // If we have a pending action error, we report it at the highest-route
       // that throws a loader error, and then clear it out to indicate that
       // it was consumed
-      if (pendingError) {
-        error = Object.values(pendingError)[0];
+      if (pendingError !== undefined) {
+        error = pendingError;
         pendingError = undefined;
       }
       errors = errors || {};
-      // Prefer higher error values if lower errors bubble to the same boundary
-      if (errors[boundaryMatch.route.id] == null) {
-        errors[boundaryMatch.route.id] = error;
+      if (skipLoaderErrorBubbling) {
+        errors[id] = error;
+      } else {
+        // Look upwards from the matched route for the closest ancestor error
+        // boundary, defaulting to the root match.  Prefer higher error values
+        // if lower errors bubble to the same boundary
+        let boundaryMatch = findNearestBoundary(matches, id);
+        if (errors[boundaryMatch.route.id] == null) {
+          errors[boundaryMatch.route.id] = error;
+        }
       }
       // Clear our any prior loaderData for the throwing route
       loaderData[id] = undefined;
@@ -23360,25 +24213,35 @@ function processRouteLoaderData(matches, matchesToLoad, results, pendingError, a
       if (isDeferredResult(result)) {
         activeDeferreds.set(id, result.deferredData);
         loaderData[id] = result.deferredData.data;
+        // Error status codes always override success status codes, but if all
+        // loaders are successful we take the deepest status code.
+        if (result.statusCode != null && result.statusCode !== 200 && !foundError) {
+          statusCode = result.statusCode;
+        }
+        if (result.headers) {
+          loaderHeaders[id] = result.headers;
+        }
       } else {
         loaderData[id] = result.data;
-      }
-      // Error status codes always override success status codes, but if all
-      // loaders are successful we take the deepest status code.
-      if (result.statusCode != null && result.statusCode !== 200 && !foundError) {
-        statusCode = result.statusCode;
-      }
-      if (result.headers) {
-        loaderHeaders[id] = result.headers;
+        // Error status codes always override success status codes, but if all
+        // loaders are successful we take the deepest status code.
+        if (result.statusCode && result.statusCode !== 200 && !foundError) {
+          statusCode = result.statusCode;
+        }
+        if (result.headers) {
+          loaderHeaders[id] = result.headers;
+        }
       }
     }
   });
   // If we didn't consume the pending action error (i.e., all loaders
   // resolved), then consume it here.  Also clear out any loaderData for the
   // throwing route
-  if (pendingError) {
-    errors = pendingError;
-    loaderData[Object.keys(pendingError)[0]] = undefined;
+  if (pendingError !== undefined && pendingActionResult) {
+    errors = {
+      [pendingActionResult[0]]: pendingError
+    };
+    loaderData[pendingActionResult[0]] = undefined;
   }
   return {
     loaderData,
@@ -23387,24 +24250,25 @@ function processRouteLoaderData(matches, matchesToLoad, results, pendingError, a
     loaderHeaders
   };
 }
-function processLoaderData(state, matches, matchesToLoad, results, pendingError, revalidatingFetchers, fetcherResults, activeDeferreds) {
+function processLoaderData(state, matches, results, pendingActionResult, revalidatingFetchers, fetcherResults, activeDeferreds) {
   let {
     loaderData,
     errors
-  } = processRouteLoaderData(matches, matchesToLoad, results, pendingError, activeDeferreds);
+  } = processRouteLoaderData(matches, results, pendingActionResult, activeDeferreds, false // This method is only called client side so we always want to bubble
+  );
   // Process results from our revalidating fetchers
-  for (let index = 0; index < revalidatingFetchers.length; index++) {
+  revalidatingFetchers.forEach(rf => {
     let {
       key,
       match,
       controller
-    } = revalidatingFetchers[index];
-    invariant(fetcherResults !== undefined && fetcherResults[index] !== undefined, "Did not find corresponding fetcher result");
-    let result = fetcherResults[index];
+    } = rf;
+    let result = fetcherResults[key];
+    invariant(result, "Did not find corresponding fetcher result");
     // Process fetcher non-redirect errors
     if (controller && controller.signal.aborted) {
       // Nothing to do for aborted fetchers
-      continue;
+      return;
     } else if (isErrorResult(result)) {
       let boundaryMatch = findNearestBoundary(state.matches, match == null ? void 0 : match.route.id);
       if (!(errors && errors[boundaryMatch.route.id])) {
@@ -23425,7 +24289,7 @@ function processLoaderData(state, matches, matchesToLoad, results, pendingError,
       let doneFetcher = getDoneFetcher(result.data);
       state.fetchers.set(key, doneFetcher);
     }
-  }
+  });
   return {
     loaderData,
     errors
@@ -23451,6 +24315,19 @@ function mergeLoaderData(loaderData, newLoaderData, matches, errors) {
   }
   return mergedLoaderData;
 }
+function getActionDataForCommit(pendingActionResult) {
+  if (!pendingActionResult) {
+    return {};
+  }
+  return isErrorResult(pendingActionResult[1]) ? {
+    // Clear out prior actionData on errors
+    actionData: {}
+  } : {
+    actionData: {
+      [pendingActionResult[0]]: pendingActionResult[1].data
+    }
+  };
+}
 // Find the nearest error boundary, looking upwards from the leaf route (or the
 // route specified by routeId) for the closest ancestor error boundary,
 // defaulting to the root match
@@ -23473,13 +24350,14 @@ function getShortCircuitMatches(routes) {
     route
   };
 }
-function getInternalRouterError(status, _temp4) {
+function getInternalRouterError(status, _temp5) {
   let {
     pathname,
     routeId,
     method,
-    type
-  } = _temp4 === void 0 ? {} : _temp4;
+    type,
+    message
+  } = _temp5 === void 0 ? {} : _temp5;
   let statusText = "Unknown Server Error";
   let errorMessage = "Unknown @remix-run/router error";
   if (status === 400) {
@@ -23509,12 +24387,13 @@ function getInternalRouterError(status, _temp4) {
 }
 // Find any returned redirect errors, starting from the lowest match
 function findRedirect(results) {
-  for (let i = results.length - 1; i >= 0; i--) {
-    let result = results[i];
+  let entries = Object.entries(results);
+  for (let i = entries.length - 1; i >= 0; i--) {
+    let [key, result] = entries[i];
     if (isRedirectResult(result)) {
       return {
-        result,
-        idx: i
+        key,
+        result
       };
     }
   }
@@ -23543,6 +24422,12 @@ function isHashChangeOnly(a, b) {
   // /page#hash -> /page
   return false;
 }
+function isDataStrategyResult(result) {
+  return result != null && typeof result === "object" && "type" in result && "result" in result && (result.type === ResultType.data || result.type === ResultType.error);
+}
+function isRedirectDataStrategyResultResult(result) {
+  return isResponse(result.result) && redirectStatusCodes.has(result.result.status);
+}
 function isDeferredResult(result) {
   return result.type === ResultType.deferred;
 }
@@ -23551,6 +24436,9 @@ function isErrorResult(result) {
 }
 function isRedirectResult(result) {
   return (result && result.type) === ResultType.redirect;
+}
+function isDataWithResponseInit(value) {
+  return typeof value === "object" && value != null && "type" in value && "data" in value && "init" in value && value.type === "DataWithResponseInit";
 }
 function isDeferredData(value) {
   let deferred = value;
@@ -23567,19 +24455,17 @@ function isRedirectResponse(result) {
   let location = result.headers.get("Location");
   return status >= 300 && status <= 399 && location != null;
 }
-function isQueryRouteResponse(obj) {
-  return obj && isResponse(obj.response) && (obj.type === ResultType.data || obj.type === ResultType.error);
-}
 function isValidMethod(method) {
   return validRequestMethods.has(method.toLowerCase());
 }
 function isMutationMethod(method) {
   return validMutationMethods.has(method.toLowerCase());
 }
-async function resolveDeferredResults(currentMatches, matchesToLoad, results, signals, isFetcher, currentLoaderData) {
-  for (let index = 0; index < results.length; index++) {
-    let result = results[index];
-    let match = matchesToLoad[index];
+async function resolveNavigationDeferredResults(matches, results, signal, currentMatches, currentLoaderData) {
+  let entries = Object.entries(results);
+  for (let index = 0; index < entries.length; index++) {
+    let [routeId, result] = entries[index];
+    let match = matches.find(m => (m == null ? void 0 : m.route.id) === routeId);
     // If we don't have a match, then we can have a deferred result to do
     // anything with.  This is for revalidating fetchers where the route was
     // removed during HMR
@@ -23588,15 +24474,41 @@ async function resolveDeferredResults(currentMatches, matchesToLoad, results, si
     }
     let currentMatch = currentMatches.find(m => m.route.id === match.route.id);
     let isRevalidatingLoader = currentMatch != null && !isNewRouteInstance(currentMatch, match) && (currentLoaderData && currentLoaderData[match.route.id]) !== undefined;
-    if (isDeferredResult(result) && (isFetcher || isRevalidatingLoader)) {
+    if (isDeferredResult(result) && isRevalidatingLoader) {
       // Note: we do not have to touch activeDeferreds here since we race them
       // against the signal in resolveDeferredData and they'll get aborted
       // there if needed
-      let signal = signals[index];
-      invariant(signal, "Expected an AbortSignal for revalidating fetcher deferred result");
-      await resolveDeferredData(result, signal, isFetcher).then(result => {
+      await resolveDeferredData(result, signal, false).then(result => {
         if (result) {
-          results[index] = result || results[index];
+          results[routeId] = result;
+        }
+      });
+    }
+  }
+}
+async function resolveFetcherDeferredResults(matches, results, revalidatingFetchers) {
+  for (let index = 0; index < revalidatingFetchers.length; index++) {
+    let {
+      key,
+      routeId,
+      controller
+    } = revalidatingFetchers[index];
+    let result = results[key];
+    let match = matches.find(m => (m == null ? void 0 : m.route.id) === routeId);
+    // If we don't have a match, then we can have a deferred result to do
+    // anything with.  This is for revalidating fetchers where the route was
+    // removed during HMR
+    if (!match) {
+      continue;
+    }
+    if (isDeferredResult(result)) {
+      // Note: we do not have to touch activeDeferreds here since we race them
+      // against the signal in resolveDeferredData and they'll get aborted
+      // there if needed
+      invariant(controller, "Expected an AbortController for revalidating fetcher deferred result");
+      await resolveDeferredData(result, controller.signal, true).then(result => {
+        if (result) {
+          results[key] = result;
         }
       });
     }
@@ -24124,6 +25036,35 @@ function isPresetStatusColor(color) {
 
 /***/ }),
 
+/***/ "./node_modules/antd/es/_util/convertToTooltipProps.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/antd/es/_util/convertToTooltipProps.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+function convertToTooltipProps(tooltip) {
+  // isNil
+  if (tooltip === undefined || tooltip === null) {
+    return null;
+  }
+  if (typeof tooltip === 'object' && ! /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.isValidElement)(tooltip)) {
+    return tooltip;
+  }
+  return {
+    title: tooltip
+  };
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (convertToTooltipProps);
+
+/***/ }),
+
 /***/ "./node_modules/antd/es/_util/easings.js":
 /*!***********************************************!*\
   !*** ./node_modules/antd/es/_util/easings.js ***!
@@ -24159,22 +25100,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-const extendsObject = function () {
-  const result = Object.assign({}, arguments.length <= 0 ? undefined : arguments[0]);
-  for (let i = 1; i < arguments.length; i++) {
-    const obj = i < 0 || arguments.length <= i ? undefined : arguments[i];
-    if (obj) {
-      Object.keys(obj).forEach(key => {
-        const val = obj[key];
-        if (val !== undefined) {
-          result[key] = val;
+function mergeProps() {
+  const ret = {};
+  for (var _len = arguments.length, items = new Array(_len), _key = 0; _key < _len; _key++) {
+    items[_key] = arguments[_key];
+  }
+  items.forEach(item => {
+    if (item) {
+      Object.keys(item).forEach(key => {
+        if (item[key] !== undefined) {
+          ret[key] = item[key];
         }
       });
     }
-  }
-  return result;
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (extendsObject);
+  });
+  return ret;
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (mergeProps);
 
 /***/ }),
 
@@ -24313,9 +25255,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   pickClosable: () => (/* binding */ pickClosable)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _ant_design_icons_es_icons_CloseOutlined__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @ant-design/icons/es/icons/CloseOutlined */ "./node_modules/@ant-design/icons/es/icons/CloseOutlined.js");
+/* harmony import */ var _ant_design_icons_es_icons_CloseOutlined__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @ant-design/icons/es/icons/CloseOutlined */ "./node_modules/@ant-design/icons/es/icons/CloseOutlined.js");
 /* harmony import */ var rc_util_es_pickAttrs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rc-util/es/pickAttrs */ "./node_modules/rc-util/es/pickAttrs.js");
+/* harmony import */ var _locale__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../locale */ "./node_modules/antd/es/locale/useLocale.js");
+/* harmony import */ var _locale_en_US__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../locale/en_US */ "./node_modules/antd/es/locale/en_US.js");
+/* harmony import */ var _extendsObject__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../extendsObject */ "./node_modules/antd/es/_util/extendsObject.js");
 "use client";
+
+
+
 
 
 
@@ -24353,26 +25301,6 @@ function useClosableConfig(closableCollection) {
     return closableConfig;
   }, [closable, closeIcon]);
 }
-/**
- * Assign object without `undefined` field. Will skip if is `false`.
- * This helps to handle both closableConfig or false
- */
-function assignWithoutUndefined() {
-  const target = {};
-  for (var _len = arguments.length, objList = new Array(_len), _key = 0; _key < _len; _key++) {
-    objList[_key] = arguments[_key];
-  }
-  objList.forEach(obj => {
-    if (obj) {
-      Object.keys(obj).forEach(key => {
-        if (obj[key] !== undefined) {
-          target[key] = obj[key];
-        }
-      });
-    }
-  });
-  return target;
-}
 /** Use same object to support `useMemo` optimization */
 const EmptyFallbackCloseCollection = {};
 function useClosable(propCloseCollection, contextCloseCollection) {
@@ -24380,9 +25308,10 @@ function useClosable(propCloseCollection, contextCloseCollection) {
   // Align the `props`, `context` `fallback` to config object first
   const propCloseConfig = useClosableConfig(propCloseCollection);
   const contextCloseConfig = useClosableConfig(contextCloseCollection);
+  const [contextLocale] = (0,_locale__WEBPACK_IMPORTED_MODULE_2__["default"])('global', _locale_en_US__WEBPACK_IMPORTED_MODULE_3__["default"].global);
   const closeBtnIsDisabled = typeof propCloseConfig !== 'boolean' ? !!(propCloseConfig === null || propCloseConfig === void 0 ? void 0 : propCloseConfig.disabled) : false;
   const mergedFallbackCloseCollection = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => Object.assign({
-    closeIcon: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_CloseOutlined__WEBPACK_IMPORTED_MODULE_2__["default"], null)
+    closeIcon: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_CloseOutlined__WEBPACK_IMPORTED_MODULE_4__["default"], null)
   }, fallbackCloseCollection), [fallbackCloseCollection]);
   // Use fallback logic to fill the config
   const mergedClosableConfig = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => {
@@ -24392,7 +25321,7 @@ function useClosable(propCloseCollection, contextCloseCollection) {
       return false;
     }
     if (propCloseConfig) {
-      return assignWithoutUndefined(mergedFallbackCloseCollection, contextCloseConfig, propCloseConfig);
+      return (0,_extendsObject__WEBPACK_IMPORTED_MODULE_5__["default"])(mergedFallbackCloseCollection, contextCloseConfig, propCloseConfig);
     }
     // =============== Context Second ==============
     // Skip if context is disabled
@@ -24400,7 +25329,7 @@ function useClosable(propCloseCollection, contextCloseCollection) {
       return false;
     }
     if (contextCloseConfig) {
-      return assignWithoutUndefined(mergedFallbackCloseCollection, contextCloseConfig);
+      return (0,_extendsObject__WEBPACK_IMPORTED_MODULE_5__["default"])(mergedFallbackCloseCollection, contextCloseConfig);
     }
     // ============= Fallback Default ==============
     return !mergedFallbackCloseCollection.closable ? false : mergedFallbackCloseCollection;
@@ -24408,7 +25337,7 @@ function useClosable(propCloseCollection, contextCloseCollection) {
   // Calculate the final closeIcon
   return react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => {
     if (mergedClosableConfig === false) {
-      return [false, null, closeBtnIsDisabled];
+      return [false, null, closeBtnIsDisabled, {}];
     }
     const {
       closeIconRender
@@ -24417,18 +25346,20 @@ function useClosable(propCloseCollection, contextCloseCollection) {
       closeIcon
     } = mergedClosableConfig;
     let mergedCloseIcon = closeIcon;
+    // Wrap the closeIcon with aria props
+    const ariaOrDataProps = (0,rc_util_es_pickAttrs__WEBPACK_IMPORTED_MODULE_1__["default"])(mergedClosableConfig, true);
     if (mergedCloseIcon !== null && mergedCloseIcon !== undefined) {
       // Wrap the closeIcon if needed
       if (closeIconRender) {
         mergedCloseIcon = closeIconRender(closeIcon);
       }
-      // Wrap the closeIcon with aria props
-      const ariaProps = (0,rc_util_es_pickAttrs__WEBPACK_IMPORTED_MODULE_1__["default"])(mergedClosableConfig, true);
-      if (Object.keys(ariaProps).length) {
-        mergedCloseIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.isValidElement(mergedCloseIcon) ? (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.cloneElement(mergedCloseIcon, ariaProps)) : (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", Object.assign({}, ariaProps), mergedCloseIcon));
-      }
+      mergedCloseIcon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.isValidElement(mergedCloseIcon) ? (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.cloneElement(mergedCloseIcon, Object.assign({
+        'aria-label': contextLocale.close
+      }, ariaOrDataProps))) : (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", Object.assign({
+        "aria-label": contextLocale.close
+      }, ariaOrDataProps), mergedCloseIcon));
     }
-    return [true, mergedCloseIcon, closeBtnIsDisabled];
+    return [true, mergedCloseIcon, closeBtnIsDisabled, ariaOrDataProps];
   }, [mergedClosableConfig, mergedFallbackCloseCollection]);
 }
 
@@ -24708,6 +25639,37 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 const isPrimitive = value => typeof value !== 'object' && typeof value !== 'function' || value === null;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (isPrimitive);
+
+/***/ }),
+
+/***/ "./node_modules/antd/es/_util/mediaQueryUtil.js":
+/*!******************************************************!*\
+  !*** ./node_modules/antd/es/_util/mediaQueryUtil.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   addMediaQueryListener: () => (/* binding */ addMediaQueryListener),
+/* harmony export */   removeMediaQueryListener: () => (/* binding */ removeMediaQueryListener)
+/* harmony export */ });
+const addMediaQueryListener = (mql, handler) => {
+  // Don't delete here, please keep the code compatible
+  if (typeof (mql === null || mql === void 0 ? void 0 : mql.addEventListener) !== 'undefined') {
+    mql.addEventListener('change', handler);
+  } else if (typeof (mql === null || mql === void 0 ? void 0 : mql.addListener) !== 'undefined') {
+    mql.addListener(handler);
+  }
+};
+const removeMediaQueryListener = (mql, handler) => {
+  // Don't delete here, please keep the code compatible
+  if (typeof (mql === null || mql === void 0 ? void 0 : mql.removeEventListener) !== 'undefined') {
+    mql.removeEventListener('change', handler);
+  } else if (typeof (mql === null || mql === void 0 ? void 0 : mql.removeListener) !== 'undefined') {
+    mql.removeListener(handler);
+  }
+};
 
 /***/ }),
 
@@ -25004,12 +25966,14 @@ function cloneElement(element, props) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ useResponsiveObserver),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   matchScreen: () => (/* binding */ matchScreen),
 /* harmony export */   responsiveArray: () => (/* binding */ responsiveArray)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _theme_internal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../theme/internal */ "./node_modules/antd/es/theme/useToken.js");
+/* harmony import */ var _mediaQueryUtil__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./mediaQueryUtil */ "./node_modules/antd/es/_util/mediaQueryUtil.js");
+
 
 
 const responsiveArray = ['xxl', 'xl', 'lg', 'md', 'sm', 'xs'];
@@ -25049,7 +26013,17 @@ const validateBreakpoints = token => {
   });
   return token;
 };
-function useResponsiveObserver() {
+const matchScreen = (screens, screenSizes) => {
+  if (!screenSizes) {
+    return;
+  }
+  for (const breakpoint of responsiveArray) {
+    if (screens[breakpoint] && (screenSizes === null || screenSizes === void 0 ? void 0 : screenSizes[breakpoint]) !== undefined) {
+      return screenSizes[breakpoint];
+    }
+  }
+};
+const useResponsiveObserver = () => {
   const [, token] = (0,_theme_internal__WEBPACK_IMPORTED_MODULE_1__["default"])();
   const responsiveMap = getResponsiveMap(validateBreakpoints(token));
   // To avoid repeat create instance, we add `useMemo` here.
@@ -25058,6 +26032,7 @@ function useResponsiveObserver() {
     let subUid = -1;
     let screens = {};
     return {
+      responsiveMap,
       matchHandlers: {},
       dispatch(pointMap) {
         screens = pointMap;
@@ -25079,48 +26054,37 @@ function useResponsiveObserver() {
           this.unregister();
         }
       },
-      unregister() {
-        Object.keys(responsiveMap).forEach(screen => {
-          const matchMediaQuery = responsiveMap[screen];
-          const handler = this.matchHandlers[matchMediaQuery];
-          handler === null || handler === void 0 ? void 0 : handler.mql.removeListener(handler === null || handler === void 0 ? void 0 : handler.listener);
-        });
-        subscribers.clear();
-      },
       register() {
-        Object.keys(responsiveMap).forEach(screen => {
-          const matchMediaQuery = responsiveMap[screen];
-          const listener = _ref => {
+        Object.entries(responsiveMap).forEach(_ref => {
+          let [screen, mediaQuery] = _ref;
+          const listener = _ref2 => {
             let {
               matches
-            } = _ref;
+            } = _ref2;
             this.dispatch(Object.assign(Object.assign({}, screens), {
               [screen]: matches
             }));
           };
-          const mql = window.matchMedia(matchMediaQuery);
-          mql.addListener(listener);
-          this.matchHandlers[matchMediaQuery] = {
+          const mql = window.matchMedia(mediaQuery);
+          (0,_mediaQueryUtil__WEBPACK_IMPORTED_MODULE_2__.addMediaQueryListener)(mql, listener);
+          this.matchHandlers[mediaQuery] = {
             mql,
             listener
           };
           listener(mql);
         });
       },
-      responsiveMap
+      unregister() {
+        Object.values(responsiveMap).forEach(mediaQuery => {
+          const handler = this.matchHandlers[mediaQuery];
+          (0,_mediaQueryUtil__WEBPACK_IMPORTED_MODULE_2__.removeMediaQueryListener)(handler === null || handler === void 0 ? void 0 : handler.mql, handler === null || handler === void 0 ? void 0 : handler.listener);
+        });
+        subscribers.clear();
+      }
     };
   }, [token]);
-}
-const matchScreen = (screens, screenSizes) => {
-  if (screenSizes && typeof screenSizes === 'object') {
-    for (let i = 0; i < responsiveArray.length; i++) {
-      const breakpoint = responsiveArray[i];
-      if (screens[breakpoint] && screenSizes[breakpoint] !== undefined) {
-        return screenSizes[breakpoint];
-      }
-    }
-  }
 };
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (useResponsiveObserver);
 
 /***/ }),
 
@@ -25232,13 +26196,16 @@ const canUseDocElement = () => (0,rc_util_es_Dom_canUseDom__WEBPACK_IMPORTED_MOD
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ toList)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-function toList(candidate) {
+const toList = function (candidate) {
   let skipEmpty = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  if (skipEmpty && (candidate === undefined || candidate === null)) return [];
+  if (skipEmpty && (candidate === undefined || candidate === null)) {
+    return [];
+  }
   return Array.isArray(candidate) ? candidate : [candidate];
-}
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (toList);
 
 /***/ }),
 
@@ -25469,7 +26436,7 @@ const showWaveEffect = (target, info) => {
   holder.style.left = '0px';
   holder.style.top = '0px';
   target === null || target === void 0 ? void 0 : target.insertBefore(holder, target === null || target === void 0 ? void 0 : target.firstChild);
-  const reactRender = (0,_config_provider_UnstableContext__WEBPACK_IMPORTED_MODULE_7__.getReactRender)();
+  const reactRender = (0,_config_provider_UnstableContext__WEBPACK_IMPORTED_MODULE_7__.unstableSetRender)();
   let unmountCallback = null;
   function registerUnmount() {
     return unmountCallback;
@@ -25816,7 +26783,25 @@ var __rest = undefined && undefined.__rest || function (s, e) {
 
 
 
-const InternalAvatar = (props, ref) => {
+const Avatar = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((props, ref) => {
+  const {
+      prefixCls: customizePrefixCls,
+      shape,
+      size: customSize,
+      src,
+      srcSet,
+      icon,
+      className,
+      rootClassName,
+      style,
+      alt,
+      draggable,
+      children,
+      crossOrigin,
+      gap = 4,
+      onError
+    } = props,
+    others = __rest(props, ["prefixCls", "shape", "size", "src", "srcSet", "icon", "className", "rootClassName", "style", "alt", "draggable", "children", "crossOrigin", "gap", "onError"]);
   const [scale, setScale] = react__WEBPACK_IMPORTED_MODULE_0__.useState(1);
   const [mounted, setMounted] = react__WEBPACK_IMPORTED_MODULE_0__.useState(false);
   const [isImgExist, setIsImgExist] = react__WEBPACK_IMPORTED_MODULE_0__.useState(true);
@@ -25836,9 +26821,6 @@ const InternalAvatar = (props, ref) => {
     const nodeWidth = avatarNodeRef.current.offsetWidth;
     // denominator is 0 is no meaning
     if (childrenWidth !== 0 && nodeWidth !== 0) {
-      const {
-        gap = 4
-      } = props;
       if (gap * 2 < nodeWidth) {
         setScale(nodeWidth - gap * 2 < childrenWidth ? (nodeWidth - gap * 2) / childrenWidth : 1);
       }
@@ -25850,32 +26832,14 @@ const InternalAvatar = (props, ref) => {
   react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => {
     setIsImgExist(true);
     setScale(1);
-  }, [props.src]);
-  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(setScaleParam, [props.gap]);
+  }, [src]);
+  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(setScaleParam, [gap]);
   const handleImgLoadError = () => {
-    const {
-      onError
-    } = props;
     const errorFlag = onError === null || onError === void 0 ? void 0 : onError();
     if (errorFlag !== false) {
       setIsImgExist(false);
     }
   };
-  const {
-      prefixCls: customizePrefixCls,
-      shape,
-      size: customSize,
-      src,
-      srcSet,
-      icon,
-      className,
-      rootClassName,
-      alt,
-      draggable,
-      children,
-      crossOrigin
-    } = props,
-    others = __rest(props, ["prefixCls", "shape", "size", "src", "srcSet", "icon", "className", "rootClassName", "alt", "draggable", "children", "crossOrigin"]);
   const size = (0,_config_provider_hooks_useSize__WEBPACK_IMPORTED_MODULE_6__["default"])(ctxSize => {
     var _a, _b;
     return (_b = (_a = customSize !== null && customSize !== void 0 ? customSize : avatarCtx === null || avatarCtx === void 0 ? void 0 : avatarCtx.size) !== null && _a !== void 0 ? _a : ctxSize) !== null && _b !== void 0 ? _b : 'default';
@@ -25953,17 +26917,12 @@ const InternalAvatar = (props, ref) => {
       ref: avatarChildrenRef
     }, children);
   }
-  // The event is triggered twice from bubbling up the DOM tree.
-  // see https://codesandbox.io/s/kind-snow-9lidz
-  delete others.onError;
-  delete others.gap;
   return wrapCSSVar(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", Object.assign({}, others, {
-    style: Object.assign(Object.assign(Object.assign(Object.assign({}, sizeStyle), responsiveSizeStyle), avatar === null || avatar === void 0 ? void 0 : avatar.style), others.style),
+    style: Object.assign(Object.assign(Object.assign(Object.assign({}, sizeStyle), responsiveSizeStyle), avatar === null || avatar === void 0 ? void 0 : avatar.style), style),
     className: classString,
     ref: avatarNodeMergedRef
   }), childrenToRender));
-};
-const Avatar = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef(InternalAvatar);
+});
 if (true) {
   Avatar.displayName = 'Avatar';
 }
@@ -26095,7 +27054,7 @@ const AvatarGroup = props => {
     });
     childrenShow.push(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_popover__WEBPACK_IMPORTED_MODULE_9__["default"], Object.assign({
       key: "avatar-popover-key",
-      destroyTooltipOnHide: true
+      destroyOnHidden: true
     }, mergeProps), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Avatar__WEBPACK_IMPORTED_MODULE_10__["default"], {
       style: mergeStyle
     }, `+${numOfChildren - mergeCount}`)));
@@ -27551,16 +28510,29 @@ const InternalCompoundedButton = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__
   // https://github.com/ant-design/ant-design/issues/47605
   // Compatible with original `type` behavior
   const mergedType = type || 'default';
+  const {
+    button
+  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider_context__WEBPACK_IMPORTED_MODULE_4__.ConfigContext);
   const [mergedColor, mergedVariant] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => {
+    // >>>>> Local
+    // Color & Variant
     if (color && variant) {
       return [color, variant];
     }
-    const colorVariantPair = ButtonTypeMap[mergedType] || [];
-    if (danger) {
-      return ['danger', colorVariantPair[1]];
+    // Sugar syntax
+    if (type || danger) {
+      const colorVariantPair = ButtonTypeMap[mergedType] || [];
+      if (danger) {
+        return ['danger', colorVariantPair[1]];
+      }
+      return colorVariantPair;
     }
-    return colorVariantPair;
-  }, [type, color, variant, danger]);
+    // >>> Context fallback
+    if ((button === null || button === void 0 ? void 0 : button.color) && (button === null || button === void 0 ? void 0 : button.variant)) {
+      return [button.color, button.variant];
+    }
+    return ['default', 'outlined'];
+  }, [type, color, variant, danger, button === null || button === void 0 ? void 0 : button.variant, button === null || button === void 0 ? void 0 : button.color]);
   const isDanger = mergedColor === 'danger';
   const mergedColorText = isDanger ? 'dangerous' : mergedColor;
   const {
@@ -27671,7 +28643,7 @@ const InternalCompoundedButton = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__
   // ========================= Render =========================
   const classes = classnames__WEBPACK_IMPORTED_MODULE_1___default()(prefixCls, hashId, cssVarCls, {
     [`${prefixCls}-${shape}`]: shape !== 'default' && shape,
-    // line(253 - 254): Compatible with versions earlier than 5.21.0
+    // Compatible with versions earlier than 5.21.0
     [`${prefixCls}-${mergedType}`]: mergedType,
     [`${prefixCls}-dangerous`]: danger,
     [`${prefixCls}-color-${mergedColorText}`]: mergedColorText,
@@ -29102,7 +30074,7 @@ const genCardActionsStyle = token => {
         [`a:not(${componentCls}-btn), > ${iconCls}`]: {
           display: 'inline-block',
           width: '100%',
-          color: token.colorTextDescription,
+          color: token.colorIcon,
           lineHeight: (0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.fontHeight),
           transition: `color ${token.motionDurationMid}`,
           '&:hover': {
@@ -29483,9 +30455,9 @@ const InternalCheckbox = (props, ref) => {
     className: checkboxClass,
     disabled: mergedDisabled,
     ref: mergedRef
-  })), children !== undefined && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
+  })), children !== undefined && children !== null && (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
     className: `${prefixCls}-label`
-  }, children))));
+  }, children)))));
 };
 const Checkbox = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef(InternalCheckbox);
 if (true) {
@@ -29603,13 +30575,13 @@ const CheckboxGroup = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef
     value: option.value,
     checked: value.includes(option.value),
     onChange: option.onChange,
-    className: `${groupPrefixCls}-item`,
+    className: classnames__WEBPACK_IMPORTED_MODULE_2___default()(`${groupPrefixCls}-item`, option.className),
     style: option.style,
     title: option.title,
     id: option.id,
     required: option.required
   }, option.label))) : children;
-  const context = {
+  const memoizedContext = react__WEBPACK_IMPORTED_MODULE_1__.useMemo(() => ({
     toggleOption,
     value,
     disabled: restProps.disabled,
@@ -29617,7 +30589,7 @@ const CheckboxGroup = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef
     // https://github.com/ant-design/ant-design/issues/16376
     registerValue,
     cancelValue
-  };
+  }), [toggleOption, value, restProps.disabled, restProps.name, registerValue, cancelValue]);
   const classString = classnames__WEBPACK_IMPORTED_MODULE_2___default()(groupPrefixCls, {
     [`${groupPrefixCls}-rtl`]: direction === 'rtl'
   }, className, rootClassName, cssVarCls, rootCls, hashId);
@@ -29627,7 +30599,7 @@ const CheckboxGroup = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef
   }, domProps, {
     ref: ref
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_GroupContext__WEBPACK_IMPORTED_MODULE_8__["default"].Provider, {
-    value: context
+    value: memoizedContext
   }, childrenNode)));
 });
 
@@ -30048,6 +31020,8 @@ const Collapse = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((pro
     size: customizeSize,
     expandIconPosition = 'start',
     children,
+    destroyInactivePanel,
+    destroyOnHidden,
     expandIcon
   } = props;
   const mergedSize = (0,_config_provider_hooks_useSize__WEBPACK_IMPORTED_MODULE_6__["default"])(ctx => {
@@ -30061,6 +31035,7 @@ const Collapse = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((pro
     const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_8__.devUseWarning)('Collapse');
     // Warning if use legacy type `expandIconPosition`
      true ? warning(expandIconPosition !== 'left' && expandIconPosition !== 'right', 'deprecated', '`expandIconPosition` with `left` or `right` is deprecated. Please use `start` or `end` instead.') : 0;
+    warning.deprecated(!('destroyInactivePanel' in props), 'destroyInactivePanel', 'destroyOnHidden');
   }
   // Align with logic position
   const mergedExpandIconPosition = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => {
@@ -30121,7 +31096,9 @@ const Collapse = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((pro
     expandIcon: renderExpandIcon,
     prefixCls: prefixCls,
     className: collapseClassName,
-    style: Object.assign(Object.assign({}, contextStyle), style)
+    style: Object.assign(Object.assign({}, contextStyle), style),
+    // TODO: In the future, destroyInactivePanel in rc-collapse needs to be upgrade to destroyOnHidden
+    destroyInactivePanel: destroyOnHidden !== null && destroyOnHidden !== void 0 ? destroyOnHidden : destroyInactivePanel
   }), items));
 });
 if (true) {
@@ -30420,7 +31397,8 @@ const genBorderlessStyle = token => {
   const {
     componentCls,
     headerBg,
-    paddingXXS,
+    borderlessContentPadding,
+    borderlessContentBg,
     colorBorder
   } = token;
   return {
@@ -30440,11 +31418,11 @@ const genBorderlessStyle = token => {
         borderBottom: 0
       },
       [`> ${componentCls}-item > ${componentCls}-content`]: {
-        backgroundColor: 'transparent',
+        backgroundColor: borderlessContentBg,
         borderTop: 0
       },
       [`> ${componentCls}-item > ${componentCls}-content > ${componentCls}-content-box`]: {
-        paddingTop: paddingXXS
+        padding: borderlessContentPadding
       }
     }
   };
@@ -30476,7 +31454,9 @@ const prepareComponentToken = token => ({
   headerBg: token.colorFillAlter,
   contentPadding: `${token.padding}px 16px`,
   // Fixed Value
-  contentBg: token.colorBgContainer
+  contentBg: token.colorBgContainer,
+  borderlessContentPadding: `${token.paddingXXS}px 16px ${token.padding}px`,
+  borderlessContentBg: 'transparent'
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_theme_internal__WEBPACK_IMPORTED_MODULE_2__.genStyleHooks)('Collapse', token => {
   const collapseToken = (0,_theme_internal__WEBPACK_IMPORTED_MODULE_3__.mergeToken)(token, {
@@ -30962,7 +31942,6 @@ const SizeContextProvider = _ref => {
 var react_dom__WEBPACK_IMPORTED_MODULE_1___namespace_cache;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   getReactRender: () => (/* binding */ getReactRender),
 /* harmony export */   unstableSetRender: () => (/* binding */ unstableSetRender)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
@@ -30995,9 +31974,9 @@ let unstableRender = defaultReactRender;
  * And will be removed in next major version.
  */
 function unstableSetRender(render) {
-  unstableRender = render;
-}
-function getReactRender() {
+  if (render) {
+    unstableRender = render;
+  }
   return unstableRender;
 }
 
@@ -31301,7 +32280,7 @@ const useSize = customSize => {
     if (typeof customSize === 'string') {
       return customSize !== null && customSize !== void 0 ? customSize : size;
     }
-    if (customSize instanceof Function) {
+    if (typeof customSize === 'function') {
       return customSize(size);
     }
     return size;
@@ -32511,8 +33490,16 @@ const genBorderedStyle = token => {
         },
         [`${componentCls}-row`]: {
           borderBottom: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.lineWidth)} ${token.lineType} ${token.colorSplit}`,
+          '&:first-child': {
+            '> th:first-child, > td:first-child': {
+              borderStartStartRadius: token.borderRadiusLG
+            }
+          },
           '&:last-child': {
-            borderBottom: 'none'
+            borderBottom: 'none',
+            '> th:first-child, > td:first-child': {
+              borderEndStartRadius: token.borderRadiusLG
+            }
           },
           [`> ${componentCls}-item-label, > ${componentCls}-item-content`]: {
             padding: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.padding)} ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.paddingLG)}`,
@@ -32703,8 +33690,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _util_hooks_useClosable__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_util/hooks/useClosable */ "./node_modules/antd/es/_util/hooks/useClosable.js");
-/* harmony import */ var _skeleton__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../skeleton */ "./node_modules/antd/es/skeleton/index.js");
 /* harmony import */ var _config_provider_context__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../config-provider/context */ "./node_modules/antd/es/config-provider/context.js");
+/* harmony import */ var _skeleton__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../skeleton */ "./node_modules/antd/es/skeleton/index.js");
 "use client";
 
 
@@ -32732,7 +33719,6 @@ const DrawerPanel = props => {
   const customCloseIconRender = react__WEBPACK_IMPORTED_MODULE_0__.useCallback(icon => (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("button", {
     type: "button",
     onClick: onClose,
-    "aria-label": "Close",
     className: `${prefixCls}-close`
   }, icon)), [onClose]);
   const [mergedClosable, mergedCloseIcon] = (0,_util_hooks_useClosable__WEBPACK_IMPORTED_MODULE_3__["default"])((0,_util_hooks_useClosable__WEBPACK_IMPORTED_MODULE_3__.pickClosable)(props), (0,_util_hooks_useClosable__WEBPACK_IMPORTED_MODULE_3__.pickClosable)(drawerContext), {
@@ -32856,9 +33842,11 @@ const Drawer = props => {
       afterVisibleChange,
       maskStyle,
       drawerStyle,
-      contentWrapperStyle
+      contentWrapperStyle,
+      destroyOnClose,
+      destroyOnHidden
     } = props,
-    rest = __rest(props, ["rootClassName", "width", "height", "size", "mask", "push", "open", "afterOpenChange", "onClose", "prefixCls", "getContainer", "style", "className", "visible", "afterVisibleChange", "maskStyle", "drawerStyle", "contentWrapperStyle"]);
+    rest = __rest(props, ["rootClassName", "width", "height", "size", "mask", "push", "open", "afterOpenChange", "onClose", "prefixCls", "getContainer", "style", "className", "visible", "afterVisibleChange", "maskStyle", "drawerStyle", "contentWrapperStyle", "destroyOnClose", "destroyOnHidden"]);
   const {
     getPopupContainer,
     getPrefixCls,
@@ -32880,7 +33868,7 @@ const Drawer = props => {
   // ========================== Warning ===========================
   if (true) {
     const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_5__.devUseWarning)('Drawer');
-    [['visible', 'open'], ['afterVisibleChange', 'afterOpenChange'], ['headerStyle', 'styles.header'], ['bodyStyle', 'styles.body'], ['footerStyle', 'styles.footer'], ['contentWrapperStyle', 'styles.wrapper'], ['maskStyle', 'styles.mask'], ['drawerStyle', 'styles.content']].forEach(_ref => {
+    [['visible', 'open'], ['afterVisibleChange', 'afterOpenChange'], ['headerStyle', 'styles.header'], ['bodyStyle', 'styles.body'], ['footerStyle', 'styles.footer'], ['contentWrapperStyle', 'styles.wrapper'], ['maskStyle', 'styles.mask'], ['drawerStyle', 'styles.content'], ['destroyInactivePanel', 'destroyOnHidden']].forEach(_ref => {
       let [deprecatedName, newName] = _ref;
       warning.deprecated(!(deprecatedName in props), deprecatedName, newName);
     });
@@ -32948,7 +33936,9 @@ const Drawer = props => {
     getContainer: getContainer,
     afterOpenChange: afterOpenChange !== null && afterOpenChange !== void 0 ? afterOpenChange : afterVisibleChange,
     panelRef: panelRef,
-    zIndex: zIndex
+    zIndex: zIndex,
+    // TODO: In the future, destroyOnClose in rc-drawer needs to be upgrade to destroyOnHidden
+    destroyOnClose: destroyOnHidden !== null && destroyOnHidden !== void 0 ? destroyOnHidden : destroyOnClose
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_DrawerPanel__WEBPACK_IMPORTED_MODULE_11__["default"], Object.assign({
     prefixCls: prefixCls
   }, rest, {
@@ -33356,12 +34346,15 @@ const DropdownButton = props => {
       mouseLeaveDelay,
       overlayClassName,
       overlayStyle,
+      destroyOnHidden,
       destroyPopupOnHide,
-      dropdownRender
+      dropdownRender,
+      popupRender
     } = props,
-    restProps = __rest(props, ["prefixCls", "type", "danger", "disabled", "loading", "onClick", "htmlType", "children", "className", "menu", "arrow", "autoFocus", "overlay", "trigger", "align", "open", "onOpenChange", "placement", "getPopupContainer", "href", "icon", "title", "buttonsRender", "mouseEnterDelay", "mouseLeaveDelay", "overlayClassName", "overlayStyle", "destroyPopupOnHide", "dropdownRender"]);
+    restProps = __rest(props, ["prefixCls", "type", "danger", "disabled", "loading", "onClick", "htmlType", "children", "className", "menu", "arrow", "autoFocus", "overlay", "trigger", "align", "open", "onOpenChange", "placement", "getPopupContainer", "href", "icon", "title", "buttonsRender", "mouseEnterDelay", "mouseLeaveDelay", "overlayClassName", "overlayStyle", "destroyOnHidden", "destroyPopupOnHide", "dropdownRender", "popupRender"]);
   const prefixCls = getPrefixCls('dropdown', customizePrefixCls);
   const buttonPrefixCls = `${prefixCls}-button`;
+  const mergedPopupRender = popupRender || dropdownRender;
   const dropdownProps = {
     menu,
     arrow,
@@ -33375,14 +34368,17 @@ const DropdownButton = props => {
     mouseLeaveDelay,
     overlayClassName,
     overlayStyle,
-    destroyPopupOnHide,
-    dropdownRender
+    destroyOnHidden,
+    popupRender: mergedPopupRender
   };
   const {
     compactSize,
     compactItemClassnames
   } = (0,_space_Compact__WEBPACK_IMPORTED_MODULE_4__.useCompactItemContext)(prefixCls, direction);
   const classes = classnames__WEBPACK_IMPORTED_MODULE_1___default()(buttonPrefixCls, compactItemClassnames, className);
+  if ('destroyPopupOnHide' in props) {
+    dropdownProps.destroyPopupOnHide = destroyPopupOnHide;
+  }
   if ('overlay' in props) {
     dropdownProps.overlay = overlay;
   }
@@ -33488,6 +34484,7 @@ const Dropdown = props => {
     trigger,
     disabled,
     dropdownRender,
+    popupRender,
     getPopupContainer,
     overlayClassName,
     rootClassName,
@@ -33502,7 +34499,9 @@ const Dropdown = props => {
     autoAdjustOverflow = true,
     placement = '',
     overlay,
-    transitionName
+    transitionName,
+    destroyOnHidden,
+    destroyPopupOnHide
   } = props;
   const {
     getPopupContainer: getContextPopupContainer,
@@ -33510,14 +34509,24 @@ const Dropdown = props => {
     direction,
     dropdown
   } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider__WEBPACK_IMPORTED_MODULE_6__.ConfigContext);
+  const mergedPopupRender = popupRender || dropdownRender;
   // Warning for deprecated usage
   const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_7__.devUseWarning)('Dropdown');
   if (true) {
-    [['visible', 'open'], ['onVisibleChange', 'onOpenChange']].forEach(_ref => {
+    const deprecatedProps = {
+      visible: 'open',
+      onVisibleChange: 'onOpenChange',
+      overlay: 'menu',
+      dropdownRender: 'popupRender',
+      destroyPopupOnHide: 'destroyOnHidden'
+    };
+    Object.entries(deprecatedProps).forEach(_ref => {
       let [deprecatedName, newName] = _ref;
       warning.deprecated(!(deprecatedName in props), deprecatedName, newName);
     });
-    warning.deprecated(!('overlay' in props), 'overlay', 'menu');
+    if (placement.includes('Center')) {
+      warning.deprecated(!placement.includes('Center'), `placement: ${placement}`, `placement: ${placement.slice(0, placement.indexOf('Center'))}`);
+    }
   }
   const memoTransitionName = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => {
     const rootPrefixCls = getPrefixCls();
@@ -33538,22 +34547,12 @@ const Dropdown = props => {
     }
     return placement;
   }, [placement, direction]);
-  if (true) {
-    if (placement.includes('Center')) {
-      const newPlacement = placement.slice(0, placement.indexOf('Center'));
-       true ? warning(!placement.includes('Center'), 'deprecated', `You are using '${placement}' placement in Dropdown, which is deprecated. Try to use '${newPlacement}' instead.`) : 0;
-    }
-    [['visible', 'open'], ['onVisibleChange', 'onOpenChange']].forEach(_ref2 => {
-      let [deprecatedName, newName] = _ref2;
-      warning.deprecated(!(deprecatedName in props), deprecatedName, newName);
-    });
-  }
   const prefixCls = getPrefixCls('dropdown', customizePrefixCls);
   const rootCls = (0,_config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_8__["default"])(prefixCls);
   const [wrapCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_9__["default"])(prefixCls, rootCls);
   const [, token] = (0,_theme_internal__WEBPACK_IMPORTED_MODULE_10__["default"])();
   const child = react__WEBPACK_IMPORTED_MODULE_0__.Children.only((0,_util_isPrimitive__WEBPACK_IMPORTED_MODULE_11__["default"])(children) ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", null, children) : children);
-  const dropdownTrigger = (0,_util_reactNode__WEBPACK_IMPORTED_MODULE_12__.cloneElement)(child, {
+  const popupTrigger = (0,_util_reactNode__WEBPACK_IMPORTED_MODULE_12__.cloneElement)(child, {
     className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(`${prefixCls}-trigger`, {
       [`${prefixCls}-rtl`]: direction === 'rtl'
     }, child.props.className),
@@ -33603,8 +34602,8 @@ const Dropdown = props => {
     } else {
       overlayNode = overlay;
     }
-    if (dropdownRender) {
-      overlayNode = dropdownRender(overlayNode);
+    if (mergedPopupRender) {
+      overlayNode = mergedPopupRender(overlayNode);
     }
     overlayNode = react__WEBPACK_IMPORTED_MODULE_0__.Children.only(typeof overlayNode === 'string' ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", null, overlayNode) : overlayNode);
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_menu_OverrideContext__WEBPACK_IMPORTED_MODULE_15__.OverrideProvider, {
@@ -33620,10 +34619,10 @@ const Dropdown = props => {
       mode: "vertical",
       selectable: false,
       onClick: onMenuClick,
-      validator: _ref3 => {
+      validator: _ref2 => {
         let {
           mode
-        } = _ref3;
+        } = _ref2;
         // Warning if use other mode
          true ? warning(!mode || mode === 'vertical', 'usage', `mode="${mode}" is not supported for Dropdown's Menu.`) : 0;
       }
@@ -33650,8 +34649,9 @@ const Dropdown = props => {
     onVisibleChange: onInnerOpenChange,
     overlayStyle: Object.assign(Object.assign(Object.assign({}, dropdown === null || dropdown === void 0 ? void 0 : dropdown.style), overlayStyle), {
       zIndex
-    })
-  }), dropdownTrigger);
+    }),
+    autoDestroy: destroyOnHidden !== null && destroyOnHidden !== void 0 ? destroyOnHidden : destroyPopupOnHide
+  }), popupTrigger);
   if (zIndex) {
     renderNode = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_util_zindexContext__WEBPACK_IMPORTED_MODULE_19__["default"].Provider, {
       value: contextZIndex
@@ -33956,7 +34956,7 @@ const genBaseStyle = token => {
             insetInlineEnd: token.paddingXS,
             [`${componentCls}-menu-submenu-arrow-icon`]: {
               marginInlineEnd: '0 !important',
-              color: token.colorTextDescription,
+              color: token.colorIcon,
               fontSize: fontSizeIcon,
               fontStyle: 'normal'
             }
@@ -34641,6 +35641,7 @@ const InternalForm = (props, ref) => {
   const [wrapCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_9__["default"])(prefixCls, rootCls);
   const formClassName = classnames__WEBPACK_IMPORTED_MODULE_1___default()(prefixCls, `${prefixCls}-${layout}`, {
     [`${prefixCls}-hide-required-mark`]: mergedRequiredMark === false,
+    // todo: remove in next major version
     [`${prefixCls}-rtl`]: direction === 'rtl',
     [`${prefixCls}-${mergedSize}`]: mergedSize
   }, cssVarCls, rootCls, hashId, contextClassName, className, rootClassName);
@@ -35456,13 +36457,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _ant_design_icons_es_icons_QuestionCircleOutlined__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @ant-design/icons/es/icons/QuestionCircleOutlined */ "./node_modules/@ant-design/icons/es/icons/QuestionCircleOutlined.js");
+/* harmony import */ var _ant_design_icons_es_icons_QuestionCircleOutlined__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ant-design/icons/es/icons/QuestionCircleOutlined */ "./node_modules/@ant-design/icons/es/icons/QuestionCircleOutlined.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _grid_col__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../grid/col */ "./node_modules/antd/es/grid/col.js");
+/* harmony import */ var _util_convertToTooltipProps__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../_util/convertToTooltipProps */ "./node_modules/antd/es/_util/convertToTooltipProps.js");
+/* harmony import */ var _grid_col__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../grid/col */ "./node_modules/antd/es/grid/col.js");
 /* harmony import */ var _locale__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../locale */ "./node_modules/antd/es/locale/useLocale.js");
-/* harmony import */ var _locale_en_US__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../locale/en_US */ "./node_modules/antd/es/locale/en_US.js");
-/* harmony import */ var _tooltip__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../tooltip */ "./node_modules/antd/es/tooltip/index.js");
+/* harmony import */ var _locale_en_US__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../locale/en_US */ "./node_modules/antd/es/locale/en_US.js");
+/* harmony import */ var _tooltip__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../tooltip */ "./node_modules/antd/es/tooltip/index.js");
 /* harmony import */ var _context__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./context */ "./node_modules/antd/es/form/context.js");
 "use client";
 
@@ -35482,17 +36484,7 @@ var __rest = undefined && undefined.__rest || function (s, e) {
 
 
 
-function toTooltipProps(tooltip) {
-  if (!tooltip) {
-    return null;
-  }
-  if (typeof tooltip === 'object' && ! /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.isValidElement(tooltip)) {
-    return tooltip;
-  }
-  return {
-    title: tooltip
-  };
-}
+
 const FormItemLabel = _ref => {
   let {
     prefixCls,
@@ -35532,13 +36524,13 @@ const FormItemLabel = _ref => {
     labelChildren = label.replace(/[:|：]\s*$/, '');
   }
   // Tooltip
-  const tooltipProps = toTooltipProps(tooltip);
+  const tooltipProps = (0,_util_convertToTooltipProps__WEBPACK_IMPORTED_MODULE_4__["default"])(tooltip);
   if (tooltipProps) {
     const {
-        icon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_QuestionCircleOutlined__WEBPACK_IMPORTED_MODULE_4__["default"], null)
+        icon = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_QuestionCircleOutlined__WEBPACK_IMPORTED_MODULE_5__["default"], null)
       } = tooltipProps,
       restTooltipProps = __rest(tooltipProps, ["icon"]);
-    const tooltipNode = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_tooltip__WEBPACK_IMPORTED_MODULE_5__["default"], Object.assign({}, restTooltipProps), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.cloneElement(icon, {
+    const tooltipNode = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_tooltip__WEBPACK_IMPORTED_MODULE_6__["default"], Object.assign({}, restTooltipProps), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.cloneElement(icon, {
       className: `${prefixCls}-item-tooltip`,
       title: '',
       onClick: e => {
@@ -35553,6 +36545,7 @@ const FormItemLabel = _ref => {
   // Required Mark
   const isOptionalMark = requiredMark === 'optional';
   const isRenderMark = typeof requiredMark === 'function';
+  const hideRequiredMark = requiredMark === false;
   if (isRenderMark) {
     labelChildren = requiredMark(labelChildren, {
       required: !!required
@@ -35561,14 +36554,21 @@ const FormItemLabel = _ref => {
     labelChildren = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, labelChildren, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
       className: `${prefixCls}-item-optional`,
       title: ""
-    }, (formLocale === null || formLocale === void 0 ? void 0 : formLocale.optional) || ((_a = _locale_en_US__WEBPACK_IMPORTED_MODULE_6__["default"].Form) === null || _a === void 0 ? void 0 : _a.optional)));
+    }, (formLocale === null || formLocale === void 0 ? void 0 : formLocale.optional) || ((_a = _locale_en_US__WEBPACK_IMPORTED_MODULE_7__["default"].Form) === null || _a === void 0 ? void 0 : _a.optional)));
+  }
+  // https://github.com/ant-design/ant-design/pull/52950#discussion_r1980880316
+  let markType;
+  if (hideRequiredMark) {
+    markType = 'hidden';
+  } else if (isOptionalMark || isRenderMark) {
+    markType = 'optional';
   }
   const labelClassName = classnames__WEBPACK_IMPORTED_MODULE_1___default()({
     [`${prefixCls}-item-required`]: required,
-    [`${prefixCls}-item-required-mark-optional`]: isOptionalMark || isRenderMark,
+    [`${prefixCls}-item-required-mark-${markType}`]: markType,
     [`${prefixCls}-item-no-colon`]: !computedColon
   });
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_grid_col__WEBPACK_IMPORTED_MODULE_7__["default"], Object.assign({}, mergedLabelCol, {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_grid_col__WEBPACK_IMPORTED_MODULE_8__["default"], Object.assign({}, mergedLabelCol, {
     className: labelColClassName
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("label", {
     htmlFor: htmlFor,
@@ -36345,7 +37345,6 @@ const genFormItemStyle = token => {
   const {
     formItemCls,
     iconCls,
-    componentCls,
     rootPrefixCls,
     antCls,
     labelRequiredMarkColor,
@@ -36393,7 +37392,11 @@ const genFormItemStyle = token => {
         '&-wrap': {
           overflow: 'unset',
           lineHeight: token.lineHeight,
-          whiteSpace: 'unset'
+          whiteSpace: 'unset',
+          '> label': {
+            verticalAlign: 'middle',
+            textWrap: 'balance'
+          }
         },
         '> label': {
           position: 'relative',
@@ -36407,17 +37410,20 @@ const genFormItemStyle = token => {
             fontSize: token.fontSize,
             verticalAlign: 'top'
           },
-          // Required mark
-          [`&${formItemCls}-required:not(${formItemCls}-required-mark-optional)::before`]: {
-            display: 'inline-block',
-            marginInlineEnd: token.marginXXS,
-            color: labelRequiredMarkColor,
-            fontSize: token.fontSize,
-            fontFamily: 'SimSun, sans-serif',
-            lineHeight: 1,
-            content: '"*"',
-            [`${componentCls}-hide-required-mark &`]: {
-              display: 'none'
+          [`&${formItemCls}-required`]: {
+            '&::before': {
+              display: 'inline-block',
+              marginInlineEnd: token.marginXXS,
+              color: labelRequiredMarkColor,
+              fontSize: token.fontSize,
+              fontFamily: 'SimSun, sans-serif',
+              lineHeight: 1,
+              content: '"*"'
+            },
+            [`&${formItemCls}-required-mark-hidden, &${formItemCls}-required-mark-optional`]: {
+              '&::before': {
+                display: 'none'
+              }
             }
           },
           // Optional mark
@@ -36425,7 +37431,7 @@ const genFormItemStyle = token => {
             display: 'inline-block',
             marginInlineStart: token.marginXXS,
             color: token.colorTextDescription,
-            [`${componentCls}-hide-required-mark &`]: {
+            [`&${formItemCls}-required-mark-hidden`]: {
               display: 'none'
             }
           },
@@ -37449,7 +38455,8 @@ const InternalPreviewGroup = _a => {
     } = _a,
     otherProps = __rest(_a, ["previewPrefixCls", "preview"]);
   const {
-    getPrefixCls
+    getPrefixCls,
+    direction
   } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider__WEBPACK_IMPORTED_MODULE_11__.ConfigContext);
   const prefixCls = getPrefixCls('image', customizePrefixCls);
   const previewPrefixCls = `${prefixCls}-preview`;
@@ -37457,6 +38464,10 @@ const InternalPreviewGroup = _a => {
   const rootCls = (0,_config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_12__["default"])(prefixCls);
   const [wrapCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_13__["default"])(prefixCls, rootCls);
   const [zIndex] = (0,_util_hooks_useZIndex__WEBPACK_IMPORTED_MODULE_14__.useZIndex)('ImagePreview', typeof preview === 'object' ? preview.zIndex : undefined);
+  const memoizedIcons = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => Object.assign(Object.assign({}, icons), {
+    left: direction === 'rtl' ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_RightOutlined__WEBPACK_IMPORTED_MODULE_9__["default"], null) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_LeftOutlined__WEBPACK_IMPORTED_MODULE_8__["default"], null),
+    right: direction === 'rtl' ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_LeftOutlined__WEBPACK_IMPORTED_MODULE_8__["default"], null) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_RightOutlined__WEBPACK_IMPORTED_MODULE_9__["default"], null)
+  }), [direction]);
   const mergedPreview = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => {
     var _a;
     if (preview === false) {
@@ -37474,7 +38485,7 @@ const InternalPreviewGroup = _a => {
   return wrapCSSVar(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(rc_image__WEBPACK_IMPORTED_MODULE_2__["default"].PreviewGroup, Object.assign({
     preview: mergedPreview,
     previewPrefixCls: previewPrefixCls,
-    icons: icons
+    icons: memoizedIcons
   }, otherProps)));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (InternalPreviewGroup);
@@ -37493,17 +38504,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _ant_design_icons_es_icons_EyeOutlined__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons/es/icons/EyeOutlined */ "./node_modules/@ant-design/icons/es/icons/EyeOutlined.js");
+/* harmony import */ var _ant_design_icons_es_icons_EyeOutlined__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @ant-design/icons/es/icons/EyeOutlined */ "./node_modules/@ant-design/icons/es/icons/EyeOutlined.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var rc_image__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rc-image */ "./node_modules/rc-image/es/index.js");
-/* harmony import */ var _util_hooks_useZIndex__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../_util/hooks/useZIndex */ "./node_modules/antd/es/_util/hooks/useZIndex.js");
-/* harmony import */ var _util_motion__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../_util/motion */ "./node_modules/antd/es/_util/motion.js");
-/* harmony import */ var _config_provider_context__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../config-provider/context */ "./node_modules/antd/es/config-provider/context.js");
-/* harmony import */ var _config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../config-provider/hooks/useCSSVarCls */ "./node_modules/antd/es/config-provider/hooks/useCSSVarCls.js");
-/* harmony import */ var _locale__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../locale */ "./node_modules/antd/es/locale/useLocale.js");
-/* harmony import */ var _PreviewGroup__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./PreviewGroup */ "./node_modules/antd/es/image/PreviewGroup.js");
-/* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./style */ "./node_modules/antd/es/image/style/index.js");
+/* harmony import */ var _util_hooks_useZIndex__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../_util/hooks/useZIndex */ "./node_modules/antd/es/_util/hooks/useZIndex.js");
+/* harmony import */ var _util_motion__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../_util/motion */ "./node_modules/antd/es/_util/motion.js");
+/* harmony import */ var _util_warning__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_util/warning */ "./node_modules/antd/es/_util/warning.js");
+/* harmony import */ var _config_provider_context__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../config-provider/context */ "./node_modules/antd/es/config-provider/context.js");
+/* harmony import */ var _config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../config-provider/hooks/useCSSVarCls */ "./node_modules/antd/es/config-provider/hooks/useCSSVarCls.js");
+/* harmony import */ var _locale__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../locale */ "./node_modules/antd/es/locale/useLocale.js");
+/* harmony import */ var _PreviewGroup__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./PreviewGroup */ "./node_modules/antd/es/image/PreviewGroup.js");
+/* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./style */ "./node_modules/antd/es/image/style/index.js");
 "use client";
 
 var __rest = undefined && undefined.__rest || function (s, e) {
@@ -37525,6 +38537,7 @@ var __rest = undefined && undefined.__rest || function (s, e) {
 
 
 
+
 const Image = props => {
   const {
       prefixCls: customizePrefixCls,
@@ -37534,22 +38547,26 @@ const Image = props => {
       style
     } = props,
     otherProps = __rest(props, ["prefixCls", "preview", "className", "rootClassName", "style"]);
+  if (true) {
+    const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_3__.devUseWarning)('Image');
+    warning.deprecated(!(preview && typeof preview === 'object' && 'destroyOnClose' in preview), 'destroyOnClose', 'destroyOnHidden');
+  }
   const {
     getPrefixCls,
     getPopupContainer: getContextPopupContainer,
     className: contextClassName,
     style: contextStyle,
     preview: contextPreview
-  } = (0,_config_provider_context__WEBPACK_IMPORTED_MODULE_3__.useComponentConfig)('image');
-  const [imageLocale] = (0,_locale__WEBPACK_IMPORTED_MODULE_4__["default"])('Image');
+  } = (0,_config_provider_context__WEBPACK_IMPORTED_MODULE_4__.useComponentConfig)('image');
+  const [imageLocale] = (0,_locale__WEBPACK_IMPORTED_MODULE_5__["default"])('Image');
   const prefixCls = getPrefixCls('image', customizePrefixCls);
   const rootPrefixCls = getPrefixCls();
   // Style
-  const rootCls = (0,_config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_5__["default"])(prefixCls);
-  const [wrapCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_6__["default"])(prefixCls, rootCls);
+  const rootCls = (0,_config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_6__["default"])(prefixCls);
+  const [wrapCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_7__["default"])(prefixCls, rootCls);
   const mergedRootClassName = classnames__WEBPACK_IMPORTED_MODULE_1___default()(rootClassName, hashId, cssVarCls, rootCls);
   const mergedClassName = classnames__WEBPACK_IMPORTED_MODULE_1___default()(className, hashId, contextClassName);
-  const [zIndex] = (0,_util_hooks_useZIndex__WEBPACK_IMPORTED_MODULE_7__.useZIndex)('ImagePreview', typeof preview === 'object' ? preview.zIndex : undefined);
+  const [zIndex] = (0,_util_hooks_useZIndex__WEBPACK_IMPORTED_MODULE_8__.useZIndex)('ImagePreview', typeof preview === 'object' ? preview.zIndex : undefined);
   const mergedPreview = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => {
     if (preview === false) {
       return preview;
@@ -37558,19 +38575,23 @@ const Image = props => {
     const {
         getContainer,
         closeIcon,
-        rootClassName
+        rootClassName,
+        destroyOnClose,
+        destroyOnHidden
       } = _preview,
-      restPreviewProps = __rest(_preview, ["getContainer", "closeIcon", "rootClassName"]);
+      restPreviewProps = __rest(_preview, ["getContainer", "closeIcon", "rootClassName", "destroyOnClose", "destroyOnHidden"]);
     return Object.assign(Object.assign({
       mask: (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", {
         className: `${prefixCls}-mask-info`
-      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_EyeOutlined__WEBPACK_IMPORTED_MODULE_8__["default"], null), imageLocale === null || imageLocale === void 0 ? void 0 : imageLocale.preview)),
-      icons: _PreviewGroup__WEBPACK_IMPORTED_MODULE_9__.icons
+      }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_EyeOutlined__WEBPACK_IMPORTED_MODULE_9__["default"], null), imageLocale === null || imageLocale === void 0 ? void 0 : imageLocale.preview)),
+      icons: _PreviewGroup__WEBPACK_IMPORTED_MODULE_10__.icons
     }, restPreviewProps), {
+      // TODO: In the future, destroyOnClose in rc-image needs to be upgrade to destroyOnHidden
+      destroyOnClose: destroyOnHidden !== null && destroyOnHidden !== void 0 ? destroyOnHidden : destroyOnClose,
       rootClassName: classnames__WEBPACK_IMPORTED_MODULE_1___default()(mergedRootClassName, rootClassName),
       getContainer: getContainer !== null && getContainer !== void 0 ? getContainer : getContextPopupContainer,
-      transitionName: (0,_util_motion__WEBPACK_IMPORTED_MODULE_10__.getTransitionName)(rootPrefixCls, 'zoom', _preview.transitionName),
-      maskTransitionName: (0,_util_motion__WEBPACK_IMPORTED_MODULE_10__.getTransitionName)(rootPrefixCls, 'fade', _preview.maskTransitionName),
+      transitionName: (0,_util_motion__WEBPACK_IMPORTED_MODULE_11__.getTransitionName)(rootPrefixCls, 'zoom', _preview.transitionName),
+      maskTransitionName: (0,_util_motion__WEBPACK_IMPORTED_MODULE_11__.getTransitionName)(rootPrefixCls, 'fade', _preview.maskTransitionName),
       zIndex,
       closeIcon: closeIcon !== null && closeIcon !== void 0 ? closeIcon : contextPreview === null || contextPreview === void 0 ? void 0 : contextPreview.closeIcon
     });
@@ -37584,7 +38605,7 @@ const Image = props => {
     style: mergedStyle
   }, otherProps)));
 };
-Image.PreviewGroup = _PreviewGroup__WEBPACK_IMPORTED_MODULE_9__["default"];
+Image.PreviewGroup = _PreviewGroup__WEBPACK_IMPORTED_MODULE_10__["default"];
 if (true) {
   Image.displayName = 'Image';
 }
@@ -38088,7 +39109,7 @@ const InputNumber = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((
         [`${prefixCls}-affix-wrapper-sm`]: mergedSize === 'small',
         [`${prefixCls}-affix-wrapper-lg`]: mergedSize === 'large',
         [`${prefixCls}-affix-wrapper-rtl`]: direction === 'rtl',
-        [`${prefixCls}-affix-wrapper-without-controls`]: controls === false
+        [`${prefixCls}-affix-wrapper-without-controls`]: controls === false || mergedDisabled
       }, hashId),
       wrapper: classnames__WEBPACK_IMPORTED_MODULE_1___default()({
         [`${wrapperClassName}-rtl`]: direction === 'rtl'
@@ -38187,7 +39208,7 @@ const genInputNumberStyles = token => {
     paddingBlockSM,
     paddingBlockLG,
     paddingInlineLG,
-    colorTextDescription,
+    colorIcon,
     motionDurationMid,
     handleHoverColor,
     handleOpacity,
@@ -38332,7 +39353,6 @@ const genInputNumberStyles = token => {
         }), (0,_input_style__WEBPACK_IMPORTED_MODULE_2__.genPlaceholderStyle)(token.colorTextPlaceholder)), {
           '&[type="number"]::-webkit-inner-spin-button, &[type="number"]::-webkit-outer-spin-button': {
             margin: 0,
-            webkitAppearance: 'none',
             appearance: 'none'
           }
         })
@@ -38383,7 +39403,7 @@ const genInputNumberStyles = token => {
       [`${componentCls}-handler`]: {
         height: '50%',
         overflow: 'hidden',
-        color: colorTextDescription,
+        color: colorIcon,
         fontWeight: 'bold',
         lineHeight: 0,
         textAlign: 'center',
@@ -38404,7 +39424,7 @@ const genInputNumberStyles = token => {
           }
         },
         '&-up-inner, &-down-inner': Object.assign(Object.assign({}, (0,_style__WEBPACK_IMPORTED_MODULE_1__.resetIcon)()), {
-          color: colorTextDescription,
+          color: colorIcon,
           transition: `all ${motionDurationMid} linear`,
           userSelect: 'none'
         })
@@ -38884,8 +39904,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var rc_util_es_raf__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rc-util/es/raf */ "./node_modules/rc-util/es/raf.js");
-/* harmony import */ var _Input__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Input */ "./node_modules/antd/es/input/Input.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
+/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var rc_util_es_raf__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rc-util/es/raf */ "./node_modules/rc-util/es/raf.js");
+/* harmony import */ var _config_provider__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../config-provider */ "./node_modules/antd/es/config-provider/context.js");
+/* harmony import */ var _Input__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Input */ "./node_modules/antd/es/input/Input.js");
 "use client";
 
 var __rest = undefined && undefined.__rest || function (s, e) {
@@ -38899,25 +39922,33 @@ var __rest = undefined && undefined.__rest || function (s, e) {
 
 
 
+
+
 const OTPInput = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((props, ref) => {
   const {
+      className,
       value,
       onChange,
       onActiveChange,
       index,
       mask
     } = props,
-    restProps = __rest(props, ["value", "onChange", "onActiveChange", "index", "mask"]);
-  const internalValue = value && typeof mask === 'string' ? mask : value;
-  const onInternalChange = e => {
-    onChange(index, e.target.value);
-  };
+    restProps = __rest(props, ["className", "value", "onChange", "onActiveChange", "index", "mask"]);
+  const {
+    getPrefixCls
+  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider__WEBPACK_IMPORTED_MODULE_3__.ConfigContext);
+  const prefixCls = getPrefixCls('otp');
+  const maskValue = typeof mask === 'string' ? mask : value;
   // ========================== Ref ===========================
   const inputRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef(null);
   react__WEBPACK_IMPORTED_MODULE_0__.useImperativeHandle(ref, () => inputRef.current);
+  // ========================= Input ==========================
+  const onInternalChange = e => {
+    onChange(index, e.target.value);
+  };
   // ========================= Focus ==========================
   const syncSelection = () => {
-    (0,rc_util_es_raf__WEBPACK_IMPORTED_MODULE_1__["default"])(() => {
+    (0,rc_util_es_raf__WEBPACK_IMPORTED_MODULE_2__["default"])(() => {
       var _a;
       const inputEle = (_a = inputRef.current) === null || _a === void 0 ? void 0 : _a.input;
       if (document.activeElement === inputEle && inputEle) {
@@ -38948,18 +39979,28 @@ const OTPInput = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((pro
     syncSelection();
   };
   // ========================= Render =========================
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Input__WEBPACK_IMPORTED_MODULE_2__["default"], Object.assign({
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
+    className: `${prefixCls}-input-wrapper`,
+    role: "presentation"
+  }, mask && value !== '' && value !== undefined && (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
+    className: `${prefixCls}-mask-icon`,
+    "aria-hidden": "true"
+  }, maskValue)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Input__WEBPACK_IMPORTED_MODULE_4__["default"], Object.assign({
+    "aria-label": `OTP Input ${index + 1}`,
     type: mask === true ? 'password' : 'text'
   }, restProps, {
     ref: inputRef,
-    value: internalValue,
+    value: value,
     onInput: onInternalChange,
     onFocus: syncSelection,
     onKeyDown: onInternalKeyDown,
     onKeyUp: onInternalKeyUp,
     onMouseDown: syncSelection,
-    onMouseUp: syncSelection
-  }));
+    onMouseUp: syncSelection,
+    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(className, {
+      [`${prefixCls}-mask-input`]: mask
+    })
+  })));
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (OTPInput);
 
@@ -39170,7 +40211,8 @@ const OTP = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef((props, r
       [`${prefixCls}-sm`]: mergedSize === 'small',
       [`${prefixCls}-lg`]: mergedSize === 'large',
       [`${prefixCls}-rtl`]: direction === 'rtl'
-    }, cssVarCls, hashId)
+    }, cssVarCls, hashId),
+    role: "group"
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_form_context__WEBPACK_IMPORTED_MODULE_9__.FormItemInputContext.Provider, {
     value: proxyFormContext
   }, Array.from({
@@ -39586,9 +40628,12 @@ const TextArea = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(
       className,
       style,
       styles,
-      variant: customVariant
+      variant: customVariant,
+      showCount,
+      onMouseDown,
+      onResize
     } = props,
-    rest = __rest(props, ["prefixCls", "bordered", "size", "disabled", "status", "allowClear", "classNames", "rootClassName", "className", "style", "styles", "variant"]);
+    rest = __rest(props, ["prefixCls", "bordered", "size", "disabled", "status", "allowClear", "classNames", "rootClassName", "className", "style", "styles", "variant", "showCount", "onMouseDown", "onResize"]);
   if (true) {
     const {
       deprecated
@@ -39605,17 +40650,17 @@ const TextArea = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(
     classNames: contextClassNames,
     styles: contextStyles
   } = (0,_config_provider_context__WEBPACK_IMPORTED_MODULE_4__.useComponentConfig)('textArea');
-  // ===================== Disabled =====================
+  // =================== Disabled ===================
   const disabled = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider_DisabledContext__WEBPACK_IMPORTED_MODULE_5__["default"]);
   const mergedDisabled = customDisabled !== null && customDisabled !== void 0 ? customDisabled : disabled;
-  // ===================== Status =====================
+  // ==================== Status ====================
   const {
     status: contextStatus,
     hasFeedback,
     feedbackIcon
   } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_form_context__WEBPACK_IMPORTED_MODULE_6__.FormItemInputContext);
   const mergedStatus = (0,_util_statusUtils__WEBPACK_IMPORTED_MODULE_7__.getMergedStatus)(contextStatus, customStatus);
-  // ===================== Ref =====================
+  // ===================== Ref ======================
   const innerRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef(null);
   react__WEBPACK_IMPORTED_MODULE_0__.useImperativeHandle(ref, () => {
     var _a;
@@ -39632,11 +40677,11 @@ const TextArea = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(
     };
   });
   const prefixCls = getPrefixCls('input', customizePrefixCls);
-  // ===================== Style =====================
+  // ==================== Style =====================
   const rootCls = (0,_config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_9__["default"])(prefixCls);
   const [wrapSharedCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_10__.useSharedStyle)(prefixCls, rootClassName);
   const [wrapCSSVar] = (0,_style_textarea__WEBPACK_IMPORTED_MODULE_11__["default"])(prefixCls, rootCls);
-  // ===================== Compact Item =====================
+  // ================= Compact Item =================
   const {
     compactSize,
     compactItemClassnames
@@ -39648,6 +40693,32 @@ const TextArea = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(
   });
   const [variant, enableVariantCls] = (0,_form_hooks_useVariants__WEBPACK_IMPORTED_MODULE_14__["default"])('textArea', customVariant, bordered);
   const mergedAllowClear = (0,_util_getAllowClear__WEBPACK_IMPORTED_MODULE_15__["default"])(allowClear !== null && allowClear !== void 0 ? allowClear : contextAllowClear);
+  // ==================== Resize ====================
+  // https://github.com/ant-design/ant-design/issues/51594
+  const [isMouseDown, setIsMouseDown] = react__WEBPACK_IMPORTED_MODULE_0__.useState(false);
+  // When has wrapper, resize will make as dirty for `resize: both` style
+  const [resizeDirty, setResizeDirty] = react__WEBPACK_IMPORTED_MODULE_0__.useState(false);
+  const onInternalMouseDown = e => {
+    setIsMouseDown(true);
+    onMouseDown === null || onMouseDown === void 0 ? void 0 : onMouseDown(e);
+    const onMouseUp = () => {
+      setIsMouseDown(false);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+    document.addEventListener('mouseup', onMouseUp);
+  };
+  const onInternalResize = size => {
+    var _a, _b;
+    onResize === null || onResize === void 0 ? void 0 : onResize(size);
+    // Change to dirty since this maybe from the `resize: both` style
+    if (isMouseDown && typeof getComputedStyle === 'function') {
+      const ele = (_b = (_a = innerRef.current) === null || _a === void 0 ? void 0 : _a.nativeElement) === null || _b === void 0 ? void 0 : _b.querySelector('textarea');
+      if (ele && getComputedStyle(ele).resize === 'both') {
+        setResizeDirty(true);
+      }
+    }
+  };
+  // ==================== Render ====================
   return wrapSharedCSSVar(wrapCSSVar(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(rc_textarea__WEBPACK_IMPORTED_MODULE_2__["default"], Object.assign({
     autoComplete: contextAutoComplete
   }, rest, {
@@ -39655,12 +40726,14 @@ const TextArea = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(
     styles: Object.assign(Object.assign({}, contextStyles), styles),
     disabled: mergedDisabled,
     allowClear: mergedAllowClear,
-    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(cssVarCls, rootCls, className, rootClassName, compactItemClassnames, contextClassName),
+    className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(cssVarCls, rootCls, className, rootClassName, compactItemClassnames, contextClassName,
+    // Only for wrapper
+    resizeDirty && `${prefixCls}-textarea-affix-wrapper-resize-dirty`),
     classNames: Object.assign(Object.assign(Object.assign({}, classes), contextClassNames), {
       textarea: classnames__WEBPACK_IMPORTED_MODULE_1___default()({
         [`${prefixCls}-sm`]: mergedSize === 'small',
         [`${prefixCls}-lg`]: mergedSize === 'large'
-      }, hashId, classes === null || classes === void 0 ? void 0 : classes.textarea, contextClassNames.textarea),
+      }, hashId, classes === null || classes === void 0 ? void 0 : classes.textarea, contextClassNames.textarea, isMouseDown && `${prefixCls}-mouse-active`),
       variant: classnames__WEBPACK_IMPORTED_MODULE_1___default()({
         [`${prefixCls}-${variant}`]: enableVariantCls
       }, (0,_util_statusUtils__WEBPACK_IMPORTED_MODULE_7__.getStatusClassNames)(prefixCls, mergedStatus)),
@@ -39668,14 +40741,17 @@ const TextArea = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(
         [`${prefixCls}-affix-wrapper-rtl`]: direction === 'rtl',
         [`${prefixCls}-affix-wrapper-sm`]: mergedSize === 'small',
         [`${prefixCls}-affix-wrapper-lg`]: mergedSize === 'large',
-        [`${prefixCls}-textarea-show-count`]: props.showCount || ((_a = props.count) === null || _a === void 0 ? void 0 : _a.show)
+        [`${prefixCls}-textarea-show-count`]: showCount || ((_a = props.count) === null || _a === void 0 ? void 0 : _a.show)
       }, hashId)
     }),
     prefixCls: prefixCls,
     suffix: hasFeedback && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("span", {
       className: `${prefixCls}-textarea-suffix`
     }, feedbackIcon),
-    ref: innerRef
+    showCount: showCount,
+    ref: innerRef,
+    onResize: onInternalResize,
+    onMouseDown: onInternalMouseDown
   }))));
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TextArea);
@@ -39840,17 +40916,6 @@ const genBasicInputStyle = token => Object.assign(Object.assign({
   borderRadius: token.borderRadius,
   transition: `all ${token.motionDurationMid}`
 }, genPlaceholderStyle(token.colorTextPlaceholder)), {
-  // Reset height for `textarea`s
-  'textarea&': {
-    maxWidth: '100%',
-    // prevent textarea resize from coming out of its container
-    height: 'auto',
-    minHeight: token.controlHeight,
-    lineHeight: token.lineHeight,
-    verticalAlign: 'bottom',
-    transition: `all ${token.motionDurationSlow}, height 0s`,
-    resize: 'vertical'
-  },
   // Size
   '&-lg': Object.assign({}, genInputLargeStyle(token)),
   '&-sm': Object.assign({}, genInputSmallStyle(token)),
@@ -40114,7 +41179,7 @@ const genInputStyle = token => {
         }
       },
       '&[type="search"]::-webkit-search-cancel-button, &[type="search"]::-webkit-search-decoration': {
-        '-webkit-appearance': 'none'
+        appearance: 'none'
       }
     })
   };
@@ -40140,7 +41205,7 @@ const genAllowClearStyle = token => {
       outline: 'none',
       backgroundColor: 'transparent',
       '&:hover': {
-        color: token.colorTextTertiary
+        color: token.colorIcon
       },
       '&:active': {
         color: token.colorText
@@ -40211,7 +41276,8 @@ const genAffixStyle = token => {
           }
         },
         '&-show-count-suffix': {
-          color: colorTextDescription
+          color: colorTextDescription,
+          direction: 'ltr'
         },
         '&-show-count-has-suffix': {
           marginInlineEnd: token.paddingXXS
@@ -40488,6 +41554,28 @@ const genOTPStyle = token => {
       alignItems: 'center',
       flexWrap: 'nowrap',
       columnGap: paddingXS,
+      [`${componentCls}-input-wrapper`]: {
+        position: 'relative',
+        [`${componentCls}-mask-icon`]: {
+          position: 'absolute',
+          zIndex: '1',
+          top: '50%',
+          right: '50%',
+          transform: 'translate(50%, -50%)',
+          pointerEvents: 'none'
+        },
+        [`${componentCls}-mask-input`]: {
+          color: 'transparent',
+          caretColor: 'var(--ant-color-text)'
+        },
+        [`${componentCls}-mask-input[type=number]::-webkit-inner-spin-button`]: {
+          '-webkit-appearance': 'none',
+          margin: 0
+        },
+        [`${componentCls}-mask-input[type=number]`]: {
+          '-moz-appearance': 'textfield'
+        }
+      },
       '&-rtl': {
         direction: 'rtl'
       },
@@ -40539,13 +41627,27 @@ const genTextAreaStyle = token => {
   } = token;
   const textareaPrefixCls = `${componentCls}-textarea`;
   return {
+    // Raw Textarea
+    [`textarea${componentCls}`]: {
+      maxWidth: '100%',
+      // prevent textarea resize from coming out of its container
+      height: 'auto',
+      minHeight: token.controlHeight,
+      lineHeight: token.lineHeight,
+      verticalAlign: 'bottom',
+      transition: `all ${token.motionDurationSlow}`,
+      resize: 'vertical',
+      [`&${componentCls}-mouse-active`]: {
+        transition: `all ${token.motionDurationSlow}, height 0s, width 0s`
+      }
+    },
+    // Wrapper for resize
+    [`${componentCls}-textarea-affix-wrapper-resize-dirty`]: {
+      width: 'auto'
+    },
     [textareaPrefixCls]: {
       position: 'relative',
       '&-show-count': {
-        // https://github.com/ant-design/ant-design/issues/33049
-        [`> ${componentCls}`]: {
-          height: '100%'
-        },
         [`${componentCls}-data-count`]: {
           position: 'absolute',
           bottom: token.calc(token.fontSize).mul(token.lineHeight).mul(-1).equal(),
@@ -40595,6 +41697,14 @@ const genTextAreaStyle = token => {
             alignItems: 'center',
             margin: 'auto',
             pointerEvents: 'none'
+          }
+        }
+      },
+      [`&-affix-wrapper${componentCls}-affix-wrapper-rtl`]: {
+        [`${componentCls}-suffix`]: {
+          [`${componentCls}-data-count`]: {
+            direction: 'ltr',
+            insetInlineStart: 0
           }
         }
       },
@@ -40853,23 +41963,26 @@ const genBorderlessStyle = (token, extraStyles) => {
   };
 };
 /* ============== Filled ============== */
-const genBaseFilledStyle = (token, options) => ({
-  background: options.bg,
-  borderWidth: token.lineWidth,
-  borderStyle: token.lineType,
-  borderColor: 'transparent',
-  'input&, & input, textarea&, & textarea': {
-    color: options === null || options === void 0 ? void 0 : options.inputColor
-  },
-  '&:hover': {
-    background: options.hoverBg
-  },
-  '&:focus, &:focus-within': {
-    outline: 0,
-    borderColor: options.activeBorderColor,
-    backgroundColor: token.activeBg
-  }
-});
+const genBaseFilledStyle = (token, options) => {
+  var _a;
+  return {
+    background: options.bg,
+    borderWidth: token.lineWidth,
+    borderStyle: token.lineType,
+    borderColor: 'transparent',
+    'input&, & input, textarea&, & textarea': {
+      color: (_a = options === null || options === void 0 ? void 0 : options.inputColor) !== null && _a !== void 0 ? _a : 'unset'
+    },
+    '&:hover': {
+      background: options.hoverBg
+    },
+    '&:focus, &:focus-within': {
+      outline: 0,
+      borderColor: options.activeBorderColor,
+      backgroundColor: token.activeBg
+    }
+  };
+};
 const genFilledStatusStyle = (token, options) => ({
   [`&${token.componentCls}-status-${options.status}:not(${token.componentCls}-disabled)`]: Object.assign(Object.assign({}, genBaseFilledStyle(token, options)), {
     [`${token.componentCls}-prefix, ${token.componentCls}-suffix`]: {
@@ -41048,12 +42161,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _ant_design_icons_es_icons_BarsOutlined__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @ant-design/icons/es/icons/BarsOutlined */ "./node_modules/@ant-design/icons/es/icons/BarsOutlined.js");
-/* harmony import */ var _ant_design_icons_es_icons_LeftOutlined__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons/es/icons/LeftOutlined */ "./node_modules/@ant-design/icons/es/icons/LeftOutlined.js");
-/* harmony import */ var _ant_design_icons_es_icons_RightOutlined__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @ant-design/icons/es/icons/RightOutlined */ "./node_modules/@ant-design/icons/es/icons/RightOutlined.js");
+/* harmony import */ var _ant_design_icons_es_icons_BarsOutlined__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @ant-design/icons/es/icons/BarsOutlined */ "./node_modules/@ant-design/icons/es/icons/BarsOutlined.js");
+/* harmony import */ var _ant_design_icons_es_icons_LeftOutlined__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @ant-design/icons/es/icons/LeftOutlined */ "./node_modules/@ant-design/icons/es/icons/LeftOutlined.js");
+/* harmony import */ var _ant_design_icons_es_icons_RightOutlined__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons/es/icons/RightOutlined */ "./node_modules/@ant-design/icons/es/icons/RightOutlined.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var rc_util_es_omit__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rc-util/es/omit */ "./node_modules/rc-util/es/omit.js");
+/* harmony import */ var _util_mediaQueryUtil__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../_util/mediaQueryUtil */ "./node_modules/antd/es/_util/mediaQueryUtil.js");
 /* harmony import */ var _config_provider__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../config-provider */ "./node_modules/antd/es/config-provider/context.js");
 /* harmony import */ var _context__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./context */ "./node_modules/antd/es/layout/context.js");
 /* harmony import */ var _style_sider__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./style/sider */ "./node_modules/antd/es/layout/style/sider.js");
@@ -41067,6 +42181,7 @@ var __rest = undefined && undefined.__rest || function (s, e) {
   }
   return t;
 };
+
 
 
 
@@ -41148,29 +42263,17 @@ const Sider = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((props,
   };
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     function responsiveHandler(mql) {
-      return responsiveHandlerRef.current(mql);
+      var _a;
+      return (_a = responsiveHandlerRef.current) === null || _a === void 0 ? void 0 : _a.call(responsiveHandlerRef, mql);
     }
     let mql;
-    if (typeof window !== 'undefined') {
-      const {
-        matchMedia
-      } = window;
-      if (matchMedia && breakpoint && breakpoint in dimensionMaxMap) {
-        mql = matchMedia(`screen and (max-width: ${dimensionMaxMap[breakpoint]})`);
-        try {
-          mql.addEventListener('change', responsiveHandler);
-        } catch (_a) {
-          mql.addListener(responsiveHandler);
-        }
-        responsiveHandler(mql);
-      }
+    if (typeof (window === null || window === void 0 ? void 0 : window.matchMedia) !== 'undefined' && breakpoint && breakpoint in dimensionMaxMap) {
+      mql = window.matchMedia(`screen and (max-width: ${dimensionMaxMap[breakpoint]})`);
+      (0,_util_mediaQueryUtil__WEBPACK_IMPORTED_MODULE_6__.addMediaQueryListener)(mql, responsiveHandler);
+      responsiveHandler(mql);
     }
     return () => {
-      try {
-        mql === null || mql === void 0 ? void 0 : mql.removeEventListener('change', responsiveHandler);
-      } catch (_a) {
-        mql === null || mql === void 0 ? void 0 : mql.removeListener(responsiveHandler);
-      }
+      (0,_util_mediaQueryUtil__WEBPACK_IMPORTED_MODULE_6__.removeMediaQueryListener)(mql, responsiveHandler);
     };
   }, [breakpoint]); // in order to accept dynamic 'breakpoint' property, we need to add 'breakpoint' into dependency array.
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
@@ -41190,11 +42293,11 @@ const Sider = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((props,
     onClick: toggle,
     className: classnames__WEBPACK_IMPORTED_MODULE_1___default()(`${prefixCls}-zero-width-trigger`, `${prefixCls}-zero-width-trigger-${reverseArrow ? 'right' : 'left'}`),
     style: zeroWidthTriggerStyle
-  }, trigger || /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_BarsOutlined__WEBPACK_IMPORTED_MODULE_6__["default"], null))) : null;
+  }, trigger || /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_BarsOutlined__WEBPACK_IMPORTED_MODULE_7__["default"], null))) : null;
   const reverseIcon = direction === 'rtl' === !reverseArrow;
   const iconObj = {
-    expanded: reverseIcon ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_RightOutlined__WEBPACK_IMPORTED_MODULE_7__["default"], null) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_LeftOutlined__WEBPACK_IMPORTED_MODULE_8__["default"], null),
-    collapsed: reverseIcon ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_LeftOutlined__WEBPACK_IMPORTED_MODULE_8__["default"], null) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_RightOutlined__WEBPACK_IMPORTED_MODULE_7__["default"], null)
+    expanded: reverseIcon ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_RightOutlined__WEBPACK_IMPORTED_MODULE_8__["default"], null) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_LeftOutlined__WEBPACK_IMPORTED_MODULE_9__["default"], null),
+    collapsed: reverseIcon ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_LeftOutlined__WEBPACK_IMPORTED_MODULE_9__["default"], null) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_RightOutlined__WEBPACK_IMPORTED_MODULE_8__["default"], null)
   };
   const status = collapsed ? 'collapsed' : 'expanded';
   const defaultTrigger = iconObj[status];
@@ -41944,8 +43047,8 @@ var __rest = undefined && undefined.__rest || function (s, e) {
 
 
 
-function InternalList(_a, ref) {
-  var {
+function InternalList(props, ref) {
+  const {
       pagination = false,
       prefixCls: customizePrefixCls,
       bordered = false,
@@ -41965,8 +43068,8 @@ function InternalList(_a, ref) {
       rowKey,
       renderItem,
       locale
-    } = _a,
-    rest = __rest(_a, ["pagination", "prefixCls", "bordered", "split", "className", "rootClassName", "style", "children", "itemLayout", "loadMore", "grid", "dataSource", "size", "header", "footer", "loading", "rowKey", "renderItem", "locale"]);
+    } = props,
+    rest = __rest(props, ["pagination", "prefixCls", "bordered", "split", "className", "rootClassName", "style", "children", "itemLayout", "loadMore", "grid", "dataSource", "size", "header", "footer", "loading", "rowKey", "renderItem", "locale"]);
   const paginationObj = pagination && typeof pagination === 'object' ? pagination : {};
   const [paginationCurrent, setPaginationCurrent] = react__WEBPACK_IMPORTED_MODULE_1__.useState(paginationObj.defaultCurrent || 1);
   const [paginationSize, setPaginationSize] = react__WEBPACK_IMPORTED_MODULE_1__.useState(paginationObj.defaultPageSize || 10);
@@ -41981,7 +43084,8 @@ function InternalList(_a, ref) {
   } = react__WEBPACK_IMPORTED_MODULE_1__.useContext(_config_provider_context__WEBPACK_IMPORTED_MODULE_3__.ConfigContext);
   const defaultPaginationProps = {
     current: 1,
-    total: 0
+    total: 0,
+    position: 'bottom'
   };
   const triggerPaginationEvent = eventName => (page, pageSize) => {
     var _a;
@@ -41993,8 +43097,10 @@ function InternalList(_a, ref) {
   };
   const onPaginationChange = triggerPaginationEvent('onChange');
   const onPaginationShowSizeChange = triggerPaginationEvent('onShowSizeChange');
-  const renderInnerItem = (item, index) => {
-    if (!renderItem) return null;
+  const renderInternalItem = (item, index) => {
+    if (!renderItem) {
+      return null;
+    }
     let key;
     if (typeof rowKey === 'function') {
       key = rowKey(item);
@@ -42010,7 +43116,7 @@ function InternalList(_a, ref) {
       key: key
     }, renderItem(item, index));
   };
-  const isSomethingAfterLastItem = () => !!(loadMore || pagination || footer);
+  const isSomethingAfterLastItem = !!(loadMore || pagination || footer);
   const prefixCls = getPrefixCls('list', customizePrefixCls);
   // Style
   const [wrapCSSVar, hashId, cssVarCls] = (0,_style__WEBPACK_IMPORTED_MODULE_4__["default"])(prefixCls);
@@ -42042,7 +43148,7 @@ function InternalList(_a, ref) {
     [`${prefixCls}-bordered`]: bordered,
     [`${prefixCls}-loading`]: isLoading,
     [`${prefixCls}-grid`]: !!grid,
-    [`${prefixCls}-something-after-last-item`]: isSomethingAfterLastItem(),
+    [`${prefixCls}-something-after-last-item`]: isSomethingAfterLastItem,
     [`${prefixCls}-rtl`]: direction === 'rtl'
   }, contextClassName, className, rootClassName, hashId, cssVarCls);
   const paginationProps = (0,_util_extendsObject__WEBPACK_IMPORTED_MODULE_6__["default"])(defaultPaginationProps, {
@@ -42051,9 +43157,7 @@ function InternalList(_a, ref) {
     pageSize: paginationSize
   }, pagination || {});
   const largestPage = Math.ceil(paginationProps.total / paginationProps.pageSize);
-  if (paginationProps.current > largestPage) {
-    paginationProps.current = largestPage;
-  }
+  paginationProps.current = Math.min(paginationProps.current, largestPage);
   const paginationContent = pagination && (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement("div", {
     className: classnames__WEBPACK_IMPORTED_MODULE_2___default()(`${prefixCls}-pagination`)
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_pagination__WEBPACK_IMPORTED_MODULE_7__["default"], Object.assign({
@@ -42097,7 +43201,7 @@ function InternalList(_a, ref) {
     }
   });
   if (splitDataSource.length > 0) {
-    const items = splitDataSource.map((item, index) => renderInnerItem(item, index));
+    const items = splitDataSource.map(renderInternalItem);
     childrenContent = grid ? (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_grid__WEBPACK_IMPORTED_MODULE_10__["default"], {
       gutter: grid.gutter
     }, react__WEBPACK_IMPORTED_MODULE_1__.Children.map(items, child => (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement("div", {
@@ -42113,7 +43217,7 @@ function InternalList(_a, ref) {
       componentName: "List"
     }));
   }
-  const paginationPosition = paginationProps.position || 'bottom';
+  const paginationPosition = paginationProps.position;
   const contextValue = react__WEBPACK_IMPORTED_MODULE_1__.useMemo(() => ({
     grid,
     itemLayout
@@ -42525,7 +43629,8 @@ const localeValues = {
   TimePicker: _time_picker_locale_en_US__WEBPACK_IMPORTED_MODULE_2__["default"],
   Calendar: _calendar_locale_en_US__WEBPACK_IMPORTED_MODULE_3__["default"],
   global: {
-    placeholder: 'Please select'
+    placeholder: 'Please select',
+    close: 'Close'
   },
   Table: {
     filterTitle: 'Filter menu',
@@ -44640,7 +45745,7 @@ function flushNotice() {
     message = newMessage;
     // Delay render to avoid sync issue
     act(() => {
-      const reactRender = (0,_config_provider_UnstableContext__WEBPACK_IMPORTED_MODULE_6__.getReactRender)();
+      const reactRender = (0,_config_provider_UnstableContext__WEBPACK_IMPORTED_MODULE_6__.unstableSetRender)();
       reactRender(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(GlobalHolderWrapper, {
         ref: node => {
           const {
@@ -45572,32 +46677,6 @@ if ((0,_util_styleChecker__WEBPACK_IMPORTED_MODULE_3__.canUseDocElement)()) {
   document.documentElement.addEventListener('click', getClickPosition, true);
 }
 const Modal = props => {
-  var _a;
-  const {
-    getPopupContainer: getContextPopupContainer,
-    getPrefixCls,
-    direction,
-    modal: modalContext
-  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider__WEBPACK_IMPORTED_MODULE_4__.ConfigContext);
-  const handleCancel = e => {
-    const {
-      onCancel
-    } = props;
-    onCancel === null || onCancel === void 0 ? void 0 : onCancel(e);
-  };
-  const handleOk = e => {
-    const {
-      onOk
-    } = props;
-    onOk === null || onOk === void 0 ? void 0 : onOk(e);
-  };
-  if (true) {
-    const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_5__.devUseWarning)('Modal');
-    [['visible', 'open'], ['bodyStyle', 'styles.body'], ['maskStyle', 'styles.mask']].forEach(_ref => {
-      let [deprecatedName, newName] = _ref;
-      warning.deprecated(!(deprecatedName in props), deprecatedName, newName);
-    });
-  }
   const {
       prefixCls: customizePrefixCls,
       className,
@@ -45615,9 +46694,38 @@ const Modal = props => {
       classNames: modalClassNames,
       styles: modalStyles,
       children,
-      loading
+      loading,
+      confirmLoading,
+      zIndex: customizeZIndex,
+      mousePosition: customizeMousePosition,
+      onOk,
+      onCancel,
+      destroyOnHidden,
+      destroyOnClose
     } = props,
-    restProps = __rest(props, ["prefixCls", "className", "rootClassName", "open", "wrapClassName", "centered", "getContainer", "focusTriggerAfterClose", "style", "visible", "width", "footer", "classNames", "styles", "children", "loading"]);
+    restProps = __rest(props, ["prefixCls", "className", "rootClassName", "open", "wrapClassName", "centered", "getContainer", "focusTriggerAfterClose", "style", "visible", "width", "footer", "classNames", "styles", "children", "loading", "confirmLoading", "zIndex", "mousePosition", "onOk", "onCancel", "destroyOnHidden", "destroyOnClose"]);
+  const {
+    getPopupContainer: getContextPopupContainer,
+    getPrefixCls,
+    direction,
+    modal: modalContext
+  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider__WEBPACK_IMPORTED_MODULE_4__.ConfigContext);
+  const handleCancel = e => {
+    if (confirmLoading) {
+      return;
+    }
+    onCancel === null || onCancel === void 0 ? void 0 : onCancel(e);
+  };
+  const handleOk = e => {
+    onOk === null || onOk === void 0 ? void 0 : onOk(e);
+  };
+  if (true) {
+    const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_5__.devUseWarning)('Modal');
+    [['visible', 'open'], ['bodyStyle', 'styles.body'], ['maskStyle', 'styles.mask'], ['destroyOnClose', 'destroyOnHidden']].forEach(_ref => {
+      let [deprecatedName, newName] = _ref;
+      warning.deprecated(!(deprecatedName in props), deprecatedName, newName);
+    });
+  }
   const prefixCls = getPrefixCls('modal', customizePrefixCls);
   const rootPrefixCls = getPrefixCls();
   // Style
@@ -45631,7 +46739,7 @@ const Modal = props => {
     onOk: handleOk,
     onCancel: handleCancel
   }))) : null;
-  const [mergedClosable, mergedCloseIcon, closeBtnIsDisabled] = (0,_util_hooks_useClosable__WEBPACK_IMPORTED_MODULE_9__["default"])((0,_util_hooks_useClosable__WEBPACK_IMPORTED_MODULE_9__.pickClosable)(props), (0,_util_hooks_useClosable__WEBPACK_IMPORTED_MODULE_9__.pickClosable)(modalContext), {
+  const [mergedClosable, mergedCloseIcon, closeBtnIsDisabled, ariaProps] = (0,_util_hooks_useClosable__WEBPACK_IMPORTED_MODULE_9__["default"])((0,_util_hooks_useClosable__WEBPACK_IMPORTED_MODULE_9__.pickClosable)(props), (0,_util_hooks_useClosable__WEBPACK_IMPORTED_MODULE_9__.pickClosable)(modalContext), {
     closable: true,
     closeIcon: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_ant_design_icons_es_icons_CloseOutlined__WEBPACK_IMPORTED_MODULE_10__["default"], {
       className: `${prefixCls}-close-icon`
@@ -45642,7 +46750,7 @@ const Modal = props => {
   // Select `ant-modal-content` by `panelRef`
   const panelRef = (0,_watermark_context__WEBPACK_IMPORTED_MODULE_11__.usePanelRef)(`.${prefixCls}-content`);
   // ============================ zIndex ============================
-  const [zIndex, contextZIndex] = (0,_util_hooks_useZIndex__WEBPACK_IMPORTED_MODULE_12__.useZIndex)('Modal', restProps.zIndex);
+  const [zIndex, contextZIndex] = (0,_util_hooks_useZIndex__WEBPACK_IMPORTED_MODULE_12__.useZIndex)('Modal', customizeZIndex);
   // =========================== Width ============================
   const [numWidth, responsiveWidth] = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => {
     if (width && typeof width === 'object') {
@@ -45677,12 +46785,12 @@ const Modal = props => {
     rootClassName: classnames__WEBPACK_IMPORTED_MODULE_1___default()(hashId, rootClassName, cssVarCls, rootCls),
     footer: dialogFooter,
     visible: open !== null && open !== void 0 ? open : visible,
-    mousePosition: (_a = restProps.mousePosition) !== null && _a !== void 0 ? _a : mousePosition,
+    mousePosition: customizeMousePosition !== null && customizeMousePosition !== void 0 ? customizeMousePosition : mousePosition,
     onClose: handleCancel,
-    closable: mergedClosable ? {
+    closable: mergedClosable ? Object.assign({
       disabled: closeBtnIsDisabled,
       closeIcon: mergedCloseIcon
-    } : mergedClosable,
+    }, ariaProps) : mergedClosable,
     closeIcon: mergedCloseIcon,
     focusTriggerAfterClose: focusTriggerAfterClose,
     transitionName: (0,_util_motion__WEBPACK_IMPORTED_MODULE_15__.getTransitionName)(rootPrefixCls, 'zoom', props.transitionName),
@@ -45693,7 +46801,9 @@ const Modal = props => {
       wrapper: classnames__WEBPACK_IMPORTED_MODULE_1___default()(wrapClassNameExtended, modalClassNames === null || modalClassNames === void 0 ? void 0 : modalClassNames.wrapper)
     }),
     styles: Object.assign(Object.assign({}, modalContext === null || modalContext === void 0 ? void 0 : modalContext.styles), modalStyles),
-    panelRef: panelRef
+    panelRef: panelRef,
+    // TODO: In the future, destroyOnClose in rc-dialog needs to be upgrade to destroyOnHidden
+    destroyOnClose: destroyOnHidden !== null && destroyOnHidden !== void 0 ? destroyOnHidden : destroyOnClose
   }), loading ? (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_skeleton__WEBPACK_IMPORTED_MODULE_16__["default"], {
     active: true,
     title: false,
@@ -46079,7 +47189,7 @@ function confirm(config) {
       const iconPrefixCls = global.getIconPrefixCls();
       const theme = global.getTheme();
       const dom = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(ConfirmDialogWrapper, Object.assign({}, props));
-      const reactRender = (0,_config_provider_UnstableContext__WEBPACK_IMPORTED_MODULE_8__.getReactRender)();
+      const reactRender = (0,_config_provider_UnstableContext__WEBPACK_IMPORTED_MODULE_8__.unstableSetRender)();
       reactUnmount = reactRender(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_config_provider__WEBPACK_IMPORTED_MODULE_6__["default"], {
         prefixCls: rootPrefixCls,
         iconPrefixCls: iconPrefixCls,
@@ -47423,6 +48533,7 @@ const genPaginationDisabledStyle = token => {
       cursor: 'not-allowed',
       [`${componentCls}-item`]: {
         cursor: 'not-allowed',
+        backgroundColor: 'transparent',
         '&:hover, &:active': {
           backgroundColor: 'transparent'
         },
@@ -47493,16 +48604,6 @@ const genPaginationMiniStyle = token => {
       height: token.itemSizeSM,
       margin: 0,
       lineHeight: (0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.calc(token.itemSizeSM).sub(2).equal())
-    },
-    [`&${componentCls}-mini:not(${componentCls}-disabled) ${componentCls}-item:not(${componentCls}-item-active)`]: {
-      backgroundColor: 'transparent',
-      borderColor: 'transparent',
-      '&:hover': {
-        backgroundColor: token.colorBgTextHover
-      },
-      '&:active': {
-        backgroundColor: token.colorBgTextActive
-      }
     },
     [`&${componentCls}-mini ${componentCls}-prev, &${componentCls}-mini ${componentCls}-next`]: {
       minWidth: token.itemSizeSM,
@@ -49380,15 +50481,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
 /* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var rc_util_es_hooks_useMergedState__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rc-util/es/hooks/useMergedState */ "./node_modules/rc-util/es/hooks/useMergedState.js");
-/* harmony import */ var rc_util_es_pickAttrs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rc-util/es/pickAttrs */ "./node_modules/rc-util/es/pickAttrs.js");
+/* harmony import */ var rc_util_es_hooks_useId__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rc-util/es/hooks/useId */ "./node_modules/rc-util/es/hooks/useId.js");
+/* harmony import */ var rc_util_es_hooks_useMergedState__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rc-util/es/hooks/useMergedState */ "./node_modules/rc-util/es/hooks/useMergedState.js");
+/* harmony import */ var rc_util_es_pickAttrs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rc-util/es/pickAttrs */ "./node_modules/rc-util/es/pickAttrs.js");
 /* harmony import */ var _config_provider__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../config-provider */ "./node_modules/antd/es/config-provider/context.js");
 /* harmony import */ var _config_provider_hooks_useCSSVarCls__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../config-provider/hooks/useCSSVarCls */ "./node_modules/antd/es/config-provider/hooks/useCSSVarCls.js");
 /* harmony import */ var _config_provider_hooks_useSize__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../config-provider/hooks/useSize */ "./node_modules/antd/es/config-provider/hooks/useSize.js");
 /* harmony import */ var _context__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./context */ "./node_modules/antd/es/radio/context.js");
 /* harmony import */ var _radio__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./radio */ "./node_modules/antd/es/radio/radio.js");
 /* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./style */ "./node_modules/antd/es/radio/style/index.js");
-/* harmony import */ var rc_util_es_hooks_useId__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rc-util/es/hooks/useId */ "./node_modules/rc-util/es/hooks/useId.js");
 "use client";
 
 
@@ -49407,7 +50508,7 @@ const RadioGroup = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((p
     getPrefixCls,
     direction
   } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider__WEBPACK_IMPORTED_MODULE_5__.ConfigContext);
-  const defaultName = (0,rc_util_es_hooks_useId__WEBPACK_IMPORTED_MODULE_4__["default"])();
+  const defaultName = (0,rc_util_es_hooks_useId__WEBPACK_IMPORTED_MODULE_2__["default"])();
   const {
     prefixCls: customizePrefixCls,
     className,
@@ -49430,7 +50531,7 @@ const RadioGroup = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((p
     onFocus,
     onBlur
   } = props;
-  const [value, setValue] = (0,rc_util_es_hooks_useMergedState__WEBPACK_IMPORTED_MODULE_2__["default"])(defaultValue, {
+  const [value, setValue] = (0,rc_util_es_hooks_useMergedState__WEBPACK_IMPORTED_MODULE_3__["default"])(defaultValue, {
     value: customizedValue
   });
   const onRadioChange = react__WEBPACK_IMPORTED_MODULE_0__.useCallback(event => {
@@ -49471,6 +50572,7 @@ const RadioGroup = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((p
         checked: value === option.value,
         title: option.title,
         style: option.style,
+        className: option.className,
         id: option.id,
         required: option.required
       }, option.label);
@@ -49490,7 +50592,7 @@ const RadioGroup = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((p
     optionType,
     block
   }), [onRadioChange, value, disabled, name, optionType, block]);
-  return wrapCSSVar(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", Object.assign({}, (0,rc_util_es_pickAttrs__WEBPACK_IMPORTED_MODULE_3__["default"])(props, {
+  return wrapCSSVar(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("div", Object.assign({}, (0,rc_util_es_pickAttrs__WEBPACK_IMPORTED_MODULE_4__["default"])(props, {
     aria: true,
     data: true
   }), {
@@ -50502,7 +51604,7 @@ var __rest = undefined && undefined.__rest || function (s, e) {
 
 const SECRET_COMBOBOX_MODE_DO_NOT_USE = 'SECRET_COMBOBOX_MODE_DO_NOT_USE';
 const InternalSelect = (props, ref) => {
-  var _a;
+  var _a, _b, _c, _d, _e;
   const {
       prefixCls: customizePrefixCls,
       bordered,
@@ -50529,9 +51631,15 @@ const InternalSelect = (props, ref) => {
       transitionName,
       tagRender,
       maxCount,
-      prefix
+      prefix,
+      dropdownRender,
+      popupRender,
+      onDropdownVisibleChange,
+      onOpenChange,
+      styles,
+      classNames
     } = props,
-    rest = __rest(props, ["prefixCls", "bordered", "className", "rootClassName", "getPopupContainer", "popupClassName", "dropdownClassName", "listHeight", "placement", "listItemHeight", "size", "disabled", "notFoundContent", "status", "builtinPlacements", "dropdownMatchSelectWidth", "popupMatchSelectWidth", "direction", "style", "allowClear", "variant", "dropdownStyle", "transitionName", "tagRender", "maxCount", "prefix"]);
+    rest = __rest(props, ["prefixCls", "bordered", "className", "rootClassName", "getPopupContainer", "popupClassName", "dropdownClassName", "listHeight", "placement", "listItemHeight", "size", "disabled", "notFoundContent", "status", "builtinPlacements", "dropdownMatchSelectWidth", "popupMatchSelectWidth", "direction", "style", "allowClear", "variant", "dropdownStyle", "transitionName", "tagRender", "maxCount", "prefix", "dropdownRender", "popupRender", "onDropdownVisibleChange", "onOpenChange", "styles", "classNames"]);
   const {
     getPopupContainer: getContextPopupContainer,
     getPrefixCls,
@@ -50541,7 +51649,13 @@ const InternalSelect = (props, ref) => {
     popupMatchSelectWidth: contextPopupMatchSelectWidth,
     popupOverflow
   } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(_config_provider__WEBPACK_IMPORTED_MODULE_4__.ConfigContext);
-  const contextSelect = (0,_config_provider__WEBPACK_IMPORTED_MODULE_4__.useComponentConfig)('select');
+  const {
+    showSearch,
+    style: contextStyle,
+    styles: contextStyles,
+    className: contextClassName,
+    classNames: contextClassNames
+  } = (0,_config_provider__WEBPACK_IMPORTED_MODULE_4__.useComponentConfig)('select');
   const [, token] = (0,_theme_internal__WEBPACK_IMPORTED_MODULE_5__["default"])();
   const listItemHeight = customListItemHeight !== null && customListItemHeight !== void 0 ? customListItemHeight : token === null || token === void 0 ? void 0 : token.controlHeight;
   const prefixCls = getPrefixCls('select', customizePrefixCls);
@@ -50569,6 +51683,9 @@ const InternalSelect = (props, ref) => {
   const isMultiple = mode === 'multiple' || mode === 'tags';
   const showSuffixIcon = (0,_useShowArrow__WEBPACK_IMPORTED_MODULE_10__["default"])(props.suffixIcon, props.showArrow);
   const mergedPopupMatchSelectWidth = (_a = popupMatchSelectWidth !== null && popupMatchSelectWidth !== void 0 ? popupMatchSelectWidth : dropdownMatchSelectWidth) !== null && _a !== void 0 ? _a : contextPopupMatchSelectWidth;
+  const mergedPopupStyle = ((_b = styles === null || styles === void 0 ? void 0 : styles.popup) === null || _b === void 0 ? void 0 : _b.root) || ((_c = contextStyles.popup) === null || _c === void 0 ? void 0 : _c.root) || dropdownStyle;
+  const mergedPopupRender = popupRender || dropdownRender;
+  const mergedOnOpenChange = onOpenChange || onDropdownVisibleChange;
   // ===================== Form Status =====================
   const {
     status: contextStatus,
@@ -50606,9 +51723,9 @@ const InternalSelect = (props, ref) => {
     clearIcon
   } : allowClear;
   const selectProps = (0,rc_util_es_omit__WEBPACK_IMPORTED_MODULE_3__["default"])(rest, ['suffixIcon', 'itemIcon']);
-  const mergedPopupClassName = classnames__WEBPACK_IMPORTED_MODULE_1___default()(popupClassName || dropdownClassName, {
+  const mergedPopupClassName = classnames__WEBPACK_IMPORTED_MODULE_1___default()(((_d = classNames === null || classNames === void 0 ? void 0 : classNames.popup) === null || _d === void 0 ? void 0 : _d.root) || ((_e = contextClassNames === null || contextClassNames === void 0 ? void 0 : contextClassNames.popup) === null || _e === void 0 ? void 0 : _e.root) || popupClassName || dropdownClassName, {
     [`${prefixCls}-dropdown-${direction}`]: direction === 'rtl'
-  }, rootClassName, cssVarCls, rootCls, hashId);
+  }, rootClassName, contextClassNames.root, classNames === null || classNames === void 0 ? void 0 : classNames.root, cssVarCls, rootCls, hashId);
   const mergedSize = (0,_config_provider_hooks_useSize__WEBPACK_IMPORTED_MODULE_15__["default"])(ctx => {
     var _a;
     return (_a = customizeSize !== null && customizeSize !== void 0 ? customizeSize : compactSize) !== null && _a !== void 0 ? _a : ctx;
@@ -50622,7 +51739,7 @@ const InternalSelect = (props, ref) => {
     [`${prefixCls}-rtl`]: direction === 'rtl',
     [`${prefixCls}-${variant}`]: enableVariantCls,
     [`${prefixCls}-in-form-item`]: isFormItemInput
-  }, (0,_util_statusUtils__WEBPACK_IMPORTED_MODULE_12__.getStatusClassNames)(prefixCls, mergedStatus, hasFeedback), compactItemClassnames, contextSelect.className, className, rootClassName, cssVarCls, rootCls, hashId);
+  }, (0,_util_statusUtils__WEBPACK_IMPORTED_MODULE_12__.getStatusClassNames)(prefixCls, mergedStatus, hasFeedback), compactItemClassnames, contextClassName, className, contextClassNames.root, classNames === null || classNames === void 0 ? void 0 : classNames.root, rootClassName, cssVarCls, rootCls, hashId);
   // ===================== Placement =====================
   const memoPlacement = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => {
     if (placement !== undefined) {
@@ -50633,21 +51750,31 @@ const InternalSelect = (props, ref) => {
   // ====================== Warning ======================
   if (true) {
     const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_17__.devUseWarning)('Select');
-    warning.deprecated(!dropdownClassName, 'dropdownClassName', 'popupClassName');
-    warning.deprecated(dropdownMatchSelectWidth === undefined, 'dropdownMatchSelectWidth', 'popupMatchSelectWidth');
+    const deprecatedProps = {
+      dropdownMatchSelectWidth: 'popupMatchSelectWidth',
+      dropdownStyle: 'styles.popup.root',
+      dropdownClassName: 'classNames.popup.root',
+      popupClassName: 'classNames.popup.root',
+      dropdownRender: 'popupRender',
+      onDropdownVisibleChange: 'onOpenChange',
+      bordered: 'variant'
+    };
+    Object.entries(deprecatedProps).forEach(_ref => {
+      let [oldProp, newProp] = _ref;
+      warning.deprecated(!(oldProp in props), oldProp, newProp);
+    });
      true ? warning(!('showArrow' in props), 'deprecated', '`showArrow` is deprecated which will be removed in next major version. It will be a default behavior, you can hide it by setting `suffixIcon` to null.') : 0;
-    warning.deprecated(!('bordered' in props), 'bordered', 'variant');
      true ? warning(!(typeof maxCount !== 'undefined' && !isMultiple), 'usage', '`maxCount` only works with mode `multiple` or `tags`') : 0;
   }
   // ====================== zIndex =========================
-  const [zIndex] = (0,_util_hooks_useZIndex__WEBPACK_IMPORTED_MODULE_18__.useZIndex)('SelectLike', dropdownStyle === null || dropdownStyle === void 0 ? void 0 : dropdownStyle.zIndex);
+  const [zIndex] = (0,_util_hooks_useZIndex__WEBPACK_IMPORTED_MODULE_18__.useZIndex)('SelectLike', mergedPopupStyle === null || mergedPopupStyle === void 0 ? void 0 : mergedPopupStyle.zIndex);
   // ====================== Render =======================
   return wrapCSSVar(/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(rc_select__WEBPACK_IMPORTED_MODULE_2__["default"], Object.assign({
     ref: ref,
     virtual: virtual,
-    showSearch: contextSelect.showSearch
+    showSearch: showSearch
   }, selectProps, {
-    style: Object.assign(Object.assign({}, contextSelect.style), style),
+    style: Object.assign(Object.assign(Object.assign(Object.assign({}, contextStyles.root), styles === null || styles === void 0 ? void 0 : styles.root), contextStyle), style),
     dropdownMatchSelectWidth: mergedPopupMatchSelectWidth,
     transitionName: (0,_util_motion__WEBPACK_IMPORTED_MODULE_19__.getTransitionName)(rootPrefixCls, 'slide-up', transitionName),
     builtinPlacements: (0,_mergedBuiltinPlacements__WEBPACK_IMPORTED_MODULE_20__["default"])(builtinPlacements, popupOverflow),
@@ -50667,11 +51794,13 @@ const InternalSelect = (props, ref) => {
     getPopupContainer: getPopupContainer || getContextPopupContainer,
     dropdownClassName: mergedPopupClassName,
     disabled: mergedDisabled,
-    dropdownStyle: Object.assign(Object.assign({}, dropdownStyle), {
+    dropdownStyle: Object.assign(Object.assign({}, mergedPopupStyle), {
       zIndex
     }),
     maxCount: isMultiple ? maxCount : undefined,
-    tagRender: isMultiple ? tagRender : undefined
+    tagRender: isMultiple ? tagRender : undefined,
+    dropdownRender: mergedPopupRender,
+    onDropdownVisibleChange: mergedOnOpenChange
   })));
 };
 if (true) {
@@ -50970,7 +52099,7 @@ const getSearchInputWithoutBorderStyle = token => {
       fontFamily: 'inherit',
       '&::-webkit-search-cancel-button': {
         display: 'none',
-        '-webkit-appearance': 'none'
+        appearance: 'none'
       }
     }
   };
@@ -50983,6 +52112,13 @@ const genBaseStyle = token => {
     inputPaddingHorizontalBase,
     iconCls
   } = token;
+  const hoverShowClearStyle = {
+    [`${componentCls}-clear`]: {
+      opacity: 1,
+      background: token.colorBgBase,
+      borderRadius: '50%'
+    }
+  };
   return {
     [componentCls]: Object.assign(Object.assign({}, (0,_style__WEBPACK_IMPORTED_MODULE_0__.resetComponent)(token)), {
       position: 'relative',
@@ -51083,14 +52219,11 @@ const genBaseStyle = token => {
           display: 'block'
         },
         '&:hover': {
-          color: token.colorTextTertiary
+          color: token.colorIcon
         }
       },
-      [`&:hover ${componentCls}-clear`]: {
-        opacity: 1,
-        background: token.colorBgBase,
-        borderRadius: '50%'
-      }
+      '@media(hover:none)': hoverShowClearStyle,
+      '&:hover': hoverShowClearStyle
     }),
     // ========================= Feedback ==========================
     [`${componentCls}-status`]: {
@@ -54166,77 +55299,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _util_hooks_useForceUpdate__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_util/hooks/useForceUpdate */ "./node_modules/antd/es/_util/hooks/useForceUpdate.js");
-/* harmony import */ var _util_reactNode__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_util/reactNode */ "./node_modules/antd/es/_util/reactNode.js");
-/* harmony import */ var _Statistic__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Statistic */ "./node_modules/antd/es/statistic/Statistic.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils */ "./node_modules/antd/es/statistic/utils.js");
+/* harmony import */ var _util_warning__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../_util/warning */ "./node_modules/antd/es/_util/warning.js");
+/* harmony import */ var _Timer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Timer */ "./node_modules/antd/es/statistic/Timer.js");
 "use client";
 
-var __rest = undefined && undefined.__rest || function (s, e) {
-  var t = {};
-  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
-  }
-  return t;
-};
 
 
 
-
-
-const REFRESH_INTERVAL = 1000 / 30;
-function getTime(value) {
-  return new Date(value).getTime();
-}
 const Countdown = props => {
-  const {
-      value,
-      format = 'HH:mm:ss',
-      onChange,
-      onFinish
-    } = props,
-    rest = __rest(props, ["value", "format", "onChange", "onFinish"]);
-  const forceUpdate = (0,_util_hooks_useForceUpdate__WEBPACK_IMPORTED_MODULE_1__["default"])();
-  const countdown = react__WEBPACK_IMPORTED_MODULE_0__.useRef(null);
-  const stopTimer = () => {
-    onFinish === null || onFinish === void 0 ? void 0 : onFinish();
-    if (countdown.current) {
-      clearInterval(countdown.current);
-      countdown.current = null;
-    }
-  };
-  const syncTimer = () => {
-    const timestamp = getTime(value);
-    if (timestamp >= Date.now()) {
-      countdown.current = setInterval(() => {
-        forceUpdate();
-        onChange === null || onChange === void 0 ? void 0 : onChange(timestamp - Date.now());
-        if (timestamp < Date.now()) {
-          stopTimer();
-        }
-      }, REFRESH_INTERVAL);
-    }
-  };
-  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => {
-    syncTimer();
-    return () => {
-      if (countdown.current) {
-        clearInterval(countdown.current);
-        countdown.current = null;
-      }
-    };
-  }, [value]);
-  const formatter = (formatValue, config) => (0,_utils__WEBPACK_IMPORTED_MODULE_2__.formatCountdown)(formatValue, Object.assign(Object.assign({}, config), {
-    format
-  }));
-  const valueRender = node => (0,_util_reactNode__WEBPACK_IMPORTED_MODULE_3__.cloneElement)(node, {
-    title: undefined
-  });
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Statistic__WEBPACK_IMPORTED_MODULE_4__["default"], Object.assign({}, rest, {
-    value: value,
-    valueRender: valueRender,
-    formatter: formatter
+  if (true) {
+    const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_1__.devUseWarning)('Countdown');
+    warning.deprecated(false, '<Statistic.Countdown />', '<Statistic.Timer type="countdown" />');
+  }
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Timer__WEBPACK_IMPORTED_MODULE_2__["default"], Object.assign({}, props, {
+    type: "countdown"
   }));
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.memo(Countdown));
@@ -54415,6 +55491,101 @@ if (true) {
 
 /***/ }),
 
+/***/ "./node_modules/antd/es/statistic/Timer.js":
+/*!*************************************************!*\
+  !*** ./node_modules/antd/es/statistic/Timer.js ***!
+  \*************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var rc_util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rc-util */ "./node_modules/rc-util/es/index.js");
+/* harmony import */ var rc_util_es_raf__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rc-util/es/raf */ "./node_modules/rc-util/es/raf.js");
+/* harmony import */ var _util_hooks_useForceUpdate__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../_util/hooks/useForceUpdate */ "./node_modules/antd/es/_util/hooks/useForceUpdate.js");
+/* harmony import */ var _util_reactNode__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../_util/reactNode */ "./node_modules/antd/es/_util/reactNode.js");
+/* harmony import */ var _Statistic__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Statistic */ "./node_modules/antd/es/statistic/Statistic.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils */ "./node_modules/antd/es/statistic/utils.js");
+"use client";
+
+var __rest = undefined && undefined.__rest || function (s, e) {
+  var t = {};
+  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
+  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
+  }
+  return t;
+};
+
+
+
+
+
+
+
+function getTime(value) {
+  return new Date(value).getTime();
+}
+const StatisticTimer = props => {
+  const {
+      value,
+      format = 'HH:mm:ss',
+      onChange,
+      onFinish,
+      type
+    } = props,
+    rest = __rest(props, ["value", "format", "onChange", "onFinish", "type"]);
+  const down = type === 'countdown';
+  const forceUpdate = (0,_util_hooks_useForceUpdate__WEBPACK_IMPORTED_MODULE_3__["default"])();
+  // ======================== Update ========================
+  const update = (0,rc_util__WEBPACK_IMPORTED_MODULE_1__.useEvent)(() => {
+    const now = Date.now();
+    const timestamp = getTime(value);
+    forceUpdate();
+    const timeDiff = !down ? now - timestamp : timestamp - now;
+    onChange === null || onChange === void 0 ? void 0 : onChange(timeDiff);
+    // Only countdown will trigger `onFinish`
+    if (down && timestamp < now) {
+      onFinish === null || onFinish === void 0 ? void 0 : onFinish();
+      return false;
+    }
+    return true;
+  });
+  // Effect trigger
+  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => {
+    let rafId;
+    const clear = () => rc_util_es_raf__WEBPACK_IMPORTED_MODULE_2__["default"].cancel(rafId);
+    const rafUpdate = () => {
+      rafId = (0,rc_util_es_raf__WEBPACK_IMPORTED_MODULE_2__["default"])(() => {
+        if (update()) {
+          rafUpdate();
+        }
+      });
+    };
+    rafUpdate();
+    return clear;
+  }, [value, down]);
+  // ======================== Format ========================
+  const formatter = (formatValue, config) => (0,_utils__WEBPACK_IMPORTED_MODULE_4__.formatCounter)(formatValue, Object.assign(Object.assign({}, config), {
+    format
+  }), down);
+  const valueRender = node => (0,_util_reactNode__WEBPACK_IMPORTED_MODULE_5__.cloneElement)(node, {
+    title: undefined
+  });
+  // ======================== Render ========================
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_Statistic__WEBPACK_IMPORTED_MODULE_6__["default"], Object.assign({}, rest, {
+    value: value,
+    valueRender: valueRender,
+    formatter: formatter
+  }));
+};
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (StatisticTimer);
+
+/***/ }),
+
 /***/ "./node_modules/antd/es/statistic/index.js":
 /*!*************************************************!*\
   !*** ./node_modules/antd/es/statistic/index.js ***!
@@ -54426,13 +55597,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _Countdown__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Countdown */ "./node_modules/antd/es/statistic/Countdown.js");
+/* harmony import */ var _Countdown__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Countdown */ "./node_modules/antd/es/statistic/Countdown.js");
 /* harmony import */ var _Statistic__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Statistic */ "./node_modules/antd/es/statistic/Statistic.js");
+/* harmony import */ var _Timer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Timer */ "./node_modules/antd/es/statistic/Timer.js");
 "use client";
 
 
 
-_Statistic__WEBPACK_IMPORTED_MODULE_0__["default"].Countdown = _Countdown__WEBPACK_IMPORTED_MODULE_1__["default"];
+
+_Statistic__WEBPACK_IMPORTED_MODULE_0__["default"].Timer = _Timer__WEBPACK_IMPORTED_MODULE_1__["default"];
+_Statistic__WEBPACK_IMPORTED_MODULE_0__["default"].Countdown = _Countdown__WEBPACK_IMPORTED_MODULE_2__["default"];
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_Statistic__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 /***/ }),
@@ -54523,7 +55697,7 @@ const prepareComponentToken = token => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   formatCountdown: () => (/* binding */ formatCountdown),
+/* harmony export */   formatCounter: () => (/* binding */ formatCounter),
 /* harmony export */   formatTimeStr: () => (/* binding */ formatTimeStr)
 /* harmony export */ });
 // Countdown
@@ -54565,13 +55739,13 @@ function formatTimeStr(duration, format) {
     return match;
   });
 }
-function formatCountdown(value, config) {
+function formatCounter(value, config, down) {
   const {
     format = ''
   } = config;
   const target = new Date(value).getTime();
   const current = Date.now();
-  const diff = Math.max(target - current, 0);
+  const diff = down ? Math.max(target - current, 0) : Math.max(current - target, 0);
   return formatTimeStr(diff, format);
 }
 
@@ -56976,7 +58150,7 @@ const FilterDropdown = props => {
     rootClassName: classnames__WEBPACK_IMPORTED_MODULE_2___default()(rootClassName, filterDropdownProps.rootClassName),
     open: mergedVisible,
     onOpenChange: onVisibleChange,
-    dropdownRender: () => {
+    popupRender: () => {
       if (typeof (filterDropdownProps === null || filterDropdownProps === void 0 ? void 0 : filterDropdownProps.dropdownRender) === 'function') {
         return filterDropdownProps.dropdownRender(dropdownContent);
       }
@@ -57107,11 +58281,12 @@ const collectFilterStates = (columns, init, pos) => {
   (columns || []).forEach((column, index) => {
     var _a;
     const columnPos = (0,_util__WEBPACK_IMPORTED_MODULE_2__.getColumnPos)(index, pos);
-    if (column.filters || 'filterDropdown' in column || 'onFilter' in column) {
+    const filterDropdownIsDefined = column.filterDropdown !== undefined;
+    if (column.filters || filterDropdownIsDefined || 'onFilter' in column) {
       if ('filteredValue' in column) {
         // Controlled
         let filteredValues = column.filteredValue;
-        if (!('filterDropdown' in column)) {
+        if (!filterDropdownIsDefined) {
           filteredValues = (_a = filteredValues === null || filteredValues === void 0 ? void 0 : filteredValues.map(String)) !== null && _a !== void 0 ? _a : filteredValues;
         }
         filterStates.push({
@@ -57999,6 +59174,7 @@ const useSelection = (config, rowSelection) => {
       title: renderColumnTitle(),
       render: renderSelectionCell,
       onCell: rowSelection.onCell,
+      align: rowSelection.align,
       [rc_table__WEBPACK_IMPORTED_MODULE_3__.INTERNAL_COL_DEFINE]: {
         className: columnCls
       }
@@ -58317,7 +59493,7 @@ const useFilterSorter = props => {
     showSorterTooltip,
     onSorterChange
   } = props;
-  const [sortStates, setSortStates] = react__WEBPACK_IMPORTED_MODULE_1__.useState(collectSortStates(mergedColumns, true));
+  const [sortStates, setSortStates] = react__WEBPACK_IMPORTED_MODULE_1__.useState(() => collectSortStates(mergedColumns, true));
   const getColumnKeys = (columns, pos) => {
     const newKeys = [];
     columns.forEach((item, index) => {
@@ -58875,7 +60051,7 @@ const genFilterStyle = token => {
     tablePaddingHorizontal,
     borderRadius,
     motionDurationSlow,
-    colorTextDescription,
+    colorIcon,
     colorPrimary,
     tableHeaderFilterActiveBg,
     colorTextDisabled,
@@ -58910,7 +60086,7 @@ const genFilterStyle = token => {
         cursor: 'pointer',
         transition: `all ${motionDurationSlow}`,
         '&:hover': {
-          color: colorTextDescription,
+          color: colorIcon,
           background: tableHeaderFilterActiveBg
         },
         '&.active': {
@@ -59998,7 +61174,7 @@ const genStickyStyle = token => {
             height: tableScrollThumbSize,
             backgroundColor: tableScrollThumbBg,
             borderRadius: stickyScrollBarBorderRadius,
-            transition: `all ${token.motionDurationSlow}, transform none`,
+            transition: `all ${token.motionDurationSlow}, transform 0s`,
             position: 'absolute',
             bottom: 0,
             '&:hover, &-active': {
@@ -60296,7 +61472,14 @@ function useLegacyItems(items, children) {
     warning.deprecated(!children, 'Tabs.TabPane', 'items');
   }
   if (items) {
-    return items;
+    return items.map(item => {
+      var _a;
+      const mergedDestroyOnHidden = (_a = item.destroyOnHidden) !== null && _a !== void 0 ? _a : item.destroyInactiveTabPane;
+      return Object.assign(Object.assign({}, item), {
+        // TODO: In the future, destroyInactiveTabPane in rc-tabs needs to be upgrade to destroyOnHidden
+        destroyInactiveTabPane: mergedDestroyOnHidden
+      });
+    });
   }
   const childrenItems = (0,rc_util_es_Children_toArray__WEBPACK_IMPORTED_MODULE_1__["default"])(children).map(node => {
     if (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.isValidElement(node)) {
@@ -60393,9 +61576,11 @@ const Tabs = props => {
       animated,
       style,
       indicatorSize,
-      indicator
+      indicator,
+      destroyInactiveTabPane,
+      destroyOnHidden
     } = props,
-    otherProps = __rest(props, ["type", "className", "rootClassName", "size", "onEdit", "hideAdd", "centered", "addIcon", "removeIcon", "moreIcon", "more", "popupClassName", "children", "items", "animated", "style", "indicatorSize", "indicator"]);
+    otherProps = __rest(props, ["type", "className", "rootClassName", "size", "onEdit", "hideAdd", "centered", "addIcon", "removeIcon", "moreIcon", "more", "popupClassName", "children", "items", "animated", "style", "indicatorSize", "indicator", "destroyInactiveTabPane", "destroyOnHidden"]);
   const {
     prefixCls: customizePrefixCls
   } = otherProps;
@@ -60428,6 +61613,7 @@ const Tabs = props => {
     const warning = (0,_util_warning__WEBPACK_IMPORTED_MODULE_8__.devUseWarning)('Tabs');
      true ? warning(!('onPrevClick' in props) && !('onNextClick' in props), 'breaking', '`onPrevClick` and `onNextClick` has been removed. Please use `onTabScroll` instead.') : 0;
      true ? warning(!(indicatorSize || (tabs === null || tabs === void 0 ? void 0 : tabs.indicatorSize)), 'deprecated', '`indicatorSize` has been deprecated. Please use `indicator={{ size: ... }}` instead.') : 0;
+    warning.deprecated(!('destroyInactiveTabPane' in props || (items === null || items === void 0 ? void 0 : items.some(item => 'destroyInactiveTabPane' in item))), 'destroyInactiveTabPane', 'destroyOnHidden');
   }
   const size = (0,_config_provider_hooks_useSize__WEBPACK_IMPORTED_MODULE_9__["default"])(customSize);
   const mergedItems = (0,_hooks_useLegacyItems__WEBPACK_IMPORTED_MODULE_10__["default"])(items, children);
@@ -60457,7 +61643,9 @@ const Tabs = props => {
     }, more),
     prefixCls: prefixCls,
     animated: mergedAnimated,
-    indicator: mergedIndicator
+    indicator: mergedIndicator,
+    // TODO: In the future, destroyInactiveTabPane in rc-tabs needs to be upgrade to destroyOnHidden
+    destroyInactiveTabPane: destroyOnHidden !== null && destroyOnHidden !== void 0 ? destroyOnHidden : destroyInactiveTabPane
   })));
 };
 Tabs.TabPane = _TabPane__WEBPACK_IMPORTED_MODULE_13__["default"];
@@ -60651,7 +61839,7 @@ const genDropdownStyle = token => {
               _skip_check_: true,
               value: token.marginSM
             },
-            color: token.colorTextDescription,
+            color: token.colorIcon,
             fontSize: token.fontSizeSM,
             background: 'transparent',
             border: 0,
@@ -60884,10 +62072,13 @@ const genSizeStyle = token => {
     componentCls,
     cardPaddingSM,
     cardPaddingLG,
+    cardHeightSM,
+    cardHeightLG,
     horizontalItemPaddingSM,
     horizontalItemPaddingLG
   } = token;
   return {
+    // >>>>> shared
     [componentCls]: {
       '&-small': {
         [`> ${componentCls}-nav`]: {
@@ -60901,16 +62092,23 @@ const genSizeStyle = token => {
         [`> ${componentCls}-nav`]: {
           [`${componentCls}-tab`]: {
             padding: horizontalItemPaddingLG,
-            fontSize: token.titleFontSizeLG
+            fontSize: token.titleFontSizeLG,
+            lineHeight: token.lineHeightLG
           }
         }
       }
     },
+    // >>>>> card
     [`${componentCls}-card`]: {
+      // Small
       [`&${componentCls}-small`]: {
         [`> ${componentCls}-nav`]: {
           [`${componentCls}-tab`]: {
             padding: cardPaddingSM
+          },
+          [`${componentCls}-nav-add`]: {
+            minWidth: cardHeightSM,
+            minHeight: cardHeightSM
           }
         },
         [`&${componentCls}-bottom`]: {
@@ -60940,10 +62138,15 @@ const genSizeStyle = token => {
           }
         }
       },
+      // Large
       [`&${componentCls}-large`]: {
         [`> ${componentCls}-nav`]: {
           [`${componentCls}-tab`]: {
             padding: cardPaddingLG
+          },
+          [`${componentCls}-nav-add`]: {
+            minWidth: cardHeightLG,
+            minHeight: cardHeightLG
           }
         }
       }
@@ -60998,7 +62201,7 @@ const genTabStyle = token => {
           _skip_check_: true,
           value: token.marginXS
         },
-        color: token.colorTextDescription,
+        color: token.colorIcon,
         fontSize: token.fontSizeSM,
         background: 'transparent',
         border: 'none',
@@ -61215,11 +62418,11 @@ const genTabsStyle = token => {
         },
         [`${componentCls}-nav-add`]: Object.assign({
           minWidth: cardHeight,
+          minHeight: cardHeight,
           marginLeft: {
             _skip_check_: true,
             value: cardGutter
           },
-          padding: (0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.paddingXS),
           background: 'transparent',
           border: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.lineWidth)} ${token.lineType} ${colorBorderSecondary}`,
           borderRadius: `${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.borderRadiusLG)} ${(0,_ant_design_cssinjs__WEBPACK_IMPORTED_MODULE_0__.unit)(token.borderRadiusLG)} 0 0`,
@@ -61273,15 +62476,29 @@ const genTabsStyle = token => {
   };
 };
 const prepareComponentToken = token => {
-  const cardHeight = token.controlHeightLG;
+  const {
+    cardHeight,
+    cardHeightSM,
+    cardHeightLG,
+    controlHeight,
+    controlHeightLG
+  } = token;
+  const mergedCardHeight = cardHeight || controlHeightLG;
+  const mergedCardHeightSM = cardHeightSM || controlHeight;
+  // `controlHeight` missing XL variable, so we directly write it here:
+  const mergedCardHeightLG = cardHeightLG || controlHeightLG + 8;
   return {
     zIndexPopup: token.zIndexPopupBase + 50,
     cardBg: token.colorFillAlter,
-    cardHeight,
+    // We can not pass this as valid value,
+    // Since `cardHeight` will lock nav add button height.
+    cardHeight: mergedCardHeight,
+    cardHeightSM: mergedCardHeightSM,
+    cardHeightLG: mergedCardHeightLG,
     // Initialize with empty string, because cardPadding will be calculated with cardHeight by default.
-    cardPadding: `${(cardHeight - Math.round(token.fontSize * token.lineHeight)) / 2 - token.lineWidth}px ${token.padding}px`,
-    cardPaddingSM: `${token.paddingXXS * 1.5}px ${token.padding}px`,
-    cardPaddingLG: `${token.paddingXS}px ${token.padding}px ${token.paddingXXS * 1.5}px`,
+    cardPadding: `${(mergedCardHeight - token.fontHeight) / 2 - token.lineWidth}px ${token.padding}px`,
+    cardPaddingSM: `${(mergedCardHeightSM - token.fontHeight) / 2 - token.lineWidth}px ${token.paddingXS}px`,
+    cardPaddingLG: `${(mergedCardHeightLG - token.fontHeightLG) / 2 - token.lineWidth}px ${token.padding}px`,
     titleFontSize: token.fontSize,
     titleFontSizeLG: token.fontSizeLG,
     titleFontSizeSM: token.fontSize,
@@ -63439,11 +64656,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _util_reactNode__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../_util/reactNode */ "./node_modules/antd/es/_util/reactNode.js");
 /* harmony import */ var _util_warning__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../_util/warning */ "./node_modules/antd/es/_util/warning.js");
 /* harmony import */ var _util_zindexContext__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../_util/zindexContext */ "./node_modules/antd/es/_util/zindexContext.js");
+/* harmony import */ var _config_provider_context__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../config-provider/context */ "./node_modules/antd/es/config-provider/context.js");
 /* harmony import */ var _theme_internal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../theme/internal */ "./node_modules/antd/es/theme/useToken.js");
 /* harmony import */ var _PurePanel__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./PurePanel */ "./node_modules/antd/es/tooltip/PurePanel.js");
 /* harmony import */ var _style__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./style */ "./node_modules/antd/es/tooltip/style/index.js");
 /* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./util */ "./node_modules/antd/es/tooltip/util.js");
-/* harmony import */ var _config_provider_context__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../config-provider/context */ "./node_modules/antd/es/config-provider/context.js");
 "use client";
 
 var __rest = undefined && undefined.__rest || function (s, e) {
@@ -63482,6 +64699,7 @@ const InternalTooltip = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardR
       afterOpenChange,
       afterVisibleChange,
       destroyTooltipOnHide,
+      destroyOnHidden,
       arrow = true,
       title,
       overlay,
@@ -63499,7 +64717,7 @@ const InternalTooltip = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardR
       styles,
       classNames: tooltipClassNames
     } = props,
-    restProps = __rest(props, ["prefixCls", "openClassName", "getTooltipContainer", "color", "overlayInnerStyle", "children", "afterOpenChange", "afterVisibleChange", "destroyTooltipOnHide", "arrow", "title", "overlay", "builtinPlacements", "arrowPointAtCenter", "autoAdjustOverflow", "motion", "getPopupContainer", "placement", "mouseEnterDelay", "mouseLeaveDelay", "overlayStyle", "rootClassName", "overlayClassName", "styles", "classNames"]);
+    restProps = __rest(props, ["prefixCls", "openClassName", "getTooltipContainer", "color", "overlayInnerStyle", "children", "afterOpenChange", "afterVisibleChange", "destroyTooltipOnHide", "destroyOnHidden", "arrow", "title", "overlay", "builtinPlacements", "arrowPointAtCenter", "autoAdjustOverflow", "motion", "getPopupContainer", "placement", "mouseEnterDelay", "mouseLeaveDelay", "overlayStyle", "rootClassName", "overlayClassName", "styles", "classNames"]);
   const mergedShowArrow = !!arrow;
   const [, token] = (0,_theme_internal__WEBPACK_IMPORTED_MODULE_4__["default"])();
   const {
@@ -63532,7 +64750,7 @@ const InternalTooltip = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardR
   });
   // ============================== Warn ==============================
   if (true) {
-    [['visible', 'open'], ['defaultVisible', 'defaultOpen'], ['onVisibleChange', 'onOpenChange'], ['afterVisibleChange', 'afterOpenChange'], ['arrowPointAtCenter', 'arrow={{ pointAtCenter: true }}'], ['overlayStyle', 'styles={{ root: {} }}'], ['overlayInnerStyle', 'styles={{ body: {} }}'], ['overlayClassName', 'classNames={{ root: "" }}']].forEach(_ref => {
+    [['visible', 'open'], ['defaultVisible', 'defaultOpen'], ['onVisibleChange', 'onOpenChange'], ['afterVisibleChange', 'afterOpenChange'], ['destroyTooltipOnHide', 'destroyOnHidden'], ['arrowPointAtCenter', 'arrow={{ pointAtCenter: true }}'], ['overlayStyle', 'styles={{ root: {} }}'], ['overlayInnerStyle', 'styles={{ body: {} }}'], ['overlayClassName', 'classNames={{ root: "" }}']].forEach(_ref => {
       let [deprecatedName, newName] = _ref;
       warning.deprecated(!(deprecatedName in props), deprecatedName, newName);
     });
@@ -63629,7 +64847,8 @@ const InternalTooltip = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardR
       motionName: (0,_util_motion__WEBPACK_IMPORTED_MODULE_13__.getTransitionName)(rootPrefixCls, 'zoom-big-fast', props.transitionName),
       motionDeadline: 1000
     },
-    destroyTooltipOnHide: !!destroyTooltipOnHide
+    // TODO: In the future, destroyTooltipOnHide in rc-tooltip needs to be upgrade to destroyOnHidden
+    destroyTooltipOnHide: destroyOnHidden !== null && destroyOnHidden !== void 0 ? destroyOnHidden : !!destroyTooltipOnHide
   }), tempOpen ? (0,_util_reactNode__WEBPACK_IMPORTED_MODULE_9__.cloneElement)(child, {
     className: childCls
   }) : child);
@@ -64603,7 +65822,8 @@ const genBaseStyle = (prefixCls, token) => {
   };
 };
 // ============================== Merged ==============================
-const genTreeStyle = (prefixCls, token) => {
+const genTreeStyle = function (prefixCls, token) {
+  let enableDirectory = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
   const treeCls = `.${prefixCls}`;
   const treeNodeCls = `${treeCls}-treenode`;
   const treeNodePadding = token.calc(token.paddingXS).div(2).equal();
@@ -64616,7 +65836,7 @@ const genTreeStyle = (prefixCls, token) => {
   // Basic
   genBaseStyle(prefixCls, treeToken),
   // Directory
-  (0,_directory__WEBPACK_IMPORTED_MODULE_3__.genDirectoryStyle)(treeToken)];
+  enableDirectory && (0,_directory__WEBPACK_IMPORTED_MODULE_3__.genDirectoryStyle)(treeToken)].filter(Boolean);
 };
 const initComponentToken = token => {
   const {
@@ -66319,18 +67539,18 @@ const genTypographyStyle = token => {
         color: token.colorTextDescription
       },
       [`&${componentCls}-success`]: {
-        color: token.colorSuccess
+        color: token.colorSuccessText
       },
       [`&${componentCls}-warning`]: {
-        color: token.colorWarning
+        color: token.colorWarningText
       },
       [`&${componentCls}-danger`]: {
-        color: token.colorError,
+        color: token.colorErrorText,
         'a&:active, a&:focus': {
-          color: token.colorErrorActive
+          color: token.colorErrorTextActive
         },
         'a&:hover': {
-          color: token.colorErrorHover
+          color: token.colorErrorTextHover
         }
       },
       [`&${componentCls}-disabled`]: {
@@ -66583,7 +67803,7 @@ const getEditableStyles = token => {
         position: 'absolute',
         insetInlineEnd: token.calc(token.marginXS).add(2).equal(),
         insetBlockEnd: token.marginXS,
-        color: token.colorTextDescription,
+        color: token.colorIcon,
         // default style
         fontWeight: 'normal',
         fontSize: token.fontSize,
@@ -66837,6 +68057,7 @@ const InternalUpload = (props, ref) => {
     }
     // Prevent React18 auto batch since input[upload] trigger process at same time
     // which makes fileList closure problem
+    // eslint-disable-next-line react-dom/no-flush-sync
     (0,react_dom__WEBPACK_IMPORTED_MODULE_2__.flushSync)(() => {
       setMergedFileList(cloneList);
     });
@@ -66850,6 +68071,7 @@ const InternalUpload = (props, ref) => {
     if (!exceedMaxCount || file.status === 'removed' ||
     // We should ignore event if current file is exceed `maxCount`
     cloneList.some(f => f.uid === file.uid)) {
+      // eslint-disable-next-line react-dom/no-flush-sync
       (0,react_dom__WEBPACK_IMPORTED_MODULE_2__.flushSync)(() => {
         onChange === null || onChange === void 0 ? void 0 : onChange(changeInfo);
       });
@@ -67480,11 +68702,9 @@ const InternalUploadList = (props, ref) => {
           (_b = (_a = customIcon.props).onClick) === null || _b === void 0 ? void 0 : _b.call(_a, e);
         }
       },
-      className: `${prefixCls}-list-item-action`
+      className: `${prefixCls}-list-item-action`,
+      disabled: acceptUploadDisabled ? disabled : false
     };
-    if (acceptUploadDisabled) {
-      btnProps.disabled = disabled;
-    }
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.isValidElement(customIcon) ? (/*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement(_button__WEBPACK_IMPORTED_MODULE_11__["default"], Object.assign({}, btnProps, {
       icon: (0,_util_reactNode__WEBPACK_IMPORTED_MODULE_12__.cloneElement)(customIcon, Object.assign(Object.assign({}, customIcon.props), {
         onClick: () => {}
@@ -67741,7 +68961,7 @@ const genBaseStyle = token => {
   };
 };
 const prepareComponentToken = token => ({
-  actionsColor: token.colorTextDescription
+  actionsColor: token.colorIcon
 });
 // ============================== Export ==============================
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_theme_internal__WEBPACK_IMPORTED_MODULE_1__.genStyleHooks)('Upload', token => {
@@ -67827,7 +69047,7 @@ const genListStyle = token => {
             }
           },
           [`${componentCls}-icon ${iconCls}`]: {
-            color: token.colorTextDescription,
+            color: token.colorIcon,
             fontSize
           },
           [`${itemCls}-progress`]: {
@@ -68394,7 +69614,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ('5.24.3');
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ('5.25.0');
 
 /***/ }),
 
@@ -68446,7 +69666,7 @@ function usePanelRef(panelSelector) {
 "use strict";
 /* provided dependency */ var process = __webpack_require__(/*! process/browser.js */ "./node_modules/process/browser.js");
 /* provided dependency */ var Buffer = __webpack_require__(/*! buffer */ "./node_modules/buffer/index.js")["Buffer"];
-/*! Axios v1.8.4 Copyright (c) 2025 Matt Zabriskie and contributors */
+/*! Axios v1.9.0 Copyright (c) 2025 Matt Zabriskie and contributors */
 
 
 function bind(fn, thisArg) {
@@ -68459,6 +69679,7 @@ function bind(fn, thisArg) {
 
 const {toString} = Object.prototype;
 const {getPrototypeOf} = Object;
+const {iterator, toStringTag} = Symbol;
 
 const kindOf = (cache => thing => {
     const str = toString.call(thing);
@@ -68585,7 +69806,7 @@ const isPlainObject = (val) => {
   }
 
   const prototype = getPrototypeOf(val);
-  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in val) && !(Symbol.iterator in val);
+  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(toStringTag in val) && !(iterator in val);
 };
 
 /**
@@ -68936,13 +70157,13 @@ const isTypedArray = (TypedArray => {
  * @returns {void}
  */
 const forEachEntry = (obj, fn) => {
-  const generator = obj && obj[Symbol.iterator];
+  const generator = obj && obj[iterator];
 
-  const iterator = generator.call(obj);
+  const _iterator = generator.call(obj);
 
   let result;
 
-  while ((result = iterator.next()) && !result.done) {
+  while ((result = _iterator.next()) && !result.done) {
     const pair = result.value;
     fn.call(obj, pair[0], pair[1]);
   }
@@ -69063,7 +70284,7 @@ const toFiniteNumber = (value, defaultValue) => {
  * @returns {boolean}
  */
 function isSpecCompliantForm(thing) {
-  return !!(thing && isFunction(thing.append) && thing[Symbol.toStringTag] === 'FormData' && thing[Symbol.iterator]);
+  return !!(thing && isFunction(thing.append) && thing[toStringTag] === 'FormData' && thing[iterator]);
 }
 
 const toJSONObject = (obj) => {
@@ -69132,6 +70353,10 @@ const asap = typeof queueMicrotask !== 'undefined' ?
 
 // *********************
 
+
+const isIterable = (thing) => thing != null && isFunction(thing[iterator]);
+
+
 var utils$1 = {
   isArray,
   isArrayBuffer,
@@ -69187,7 +70412,8 @@ var utils$1 = {
   isAsyncFn,
   isThenable,
   setImmediate: _setImmediate,
-  asap
+  asap,
+  isIterable
 };
 
 /**
@@ -70172,10 +71398,18 @@ class AxiosHeaders {
       setHeaders(header, valueOrRewrite);
     } else if(utils$1.isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
       setHeaders(parseHeaders(header), valueOrRewrite);
-    } else if (utils$1.isHeaders(header)) {
-      for (const [key, value] of header.entries()) {
-        setHeader(value, key, rewrite);
+    } else if (utils$1.isObject(header) && utils$1.isIterable(header)) {
+      let obj = {}, dest, key;
+      for (const entry of header) {
+        if (!utils$1.isArray(entry)) {
+          throw TypeError('Object iterator must return a key-value pair');
+        }
+
+        obj[key = entry[0]] = (dest = obj[key]) ?
+          (utils$1.isArray(dest) ? [...dest, entry[1]] : [dest, entry[1]]) : entry[1];
       }
+
+      setHeaders(obj, valueOrRewrite);
     } else {
       header != null && setHeader(valueOrRewrite, header, rewrite);
     }
@@ -70315,6 +71549,10 @@ class AxiosHeaders {
 
   toString() {
     return Object.entries(this.toJSON()).map(([header, value]) => header + ': ' + value).join('\n');
+  }
+
+  getSetCookie() {
+    return this.get("set-cookie") || [];
   }
 
   get [Symbol.toStringTag]() {
@@ -71356,7 +72594,7 @@ var fetchAdapter = isFetchSupported && (async (config) => {
   } catch (err) {
     unsubscribe && unsubscribe();
 
-    if (err && err.name === 'TypeError' && /fetch/i.test(err.message)) {
+    if (err && err.name === 'TypeError' && /Load failed|fetch/i.test(err.message)) {
       throw Object.assign(
         new AxiosError('Network Error', AxiosError.ERR_NETWORK, config, request),
         {
@@ -71516,7 +72754,7 @@ function dispatchRequest(config) {
   });
 }
 
-const VERSION = "1.8.4";
+const VERSION = "1.9.0";
 
 const validators$1 = {};
 
@@ -71624,7 +72862,7 @@ const validators = validator.validators;
  */
 class Axios {
   constructor(instanceConfig) {
-    this.defaults = instanceConfig;
+    this.defaults = instanceConfig || {};
     this.interceptors = {
       request: new InterceptorManager$1(),
       response: new InterceptorManager$1()
@@ -72492,7 +73730,7 @@ const resolveBodyLength = async (headers, body) => {
   } catch (err) {
     unsubscribe && unsubscribe();
 
-    if (err && err.name === 'TypeError' && /fetch/i.test(err.message)) {
+    if (err && err.name === 'TypeError' && /Load failed|fetch/i.test(err.message)) {
       throw Object.assign(
         new _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_2__["default"]('Network Error', _core_AxiosError_js__WEBPACK_IMPORTED_MODULE_2__["default"].ERR_NETWORK, config, request),
         {
@@ -73107,7 +74345,7 @@ const validators = _helpers_validator_js__WEBPACK_IMPORTED_MODULE_0__["default"]
  */
 class Axios {
   constructor(instanceConfig) {
-    this.defaults = instanceConfig;
+    this.defaults = instanceConfig || {};
     this.interceptors = {
       request: new _InterceptorManager_js__WEBPACK_IMPORTED_MODULE_1__["default"](),
       response: new _InterceptorManager_js__WEBPACK_IMPORTED_MODULE_1__["default"]()
@@ -73565,10 +74803,18 @@ class AxiosHeaders {
       setHeaders(header, valueOrRewrite)
     } else if(_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
       setHeaders((0,_helpers_parseHeaders_js__WEBPACK_IMPORTED_MODULE_1__["default"])(header), valueOrRewrite);
-    } else if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isHeaders(header)) {
-      for (const [key, value] of header.entries()) {
-        setHeader(value, key, rewrite);
+    } else if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isObject(header) && _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isIterable(header)) {
+      let obj = {}, dest, key;
+      for (const entry of header) {
+        if (!_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArray(entry)) {
+          throw TypeError('Object iterator must return a key-value pair');
+        }
+
+        obj[key = entry[0]] = (dest = obj[key]) ?
+          (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isArray(dest) ? [...dest, entry[1]] : [dest, entry[1]]) : entry[1];
       }
+
+      setHeaders(obj, valueOrRewrite)
     } else {
       header != null && setHeader(valueOrRewrite, header, rewrite);
     }
@@ -73708,6 +74954,10 @@ class AxiosHeaders {
 
   toString() {
     return Object.entries(this.toJSON()).map(([header, value]) => header + ': ' + value).join('\n');
+  }
+
+  getSetCookie() {
+    return this.get("set-cookie") || [];
   }
 
   get [Symbol.toStringTag]() {
@@ -74425,7 +75675,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VERSION: () => (/* binding */ VERSION)
 /* harmony export */ });
-const VERSION = "1.8.4";
+const VERSION = "1.9.0";
 
 /***/ }),
 
@@ -76168,6 +77418,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const {toString} = Object.prototype;
 const {getPrototypeOf} = Object;
+const {iterator, toStringTag} = Symbol;
 
 const kindOf = (cache => thing => {
     const str = toString.call(thing);
@@ -76294,7 +77545,7 @@ const isPlainObject = (val) => {
   }
 
   const prototype = getPrototypeOf(val);
-  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in val) && !(Symbol.iterator in val);
+  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(toStringTag in val) && !(iterator in val);
 }
 
 /**
@@ -76645,13 +77896,13 @@ const isTypedArray = (TypedArray => {
  * @returns {void}
  */
 const forEachEntry = (obj, fn) => {
-  const generator = obj && obj[Symbol.iterator];
+  const generator = obj && obj[iterator];
 
-  const iterator = generator.call(obj);
+  const _iterator = generator.call(obj);
 
   let result;
 
-  while ((result = iterator.next()) && !result.done) {
+  while ((result = _iterator.next()) && !result.done) {
     const pair = result.value;
     fn.call(obj, pair[0], pair[1]);
   }
@@ -76772,7 +78023,7 @@ const toFiniteNumber = (value, defaultValue) => {
  * @returns {boolean}
  */
 function isSpecCompliantForm(thing) {
-  return !!(thing && isFunction(thing.append) && thing[Symbol.toStringTag] === 'FormData' && thing[Symbol.iterator]);
+  return !!(thing && isFunction(thing.append) && thing[toStringTag] === 'FormData' && thing[iterator]);
 }
 
 const toJSONObject = (obj) => {
@@ -76841,6 +78092,10 @@ const asap = typeof queueMicrotask !== 'undefined' ?
 
 // *********************
 
+
+const isIterable = (thing) => thing != null && isFunction(thing[iterator]);
+
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   isArray,
   isArrayBuffer,
@@ -76896,7 +78151,8 @@ const asap = typeof queueMicrotask !== 'undefined' ?
   isAsyncFn,
   isThenable,
   setImmediate: _setImmediate,
-  asap
+  asap,
+  isIterable
 });
 
 
@@ -121350,7 +122606,7 @@ var Operations = function Operations(props) {
       className: "".concat(prefixCls, "-footer")
     }, showProgress && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("div", {
       className: "".concat(prefixCls, "-progress")
-    }, countRender ? countRender(current + 1, count) : "".concat(current + 1, " / ").concat(count)), toolbarRender ? toolbarRender(toolbarNode, (0,_babel_runtime_helpers_esm_objectSpread2__WEBPACK_IMPORTED_MODULE_0__["default"])((0,_babel_runtime_helpers_esm_objectSpread2__WEBPACK_IMPORTED_MODULE_0__["default"])({
+    }, countRender ? countRender(current + 1, count) : /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_6__.createElement("bdi", null, "".concat(current + 1, " / ").concat(count))), toolbarRender ? toolbarRender(toolbarNode, (0,_babel_runtime_helpers_esm_objectSpread2__WEBPACK_IMPORTED_MODULE_0__["default"])((0,_babel_runtime_helpers_esm_objectSpread2__WEBPACK_IMPORTED_MODULE_0__["default"])({
       icons: {
         prevIcon: switchPrevNode,
         nextIcon: switchNextNode,
@@ -122653,6 +123909,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 function isImageValid(src) {
   return new Promise(function (resolve) {
+    if (!src) {
+      resolve(false);
+      return;
+    }
     var img = document.createElement('img');
     img.onerror = function () {
       return resolve(false);
@@ -123961,7 +125221,8 @@ var Input = /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_9__.forwardRef)(funct
     disabled: disabled,
     classes: classes,
     classNames: classNames,
-    styles: styles
+    styles: styles,
+    ref: holderRef
   }), getInputElement());
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Input);
@@ -128456,10 +129717,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutProperties */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _Notifications__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../Notifications */ "./node_modules/rc-notification/es/Notifications.js");
+/* harmony import */ var rc_util__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! rc-util */ "./node_modules/rc-util/es/index.js");
 
 
 
 var _excluded = ["getContainer", "motion", "prefixCls", "maxCount", "className", "style", "onAllRemoved", "stack", "renderNotifications"];
+
 
 
 var defaultGetContainer = function defaultGetContainer() {
@@ -128517,23 +129780,24 @@ function useNotification() {
     _React$useState4 = (0,_babel_runtime_helpers_esm_slicedToArray__WEBPACK_IMPORTED_MODULE_1__["default"])(_React$useState3, 2),
     taskQueue = _React$useState4[0],
     setTaskQueue = _React$useState4[1];
+  var open = (0,rc_util__WEBPACK_IMPORTED_MODULE_5__.useEvent)(function (config) {
+    var mergedConfig = mergeConfig(shareConfig, config);
+    if (mergedConfig.key === null || mergedConfig.key === undefined) {
+      mergedConfig.key = "rc-notification-".concat(uniqueKey);
+      uniqueKey += 1;
+    }
+    setTaskQueue(function (queue) {
+      return [].concat((0,_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(queue), [{
+        type: 'open',
+        config: mergedConfig
+      }]);
+    });
+  });
 
   // ========================= Refs =========================
   var api = react__WEBPACK_IMPORTED_MODULE_3__.useMemo(function () {
     return {
-      open: function open(config) {
-        var mergedConfig = mergeConfig(shareConfig, config);
-        if (mergedConfig.key === null || mergedConfig.key === undefined) {
-          mergedConfig.key = "rc-notification-".concat(uniqueKey);
-          uniqueKey += 1;
-        }
-        setTaskQueue(function (queue) {
-          return [].concat((0,_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(queue), [{
-            type: 'open',
-            config: mergedConfig
-          }]);
-        });
-      },
+      open: open,
       close: function close(key) {
         setTaskQueue(function (queue) {
           return [].concat((0,_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__["default"])(queue), [{
@@ -140274,7 +141538,7 @@ var TabNavList = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_9__.forwardRef(func
       case 'Space':
         {
           e.preventDefault();
-          onTabClick(focusKey, e);
+          onTabClick(focusKey !== null && focusKey !== void 0 ? focusKey : activeKey, e);
           break;
         }
       // Backspace
@@ -140981,10 +142245,19 @@ var useIndicator = function useIndicator(options) {
     }
     cleanInkBarRaf();
     inkBarRafRef.current = (0,rc_util_es_raf__WEBPACK_IMPORTED_MODULE_1__["default"])(function () {
-      setInkStyle(newInkStyle);
+      // Avoid jitter caused by tiny numerical differences
+      // fix https://github.com/ant-design/ant-design/issues/53378
+      var isEqual = inkStyle && newInkStyle && Object.keys(newInkStyle).every(function (key) {
+        var newValue = newInkStyle[key];
+        var oldValue = inkStyle[key];
+        return typeof newValue === 'number' && typeof oldValue === 'number' ? Math.round(newValue) === Math.round(oldValue) : newValue === oldValue;
+      });
+      if (!isEqual) {
+        setInkStyle(newInkStyle);
+      }
     });
     return cleanInkBarRaf;
-  }, [activeTabOffset, horizontal, rtl, align, getLength]);
+  }, [JSON.stringify(activeTabOffset), horizontal, rtl, align, getLength]);
   return {
     style: inkStyle
   };
@@ -145706,42 +146979,53 @@ var AjaxUploader = /*#__PURE__*/function (_Component) {
         _this.onClick(e);
       }
     });
-    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_12__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_9__["default"])(_this), "onFileDrop", /*#__PURE__*/function () {
+    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_12__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_9__["default"])(_this), "onFileDropOrPaste", /*#__PURE__*/function () {
       var _ref = (0,_babel_runtime_helpers_esm_asyncToGenerator__WEBPACK_IMPORTED_MODULE_5__["default"])( /*#__PURE__*/(0,_babel_runtime_helpers_esm_regeneratorRuntime__WEBPACK_IMPORTED_MODULE_4__["default"])().mark(function _callee(e) {
-        var multiple, files, _files;
+        var _this$props2, multiple, accept, directory, items, files, dataTransfer, clipboardData, acceptFiles;
         return (0,_babel_runtime_helpers_esm_regeneratorRuntime__WEBPACK_IMPORTED_MODULE_4__["default"])().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
-              multiple = _this.props.multiple;
               e.preventDefault();
               if (!(e.type === 'dragover')) {
-                _context.next = 4;
+                _context.next = 3;
                 break;
               }
               return _context.abrupt("return");
-            case 4:
-              if (!_this.props.directory) {
-                _context.next = 11;
+            case 3:
+              _this$props2 = _this.props, multiple = _this$props2.multiple, accept = _this$props2.accept, directory = _this$props2.directory;
+              items = [];
+              files = [];
+              if (e.type === 'drop') {
+                dataTransfer = e.dataTransfer;
+                items = (0,_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_6__["default"])(dataTransfer.items || []);
+                files = (0,_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_6__["default"])(dataTransfer.files || []);
+              } else if (e.type === 'paste') {
+                clipboardData = e.clipboardData;
+                items = (0,_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_6__["default"])(clipboardData.items || []);
+                files = (0,_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_6__["default"])(clipboardData.files || []);
+              }
+              if (!directory) {
+                _context.next = 14;
                 break;
               }
-              _context.next = 7;
-              return (0,_traverseFileTree__WEBPACK_IMPORTED_MODULE_18__["default"])(Array.prototype.slice.call(e.dataTransfer.items), function (_file) {
+              _context.next = 10;
+              return (0,_traverseFileTree__WEBPACK_IMPORTED_MODULE_18__["default"])(Array.prototype.slice.call(items), function (_file) {
                 return (0,_attr_accept__WEBPACK_IMPORTED_MODULE_16__["default"])(_file, _this.props.accept);
               });
-            case 7:
+            case 10:
               files = _context.sent;
               _this.uploadFiles(files);
-              _context.next = 14;
+              _context.next = 17;
               break;
-            case 11:
-              _files = (0,_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_6__["default"])(e.dataTransfer.files).filter(function (file) {
-                return (0,_attr_accept__WEBPACK_IMPORTED_MODULE_16__["default"])(file, _this.props.accept);
+            case 14:
+              acceptFiles = (0,_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_6__["default"])(files).filter(function (file) {
+                return (0,_attr_accept__WEBPACK_IMPORTED_MODULE_16__["default"])(file, accept);
               });
               if (multiple === false) {
-                _files = _files.slice(0, 1);
+                acceptFiles = files.slice(0, 1);
               }
-              _this.uploadFiles(_files);
-            case 14:
+              _this.uploadFiles(acceptFiles);
+            case 17:
             case "end":
               return _context.stop();
           }
@@ -145751,6 +147035,12 @@ var AjaxUploader = /*#__PURE__*/function (_Component) {
         return _ref.apply(this, arguments);
       };
     }());
+    (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_12__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_9__["default"])(_this), "onPrePaste", function (e) {
+      var pastable = _this.props.pastable;
+      if (pastable) {
+        _this.onFileDropOrPaste(e);
+      }
+    });
     (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_12__["default"])((0,_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_9__["default"])(_this), "uploadFiles", function (files) {
       var originFiles = (0,_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_6__["default"])(files);
       var postFiles = originFiles.map(function (file) {
@@ -145884,12 +147174,27 @@ var AjaxUploader = /*#__PURE__*/function (_Component) {
     key: "componentDidMount",
     value: function componentDidMount() {
       this._isMounted = true;
+      var pastable = this.props.pastable;
+      if (pastable) {
+        document.addEventListener('paste', this.onPrePaste);
+      }
     }
   }, {
     key: "componentWillUnmount",
     value: function componentWillUnmount() {
       this._isMounted = false;
       this.abort();
+      document.removeEventListener('paste', this.onPrePaste);
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps) {
+      var pastable = this.props.pastable;
+      if (pastable && !prevProps.pastable) {
+        document.addEventListener('paste', this.onPrePaste);
+      } else if (!pastable && prevProps.pastable) {
+        document.removeEventListener('paste', this.onPrePaste);
+      }
     }
   }, {
     key: "post",
@@ -145902,13 +147207,13 @@ var AjaxUploader = /*#__PURE__*/function (_Component) {
       if (!this._isMounted) {
         return;
       }
-      var _this$props2 = this.props,
-        onStart = _this$props2.onStart,
-        customRequest = _this$props2.customRequest,
-        name = _this$props2.name,
-        headers = _this$props2.headers,
-        withCredentials = _this$props2.withCredentials,
-        method = _this$props2.method;
+      var _this$props3 = this.props,
+        onStart = _this$props3.onStart,
+        customRequest = _this$props3.customRequest,
+        name = _this$props3.name,
+        headers = _this$props3.headers,
+        withCredentials = _this$props3.withCredentials,
+        method = _this$props3.method;
       var uid = origin.uid;
       var request = customRequest || _request__WEBPACK_IMPORTED_MODULE_17__["default"];
       var requestOption = {
@@ -145966,28 +147271,28 @@ var AjaxUploader = /*#__PURE__*/function (_Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this$props3 = this.props,
-        Tag = _this$props3.component,
-        prefixCls = _this$props3.prefixCls,
-        className = _this$props3.className,
-        _this$props3$classNam = _this$props3.classNames,
-        classNames = _this$props3$classNam === void 0 ? {} : _this$props3$classNam,
-        disabled = _this$props3.disabled,
-        id = _this$props3.id,
-        name = _this$props3.name,
-        style = _this$props3.style,
-        _this$props3$styles = _this$props3.styles,
-        styles = _this$props3$styles === void 0 ? {} : _this$props3$styles,
-        multiple = _this$props3.multiple,
-        accept = _this$props3.accept,
-        capture = _this$props3.capture,
-        children = _this$props3.children,
-        directory = _this$props3.directory,
-        openFileDialogOnClick = _this$props3.openFileDialogOnClick,
-        onMouseEnter = _this$props3.onMouseEnter,
-        onMouseLeave = _this$props3.onMouseLeave,
-        hasControlInside = _this$props3.hasControlInside,
-        otherProps = (0,_babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_2__["default"])(_this$props3, _excluded);
+      var _this$props4 = this.props,
+        Tag = _this$props4.component,
+        prefixCls = _this$props4.prefixCls,
+        className = _this$props4.className,
+        _this$props4$classNam = _this$props4.classNames,
+        classNames = _this$props4$classNam === void 0 ? {} : _this$props4$classNam,
+        disabled = _this$props4.disabled,
+        id = _this$props4.id,
+        name = _this$props4.name,
+        style = _this$props4.style,
+        _this$props4$styles = _this$props4.styles,
+        styles = _this$props4$styles === void 0 ? {} : _this$props4$styles,
+        multiple = _this$props4.multiple,
+        accept = _this$props4.accept,
+        capture = _this$props4.capture,
+        children = _this$props4.children,
+        directory = _this$props4.directory,
+        openFileDialogOnClick = _this$props4.openFileDialogOnClick,
+        onMouseEnter = _this$props4.onMouseEnter,
+        onMouseLeave = _this$props4.onMouseLeave,
+        hasControlInside = _this$props4.hasControlInside,
+        otherProps = (0,_babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_2__["default"])(_this$props4, _excluded);
       var cls = classnames__WEBPACK_IMPORTED_MODULE_13___default()((0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_12__["default"])((0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_12__["default"])((0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_12__["default"])({}, prefixCls, true), "".concat(prefixCls, "-disabled"), disabled), className, className));
       // because input don't have directory/webkitdirectory type declaration
       var dirProps = directory ? {
@@ -145999,8 +147304,8 @@ var AjaxUploader = /*#__PURE__*/function (_Component) {
         onKeyDown: openFileDialogOnClick ? this.onKeyDown : function () {},
         onMouseEnter: onMouseEnter,
         onMouseLeave: onMouseLeave,
-        onDrop: this.onFileDrop,
-        onDragOver: this.onFileDrop,
+        onDrop: this.onFileDropOrPaste,
+        onDragOver: this.onFileDropOrPaste,
         tabIndex: hasControlInside ? undefined : '0'
       };
       return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_15__.createElement(Tag, (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, events, {
@@ -177891,87 +179196,92 @@ exports["default"] = Marquee;
 
 "use strict";
 var react__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
+var react_dom__WEBPACK_IMPORTED_MODULE_1___namespace_cache;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   AbortedDeferredError: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_1__.AbortedDeferredError),
-/* harmony export */   Await: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.Await),
+/* harmony export */   AbortedDeferredError: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.AbortedDeferredError),
+/* harmony export */   Await: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.Await),
 /* harmony export */   BrowserRouter: () => (/* binding */ BrowserRouter),
 /* harmony export */   Form: () => (/* binding */ Form),
 /* harmony export */   HashRouter: () => (/* binding */ HashRouter),
 /* harmony export */   Link: () => (/* binding */ Link),
-/* harmony export */   MemoryRouter: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.MemoryRouter),
+/* harmony export */   MemoryRouter: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.MemoryRouter),
 /* harmony export */   NavLink: () => (/* binding */ NavLink),
-/* harmony export */   Navigate: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.Navigate),
-/* harmony export */   NavigationType: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_1__.Action),
-/* harmony export */   Outlet: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.Outlet),
-/* harmony export */   Route: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.Route),
-/* harmony export */   Router: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.Router),
+/* harmony export */   Navigate: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.Navigate),
+/* harmony export */   NavigationType: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.Action),
+/* harmony export */   Outlet: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.Outlet),
+/* harmony export */   Route: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.Route),
+/* harmony export */   Router: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.Router),
 /* harmony export */   RouterProvider: () => (/* binding */ RouterProvider),
-/* harmony export */   Routes: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.Routes),
+/* harmony export */   Routes: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.Routes),
 /* harmony export */   ScrollRestoration: () => (/* binding */ ScrollRestoration),
-/* harmony export */   UNSAFE_DataRouterContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_DataRouterContext),
-/* harmony export */   UNSAFE_DataRouterStateContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_DataRouterStateContext),
-/* harmony export */   UNSAFE_LocationContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_LocationContext),
-/* harmony export */   UNSAFE_NavigationContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_NavigationContext),
-/* harmony export */   UNSAFE_RouteContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_RouteContext),
+/* harmony export */   UNSAFE_DataRouterContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_DataRouterContext),
+/* harmony export */   UNSAFE_DataRouterStateContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_DataRouterStateContext),
+/* harmony export */   UNSAFE_ErrorResponseImpl: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_ErrorResponseImpl),
+/* harmony export */   UNSAFE_FetchersContext: () => (/* binding */ FetchersContext),
+/* harmony export */   UNSAFE_LocationContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_LocationContext),
+/* harmony export */   UNSAFE_NavigationContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_NavigationContext),
+/* harmony export */   UNSAFE_RouteContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_RouteContext),
 /* harmony export */   UNSAFE_ViewTransitionContext: () => (/* binding */ ViewTransitionContext),
-/* harmony export */   UNSAFE_useRouteId: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_useRouteId),
+/* harmony export */   UNSAFE_useRouteId: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_useRouteId),
 /* harmony export */   UNSAFE_useScrollRestoration: () => (/* binding */ useScrollRestoration),
 /* harmony export */   createBrowserRouter: () => (/* binding */ createBrowserRouter),
 /* harmony export */   createHashRouter: () => (/* binding */ createHashRouter),
-/* harmony export */   createMemoryRouter: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.createMemoryRouter),
-/* harmony export */   createPath: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_1__.createPath),
-/* harmony export */   createRoutesFromChildren: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.createRoutesFromChildren),
-/* harmony export */   createRoutesFromElements: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.createRoutesFromElements),
+/* harmony export */   createMemoryRouter: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.createMemoryRouter),
+/* harmony export */   createPath: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.createPath),
+/* harmony export */   createRoutesFromChildren: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.createRoutesFromChildren),
+/* harmony export */   createRoutesFromElements: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.createRoutesFromElements),
 /* harmony export */   createSearchParams: () => (/* binding */ createSearchParams),
-/* harmony export */   defer: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_1__.defer),
-/* harmony export */   generatePath: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_1__.generatePath),
-/* harmony export */   isRouteErrorResponse: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_1__.isRouteErrorResponse),
-/* harmony export */   json: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_1__.json),
-/* harmony export */   matchPath: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_1__.matchPath),
-/* harmony export */   matchRoutes: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_1__.matchRoutes),
-/* harmony export */   parsePath: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_1__.parsePath),
-/* harmony export */   redirect: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_1__.redirect),
-/* harmony export */   redirectDocument: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_1__.redirectDocument),
-/* harmony export */   renderMatches: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.renderMatches),
-/* harmony export */   resolvePath: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_1__.resolvePath),
+/* harmony export */   defer: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.defer),
+/* harmony export */   generatePath: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.generatePath),
+/* harmony export */   isRouteErrorResponse: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.isRouteErrorResponse),
+/* harmony export */   json: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.json),
+/* harmony export */   matchPath: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.matchPath),
+/* harmony export */   matchRoutes: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.matchRoutes),
+/* harmony export */   parsePath: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.parsePath),
+/* harmony export */   redirect: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.redirect),
+/* harmony export */   redirectDocument: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.redirectDocument),
+/* harmony export */   renderMatches: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.renderMatches),
+/* harmony export */   replace: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.replace),
+/* harmony export */   resolvePath: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.resolvePath),
 /* harmony export */   unstable_HistoryRouter: () => (/* binding */ HistoryRouter),
-/* harmony export */   unstable_useBlocker: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.unstable_useBlocker),
 /* harmony export */   unstable_usePrompt: () => (/* binding */ usePrompt),
-/* harmony export */   unstable_useViewTransitionState: () => (/* binding */ useViewTransitionState),
-/* harmony export */   useActionData: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useActionData),
-/* harmony export */   useAsyncError: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useAsyncError),
-/* harmony export */   useAsyncValue: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useAsyncValue),
+/* harmony export */   useActionData: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useActionData),
+/* harmony export */   useAsyncError: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useAsyncError),
+/* harmony export */   useAsyncValue: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useAsyncValue),
 /* harmony export */   useBeforeUnload: () => (/* binding */ useBeforeUnload),
+/* harmony export */   useBlocker: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useBlocker),
 /* harmony export */   useFetcher: () => (/* binding */ useFetcher),
 /* harmony export */   useFetchers: () => (/* binding */ useFetchers),
 /* harmony export */   useFormAction: () => (/* binding */ useFormAction),
-/* harmony export */   useHref: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useHref),
-/* harmony export */   useInRouterContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useInRouterContext),
+/* harmony export */   useHref: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useHref),
+/* harmony export */   useInRouterContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useInRouterContext),
 /* harmony export */   useLinkClickHandler: () => (/* binding */ useLinkClickHandler),
-/* harmony export */   useLoaderData: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useLoaderData),
-/* harmony export */   useLocation: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useLocation),
-/* harmony export */   useMatch: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useMatch),
-/* harmony export */   useMatches: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useMatches),
-/* harmony export */   useNavigate: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useNavigate),
-/* harmony export */   useNavigation: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useNavigation),
-/* harmony export */   useNavigationType: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useNavigationType),
-/* harmony export */   useOutlet: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useOutlet),
-/* harmony export */   useOutletContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useOutletContext),
-/* harmony export */   useParams: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useParams),
-/* harmony export */   useResolvedPath: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useResolvedPath),
-/* harmony export */   useRevalidator: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useRevalidator),
-/* harmony export */   useRouteError: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useRouteError),
-/* harmony export */   useRouteLoaderData: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useRouteLoaderData),
-/* harmony export */   useRoutes: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_2__.useRoutes),
+/* harmony export */   useLoaderData: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useLoaderData),
+/* harmony export */   useLocation: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useLocation),
+/* harmony export */   useMatch: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useMatch),
+/* harmony export */   useMatches: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useMatches),
+/* harmony export */   useNavigate: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useNavigate),
+/* harmony export */   useNavigation: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useNavigation),
+/* harmony export */   useNavigationType: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useNavigationType),
+/* harmony export */   useOutlet: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useOutlet),
+/* harmony export */   useOutletContext: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useOutletContext),
+/* harmony export */   useParams: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useParams),
+/* harmony export */   useResolvedPath: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useResolvedPath),
+/* harmony export */   useRevalidator: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useRevalidator),
+/* harmony export */   useRouteError: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useRouteError),
+/* harmony export */   useRouteLoaderData: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useRouteLoaderData),
+/* harmony export */   useRoutes: () => (/* reexport safe */ react_router__WEBPACK_IMPORTED_MODULE_3__.useRoutes),
 /* harmony export */   useSearchParams: () => (/* binding */ useSearchParams),
-/* harmony export */   useSubmit: () => (/* binding */ useSubmit)
+/* harmony export */   useSubmit: () => (/* binding */ useSubmit),
+/* harmony export */   useViewTransitionState: () => (/* binding */ useViewTransitionState)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router */ "./node_modules/react-router/dist/index.js");
-/* harmony import */ var react_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @remix-run/router */ "./node_modules/@remix-run/router/dist/router.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var react_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-router */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var react_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @remix-run/router */ "./node_modules/@remix-run/router/dist/router.js");
 /**
- * React Router DOM v6.17.0
+ * React Router DOM v6.30.0
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -177980,6 +179290,8 @@ __webpack_require__.r(__webpack_exports__);
  *
  * @license MIT
  */
+
+
 
 
 
@@ -178103,7 +179415,7 @@ function isFormDataSubmitterSupported() {
 const supportedFormEncTypes = new Set(["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]);
 function getFormEncType(encType) {
   if (encType != null && !supportedFormEncTypes.has(encType)) {
-     true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(false, "\"" + encType + "\" is not a valid `encType` for `<Form>`/`<fetcher.Form>` " + ("and will default to \"" + defaultEncType + "\"")) : 0;
+     true ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_warning)(false, "\"" + encType + "\" is not a valid `encType` for `<Form>`/`<fetcher.Form>` " + ("and will default to \"" + defaultEncType + "\"")) : 0;
     return null;
   }
   return encType;
@@ -178119,7 +179431,7 @@ function getFormSubmissionInfo(target, basename) {
     // prefixed to ensure non-JS scenarios work, so strip it since we'll
     // re-prefix in the router
     let attr = target.getAttribute("action");
-    action = attr ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.stripBasename)(attr, basename) : null;
+    action = attr ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.stripBasename)(attr, basename) : null;
     method = target.getAttribute("method") || defaultMethod;
     encType = getFormEncType(target.getAttribute("enctype")) || defaultEncType;
     formData = new FormData(target);
@@ -178133,7 +179445,7 @@ function getFormSubmissionInfo(target, basename) {
     // prefixed to ensure non-JS scenarios work, so strip it since we'll
     // re-prefix in the router
     let attr = target.getAttribute("formaction") || form.getAttribute("action");
-    action = attr ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.stripBasename)(attr, basename) : null;
+    action = attr ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.stripBasename)(attr, basename) : null;
     method = target.getAttribute("formmethod") || form.getAttribute("method") || defaultMethod;
     encType = getFormEncType(target.getAttribute("formenctype")) || getFormEncType(form.getAttribute("enctype")) || defaultEncType;
     // Build a FormData object populated from a form and submitter
@@ -178178,36 +179490,55 @@ function getFormSubmissionInfo(target, basename) {
   };
 }
 
-const _excluded = ["onClick", "relative", "reloadDocument", "replace", "state", "target", "to", "preventScrollReset", "unstable_viewTransition"],
-  _excluded2 = ["aria-current", "caseSensitive", "className", "end", "style", "to", "unstable_viewTransition", "children"],
-  _excluded3 = ["reloadDocument", "replace", "state", "method", "action", "onSubmit", "submit", "relative", "preventScrollReset", "unstable_viewTransition"];
+const _excluded = ["onClick", "relative", "reloadDocument", "replace", "state", "target", "to", "preventScrollReset", "viewTransition"],
+  _excluded2 = ["aria-current", "caseSensitive", "className", "end", "style", "to", "viewTransition", "children"],
+  _excluded3 = ["fetcherKey", "navigate", "reloadDocument", "replace", "state", "method", "action", "onSubmit", "relative", "preventScrollReset", "viewTransition"];
+// HEY YOU! DON'T TOUCH THIS VARIABLE!
+//
+// It is replaced with the proper version at build time via a babel plugin in
+// the rollup config.
+//
+// Export a global property onto the window for React Router detection by the
+// Core Web Vitals Technology Report.  This way they can configure the `wappalyzer`
+// to detect and properly classify live websites as being built with React Router:
+// https://github.com/HTTPArchive/wappalyzer/blob/main/src/technologies/r.json
+const REACT_ROUTER_VERSION = "6";
+try {
+  window.__reactRouterVersion = REACT_ROUTER_VERSION;
+} catch (e) {
+  // no-op
+}
 function createBrowserRouter(routes, opts) {
-  return (0,react_router__WEBPACK_IMPORTED_MODULE_1__.createRouter)({
+  return (0,react_router__WEBPACK_IMPORTED_MODULE_2__.createRouter)({
     basename: opts == null ? void 0 : opts.basename,
     future: _extends({}, opts == null ? void 0 : opts.future, {
       v7_prependBasename: true
     }),
-    history: (0,react_router__WEBPACK_IMPORTED_MODULE_1__.createBrowserHistory)({
+    history: (0,react_router__WEBPACK_IMPORTED_MODULE_2__.createBrowserHistory)({
       window: opts == null ? void 0 : opts.window
     }),
     hydrationData: (opts == null ? void 0 : opts.hydrationData) || parseHydrationData(),
     routes,
-    mapRouteProperties: react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_mapRouteProperties,
+    mapRouteProperties: react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_mapRouteProperties,
+    dataStrategy: opts == null ? void 0 : opts.dataStrategy,
+    patchRoutesOnNavigation: opts == null ? void 0 : opts.patchRoutesOnNavigation,
     window: opts == null ? void 0 : opts.window
   }).initialize();
 }
 function createHashRouter(routes, opts) {
-  return (0,react_router__WEBPACK_IMPORTED_MODULE_1__.createRouter)({
+  return (0,react_router__WEBPACK_IMPORTED_MODULE_2__.createRouter)({
     basename: opts == null ? void 0 : opts.basename,
     future: _extends({}, opts == null ? void 0 : opts.future, {
       v7_prependBasename: true
     }),
-    history: (0,react_router__WEBPACK_IMPORTED_MODULE_1__.createHashHistory)({
+    history: (0,react_router__WEBPACK_IMPORTED_MODULE_2__.createHashHistory)({
       window: opts == null ? void 0 : opts.window
     }),
     hydrationData: (opts == null ? void 0 : opts.hydrationData) || parseHydrationData(),
     routes,
-    mapRouteProperties: react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_mapRouteProperties,
+    mapRouteProperties: react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_mapRouteProperties,
+    dataStrategy: opts == null ? void 0 : opts.dataStrategy,
+    patchRoutesOnNavigation: opts == null ? void 0 : opts.patchRoutesOnNavigation,
     window: opts == null ? void 0 : opts.window
   }).initialize();
 }
@@ -178229,7 +179560,7 @@ function deserializeErrors(errors) {
     // Hey you!  If you change this, please change the corresponding logic in
     // serializeErrors in react-router-dom/server.tsx :)
     if (val && val.__type === "RouteErrorResponse") {
-      serialized[key] = new react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_ErrorResponseImpl(val.status, val.statusText, val.data, val.internal === true);
+      serialized[key] = new react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_ErrorResponseImpl(val.status, val.statusText, val.data, val.internal === true);
     } else if (val && val.__type === "Error") {
       // Attempt to reconstruct the right type of Error (i.e., ReferenceError)
       if (val.__subType) {
@@ -178266,6 +179597,10 @@ const ViewTransitionContext = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.cr
 if (true) {
   ViewTransitionContext.displayName = "ViewTransition";
 }
+const FetchersContext = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createContext(new Map());
+if (true) {
+  FetchersContext.displayName = "Fetchers";
+}
 //#endregion
 ////////////////////////////////////////////////////////////////////////////////
 //#region Components
@@ -178293,9 +179628,20 @@ if (true) {
 */
 const START_TRANSITION = "startTransition";
 const startTransitionImpl = /*#__PURE__*/ (react__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (react__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(react__WEBPACK_IMPORTED_MODULE_0__, 2)))[START_TRANSITION];
+const FLUSH_SYNC = "flushSync";
+const flushSyncImpl = /*#__PURE__*/ (react_dom__WEBPACK_IMPORTED_MODULE_1___namespace_cache || (react_dom__WEBPACK_IMPORTED_MODULE_1___namespace_cache = __webpack_require__.t(react_dom__WEBPACK_IMPORTED_MODULE_1__, 2)))[FLUSH_SYNC];
+const USE_ID = "useId";
+const useIdImpl = /*#__PURE__*/ (react__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (react__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(react__WEBPACK_IMPORTED_MODULE_0__, 2)))[USE_ID];
 function startTransitionSafe(cb) {
   if (startTransitionImpl) {
     startTransitionImpl(cb);
+  } else {
+    cb();
+  }
+}
+function flushSyncSafe(cb) {
+  if (flushSyncImpl) {
+    flushSyncImpl(cb);
   } else {
     cb();
   }
@@ -178336,6 +179682,7 @@ function RouterProvider(_ref) {
   let [renderDfd, setRenderDfd] = react__WEBPACK_IMPORTED_MODULE_0__.useState();
   let [transition, setTransition] = react__WEBPACK_IMPORTED_MODULE_0__.useState();
   let [interruption, setInterruption] = react__WEBPACK_IMPORTED_MODULE_0__.useState();
+  let fetcherData = react__WEBPACK_IMPORTED_MODULE_0__.useRef(new Map());
   let {
     v7_startTransition
   } = future || {};
@@ -178348,15 +179695,66 @@ function RouterProvider(_ref) {
   }, [v7_startTransition]);
   let setState = react__WEBPACK_IMPORTED_MODULE_0__.useCallback((newState, _ref2) => {
     let {
-      unstable_viewTransitionOpts: viewTransitionOpts
+      deletedFetchers,
+      flushSync: flushSync,
+      viewTransitionOpts: viewTransitionOpts
     } = _ref2;
-    if (!viewTransitionOpts || router.window == null || typeof router.window.document.startViewTransition !== "function") {
-      // Mid-navigation state update, or startViewTransition isn't available
-      optInStartTransition(() => setStateImpl(newState));
-    } else if (transition && renderDfd) {
+    newState.fetchers.forEach((fetcher, key) => {
+      if (fetcher.data !== undefined) {
+        fetcherData.current.set(key, fetcher.data);
+      }
+    });
+    deletedFetchers.forEach(key => fetcherData.current.delete(key));
+    let isViewTransitionUnavailable = router.window == null || router.window.document == null || typeof router.window.document.startViewTransition !== "function";
+    // If this isn't a view transition or it's not available in this browser,
+    // just update and be done with it
+    if (!viewTransitionOpts || isViewTransitionUnavailable) {
+      if (flushSync) {
+        flushSyncSafe(() => setStateImpl(newState));
+      } else {
+        optInStartTransition(() => setStateImpl(newState));
+      }
+      return;
+    }
+    // flushSync + startViewTransition
+    if (flushSync) {
+      // Flush through the context to mark DOM elements as transition=ing
+      flushSyncSafe(() => {
+        // Cancel any pending transitions
+        if (transition) {
+          renderDfd && renderDfd.resolve();
+          transition.skipTransition();
+        }
+        setVtContext({
+          isTransitioning: true,
+          flushSync: true,
+          currentLocation: viewTransitionOpts.currentLocation,
+          nextLocation: viewTransitionOpts.nextLocation
+        });
+      });
+      // Update the DOM
+      let t = router.window.document.startViewTransition(() => {
+        flushSyncSafe(() => setStateImpl(newState));
+      });
+      // Clean up after the animation completes
+      t.finished.finally(() => {
+        flushSyncSafe(() => {
+          setRenderDfd(undefined);
+          setTransition(undefined);
+          setPendingState(undefined);
+          setVtContext({
+            isTransitioning: false
+          });
+        });
+      });
+      flushSyncSafe(() => setTransition(t));
+      return;
+    }
+    // startTransition + startViewTransition
+    if (transition) {
       // Interrupting an in-progress transition, cancel and let everything flush
       // out, and then kick off a new transition from the interruption state
-      renderDfd.resolve();
+      renderDfd && renderDfd.resolve();
       transition.skipTransition();
       setInterruption({
         state: newState,
@@ -178368,21 +179766,22 @@ function RouterProvider(_ref) {
       setPendingState(newState);
       setVtContext({
         isTransitioning: true,
+        flushSync: false,
         currentLocation: viewTransitionOpts.currentLocation,
         nextLocation: viewTransitionOpts.nextLocation
       });
     }
-  }, [optInStartTransition, transition, renderDfd, router.window]);
+  }, [router.window, transition, renderDfd, fetcherData, optInStartTransition]);
   // Need to use a layout effect here so we are subscribed early enough to
   // pick up on any render-driven redirects/navigations (useEffect/<Navigate>)
   react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect(() => router.subscribe(setState), [router, setState]);
   // When we start a view transition, create a Deferred we can use for the
   // eventual "completed" render
   react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => {
-    if (vtContext.isTransitioning) {
+    if (vtContext.isTransitioning && !vtContext.flushSync) {
       setRenderDfd(new Deferred());
     }
-  }, [vtContext.isTransitioning]);
+  }, [vtContext]);
   // Once the deferred is created, kick off startViewTransition() to update the
   // DOM and then wait on the Deferred to resolve (indicating the DOM update has
   // happened)
@@ -178419,12 +179818,18 @@ function RouterProvider(_ref) {
       setPendingState(interruption.state);
       setVtContext({
         isTransitioning: true,
+        flushSync: false,
         currentLocation: interruption.currentLocation,
         nextLocation: interruption.nextLocation
       });
       setInterruption(undefined);
     }
   }, [vtContext.isTransitioning, interruption]);
+  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => {
+     true ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_warning)(fallbackElement == null || !router.future.v7_partialHydration, "`<RouterProvider fallbackElement>` is deprecated when using " + "`v7_partialHydration`, use a `HydrateFallback` component instead") : 0;
+    // Only log this once on initial mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   let navigator = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => {
     return {
       createHref: router.createHref,
@@ -178448,34 +179853,45 @@ function RouterProvider(_ref) {
     static: false,
     basename
   }), [router, navigator, basename]);
+  let routerFuture = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => ({
+    v7_relativeSplatPath: router.future.v7_relativeSplatPath
+  }), [router.future.v7_relativeSplatPath]);
+  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => (0,react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_logV6DeprecationWarnings)(future, router.future), [future, router.future]);
   // The fragment and {null} here are important!  We need them to keep React 18's
   // useId happy when we are server-rendering since we may have a <script> here
   // containing the hydrated server-side staticContext (from StaticRouterProvider).
   // useId relies on the component tree structure to generate deterministic id's
   // so we need to ensure it remains the same on the client even though
   // we don't need the <script> tag
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_DataRouterContext.Provider, {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_DataRouterContext.Provider, {
     value: dataRouterContext
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_DataRouterStateContext.Provider, {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_DataRouterStateContext.Provider, {
     value: state
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(FetchersContext.Provider, {
+    value: fetcherData.current
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(ViewTransitionContext.Provider, {
     value: vtContext
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_2__.Router, {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_3__.Router, {
     basename: basename,
     location: state.location,
     navigationType: state.historyAction,
-    navigator: navigator
-  }, state.initialized ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(DataRoutes, {
+    navigator: navigator,
+    future: routerFuture
+  }, state.initialized || router.future.v7_partialHydration ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(MemoizedDataRoutes, {
     routes: router.routes,
+    future: router.future,
     state: state
-  }) : fallbackElement)))), null);
+  }) : fallbackElement))))), null);
 }
+// Memoize to avoid re-renders when updating `ViewTransitionContext`
+const MemoizedDataRoutes = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.memo(DataRoutes);
 function DataRoutes(_ref3) {
   let {
     routes,
+    future,
     state
   } = _ref3;
-  return (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_useRoutesImpl)(routes, undefined, state);
+  return (0,react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_useRoutesImpl)(routes, undefined, state, future);
 }
 /**
  * A `<Router>` for use in web browsers. Provides the cleanest URLs.
@@ -178489,7 +179905,7 @@ function BrowserRouter(_ref4) {
   } = _ref4;
   let historyRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef();
   if (historyRef.current == null) {
-    historyRef.current = (0,react_router__WEBPACK_IMPORTED_MODULE_1__.createBrowserHistory)({
+    historyRef.current = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.createBrowserHistory)({
       window,
       v5Compat: true
     });
@@ -178506,12 +179922,14 @@ function BrowserRouter(_ref4) {
     v7_startTransition && startTransitionImpl ? startTransitionImpl(() => setStateImpl(newState)) : setStateImpl(newState);
   }, [setStateImpl, v7_startTransition]);
   react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect(() => history.listen(setState), [history, setState]);
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_2__.Router, {
+  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => (0,react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_logV6DeprecationWarnings)(future), [future]);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_3__.Router, {
     basename: basename,
     children: children,
     location: state.location,
     navigationType: state.action,
-    navigator: history
+    navigator: history,
+    future: future
   });
 }
 /**
@@ -178527,7 +179945,7 @@ function HashRouter(_ref5) {
   } = _ref5;
   let historyRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef();
   if (historyRef.current == null) {
-    historyRef.current = (0,react_router__WEBPACK_IMPORTED_MODULE_1__.createHashHistory)({
+    historyRef.current = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.createHashHistory)({
       window,
       v5Compat: true
     });
@@ -178544,12 +179962,14 @@ function HashRouter(_ref5) {
     v7_startTransition && startTransitionImpl ? startTransitionImpl(() => setStateImpl(newState)) : setStateImpl(newState);
   }, [setStateImpl, v7_startTransition]);
   react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect(() => history.listen(setState), [history, setState]);
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_2__.Router, {
+  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => (0,react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_logV6DeprecationWarnings)(future), [future]);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_3__.Router, {
     basename: basename,
     children: children,
     location: state.location,
     navigationType: state.action,
-    navigator: history
+    navigator: history,
+    future: future
   });
 }
 /**
@@ -178576,12 +179996,14 @@ function HistoryRouter(_ref6) {
     v7_startTransition && startTransitionImpl ? startTransitionImpl(() => setStateImpl(newState)) : setStateImpl(newState);
   }, [setStateImpl, v7_startTransition]);
   react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect(() => history.listen(setState), [history, setState]);
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_2__.Router, {
+  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => (0,react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_logV6DeprecationWarnings)(future), [future]);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_router__WEBPACK_IMPORTED_MODULE_3__.Router, {
     basename: basename,
     children: children,
     location: state.location,
     navigationType: state.action,
-    navigator: history
+    navigator: history,
+    future: future
   });
 }
 if (true) {
@@ -178602,12 +180024,12 @@ const Link = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef(function
       target,
       to,
       preventScrollReset,
-      unstable_viewTransition
+      viewTransition
     } = _ref7,
     rest = _objectWithoutPropertiesLoose(_ref7, _excluded);
   let {
     basename
-  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_NavigationContext);
+  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_NavigationContext);
   // Rendered into <a href> for absolute URLs
   let absoluteHref;
   let isExternal = false;
@@ -178619,7 +180041,7 @@ const Link = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef(function
       try {
         let currentUrl = new URL(window.location.href);
         let targetUrl = to.startsWith("//") ? new URL(currentUrl.protocol + to) : new URL(to);
-        let path = (0,react_router__WEBPACK_IMPORTED_MODULE_1__.stripBasename)(targetUrl.pathname, basename);
+        let path = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.stripBasename)(targetUrl.pathname, basename);
         if (targetUrl.origin === currentUrl.origin && path != null) {
           // Strip the protocol/origin/basename for same-origin absolute URLs
           to = path + targetUrl.search + targetUrl.hash;
@@ -178628,12 +180050,12 @@ const Link = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef(function
         }
       } catch (e) {
         // We can't do external URL detection without a valid URL
-         true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(false, "<Link to=\"" + to + "\"> contains an invalid URL which will probably break " + "when clicked - please update to a valid URL path.") : 0;
+         true ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_warning)(false, "<Link to=\"" + to + "\"> contains an invalid URL which will probably break " + "when clicked - please update to a valid URL path.") : 0;
       }
     }
   }
   // Rendered into <a href> for relative URLs
-  let href = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useHref)(to, {
+  let href = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useHref)(to, {
     relative
   });
   let internalOnClick = useLinkClickHandler(to, {
@@ -178642,7 +180064,7 @@ const Link = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef(function
     target,
     preventScrollReset,
     relative,
-    unstable_viewTransition
+    viewTransition
   });
   function handleClick(event) {
     if (onClick) onClick(event);
@@ -178675,22 +180097,23 @@ const NavLink = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef(funct
       end = false,
       style: styleProp,
       to,
-      unstable_viewTransition,
+      viewTransition,
       children
     } = _ref8,
     rest = _objectWithoutPropertiesLoose(_ref8, _excluded2);
-  let path = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useResolvedPath)(to, {
+  let path = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useResolvedPath)(to, {
     relative: rest.relative
   });
-  let location = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useLocation)();
-  let routerState = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_DataRouterStateContext);
+  let location = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useLocation)();
+  let routerState = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_DataRouterStateContext);
   let {
-    navigator
-  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_NavigationContext);
+    navigator,
+    basename
+  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_NavigationContext);
   let isTransitioning = routerState != null &&
   // Conditional usage is OK here because the usage of a data router is static
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  useViewTransitionState(path) && unstable_viewTransition === true;
+  useViewTransitionState(path) && viewTransition === true;
   let toPathname = navigator.encodeLocation ? navigator.encodeLocation(path).pathname : path.pathname;
   let locationPathname = location.pathname;
   let nextLocationPathname = routerState && routerState.navigation && routerState.navigation.location ? routerState.navigation.location.pathname : null;
@@ -178699,7 +180122,16 @@ const NavLink = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef(funct
     nextLocationPathname = nextLocationPathname ? nextLocationPathname.toLowerCase() : null;
     toPathname = toPathname.toLowerCase();
   }
-  let isActive = locationPathname === toPathname || !end && locationPathname.startsWith(toPathname) && locationPathname.charAt(toPathname.length) === "/";
+  if (nextLocationPathname && basename) {
+    nextLocationPathname = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.stripBasename)(nextLocationPathname, basename) || nextLocationPathname;
+  }
+  // If the `to` has a trailing slash, look at that exact spot.  Otherwise,
+  // we're looking for a slash _after_ what's in `to`.  For example:
+  //
+  // <NavLink to="/users"> and <NavLink to="/users/">
+  // both want to look for a / at index 6 to match URL `/users/matt`
+  const endSlashPosition = toPathname !== "/" && toPathname.endsWith("/") ? toPathname.length - 1 : toPathname.length;
+  let isActive = locationPathname === toPathname || !end && locationPathname.startsWith(toPathname) && locationPathname.charAt(endSlashPosition) === "/";
   let isPending = nextLocationPathname != null && (nextLocationPathname === toPathname || !end && nextLocationPathname.startsWith(toPathname) && nextLocationPathname.charAt(toPathname.length) === "/");
   let renderProps = {
     isActive,
@@ -178725,7 +180157,7 @@ const NavLink = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef(funct
     ref: ref,
     style: style,
     to: to,
-    unstable_viewTransition: unstable_viewTransition
+    viewTransition: viewTransition
   }), typeof children === "function" ? children(renderProps) : children);
 });
 if (true) {
@@ -178737,34 +180169,26 @@ if (true) {
  * requests, allowing components to add nicer UX to the page as the form is
  * submitted and returns with data.
  */
-const Form = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((props, ref) => {
-  let submit = useSubmit();
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(FormImpl, _extends({}, props, {
-    submit: submit,
-    ref: ref
-  }));
-});
-if (true) {
-  Form.displayName = "Form";
-}
-const FormImpl = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((_ref9, forwardedRef) => {
+const Form = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((_ref9, forwardedRef) => {
   let {
+      fetcherKey,
+      navigate,
       reloadDocument,
       replace,
       state,
       method = defaultMethod,
       action,
       onSubmit,
-      submit,
       relative,
       preventScrollReset,
-      unstable_viewTransition
+      viewTransition
     } = _ref9,
     props = _objectWithoutPropertiesLoose(_ref9, _excluded3);
-  let formMethod = method.toLowerCase() === "get" ? "get" : "post";
+  let submit = useSubmit();
   let formAction = useFormAction(action, {
     relative
   });
+  let formMethod = method.toLowerCase() === "get" ? "get" : "post";
   let submitHandler = event => {
     onSubmit && onSubmit(event);
     if (event.defaultPrevented) return;
@@ -178772,12 +180196,14 @@ const FormImpl = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((_re
     let submitter = event.nativeEvent.submitter;
     let submitMethod = (submitter == null ? void 0 : submitter.getAttribute("formmethod")) || method;
     submit(submitter || event.currentTarget, {
+      fetcherKey,
       method: submitMethod,
+      navigate,
       replace,
       state,
       relative,
       preventScrollReset,
-      unstable_viewTransition
+      viewTransition
     });
   };
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("form", _extends({
@@ -178788,7 +180214,7 @@ const FormImpl = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((_re
   }, props));
 });
 if (true) {
-  FormImpl.displayName = "FormImpl";
+  Form.displayName = "Form";
 }
 /**
  * This component will emulate the browser's scroll restoration on location
@@ -178822,22 +180248,25 @@ var DataRouterHook;
 })(DataRouterHook || (DataRouterHook = {}));
 var DataRouterStateHook;
 (function (DataRouterStateHook) {
+  DataRouterStateHook["UseFetcher"] = "useFetcher";
   DataRouterStateHook["UseFetchers"] = "useFetchers";
   DataRouterStateHook["UseScrollRestoration"] = "useScrollRestoration";
 })(DataRouterStateHook || (DataRouterStateHook = {}));
+// Internal hooks
 function getDataRouterConsoleError(hookName) {
-  return hookName + " must be used within a data router.  See https://reactrouter.com/routers/picking-a-router.";
+  return hookName + " must be used within a data router.  See https://reactrouter.com/v6/routers/picking-a-router.";
 }
 function useDataRouterContext(hookName) {
-  let ctx = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_DataRouterContext);
-  !ctx ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, getDataRouterConsoleError(hookName)) : 0 : void 0;
+  let ctx = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_DataRouterContext);
+  !ctx ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_invariant)(false, getDataRouterConsoleError(hookName)) : 0 : void 0;
   return ctx;
 }
 function useDataRouterState(hookName) {
-  let state = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_DataRouterStateContext);
-  !state ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, getDataRouterConsoleError(hookName)) : 0 : void 0;
+  let state = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_DataRouterStateContext);
+  !state ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_invariant)(false, getDataRouterConsoleError(hookName)) : 0 : void 0;
   return state;
 }
+// External hooks
 /**
  * Handles the click behavior for router `<Link>` components. This is useful if
  * you need to create custom `<Link>` components with the same click behavior we
@@ -178850,11 +180279,11 @@ function useLinkClickHandler(to, _temp) {
     state,
     preventScrollReset,
     relative,
-    unstable_viewTransition
+    viewTransition
   } = _temp === void 0 ? {} : _temp;
-  let navigate = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useNavigate)();
-  let location = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useLocation)();
-  let path = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useResolvedPath)(to, {
+  let navigate = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useNavigate)();
+  let location = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useLocation)();
+  let path = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useResolvedPath)(to, {
     relative
   });
   return react__WEBPACK_IMPORTED_MODULE_0__.useCallback(event => {
@@ -178862,32 +180291,32 @@ function useLinkClickHandler(to, _temp) {
       event.preventDefault();
       // If the URL hasn't changed, a regular <a> will do a replace instead of
       // a push, so do the same here unless the replace prop is explicitly set
-      let replace = replaceProp !== undefined ? replaceProp : (0,react_router__WEBPACK_IMPORTED_MODULE_1__.createPath)(location) === (0,react_router__WEBPACK_IMPORTED_MODULE_1__.createPath)(path);
+      let replace = replaceProp !== undefined ? replaceProp : (0,react_router__WEBPACK_IMPORTED_MODULE_2__.createPath)(location) === (0,react_router__WEBPACK_IMPORTED_MODULE_2__.createPath)(path);
       navigate(to, {
         replace,
         state,
         preventScrollReset,
         relative,
-        unstable_viewTransition
+        viewTransition
       });
     }
-  }, [location, navigate, path, replaceProp, state, target, to, preventScrollReset, relative, unstable_viewTransition]);
+  }, [location, navigate, path, replaceProp, state, target, to, preventScrollReset, relative, viewTransition]);
 }
 /**
  * A convenient wrapper for reading and writing search parameters via the
  * URLSearchParams interface.
  */
 function useSearchParams(defaultInit) {
-   true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(typeof URLSearchParams !== "undefined", "You cannot use the `useSearchParams` hook in a browser that does not " + "support the URLSearchParams API. If you need to support Internet " + "Explorer 11, we recommend you load a polyfill such as " + "https://github.com/ungap/url-search-params\n\n" + "If you're unsure how to load polyfills, we recommend you check out " + "https://polyfill.io/v3/ which provides some recommendations about how " + "to load polyfills only for users that need them, instead of for every " + "user.") : 0;
+   true ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_warning)(typeof URLSearchParams !== "undefined", "You cannot use the `useSearchParams` hook in a browser that does not " + "support the URLSearchParams API. If you need to support Internet " + "Explorer 11, we recommend you load a polyfill such as " + "https://github.com/ungap/url-search-params.") : 0;
   let defaultSearchParamsRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef(createSearchParams(defaultInit));
   let hasSetSearchParamsRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef(false);
-  let location = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useLocation)();
+  let location = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useLocation)();
   let searchParams = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() =>
   // Only merge in the defaults if we haven't yet called setSearchParams.
   // Once we call that we want those to take precedence, otherwise you can't
   // remove a param with setSearchParams({}) if it has an initial value
   getSearchParamsForLocation(location.search, hasSetSearchParamsRef.current ? null : defaultSearchParamsRef.current), [location.search]);
-  let navigate = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useNavigate)();
+  let navigate = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useNavigate)();
   let setSearchParams = react__WEBPACK_IMPORTED_MODULE_0__.useCallback((nextInit, navigateOptions) => {
     const newSearchParams = createSearchParams(typeof nextInit === "function" ? nextInit(searchParams) : nextInit);
     hasSetSearchParamsRef.current = true;
@@ -178900,6 +180329,8 @@ function validateClientSideSubmission() {
     throw new Error("You are calling submit during the server render. " + "Try calling submit within a `useEffect` or callback instead.");
   }
 }
+let fetcherId = 0;
+let getUniqueFetcherId = () => "__" + String(++fetcherId) + "__";
 /**
  * Returns a function that may be used to programmatically submit a form (or
  * some arbitrary data) to the server.
@@ -178910,8 +180341,8 @@ function useSubmit() {
   } = useDataRouterContext(DataRouterHook.UseSubmit);
   let {
     basename
-  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_NavigationContext);
-  let currentRouteId = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_useRouteId)();
+  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_NavigationContext);
+  let currentRouteId = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_useRouteId)();
   return react__WEBPACK_IMPORTED_MODULE_0__.useCallback(function (target, options) {
     if (options === void 0) {
       options = {};
@@ -178924,50 +180355,31 @@ function useSubmit() {
       formData,
       body
     } = getFormSubmissionInfo(target, basename);
-    router.navigate(options.action || action, {
-      preventScrollReset: options.preventScrollReset,
-      formData,
-      body,
-      formMethod: options.method || method,
-      formEncType: options.encType || encType,
-      replace: options.replace,
-      state: options.state,
-      fromRouteId: currentRouteId,
-      unstable_viewTransition: options.unstable_viewTransition
-    });
+    if (options.navigate === false) {
+      let key = options.fetcherKey || getUniqueFetcherId();
+      router.fetch(key, currentRouteId, options.action || action, {
+        preventScrollReset: options.preventScrollReset,
+        formData,
+        body,
+        formMethod: options.method || method,
+        formEncType: options.encType || encType,
+        flushSync: options.flushSync
+      });
+    } else {
+      router.navigate(options.action || action, {
+        preventScrollReset: options.preventScrollReset,
+        formData,
+        body,
+        formMethod: options.method || method,
+        formEncType: options.encType || encType,
+        replace: options.replace,
+        state: options.state,
+        fromRouteId: currentRouteId,
+        flushSync: options.flushSync,
+        viewTransition: options.viewTransition
+      });
+    }
   }, [router, basename, currentRouteId]);
-}
-/**
- * Returns the implementation for fetcher.submit
- */
-function useSubmitFetcher(fetcherKey, fetcherRouteId) {
-  let {
-    router
-  } = useDataRouterContext(DataRouterHook.UseSubmitFetcher);
-  let {
-    basename
-  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_NavigationContext);
-  return react__WEBPACK_IMPORTED_MODULE_0__.useCallback(function (target, options) {
-    if (options === void 0) {
-      options = {};
-    }
-    validateClientSideSubmission();
-    let {
-      action,
-      method,
-      encType,
-      formData,
-      body
-    } = getFormSubmissionInfo(target, basename);
-    !(fetcherRouteId != null) ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, "No routeId available for useFetcher()") : 0 : void 0;
-    router.fetch(fetcherKey, fetcherRouteId, options.action || action, {
-      preventScrollReset: options.preventScrollReset,
-      formData,
-      body,
-      formMethod: options.method || method,
-      formEncType: options.encType || encType
-    });
-  }, [router, basename, fetcherKey, fetcherRouteId]);
 }
 // v7: Eventually we should deprecate this entirely in favor of using the
 // router method directly?
@@ -178977,32 +180389,34 @@ function useFormAction(action, _temp2) {
   } = _temp2 === void 0 ? {} : _temp2;
   let {
     basename
-  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_NavigationContext);
-  let routeContext = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_RouteContext);
-  !routeContext ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, "useFormAction must be used inside a RouteContext") : 0 : void 0;
+  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_NavigationContext);
+  let routeContext = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_RouteContext);
+  !routeContext ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_invariant)(false, "useFormAction must be used inside a RouteContext") : 0 : void 0;
   let [match] = routeContext.matches.slice(-1);
   // Shallow clone path so we can modify it below, otherwise we modify the
   // object referenced by useMemo inside useResolvedPath
-  let path = _extends({}, (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useResolvedPath)(action ? action : ".", {
+  let path = _extends({}, (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useResolvedPath)(action ? action : ".", {
     relative
   }));
-  // Previously we set the default action to ".". The problem with this is that
-  // `useResolvedPath(".")` excludes search params of the resolved URL. This is
-  // the intended behavior of when "." is specifically provided as
-  // the form action, but inconsistent w/ browsers when the action is omitted.
+  // If no action was specified, browsers will persist current search params
+  // when determining the path, so match that behavior
   // https://github.com/remix-run/remix/issues/927
-  let location = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useLocation)();
+  let location = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useLocation)();
   if (action == null) {
     // Safe to write to this directly here since if action was undefined, we
     // would have called useResolvedPath(".") which will never include a search
     path.search = location.search;
-    // When grabbing search params from the URL, remove the automatically
-    // inserted ?index param so we match the useResolvedPath search behavior
-    // which would not include ?index
-    if (match.route.index) {
-      let params = new URLSearchParams(path.search);
+    // When grabbing search params from the URL, remove any included ?index param
+    // since it might not apply to our contextual route.  We add it back based
+    // on match.route.index below
+    let params = new URLSearchParams(path.search);
+    let indexValues = params.getAll("index");
+    let hasNakedIndexParam = indexValues.some(v => v === "");
+    if (hasNakedIndexParam) {
       params.delete("index");
-      path.search = params.toString() ? "?" + params.toString() : "";
+      indexValues.filter(v => v).forEach(v => params.append("index", v));
+      let qs = params.toString();
+      path.search = qs ? "?" + qs : "";
     }
   }
   if ((!action || action === ".") && match.route.index) {
@@ -179013,67 +180427,86 @@ function useFormAction(action, _temp2) {
   // the raw basename which allows the basename to have full control over the
   // presence of a trailing slash on root actions
   if (basename !== "/") {
-    path.pathname = path.pathname === "/" ? basename : (0,react_router__WEBPACK_IMPORTED_MODULE_1__.joinPaths)([basename, path.pathname]);
+    path.pathname = path.pathname === "/" ? basename : (0,react_router__WEBPACK_IMPORTED_MODULE_2__.joinPaths)([basename, path.pathname]);
   }
-  return (0,react_router__WEBPACK_IMPORTED_MODULE_1__.createPath)(path);
+  return (0,react_router__WEBPACK_IMPORTED_MODULE_2__.createPath)(path);
 }
-function createFetcherForm(fetcherKey, routeId) {
-  let FetcherForm = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((props, ref) => {
-    let submit = useSubmitFetcher(fetcherKey, routeId);
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(FormImpl, _extends({}, props, {
-      ref: ref,
-      submit: submit
-    }));
-  });
-  if (true) {
-    FetcherForm.displayName = "fetcher.Form";
-  }
-  return FetcherForm;
-}
-let fetcherId = 0;
 // TODO: (v7) Change the useFetcher generic default from `any` to `unknown`
 /**
  * Interacts with route loaders and actions without causing a navigation. Great
  * for any interaction that stays on the same page.
  */
-function useFetcher() {
+function useFetcher(_temp3) {
   var _route$matches;
+  let {
+    key
+  } = _temp3 === void 0 ? {} : _temp3;
   let {
     router
   } = useDataRouterContext(DataRouterHook.UseFetcher);
-  let route = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_RouteContext);
-  !route ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, "useFetcher must be used inside a RouteContext") : 0 : void 0;
+  let state = useDataRouterState(DataRouterStateHook.UseFetcher);
+  let fetcherData = react__WEBPACK_IMPORTED_MODULE_0__.useContext(FetchersContext);
+  let route = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_RouteContext);
   let routeId = (_route$matches = route.matches[route.matches.length - 1]) == null ? void 0 : _route$matches.route.id;
-  !(routeId != null) ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, "useFetcher can only be used on routes that contain a unique \"id\"") : 0 : void 0;
-  let [fetcherKey] = react__WEBPACK_IMPORTED_MODULE_0__.useState(() => String(++fetcherId));
-  let [Form] = react__WEBPACK_IMPORTED_MODULE_0__.useState(() => {
-    !routeId ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, "No routeId available for fetcher.Form()") : 0 : void 0;
-    return createFetcherForm(fetcherKey, routeId);
-  });
-  let [load] = react__WEBPACK_IMPORTED_MODULE_0__.useState(() => href => {
-    !router ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, "No router available for fetcher.load()") : 0 : void 0;
-    !routeId ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, "No routeId available for fetcher.load()") : 0 : void 0;
-    router.fetch(fetcherKey, routeId, href);
-  });
-  let submit = useSubmitFetcher(fetcherKey, routeId);
-  let fetcher = router.getFetcher(fetcherKey);
-  let fetcherWithComponents = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => _extends({
-    Form,
-    submit,
-    load
-  }, fetcher), [fetcher, Form, submit, load]);
+  !fetcherData ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_invariant)(false, "useFetcher must be used inside a FetchersContext") : 0 : void 0;
+  !route ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_invariant)(false, "useFetcher must be used inside a RouteContext") : 0 : void 0;
+  !(routeId != null) ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_invariant)(false, "useFetcher can only be used on routes that contain a unique \"id\"") : 0 : void 0;
+  // Fetcher key handling
+  // OK to call conditionally to feature detect `useId`
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  let defaultKey = useIdImpl ? useIdImpl() : "";
+  let [fetcherKey, setFetcherKey] = react__WEBPACK_IMPORTED_MODULE_0__.useState(key || defaultKey);
+  if (key && key !== fetcherKey) {
+    setFetcherKey(key);
+  } else if (!fetcherKey) {
+    // We will only fall through here when `useId` is not available
+    setFetcherKey(getUniqueFetcherId());
+  }
+  // Registration/cleanup
   react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => {
-    // Is this busted when the React team gets real weird and calls effects
-    // twice on mount?  We really just need to garbage collect here when this
-    // fetcher is no longer around.
+    router.getFetcher(fetcherKey);
     return () => {
-      if (!router) {
-        console.warn("No router available to clean up from useFetcher()");
-        return;
-      }
+      // Tell the router we've unmounted - if v7_fetcherPersist is enabled this
+      // will not delete immediately but instead queue up a delete after the
+      // fetcher returns to an `idle` state
       router.deleteFetcher(fetcherKey);
     };
   }, [router, fetcherKey]);
+  // Fetcher additions
+  let load = react__WEBPACK_IMPORTED_MODULE_0__.useCallback((href, opts) => {
+    !routeId ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_invariant)(false, "No routeId available for fetcher.load()") : 0 : void 0;
+    router.fetch(fetcherKey, routeId, href, opts);
+  }, [fetcherKey, routeId, router]);
+  let submitImpl = useSubmit();
+  let submit = react__WEBPACK_IMPORTED_MODULE_0__.useCallback((target, opts) => {
+    submitImpl(target, _extends({}, opts, {
+      navigate: false,
+      fetcherKey
+    }));
+  }, [fetcherKey, submitImpl]);
+  let FetcherForm = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => {
+    let FetcherForm = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.forwardRef((props, ref) => {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(Form, _extends({}, props, {
+        navigate: false,
+        fetcherKey: fetcherKey,
+        ref: ref
+      }));
+    });
+    if (true) {
+      FetcherForm.displayName = "fetcher.Form";
+    }
+    return FetcherForm;
+  }, [fetcherKey]);
+  // Exposed FetcherWithComponents
+  let fetcher = state.fetchers.get(fetcherKey) || react_router__WEBPACK_IMPORTED_MODULE_2__.IDLE_FETCHER;
+  let data = fetcherData.get(fetcherKey);
+  let fetcherWithComponents = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => _extends({
+    Form: FetcherForm,
+    submit,
+    load
+  }, fetcher, {
+    data
+  }), [FetcherForm, submit, load, fetcher, data]);
   return fetcherWithComponents;
 }
 /**
@@ -179082,18 +180515,23 @@ function useFetcher() {
  */
 function useFetchers() {
   let state = useDataRouterState(DataRouterStateHook.UseFetchers);
-  return [...state.fetchers.values()];
+  return Array.from(state.fetchers.entries()).map(_ref11 => {
+    let [key, fetcher] = _ref11;
+    return _extends({}, fetcher, {
+      key
+    });
+  });
 }
 const SCROLL_RESTORATION_STORAGE_KEY = "react-router-scroll-positions";
 let savedScrollPositions = {};
 /**
  * When rendered inside a RouterProvider, will restore scroll positions on navigations
  */
-function useScrollRestoration(_temp3) {
+function useScrollRestoration(_temp4) {
   let {
     getKey,
     storageKey
-  } = _temp3 === void 0 ? {} : _temp3;
+  } = _temp4 === void 0 ? {} : _temp4;
   let {
     router
   } = useDataRouterContext(DataRouterHook.UseScrollRestoration);
@@ -179103,10 +180541,10 @@ function useScrollRestoration(_temp3) {
   } = useDataRouterState(DataRouterStateHook.UseScrollRestoration);
   let {
     basename
-  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_NavigationContext);
-  let location = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useLocation)();
-  let matches = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useMatches)();
-  let navigation = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useNavigation)();
+  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(react_router__WEBPACK_IMPORTED_MODULE_3__.UNSAFE_NavigationContext);
+  let location = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useLocation)();
+  let matches = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useMatches)();
+  let navigation = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useNavigation)();
   // Trigger manual scroll restoration while we're active
   react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => {
     window.history.scrollRestoration = "manual";
@@ -179123,7 +180561,7 @@ function useScrollRestoration(_temp3) {
     try {
       sessionStorage.setItem(storageKey || SCROLL_RESTORATION_STORAGE_KEY, JSON.stringify(savedScrollPositions));
     } catch (error) {
-       true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(false, "Failed to save scroll positions in sessionStorage, <ScrollRestoration /> will not work properly (" + error + ").") : 0;
+       true ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_warning)(false, "Failed to save scroll positions in sessionStorage, <ScrollRestoration /> will not work properly (" + error + ").") : 0;
     }
     window.history.scrollRestoration = "auto";
   }, [storageKey, getKey, navigation.state, location, matches]));
@@ -179145,7 +180583,7 @@ function useScrollRestoration(_temp3) {
     react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect(() => {
       let getKeyWithoutBasename = getKey && basename !== "/" ? (location, matches) => getKey( // Strip the basename to match useLocation()
       _extends({}, location, {
-        pathname: (0,react_router__WEBPACK_IMPORTED_MODULE_1__.stripBasename)(location.pathname, basename) || location.pathname
+        pathname: (0,react_router__WEBPACK_IMPORTED_MODULE_2__.stripBasename)(location.pathname, basename) || location.pathname
       }), matches) : getKey;
       let disableScrollRestoration = router == null ? void 0 : router.enableScrollRestoration(savedScrollPositions, () => window.scrollY, getKeyWithoutBasename);
       return () => disableScrollRestoration && disableScrollRestoration();
@@ -179231,12 +180669,12 @@ function usePageHide(callback, options) {
  * very incorrectly in some cases) across browsers if user click addition
  * back/forward navigations while the confirm is open.  Use at your own risk.
  */
-function usePrompt(_ref11) {
+function usePrompt(_ref12) {
   let {
     when,
     message
-  } = _ref11;
-  let blocker = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.unstable_useBlocker)(when);
+  } = _ref12;
+  let blocker = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useBlocker)(when);
   react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => {
     if (blocker.state === "blocked") {
       let proceed = window.confirm(message);
@@ -179269,32 +180707,32 @@ function useViewTransitionState(to, opts) {
     opts = {};
   }
   let vtContext = react__WEBPACK_IMPORTED_MODULE_0__.useContext(ViewTransitionContext);
-  !(vtContext != null) ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, "`unstable_useViewTransitionState` must be used within `react-router-dom`'s `RouterProvider`.  " + "Did you accidentally import `RouterProvider` from `react-router`?") : 0 : void 0;
+  !(vtContext != null) ?  true ? (0,react_router__WEBPACK_IMPORTED_MODULE_2__.UNSAFE_invariant)(false, "`useViewTransitionState` must be used within `react-router-dom`'s `RouterProvider`.  " + "Did you accidentally import `RouterProvider` from `react-router`?") : 0 : void 0;
   let {
     basename
   } = useDataRouterContext(DataRouterHook.useViewTransitionState);
-  let path = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.useResolvedPath)(to, {
+  let path = (0,react_router__WEBPACK_IMPORTED_MODULE_3__.useResolvedPath)(to, {
     relative: opts.relative
   });
   if (!vtContext.isTransitioning) {
     return false;
   }
-  let currentPath = (0,react_router__WEBPACK_IMPORTED_MODULE_1__.stripBasename)(vtContext.currentLocation.pathname, basename) || vtContext.currentLocation.pathname;
-  let nextPath = (0,react_router__WEBPACK_IMPORTED_MODULE_1__.stripBasename)(vtContext.nextLocation.pathname, basename) || vtContext.nextLocation.pathname;
+  let currentPath = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.stripBasename)(vtContext.currentLocation.pathname, basename) || vtContext.currentLocation.pathname;
+  let nextPath = (0,react_router__WEBPACK_IMPORTED_MODULE_2__.stripBasename)(vtContext.nextLocation.pathname, basename) || vtContext.nextLocation.pathname;
   // Transition is active if we're going to or coming from the indicated
   // destination.  This ensures that other PUSH navigations that reverse
   // an indicated transition apply.  I.e., on the list view you have:
   //
-  //   <NavLink to="/details/1" unstable_viewTransition>
+  //   <NavLink to="/details/1" viewTransition>
   //
   // If you click the breadcrumb back to the list view:
   //
-  //   <NavLink to="/list" unstable_viewTransition>
+  //   <NavLink to="/list" viewTransition>
   //
   // We should apply the transition because it's indicated as active going
   // from /list -> /details/1 and therefore should be active on the reverse
   // (even though this isn't strictly a POP reverse)
-  return (0,react_router__WEBPACK_IMPORTED_MODULE_1__.matchPath)(path.pathname, nextPath) != null || (0,react_router__WEBPACK_IMPORTED_MODULE_1__.matchPath)(path.pathname, currentPath) != null;
+  return (0,react_router__WEBPACK_IMPORTED_MODULE_2__.matchPath)(path.pathname, nextPath) != null || (0,react_router__WEBPACK_IMPORTED_MODULE_2__.matchPath)(path.pathname, currentPath) != null;
 }
 //#endregion
 
@@ -179329,6 +180767,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   UNSAFE_LocationContext: () => (/* binding */ LocationContext),
 /* harmony export */   UNSAFE_NavigationContext: () => (/* binding */ NavigationContext),
 /* harmony export */   UNSAFE_RouteContext: () => (/* binding */ RouteContext),
+/* harmony export */   UNSAFE_logV6DeprecationWarnings: () => (/* binding */ logV6DeprecationWarnings),
 /* harmony export */   UNSAFE_mapRouteProperties: () => (/* binding */ mapRouteProperties),
 /* harmony export */   UNSAFE_useRouteId: () => (/* binding */ useRouteId),
 /* harmony export */   UNSAFE_useRoutesImpl: () => (/* binding */ useRoutesImpl),
@@ -179346,11 +180785,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   redirect: () => (/* reexport safe */ _remix_run_router__WEBPACK_IMPORTED_MODULE_1__.redirect),
 /* harmony export */   redirectDocument: () => (/* reexport safe */ _remix_run_router__WEBPACK_IMPORTED_MODULE_1__.redirectDocument),
 /* harmony export */   renderMatches: () => (/* binding */ renderMatches),
+/* harmony export */   replace: () => (/* reexport safe */ _remix_run_router__WEBPACK_IMPORTED_MODULE_1__.replace),
 /* harmony export */   resolvePath: () => (/* reexport safe */ _remix_run_router__WEBPACK_IMPORTED_MODULE_1__.resolvePath),
-/* harmony export */   unstable_useBlocker: () => (/* binding */ useBlocker),
 /* harmony export */   useActionData: () => (/* binding */ useActionData),
 /* harmony export */   useAsyncError: () => (/* binding */ useAsyncError),
 /* harmony export */   useAsyncValue: () => (/* binding */ useAsyncValue),
+/* harmony export */   useBlocker: () => (/* binding */ useBlocker),
 /* harmony export */   useHref: () => (/* binding */ useHref),
 /* harmony export */   useInRouterContext: () => (/* binding */ useInRouterContext),
 /* harmony export */   useLoaderData: () => (/* binding */ useLoaderData),
@@ -179372,7 +180812,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _remix_run_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @remix-run/router */ "./node_modules/@remix-run/router/dist/router.js");
 /**
- * React Router v6.17.0
+ * React Router v6.30.0
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -179450,7 +180890,7 @@ if (true) {
  * Returns the full href for the given "to" value. This is useful for building
  * custom links that are also accessible and preserve right-click behavior.
  *
- * @see https://reactrouter.com/hooks/use-href
+ * @see https://reactrouter.com/v6/hooks/use-href
  */
 function useHref(to, _temp) {
   let {
@@ -179489,7 +180929,7 @@ function useHref(to, _temp) {
 /**
  * Returns true if this component is a descendant of a `<Router>`.
  *
- * @see https://reactrouter.com/hooks/use-in-router-context
+ * @see https://reactrouter.com/v6/hooks/use-in-router-context
  */
 function useInRouterContext() {
   return react__WEBPACK_IMPORTED_MODULE_0__.useContext(LocationContext) != null;
@@ -179503,7 +180943,7 @@ function useInRouterContext() {
  * "routing" in your app, and we'd like to know what your use case is. We may
  * be able to provide something higher-level to better suit your needs.
  *
- * @see https://reactrouter.com/hooks/use-location
+ * @see https://reactrouter.com/v6/hooks/use-location
  */
 function useLocation() {
   !useInRouterContext() ?  true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, // TODO: This error is probably because they somehow have 2 versions of the
@@ -179516,7 +180956,7 @@ function useLocation() {
  * Returns the current navigation action which describes how the router came to
  * the current location, either by a pop, push, or replace on the history stack.
  *
- * @see https://reactrouter.com/hooks/use-navigation-type
+ * @see https://reactrouter.com/v6/hooks/use-navigation-type
  */
 function useNavigationType() {
   return react__WEBPACK_IMPORTED_MODULE_0__.useContext(LocationContext).navigationType;
@@ -179527,7 +180967,7 @@ function useNavigationType() {
  * This is useful for components that need to know "active" state, e.g.
  * `<NavLink>`.
  *
- * @see https://reactrouter.com/hooks/use-match
+ * @see https://reactrouter.com/v6/hooks/use-match
  */
 function useMatch(pattern) {
   !useInRouterContext() ?  true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, // TODO: This error is probably because they somehow have 2 versions of the
@@ -179536,7 +180976,7 @@ function useMatch(pattern) {
   let {
     pathname
   } = useLocation();
-  return react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.matchPath)(pattern, pathname), [pathname, pattern]);
+  return react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.matchPath)(pattern, (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_decodePath)(pathname)), [pathname, pattern]);
 }
 
 /**
@@ -179560,7 +181000,7 @@ function useIsomorphicLayoutEffect(cb) {
  * Returns an imperative method for changing the location. Used by `<Link>`s, but
  * may also be used by other elements to change the location.
  *
- * @see https://reactrouter.com/hooks/use-navigate
+ * @see https://reactrouter.com/v6/hooks/use-navigate
  */
 function useNavigate() {
   let {
@@ -179577,6 +181017,7 @@ function useNavigateUnstable() {
   let dataRouterContext = react__WEBPACK_IMPORTED_MODULE_0__.useContext(DataRouterContext);
   let {
     basename,
+    future,
     navigator
   } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(NavigationContext);
   let {
@@ -179585,7 +181026,7 @@ function useNavigateUnstable() {
   let {
     pathname: locationPathname
   } = useLocation();
-  let routePathnamesJson = JSON.stringify((0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_getPathContributingMatches)(matches).map(match => match.pathnameBase));
+  let routePathnamesJson = JSON.stringify((0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_getResolveToMatches)(matches, future.v7_relativeSplatPath));
   let activeRef = react__WEBPACK_IMPORTED_MODULE_0__.useRef(false);
   useIsomorphicLayoutEffect(() => {
     activeRef.current = true;
@@ -179623,7 +181064,7 @@ const OutletContext = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createCont
 /**
  * Returns the context (if provided) for the child route at this level of the route
  * hierarchy.
- * @see https://reactrouter.com/hooks/use-outlet-context
+ * @see https://reactrouter.com/v6/hooks/use-outlet-context
  */
 function useOutletContext() {
   return react__WEBPACK_IMPORTED_MODULE_0__.useContext(OutletContext);
@@ -179633,7 +181074,7 @@ function useOutletContext() {
  * Returns the element for the child route at this level of the route
  * hierarchy. Used internally by `<Outlet>` to render child routes.
  *
- * @see https://reactrouter.com/hooks/use-outlet
+ * @see https://reactrouter.com/v6/hooks/use-outlet
  */
 function useOutlet(context) {
   let outlet = react__WEBPACK_IMPORTED_MODULE_0__.useContext(RouteContext).outlet;
@@ -179649,7 +181090,7 @@ function useOutlet(context) {
  * Returns an object of key/value pairs of the dynamic params from the current
  * URL that were matched by the route path.
  *
- * @see https://reactrouter.com/hooks/use-params
+ * @see https://reactrouter.com/v6/hooks/use-params
  */
 function useParams() {
   let {
@@ -179662,19 +181103,22 @@ function useParams() {
 /**
  * Resolves the pathname of the given `to` value against the current location.
  *
- * @see https://reactrouter.com/hooks/use-resolved-path
+ * @see https://reactrouter.com/v6/hooks/use-resolved-path
  */
 function useResolvedPath(to, _temp2) {
   let {
     relative
   } = _temp2 === void 0 ? {} : _temp2;
   let {
+    future
+  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(NavigationContext);
+  let {
     matches
   } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(RouteContext);
   let {
     pathname: locationPathname
   } = useLocation();
-  let routePathnamesJson = JSON.stringify((0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_getPathContributingMatches)(matches).map(match => match.pathnameBase));
+  let routePathnamesJson = JSON.stringify((0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_getResolveToMatches)(matches, future.v7_relativeSplatPath));
   return react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.resolveTo)(to, JSON.parse(routePathnamesJson), locationPathname, relative === "path"), [to, routePathnamesJson, locationPathname, relative]);
 }
 
@@ -179684,19 +181128,20 @@ function useResolvedPath(to, _temp2) {
  * elements in the tree must render an `<Outlet>` to render their child route's
  * element.
  *
- * @see https://reactrouter.com/hooks/use-routes
+ * @see https://reactrouter.com/v6/hooks/use-routes
  */
 function useRoutes(routes, locationArg) {
   return useRoutesImpl(routes, locationArg);
 }
 
 // Internal implementation with accept optional param for RouterProvider usage
-function useRoutesImpl(routes, locationArg, dataRouterState) {
+function useRoutesImpl(routes, locationArg, dataRouterState, future) {
   !useInRouterContext() ?  true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, // TODO: This error is probably because they somehow have 2 versions of the
   // router loaded. We can help them understand how to avoid that.
   "useRoutes() may be used only in the context of a <Router> component.") : 0 : void 0;
   let {
-    navigator
+    navigator,
+    static: isStatic
   } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(NavigationContext);
   let {
     matches: parentMatches
@@ -179741,13 +181186,32 @@ function useRoutesImpl(routes, locationArg, dataRouterState) {
     location = locationFromContext;
   }
   let pathname = location.pathname || "/";
-  let remainingPathname = parentPathnameBase === "/" ? pathname : pathname.slice(parentPathnameBase.length) || "/";
-  let matches = (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.matchRoutes)(routes, {
+  let remainingPathname = pathname;
+  if (parentPathnameBase !== "/") {
+    // Determine the remaining pathname by removing the # of URL segments the
+    // parentPathnameBase has, instead of removing based on character count.
+    // This is because we can't guarantee that incoming/outgoing encodings/
+    // decodings will match exactly.
+    // We decode paths before matching on a per-segment basis with
+    // decodeURIComponent(), but we re-encode pathnames via `new URL()` so they
+    // match what `window.location.pathname` would reflect.  Those don't 100%
+    // align when it comes to encoded URI characters such as % and &.
+    //
+    // So we may end up with:
+    //   pathname:           "/descendant/a%25b/match"
+    //   parentPathnameBase: "/descendant/a%b"
+    //
+    // And the direct substring removal approach won't work :/
+    let parentSegments = parentPathnameBase.replace(/^\//, "").split("/");
+    let segments = pathname.replace(/^\//, "").split("/");
+    remainingPathname = "/" + segments.slice(parentSegments.length).join("/");
+  }
+  let matches = !isStatic && dataRouterState && dataRouterState.matches && dataRouterState.matches.length > 0 ? dataRouterState.matches : (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.matchRoutes)(routes, {
     pathname: remainingPathname
   });
   if (true) {
      true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(parentRoute || matches != null, "No routes matched location \"" + location.pathname + location.search + location.hash + "\" ") : 0;
-     true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(matches == null || matches[matches.length - 1].route.element !== undefined || matches[matches.length - 1].route.Component !== undefined, "Matched leaf route at location \"" + location.pathname + location.search + location.hash + "\" " + "does not have an element or Component. This means it will render an <Outlet /> with a " + "null value by default resulting in an \"empty\" page.") : 0;
+     true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(matches == null || matches[matches.length - 1].route.element !== undefined || matches[matches.length - 1].route.Component !== undefined || matches[matches.length - 1].route.lazy !== undefined, "Matched leaf route at location \"" + location.pathname + location.search + location.hash + "\" " + "does not have an element or Component. This means it will render an <Outlet /> with a " + "null value by default resulting in an \"empty\" page.") : 0;
   }
   let renderedMatches = _renderMatches(matches && matches.map(match => Object.assign({}, match, {
     params: Object.assign({}, parentParams, match.params),
@@ -179757,7 +181221,7 @@ function useRoutesImpl(routes, locationArg, dataRouterState) {
     pathnameBase: match.pathnameBase === "/" ? parentPathnameBase : (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.joinPaths)([parentPathnameBase,
     // Re-encode pathnames that were decoded inside matchRoutes
     navigator.encodeLocation ? navigator.encodeLocation(match.pathnameBase).pathname : match.pathnameBase])
-  })), parentMatches, dataRouterState);
+  })), parentMatches, dataRouterState, future);
 
   // When a user passes in a `locationArg`, the associated routes need to
   // be wrapped in a new `LocationContext.Provider` in order for `useLocation`
@@ -179845,7 +181309,7 @@ class RenderErrorBoundary extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
     // this because the error provided from the app state may be cleared without
     // the location changing.
     return {
-      error: props.error || state.error,
+      error: props.error !== undefined ? props.error : state.error,
       location: state.location,
       revalidation: props.revalidation || state.revalidation
     };
@@ -179854,7 +181318,7 @@ class RenderErrorBoundary extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
     console.error("React Router caught the following error during render", error, errorInfo);
   }
   render() {
-    return this.state.error ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(RouteContext.Provider, {
+    return this.state.error !== undefined ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(RouteContext.Provider, {
       value: this.props.routeContext
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(RouteErrorContext.Provider, {
       value: this.state.error,
@@ -179879,19 +181343,33 @@ function RenderedRoute(_ref) {
     value: routeContext
   }, children);
 }
-function _renderMatches(matches, parentMatches, dataRouterState) {
-  var _dataRouterState2;
+function _renderMatches(matches, parentMatches, dataRouterState, future) {
+  var _dataRouterState;
   if (parentMatches === void 0) {
     parentMatches = [];
   }
   if (dataRouterState === void 0) {
     dataRouterState = null;
   }
+  if (future === void 0) {
+    future = null;
+  }
   if (matches == null) {
-    var _dataRouterState;
-    if ((_dataRouterState = dataRouterState) != null && _dataRouterState.errors) {
+    var _future;
+    if (!dataRouterState) {
+      return null;
+    }
+    if (dataRouterState.errors) {
       // Don't bail if we have data router errors so we can render them in the
       // boundary.  Use the pre-matched (or shimmed) matches
+      matches = dataRouterState.matches;
+    } else if ((_future = future) != null && _future.v7_partialHydration && parentMatches.length === 0 && !dataRouterState.initialized && dataRouterState.matches.length > 0) {
+      // Don't bail if we're initializing with partial hydration and we have
+      // router matches.  That means we're actively running `patchRoutesOnNavigation`
+      // so we should render down the partial matches to the appropriate
+      // `HydrateFallback`.  We only do this if `parentMatches` is empty so it
+      // only impacts the root matches for `RouterProvider` and no descendant
+      // `<Routes>`
       matches = dataRouterState.matches;
     } else {
       return null;
@@ -179900,24 +181378,72 @@ function _renderMatches(matches, parentMatches, dataRouterState) {
   let renderedMatches = matches;
 
   // If we have data errors, trim matches to the highest error boundary
-  let errors = (_dataRouterState2 = dataRouterState) == null ? void 0 : _dataRouterState2.errors;
+  let errors = (_dataRouterState = dataRouterState) == null ? void 0 : _dataRouterState.errors;
   if (errors != null) {
-    let errorIndex = renderedMatches.findIndex(m => m.route.id && (errors == null ? void 0 : errors[m.route.id]));
+    let errorIndex = renderedMatches.findIndex(m => m.route.id && (errors == null ? void 0 : errors[m.route.id]) !== undefined);
     !(errorIndex >= 0) ?  true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, "Could not find a matching route for errors on route IDs: " + Object.keys(errors).join(",")) : 0 : void 0;
     renderedMatches = renderedMatches.slice(0, Math.min(renderedMatches.length, errorIndex + 1));
   }
+
+  // If we're in a partial hydration mode, detect if we need to render down to
+  // a given HydrateFallback while we load the rest of the hydration data
+  let renderFallback = false;
+  let fallbackIndex = -1;
+  if (dataRouterState && future && future.v7_partialHydration) {
+    for (let i = 0; i < renderedMatches.length; i++) {
+      let match = renderedMatches[i];
+      // Track the deepest fallback up until the first route without data
+      if (match.route.HydrateFallback || match.route.hydrateFallbackElement) {
+        fallbackIndex = i;
+      }
+      if (match.route.id) {
+        let {
+          loaderData,
+          errors
+        } = dataRouterState;
+        let needsToRunLoader = match.route.loader && loaderData[match.route.id] === undefined && (!errors || errors[match.route.id] === undefined);
+        if (match.route.lazy || needsToRunLoader) {
+          // We found the first route that's not ready to render (waiting on
+          // lazy, or has a loader that hasn't run yet).  Flag that we need to
+          // render a fallback and render up until the appropriate fallback
+          renderFallback = true;
+          if (fallbackIndex >= 0) {
+            renderedMatches = renderedMatches.slice(0, fallbackIndex + 1);
+          } else {
+            renderedMatches = [renderedMatches[0]];
+          }
+          break;
+        }
+      }
+    }
+  }
   return renderedMatches.reduceRight((outlet, match, index) => {
-    let error = match.route.id ? errors == null ? void 0 : errors[match.route.id] : null;
-    // Only data routers handle errors
+    // Only data routers handle errors/fallbacks
+    let error;
+    let shouldRenderHydrateFallback = false;
     let errorElement = null;
+    let hydrateFallbackElement = null;
     if (dataRouterState) {
+      error = errors && match.route.id ? errors[match.route.id] : undefined;
       errorElement = match.route.errorElement || defaultErrorElement;
+      if (renderFallback) {
+        if (fallbackIndex < 0 && index === 0) {
+          warningOnce("route-fallback", false, "No `HydrateFallback` element provided to render during initial hydration");
+          shouldRenderHydrateFallback = true;
+          hydrateFallbackElement = null;
+        } else if (fallbackIndex === index) {
+          shouldRenderHydrateFallback = true;
+          hydrateFallbackElement = match.route.hydrateFallbackElement || null;
+        }
+      }
     }
     let matches = parentMatches.concat(renderedMatches.slice(0, index + 1));
     let getChildren = () => {
       let children;
       if (error) {
         children = errorElement;
+      } else if (shouldRenderHydrateFallback) {
+        children = hydrateFallbackElement;
       } else if (match.route.Component) {
         // Note: This is a de-optimized path since React won't re-use the
         // ReactElement since it's identity changes with each new
@@ -179978,7 +181504,7 @@ var DataRouterStateHook = /*#__PURE__*/function (DataRouterStateHook) {
   return DataRouterStateHook;
 }(DataRouterStateHook || {});
 function getDataRouterConsoleError(hookName) {
-  return hookName + " must be used within a data router.  See https://reactrouter.com/routers/picking-a-router.";
+  return hookName + " must be used within a data router.  See https://reactrouter.com/v6/routers/picking-a-router.";
 }
 function useDataRouterContext(hookName) {
   let ctx = react__WEBPACK_IMPORTED_MODULE_0__.useContext(DataRouterContext);
@@ -180071,9 +181597,8 @@ function useRouteLoaderData(routeId) {
  */
 function useActionData() {
   let state = useDataRouterState(DataRouterStateHook.UseActionData);
-  let route = react__WEBPACK_IMPORTED_MODULE_0__.useContext(RouteContext);
-  !route ?  true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, "useActionData must be used inside a RouteContext") : 0 : void 0;
-  return Object.values((state == null ? void 0 : state.actionData) || {})[0];
+  let routeId = useCurrentRouteId(DataRouterStateHook.UseLoaderData);
+  return state.actionData ? state.actionData[routeId] : undefined;
 }
 
 /**
@@ -180089,7 +181614,7 @@ function useRouteError() {
 
   // If this was a render error, we put it in a RouteError context inside
   // of RenderErrorBoundary
-  if (error) {
+  if (error !== undefined) {
     return error;
   }
 
@@ -180209,11 +181734,42 @@ function useNavigateStable() {
   }, [router, id]);
   return navigate;
 }
-const alreadyWarned = {};
+const alreadyWarned$1 = {};
 function warningOnce(key, cond, message) {
-  if (!cond && !alreadyWarned[key]) {
-    alreadyWarned[key] = true;
+  if (!cond && !alreadyWarned$1[key]) {
+    alreadyWarned$1[key] = true;
      true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(false, message) : 0;
+  }
+}
+
+const alreadyWarned = {};
+function warnOnce(key, message) {
+  if ( true && !alreadyWarned[message]) {
+    alreadyWarned[message] = true;
+    console.warn(message);
+  }
+}
+const logDeprecation = (flag, msg, link) => warnOnce(flag, "\u26A0\uFE0F React Router Future Flag Warning: " + msg + ". " + ("You can use the `" + flag + "` future flag to opt-in early. ") + ("For more information, see " + link + "."));
+function logV6DeprecationWarnings(renderFuture, routerFuture) {
+  if ((renderFuture == null ? void 0 : renderFuture.v7_startTransition) === undefined) {
+    logDeprecation("v7_startTransition", "React Router will begin wrapping state updates in `React.startTransition` in v7", "https://reactrouter.com/v6/upgrading/future#v7_starttransition");
+  }
+  if ((renderFuture == null ? void 0 : renderFuture.v7_relativeSplatPath) === undefined && (!routerFuture || !routerFuture.v7_relativeSplatPath)) {
+    logDeprecation("v7_relativeSplatPath", "Relative route resolution within Splat routes is changing in v7", "https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath");
+  }
+  if (routerFuture) {
+    if (routerFuture.v7_fetcherPersist === undefined) {
+      logDeprecation("v7_fetcherPersist", "The persistence behavior of fetchers is changing in v7", "https://reactrouter.com/v6/upgrading/future#v7_fetcherpersist");
+    }
+    if (routerFuture.v7_normalizeFormMethod === undefined) {
+      logDeprecation("v7_normalizeFormMethod", "Casing of `formMethod` fields is being normalized to uppercase in v7", "https://reactrouter.com/v6/upgrading/future#v7_normalizeformmethod");
+    }
+    if (routerFuture.v7_partialHydration === undefined) {
+      logDeprecation("v7_partialHydration", "`RouterProvider` hydration behavior is changing in v7", "https://reactrouter.com/v6/upgrading/future#v7_partialhydration");
+    }
+    if (routerFuture.v7_skipActionErrorRevalidation === undefined) {
+      logDeprecation("v7_skipActionErrorRevalidation", "The revalidation behavior after 4xx/5xx `action` responses is changing in v7", "https://reactrouter.com/v6/upgrading/future#v7_skipactionerrorrevalidation");
+    }
   }
 }
 
@@ -180265,6 +181821,11 @@ function RouterProvider(_ref) {
   // Need to use a layout effect here so we are subscribed early enough to
   // pick up on any render-driven redirects/navigations (useEffect/<Navigate>)
   react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect(() => router.subscribe(setState), [router, setState]);
+  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => {
+     true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(fallbackElement == null || !router.future.v7_partialHydration, "`<RouterProvider fallbackElement>` is deprecated when using " + "`v7_partialHydration`, use a `HydrateFallback` component instead") : 0;
+    // Only log this once on initial mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   let navigator = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => {
     return {
       createHref: router.createHref,
@@ -180288,6 +181849,7 @@ function RouterProvider(_ref) {
     static: false,
     basename
   }), [router, navigator, basename]);
+  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => logV6DeprecationWarnings(future, router.future), [router, future]);
 
   // The fragment and {null} here are important!  We need them to keep React 18's
   // useId happy when we are server-rendering since we may have a <script> here
@@ -180303,23 +181865,28 @@ function RouterProvider(_ref) {
     basename: basename,
     location: state.location,
     navigationType: state.historyAction,
-    navigator: navigator
-  }, state.initialized ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(DataRoutes, {
+    navigator: navigator,
+    future: {
+      v7_relativeSplatPath: router.future.v7_relativeSplatPath
+    }
+  }, state.initialized || router.future.v7_partialHydration ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(DataRoutes, {
     routes: router.routes,
+    future: router.future,
     state: state
   }) : fallbackElement))), null);
 }
 function DataRoutes(_ref2) {
   let {
     routes,
+    future,
     state
   } = _ref2;
-  return useRoutesImpl(routes, undefined, state);
+  return useRoutesImpl(routes, undefined, state, future);
 }
 /**
  * A `<Router>` that stores all entries in memory.
  *
- * @see https://reactrouter.com/router-components/memory-router
+ * @see https://reactrouter.com/v6/router-components/memory-router
  */
 function MemoryRouter(_ref3) {
   let {
@@ -180349,12 +181916,14 @@ function MemoryRouter(_ref3) {
     v7_startTransition && startTransitionImpl ? startTransitionImpl(() => setStateImpl(newState)) : setStateImpl(newState);
   }, [setStateImpl, v7_startTransition]);
   react__WEBPACK_IMPORTED_MODULE_0__.useLayoutEffect(() => history.listen(setState), [history, setState]);
+  react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => logV6DeprecationWarnings(future), [future]);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(Router, {
     basename: basename,
     children: children,
     location: state.location,
     navigationType: state.action,
-    navigator: history
+    navigator: history,
+    future: future
   });
 }
 /**
@@ -180364,7 +181933,7 @@ function MemoryRouter(_ref3) {
  * able to use hooks. In functional components, we recommend you use the
  * `useNavigate` hook instead.
  *
- * @see https://reactrouter.com/components/navigate
+ * @see https://reactrouter.com/v6/components/navigate
  */
 function Navigate(_ref4) {
   let {
@@ -180376,7 +181945,11 @@ function Navigate(_ref4) {
   !useInRouterContext() ?  true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, // TODO: This error is probably because they somehow have 2 versions of
   // the router loaded. We can help them understand how to avoid that.
   "<Navigate> may be used only in the context of a <Router> component.") : 0 : void 0;
-   true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(!react__WEBPACK_IMPORTED_MODULE_0__.useContext(NavigationContext).static, "<Navigate> must not be used on the initial render in a <StaticRouter>. " + "This is a no-op, but you should modify your code so the <Navigate> is " + "only ever rendered in response to some user interaction or state change.") : 0;
+  let {
+    future,
+    static: isStatic
+  } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(NavigationContext);
+   true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(!isStatic, "<Navigate> must not be used on the initial render in a <StaticRouter>. " + "This is a no-op, but you should modify your code so the <Navigate> is " + "only ever rendered in response to some user interaction or state change.") : 0;
   let {
     matches
   } = react__WEBPACK_IMPORTED_MODULE_0__.useContext(RouteContext);
@@ -180387,7 +181960,7 @@ function Navigate(_ref4) {
 
   // Resolve the path outside of the effect so that when effects run twice in
   // StrictMode they navigate to the same place
-  let path = (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.resolveTo)(to, (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_getPathContributingMatches)(matches).map(match => match.pathnameBase), locationPathname, relative === "path");
+  let path = (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.resolveTo)(to, (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_getResolveToMatches)(matches, future.v7_relativeSplatPath), locationPathname, relative === "path");
   let jsonPath = JSON.stringify(path);
   react__WEBPACK_IMPORTED_MODULE_0__.useEffect(() => navigate(JSON.parse(jsonPath), {
     replace,
@@ -180399,7 +181972,7 @@ function Navigate(_ref4) {
 /**
  * Renders the child route's element, if there is one.
  *
- * @see https://reactrouter.com/components/outlet
+ * @see https://reactrouter.com/v6/components/outlet
  */
 function Outlet(props) {
   return useOutlet(props.context);
@@ -180407,7 +181980,7 @@ function Outlet(props) {
 /**
  * Declares an element that should be rendered at a certain URL path.
  *
- * @see https://reactrouter.com/components/route
+ * @see https://reactrouter.com/v6/components/route
  */
 function Route(_props) {
    true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, "A <Route> is only ever to be used as the child of <Routes> element, " + "never rendered directly. Please wrap your <Route> in a <Routes>.") : 0 ;
@@ -180419,7 +181992,7 @@ function Route(_props) {
  * router that is more specific to your environment such as a `<BrowserRouter>`
  * in web browsers or a `<StaticRouter>` for server rendering.
  *
- * @see https://reactrouter.com/router-components/router
+ * @see https://reactrouter.com/v6/router-components/router
  */
 function Router(_ref5) {
   let {
@@ -180428,7 +182001,8 @@ function Router(_ref5) {
     location: locationProp,
     navigationType = _remix_run_router__WEBPACK_IMPORTED_MODULE_1__.Action.Pop,
     navigator,
-    static: staticProp = false
+    static: staticProp = false,
+    future
   } = _ref5;
   !!useInRouterContext() ?  true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_invariant)(false, "You cannot render a <Router> inside another <Router>." + " You should never have more than one in your app.") : 0 : void 0;
 
@@ -180438,8 +182012,11 @@ function Router(_ref5) {
   let navigationContext = react__WEBPACK_IMPORTED_MODULE_0__.useMemo(() => ({
     basename,
     navigator,
-    static: staticProp
-  }), [basename, navigator, staticProp]);
+    static: staticProp,
+    future: _extends({
+      v7_relativeSplatPath: false
+    }, future)
+  }), [basename, future, navigator, staticProp]);
   if (typeof locationProp === "string") {
     locationProp = (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.parsePath)(locationProp);
   }
@@ -180481,7 +182058,7 @@ function Router(_ref5) {
  * A container for a nested tree of `<Route>` elements that renders the branch
  * that best matches the current location.
  *
- * @see https://reactrouter.com/components/routes
+ * @see https://reactrouter.com/v6/components/routes
  */
 function Routes(_ref6) {
   let {
@@ -180559,7 +182136,7 @@ class AwaitErrorBoundary extends react__WEBPACK_IMPORTED_MODULE_0__.Component {
     } else if (resolve._tracked) {
       // Already tracked promise - check contents
       promise = resolve;
-      status = promise._error !== undefined ? AwaitRenderStatus.error : promise._data !== undefined ? AwaitRenderStatus.success : AwaitRenderStatus.pending;
+      status = "_error" in promise ? AwaitRenderStatus.error : "_data" in promise ? AwaitRenderStatus.success : AwaitRenderStatus.pending;
     } else {
       // Raw (untracked) promise - track it
       status = AwaitRenderStatus.pending;
@@ -180622,7 +182199,7 @@ function ResolveAwait(_ref8) {
  * either a `<Route>` element or an array of them. Used internally by
  * `<Routes>` to create a route config from its children.
  *
- * @see https://reactrouter.com/utils/create-routes-from-children
+ * @see https://reactrouter.com/v6/utils/create-routes-from-children
  */
 function createRoutesFromChildren(children, parentPath) {
   if (parentPath === void 0) {
@@ -180691,6 +182268,17 @@ function mapRouteProperties(route) {
       Component: undefined
     });
   }
+  if (route.HydrateFallback) {
+    if (true) {
+      if (route.hydrateFallbackElement) {
+         true ? (0,_remix_run_router__WEBPACK_IMPORTED_MODULE_1__.UNSAFE_warning)(false, "You should not include both `HydrateFallback` and `hydrateFallbackElement` on your route - " + "`HydrateFallback` will be used.") : 0;
+      }
+    }
+    Object.assign(updates, {
+      hydrateFallbackElement: /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(route.HydrateFallback),
+      HydrateFallback: undefined
+    });
+  }
   if (route.ErrorBoundary) {
     if (true) {
       if (route.errorElement) {
@@ -180716,7 +182304,9 @@ function createMemoryRouter(routes, opts) {
     }),
     hydrationData: opts == null ? void 0 : opts.hydrationData,
     routes,
-    mapRouteProperties
+    mapRouteProperties,
+    dataStrategy: opts == null ? void 0 : opts.dataStrategy,
+    patchRoutesOnNavigation: opts == null ? void 0 : opts.patchRoutesOnNavigation
   }).initialize();
 }
 
@@ -201547,20 +203137,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/spin/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/EditOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UserOutlined.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! dayjs */ "./node_modules/dayjs/dayjs.min.js");
+/* harmony import */ var dayjs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(dayjs__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/layout/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/typography/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/form/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/config-provider/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/spin/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/card/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/select/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var _AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../AdminSidebar/Sidebar */ "./resources/js/components/AdminPage/AdminSidebar/Sidebar.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
@@ -201569,235 +203165,805 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
+function _possibleConstructorReturn(t, e) { if (e && ("object" == _typeof(e) || "function" == typeof e)) return e; if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined"); return _assertThisInitialized(t); }
+function _assertThisInitialized(e) { if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); return e; }
+function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
+function _getPrototypeOf(t) { return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) { return t.__proto__ || Object.getPrototypeOf(t); }, _getPrototypeOf(t); }
+function _inherits(t, e) { if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function"); t.prototype = Object.create(e && e.prototype, { constructor: { value: t, writable: !0, configurable: !0 } }), Object.defineProperty(t, "prototype", { writable: !1 }), e && _setPrototypeOf(t, e); }
+function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 
 
 
 
 
-var API_BASE_URL = "http://localhost:8000/api"; // Adjust to your Laravel API URL
 
-var AdminProfile = function AdminProfile() {
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
-    _useState2 = _slicedToArray(_useState, 2),
-    user = _useState2[0],
-    setUser = _useState2[1];
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
-    _useState4 = _slicedToArray(_useState3, 2),
-    loading = _useState4[0],
-    setLoading = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
-    _useState6 = _slicedToArray(_useState5, 2),
-    editModalVisible = _useState6[0],
-    setEditModalVisible = _useState6[1];
-  var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_2__["default"].useForm(),
-    _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
-    form = _Form$useForm2[0];
+var Header = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Header,
+  Content = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Content,
+  Footer = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Footer,
+  Sider = antd__WEBPACK_IMPORTED_MODULE_4__["default"].Sider;
+var Title = antd__WEBPACK_IMPORTED_MODULE_5__["default"].Title;
 
-  // Fetch current admin data
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    var fetchUser = /*#__PURE__*/function () {
-      var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-        var token, response, _error$response;
-        return _regeneratorRuntime().wrap(function _callee$(_context) {
-          while (1) switch (_context.prev = _context.next) {
-            case 0:
-              _context.prev = 0;
-              token = localStorage.getItem("authToken"); // Adjust based on your auth setup
-              if (token) {
-                _context.next = 4;
-                break;
-              }
-              throw new Error("No authentication token found");
-            case 4:
-              _context.next = 6;
-              return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("".concat(API_BASE_URL, "/current-user"), {
-                headers: {
-                  Authorization: "Bearer ".concat(token)
-                }
-              });
-            case 6:
-              response = _context.sent;
-              setUser(response.data);
-              _context.next = 14;
-              break;
-            case 10:
-              _context.prev = 10;
-              _context.t0 = _context["catch"](0);
-              console.error("Error fetching user:", _context.t0);
-              antd__WEBPACK_IMPORTED_MODULE_4__["default"].error(((_error$response = _context.t0.response) === null || _error$response === void 0 || (_error$response = _error$response.data) === null || _error$response === void 0 ? void 0 : _error$response.message) || "Failed to load profile");
-            case 14:
-              _context.prev = 14;
-              setLoading(false);
-              return _context.finish(14);
-            case 17:
-            case "end":
-              return _context.stop();
-          }
-        }, _callee, null, [[0, 10, 14, 17]]);
-      }));
-      return function fetchUser() {
-        return _ref.apply(this, arguments);
+// Error Boundary Component
+var ErrorBoundary = /*#__PURE__*/function (_Component) {
+  function ErrorBoundary() {
+    var _this;
+    _classCallCheck(this, ErrorBoundary);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _callSuper(this, ErrorBoundary, [].concat(args));
+    _defineProperty(_this, "state", {
+      hasError: false,
+      error: null
+    });
+    return _this;
+  }
+  _inherits(ErrorBoundary, _Component);
+  return _createClass(ErrorBoundary, [{
+    key: "render",
+    value: function render() {
+      if (this.state.hasError) {
+        var _this$state$error;
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+          style: {
+            padding: 24
+          },
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h1", {
+            children: "Something went wrong."
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+            children: ((_this$state$error = this.state.error) === null || _this$state$error === void 0 ? void 0 : _this$state$error.message) || "Unknown error"
+          })]
+        });
+      }
+      return this.props.children;
+    }
+  }], [{
+    key: "getDerivedStateFromError",
+    value: function getDerivedStateFromError(error) {
+      return {
+        hasError: true,
+        error: error
       };
-    }();
-    fetchUser();
-  }, []);
+    }
+  }]);
+}(react__WEBPACK_IMPORTED_MODULE_0__.Component);
+var AdminProfile = function AdminProfile() {
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState2 = _slicedToArray(_useState, 2),
+    collapsed = _useState2[0],
+    setCollapsed = _useState2[1];
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState4 = _slicedToArray(_useState3, 2),
+    editMode = _useState4[0],
+    setEditMode = _useState4[1];
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState6 = _slicedToArray(_useState5, 2),
+    profileData = _useState6[0],
+    setProfileData = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
+    _useState8 = _slicedToArray(_useState7, 2),
+    loading = _useState8[0],
+    setLoading = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      username: "",
+      first_name: "",
+      middle_name: "",
+      last_name: "",
+      suffix: "",
+      date_of_birth: "",
+      gender: "",
+      email: "",
+      profile_image: null
+    }),
+    _useState10 = _slicedToArray(_useState9, 2),
+    formValues = _useState10[0],
+    setFormValues = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
+    _useState12 = _slicedToArray(_useState11, 2),
+    previewImage = _useState12[0],
+    setPreviewImage = _useState12[1];
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+    _useState14 = _slicedToArray(_useState13, 2),
+    isPasswordModalVisible = _useState14[0],
+    setIsPasswordModalVisible = _useState14[1];
+  var _Form$useForm = antd__WEBPACK_IMPORTED_MODULE_6__["default"].useForm(),
+    _Form$useForm2 = _slicedToArray(_Form$useForm, 1),
+    passwordForm = _Form$useForm2[0];
+  var token = localStorage.getItem("token");
 
-  // Handle edit profile submission
-  var handleEditProfile = /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(values) {
-      var token, response, _error$response2;
-      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
+  // Fetch profile data
+  var fetchProfile = /*#__PURE__*/function () {
+    var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+      var res, formattedData, _error$response, _error$response2, _error$response3, _error$response4;
+      return _regeneratorRuntime().wrap(function _callee$(_context) {
+        while (1) switch (_context.prev = _context.next) {
           case 0:
-            _context2.prev = 0;
-            token = localStorage.getItem("authToken");
-            _context2.next = 4;
-            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].put("".concat(API_BASE_URL, "/users/").concat(user.id), values, {
+            if (token) {
+              _context.next = 4;
+              break;
+            }
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("No token found, please log in.");
+            setLoading(false);
+            return _context.abrupt("return");
+          case 4:
+            _context.prev = 4;
+            setLoading(true);
+            _context.next = 8;
+            return axios__WEBPACK_IMPORTED_MODULE_8__["default"].get("http://localhost:8000/api/admin/profile", {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
-          case 4:
-            response = _context2.sent;
-            setUser(response.data);
-            setEditModalVisible(false);
-            antd__WEBPACK_IMPORTED_MODULE_4__["default"].success("Profile updated successfully");
-            _context2.next = 14;
+          case 8:
+            res = _context.sent;
+            formattedData = _objectSpread(_objectSpread({}, res.data), {}, {
+              email: res.data.email || "",
+              date_of_birth: res.data.date_of_birth ? dayjs__WEBPACK_IMPORTED_MODULE_1___default()(res.data.date_of_birth).format("YYYY-MM-DD") : "",
+              gender: res.data.gender ? res.data.gender.charAt(0).toUpperCase() + res.data.gender.slice(1).toLowerCase() : ""
+            });
+            setProfileData(formattedData);
+            setFormValues(formattedData);
+            setPreviewImage(formattedData.profile_image ? formattedData.profile_image + "?" + new Date().getTime() : "http://localhost:8000/storage/profiles/default.png");
+            _context.next = 19;
             break;
-          case 10:
-            _context2.prev = 10;
-            _context2.t0 = _context2["catch"](0);
-            console.error("Error updating profile:", _context2.t0);
-            antd__WEBPACK_IMPORTED_MODULE_4__["default"].error(((_error$response2 = _context2.t0.response) === null || _error$response2 === void 0 || (_error$response2 = _error$response2.data) === null || _error$response2 === void 0 ? void 0 : _error$response2.message) || "Failed to update profile");
-          case 14:
+          case 15:
+            _context.prev = 15;
+            _context.t0 = _context["catch"](4);
+            console.error("Error fetching profile:", {
+              message: _context.t0.message,
+              response: (_error$response = _context.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data,
+              status: (_error$response2 = _context.t0.response) === null || _error$response2 === void 0 ? void 0 : _error$response2.status,
+              headers: (_error$response3 = _context.t0.response) === null || _error$response3 === void 0 ? void 0 : _error$response3.headers
+            });
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Failed to fetch profile: ".concat(((_error$response4 = _context.t0.response) === null || _error$response4 === void 0 || (_error$response4 = _error$response4.data) === null || _error$response4 === void 0 ? void 0 : _error$response4.message) || _context.t0.message));
+          case 19:
+            _context.prev = 19;
+            setLoading(false);
+            return _context.finish(19);
+          case 22:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee, null, [[4, 15, 19, 22]]);
+    }));
+    return function fetchProfile() {
+      return _ref.apply(this, arguments);
+    };
+  }();
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    fetchProfile();
+  }, [token]);
+  var handleInputChange = function handleInputChange(e) {
+    var _e$target = e.target,
+      name = _e$target.name,
+      value = _e$target.value;
+    setFormValues(function (prev) {
+      return _objectSpread(_objectSpread({}, prev), {}, _defineProperty({}, name, value));
+    });
+  };
+  var handleFileChange = function handleFileChange(e) {
+    if (e.target.files && e.target.files.length > 0) {
+      var file = e.target.files[0];
+      setFormValues(function (prev) {
+        return _objectSpread(_objectSpread({}, prev), {}, {
+          profile_image: file
+        });
+      });
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+  var handleEdit = function handleEdit() {
+    setEditMode(true);
+  };
+  var handleCancel = function handleCancel() {
+    setFormValues(_objectSpread({}, profileData));
+    setPreviewImage(profileData !== null && profileData !== void 0 && profileData.profile_image ? profileData.profile_image + "?" + new Date().getTime() : "http://localhost:8000/storage/profiles/default.png");
+    setEditMode(false);
+  };
+  var handleSubmit = /*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2(e) {
+      var optimisticData, formData, res, updatedData, _error$response5, _error$response6;
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            e.preventDefault();
+            optimisticData = _objectSpread({}, formValues);
+            if (optimisticData.date_of_birth) {
+              optimisticData.date_of_birth = dayjs__WEBPACK_IMPORTED_MODULE_1___default()(optimisticData.date_of_birth).format("YYYY-MM-DD");
+            }
+            if (optimisticData.gender) {
+              optimisticData.gender = optimisticData.gender.charAt(0).toUpperCase() + optimisticData.gender.slice(1).toLowerCase();
+            }
+            setProfileData(optimisticData);
+            setEditMode(false);
+            setPreviewImage(optimisticData.profile_image instanceof File ? URL.createObjectURL(optimisticData.profile_image) : optimisticData.profile_image ? optimisticData.profile_image + "?" + new Date().getTime() : "http://localhost:8000/storage/profiles/default.png");
+            _context2.prev = 7;
+            formData = new FormData();
+            Object.keys(formValues).forEach(function (key) {
+              if (key !== "profile_image") {
+                formData.append(key, formValues[key] || "");
+              }
+            });
+            if (formValues.profile_image instanceof File) {
+              formData.append("profile_image", formValues.profile_image);
+            }
+            _context2.next = 13;
+            return axios__WEBPACK_IMPORTED_MODULE_8__["default"].post("http://localhost:8000/api/admin/profile", formData, {
+              headers: {
+                Authorization: "Bearer ".concat(token),
+                "Content-Type": "multipart/form-data"
+              }
+            });
+          case 13:
+            res = _context2.sent;
+            updatedData = _objectSpread(_objectSpread({}, res.data), {}, {
+              date_of_birth: res.data.date_of_birth ? dayjs__WEBPACK_IMPORTED_MODULE_1___default()(res.data.date_of_birth).format("YYYY-MM-DD") : "",
+              gender: res.data.gender ? res.data.gender.charAt(0).toUpperCase() + res.data.gender.slice(1).toLowerCase() : ""
+            });
+            setProfileData(updatedData);
+            setFormValues(updatedData);
+            setPreviewImage(updatedData.profile_image ? updatedData.profile_image + "?" + new Date().getTime() : "http://localhost:8000/storage/profiles/default.png");
+            window.dispatchEvent(new CustomEvent("profileUpdated", {
+              detail: updatedData
+            }));
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].success("Profile updated successfully!");
+            _context2.next = 27;
+            break;
+          case 22:
+            _context2.prev = 22;
+            _context2.t0 = _context2["catch"](7);
+            console.error("Error updating profile:", (_error$response5 = _context2.t0.response) === null || _error$response5 === void 0 ? void 0 : _error$response5.data);
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error("Update failed: ".concat(((_error$response6 = _context2.t0.response) === null || _error$response6 === void 0 || (_error$response6 = _error$response6.data) === null || _error$response6 === void 0 ? void 0 : _error$response6.message) || _context2.t0.message));
+            fetchProfile();
+          case 27:
           case "end":
             return _context2.stop();
         }
-      }, _callee2, null, [[0, 10]]);
+      }, _callee2, null, [[7, 22]]);
     }));
-    return function handleEditProfile(_x) {
+    return function handleSubmit(_x) {
       return _ref2.apply(this, arguments);
     };
   }();
-
-  // Open edit modal and populate form
-  var openEditModal = function openEditModal() {
-    form.setFieldsValue({
-      username: user === null || user === void 0 ? void 0 : user.username,
-      email: (user === null || user === void 0 ? void 0 : user.email) || "" // Email may not be available from getCurrentUser
-    });
-    setEditModalVisible(true);
+  var showPasswordModal = function showPasswordModal() {
+    setIsPasswordModalVisible(true);
   };
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
-    style: {
-      padding: "24px",
-      background: "#f0f2f5",
-      minHeight: "100vh"
-    },
-    children: [loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-      style: {
-        textAlign: "center",
-        padding: "50px"
-      },
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
-        size: "large"
-      })
-    }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
-      title: "Admin Profile",
-      style: {
-        maxWidth: 600,
-        margin: "0 auto"
-      },
-      extra: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-        type: "primary",
-        icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {}),
-        onClick: openEditModal,
-        disabled: !user,
-        children: "Edit Profile"
-      }),
-      children: user ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+  var handlePasswordSubmit = /*#__PURE__*/function () {
+    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3(values) {
+      var res, _error$response7, _error$response8;
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.prev = 0;
+            _context3.next = 3;
+            return axios__WEBPACK_IMPORTED_MODULE_8__["default"].post("http://localhost:8000/api/admin/password", {
+              current_password: values.current_password,
+              password: values.password,
+              password_confirmation: values.password_confirmation
+            }, {
+              headers: {
+                Authorization: "Bearer ".concat(token)
+              }
+            });
+          case 3:
+            res = _context3.sent;
+            setIsPasswordModalVisible(false);
+            passwordForm.resetFields();
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].success(res.data.message);
+            _context3.next = 13;
+            break;
+          case 9:
+            _context3.prev = 9;
+            _context3.t0 = _context3["catch"](0);
+            console.error("Error updating password:", (_error$response7 = _context3.t0.response) === null || _error$response7 === void 0 ? void 0 : _error$response7.data);
+            antd__WEBPACK_IMPORTED_MODULE_7__["default"].error(((_error$response8 = _context3.t0.response) === null || _error$response8 === void 0 || (_error$response8 = _error$response8.data) === null || _error$response8 === void 0 ? void 0 : _error$response8.message) || "Failed to update password");
+          case 13:
+          case "end":
+            return _context3.stop();
+        }
+      }, _callee3, null, [[0, 9]]);
+    }));
+    return function handlePasswordSubmit(_x2) {
+      return _ref3.apply(this, arguments);
+    };
+  }();
+  var handlePasswordCancel = function handlePasswordCancel() {
+    setIsPasswordModalVisible(false);
+    passwordForm.resetFields();
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(ErrorBoundary, {
+      children: [loading ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
         style: {
-          textAlign: "center"
+          minHeight: "100vh",
+          background: "#f0f2f5"
         },
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_9__["default"], {
-          size: 100,
-          icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {}),
-          src: user.profile_image || null // Use profile_image if available
-          ,
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(Sider, {
+          width: 256,
           style: {
-            marginBottom: "16px"
-          }
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("h2", {
-          children: user.username
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
-          style: {
-            color: "#888"
+            minHeight: "100vh"
           },
-          children: user.email || "Email not provided"
-        })]
-      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("p", {
-        style: {
-          textAlign: "center",
-          color: "red"
-        },
-        children: "Unable to load profile. Please try again."
-      })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
-      title: "Edit Profile",
-      visible: editModalVisible,
-      onCancel: function onCancel() {
-        return setEditModalVisible(false);
-      },
-      footer: null,
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_2__["default"], {
-        form: form,
-        layout: "vertical",
-        onFinish: handleEditProfile,
-        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_2__["default"].Item, {
-          name: "username",
-          label: "Username",
-          rules: [{
-            required: true,
-            message: "Please enter a username"
-          }],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_2__["default"].Item, {
-          name: "email",
-          label: "Email",
-          rules: [{
-            required: true,
-            message: "Please enter an email"
-          }, {
-            type: "email",
-            message: "Please enter a valid email"
-          }],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_2__["default"].Item, {
-          name: "password",
-          label: "Password (leave blank to keep unchanged)",
-          rules: [{
-            min: 6,
-            message: "Password must be at least 6 characters",
-            required: false
-          }],
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"].Password, {})
-        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_2__["default"].Item, {
-          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-            type: "primary",
-            htmlType: "submit",
-            children: "Save Changes"
-          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_2__["default"], {
+            collapsed: collapsed,
+            setCollapsed: setCollapsed
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(Header, {
             style: {
-              marginLeft: "8px"
+              background: "#fff",
+              padding: "0 24px",
+              display: "flex",
+              alignItems: "center"
             },
-            onClick: function onClick() {
-              return setEditModalVisible(false);
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(Title, {
+              level: 3,
+              style: {
+                margin: 0
+              },
+              children: "Admin Profile"
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(Content, {
+            style: {
+              margin: "24px 16px",
+              padding: 24,
+              background: "#fff",
+              borderRadius: 8
             },
-            children: "Cancel"
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_10__["default"], {
+              tip: "Loading profile..."
+            })
           })]
         })]
-      })
-    })]
+      }) : !profileData ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        style: {
+          minHeight: "100vh",
+          background: "#f0f2f5"
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(Sider, {
+          width: 256,
+          style: {
+            minHeight: "100vh"
+          },
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_2__["default"], {
+            collapsed: collapsed,
+            setCollapsed: setCollapsed
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(Header, {
+            style: {
+              background: "#fff",
+              padding: "0 24px",
+              display: "flex",
+              alignItems: "center"
+            },
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(Title, {
+              level: 3,
+              style: {
+                margin: 0
+              },
+              children: "Admin Profile"
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(Content, {
+            style: {
+              margin: "24px 16px",
+              padding: 24,
+              background: "#fff",
+              borderRadius: 8
+            },
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+              children: "Unable to load profile. Please try again later."
+            })
+          })]
+        })]
+      }) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        style: {
+          minHeight: "100vh",
+          background: "#f0f2f5"
+        },
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(Sider, {
+          width: 256,
+          style: {
+            minHeight: "100vh"
+          },
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminSidebar_Sidebar__WEBPACK_IMPORTED_MODULE_2__["default"], {
+            collapsed: collapsed,
+            setCollapsed: setCollapsed
+          })
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_4__["default"], {
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(Header, {
+            style: {
+              background: "#fff",
+              padding: "0 24px",
+              display: "flex",
+              alignItems: "center"
+            },
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(Title, {
+              level: 3,
+              style: {
+                margin: 0
+              },
+              children: "Admin Profile"
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(Content, {
+            style: {
+              margin: "24px 16px",
+              padding: 24,
+              background: "#fff",
+              borderRadius: 8
+            },
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_11__["default"], {
+              title: "Profile Details",
+              bordered: false,
+              style: {
+                marginBottom: 24
+              },
+              children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                style: {
+                  textAlign: "center",
+                  marginBottom: 20
+                },
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("img", {
+                  src: previewImage,
+                  alt: "Profile",
+                  style: {
+                    width: "120px",
+                    height: "120px",
+                    objectFit: "cover",
+                    borderRadius: "50%"
+                  }
+                }, previewImage), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("h2", {
+                  children: profileData.username
+                }), !editMode && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+                    style: {
+                      marginRight: 10,
+                      backgroundColor: "#0066cc",
+                      color: "#fff"
+                    },
+                    onClick: handleEdit,
+                    children: "Edit Profile"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+                    style: {
+                      backgroundColor: "#0066cc",
+                      color: "#fff"
+                    },
+                    onClick: showPasswordModal,
+                    children: "Change Password"
+                  })]
+                })]
+              }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("form", {
+                onSubmit: handleSubmit,
+                style: {
+                  width: "100%"
+                },
+                children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                  style: {
+                    display: "flex",
+                    gap: 15,
+                    flexWrap: "wrap"
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                    style: {
+                      flex: 1
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+                      children: "Username:"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                      name: "username",
+                      value: formValues.username,
+                      onChange: handleInputChange,
+                      disabled: !editMode,
+                      style: {
+                        width: "100%",
+                        borderRadius: 4
+                      }
+                    })]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                    style: {
+                      flex: 1
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+                      children: "Email:"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                      type: "email",
+                      name: "email",
+                      value: formValues.email,
+                      onChange: handleInputChange,
+                      disabled: !editMode,
+                      style: {
+                        width: "100%",
+                        borderRadius: 4
+                      }
+                    })]
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                  style: {
+                    display: "flex",
+                    gap: 15,
+                    flexWrap: "wrap",
+                    marginTop: 15
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                    style: {
+                      flex: 1
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+                      children: "First Name:"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                      name: "first_name",
+                      value: formValues.first_name,
+                      onChange: handleInputChange,
+                      disabled: !editMode,
+                      style: {
+                        width: "100%",
+                        borderRadius: 4
+                      }
+                    })]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                    style: {
+                      flex: 1
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+                      children: "Middle Name:"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                      name: "middle_name",
+                      value: formValues.middle_name,
+                      onChange: handleInputChange,
+                      disabled: !editMode,
+                      style: {
+                        width: "100%",
+                        borderRadius: 4
+                      }
+                    })]
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                  style: {
+                    display: "flex",
+                    gap: 15,
+                    flexWrap: "wrap",
+                    marginTop: 15
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                    style: {
+                      flex: 1
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+                      children: "Last Name:"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                      name: "last_name",
+                      value: formValues.last_name,
+                      onChange: handleInputChange,
+                      disabled: !editMode,
+                      style: {
+                        width: "100%",
+                        borderRadius: 4
+                      }
+                    })]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                    style: {
+                      flex: 1
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+                      children: "Suffix:"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+                      name: "suffix",
+                      value: formValues.suffix,
+                      onChange: function onChange(value) {
+                        return setFormValues(function (prev) {
+                          return _objectSpread(_objectSpread({}, prev), {}, {
+                            suffix: value
+                          });
+                        });
+                      },
+                      disabled: !editMode,
+                      style: {
+                        width: "100%",
+                        borderRadius: 4
+                      },
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"].Option, {
+                        value: "",
+                        children: "None"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"].Option, {
+                        value: "Jr.",
+                        children: "Jr."
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"].Option, {
+                        value: "Sr.",
+                        children: "Sr."
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"].Option, {
+                        value: "II",
+                        children: "II"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"].Option, {
+                        value: "III",
+                        children: "III"
+                      })]
+                    })]
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                  style: {
+                    display: "flex",
+                    gap: 15,
+                    flexWrap: "wrap",
+                    marginTop: 15
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                    style: {
+                      flex: 1
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+                      children: "Date of Birth:"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                      type: "date",
+                      name: "date_of_birth",
+                      value: formValues.date_of_birth,
+                      onChange: handleInputChange,
+                      disabled: !editMode,
+                      style: {
+                        width: "100%",
+                        borderRadius: 4
+                      }
+                    })]
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                    style: {
+                      flex: 1
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+                      children: "Gender:"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_14__["default"], {
+                      name: "gender",
+                      value: formValues.gender || "Select Gender",
+                      onChange: function onChange(value) {
+                        return setFormValues(function (prev) {
+                          return _objectSpread(_objectSpread({}, prev), {}, {
+                            gender: value
+                          });
+                        });
+                      },
+                      disabled: !editMode,
+                      style: {
+                        width: "100%",
+                        borderRadius: 4
+                      },
+                      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"].Option, {
+                        value: "Select Gender",
+                        children: "Select Gender"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"].Option, {
+                        value: "Male",
+                        children: "Male"
+                      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_14__["default"].Option, {
+                        value: "Female",
+                        children: "Female"
+                      })]
+                    })]
+                  })]
+                }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+                  style: {
+                    display: "flex",
+                    gap: 15,
+                    flexWrap: "wrap",
+                    marginTop: 15
+                  },
+                  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                    style: {
+                      flex: 2
+                    },
+                    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("label", {
+                      children: "Profile Image:"
+                    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"], {
+                      type: "file",
+                      onChange: handleFileChange,
+                      disabled: !editMode,
+                      style: {
+                        width: "100%",
+                        padding: 5
+                      }
+                    })]
+                  })
+                }), editMode && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+                  style: {
+                    display: "flex",
+                    gap: 10,
+                    justifyContent: "center",
+                    marginTop: 15,
+                    width: "100%"
+                  },
+                  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+                    type: "primary",
+                    htmlType: "submit",
+                    style: {
+                      backgroundColor: "#4caf50",
+                      borderColor: "#4caf50"
+                    },
+                    children: "Save Changes"
+                  }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+                    style: {
+                      backgroundColor: "#ff4444",
+                      borderColor: "#ff4444",
+                      color: "#fff"
+                    },
+                    onClick: handleCancel,
+                    children: "Cancel"
+                  })]
+                })]
+              })]
+            })
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(Footer, {
+            style: {
+              textAlign: "center",
+              background: "#f0f2f5"
+            },
+            children: ["TIMELESS ADMIN \xA9", new Date().getFullYear()]
+          })]
+        })]
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+        title: "Change Password",
+        open: isPasswordModalVisible,
+        onCancel: handlePasswordCancel,
+        footer: null,
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+          form: passwordForm,
+          onFinish: handlePasswordSubmit,
+          layout: "vertical",
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+            name: "current_password",
+            label: "Current Password",
+            rules: [{
+              required: true,
+              message: "Please enter your current password"
+            }],
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"].Password, {})
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+            name: "password",
+            label: "New Password",
+            rules: [{
+              required: true,
+              message: "Please enter your new password"
+            }, {
+              min: 8,
+              message: "Password must be at least 8 characters"
+            }],
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"].Password, {})
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+            name: "password_confirmation",
+            label: "Confirm New Password",
+            dependencies: ["password"],
+            rules: [{
+              required: true,
+              message: "Please confirm your new password"
+            }, function (_ref4) {
+              var getFieldValue = _ref4.getFieldValue;
+              return {
+                validator: function validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("Passwords do not match"));
+                }
+              };
+            }],
+            children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_13__["default"].Password, {})
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+              type: "primary",
+              htmlType: "submit",
+              style: {
+                marginRight: 10
+              },
+              children: "Submit"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_12__["default"], {
+              onClick: handlePasswordCancel,
+              children: "Cancel"
+            })]
+          })]
+        })
+      })]
+    })
   });
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AdminProfile);
@@ -202400,27 +204566,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DashboardOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingCartOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UserOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/TeamOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DatabaseOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/StarOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/CreditCardOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/RollbackOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/SettingOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ProfileOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/MenuUnfoldOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/MenuFoldOutlined.js");
-/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/LogoutOutlined.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/menu/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DashboardOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ShoppingCartOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/UserOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/TeamOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/DatabaseOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/StarOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/CreditCardOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/RollbackOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/SettingOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/ProfileOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/MenuUnfoldOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/MenuFoldOutlined.js");
+/* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/LogoutOutlined.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/menu/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/modal/index.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router/dist/index.js");
 /* harmony import */ var _AccessPage_Auth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../AccessPage/Auth */ "./resources/js/components/AccessPage/Auth.js");
-/* harmony import */ var _AdminSidebar_ShopNow__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../AdminSidebar/ShopNow */ "./resources/js/components/AdminPage/AdminSidebar/ShopNow.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -202433,84 +204598,81 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 
- // adjust the path as needed
 
 var items = [{
   key: "dashboard",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_4__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_3__["default"], {}),
   label: "Dashboard",
   path: "/dashboard"
 }, {
   key: "product",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_4__["default"], {}),
   label: "Product",
   path: "/products"
 }, {
   key: "order",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_6__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__["default"], {}),
   label: "Order",
   path: "/orders"
 }, {
   key: "customer",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_7__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_6__["default"], {}),
   label: "Customer",
   path: "/customers"
 }, {
   key: "user",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_7__["default"], {}),
   label: "User",
   path: "/users"
 }, {
   key: "inventory",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_8__["default"], {}),
   label: "Inventory",
   path: "/inventory"
 }, {
   key: "reviews",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_9__["default"], {}),
   label: "Reviews",
   path: "/Reviews"
 }, {
   key: "transaction",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_10__["default"], {}),
   label: "Transaction",
   path: "/Transactions"
 }, {
   key: "return-refund",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_11__["default"], {}),
   label: "Return/Refund",
   path: "/Refund"
 }, {
   key: "admin-settings",
-  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {}),
+  icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
   label: "Admin Settings",
   children: [{
     key: "admin-profile",
-    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_14__["default"], {}),
+    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {}),
     label: "Admin Profile",
     path: "/admin-profile"
   }, {
     key: "sub-category",
-    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_13__["default"], {}),
+    icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_12__["default"], {}),
     label: "Sub Category",
     path: "/sub-category"
   }]
 }];
-var Sidebar = function Sidebar() {
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
+var Sidebar = function Sidebar(_ref) {
+  var collapsed = _ref.collapsed,
+    setCollapsed = _ref.setCollapsed;
+  var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_14__.useNavigate)();
+  var location = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_14__.useLocation)();
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
     _useState2 = _slicedToArray(_useState, 2),
-    collapsed = _useState2[0],
-    setCollapsed = _useState2[1];
+    selectedKey = _useState2[0],
+    setSelectedKey = _useState2[1];
   var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
     _useState4 = _slicedToArray(_useState3, 2),
     isLoggingOut = _useState4[0],
     setIsLoggingOut = _useState4[1];
-  var navigate = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_15__.useNavigate)();
-  var location = (0,react_router_dom__WEBPACK_IMPORTED_MODULE_15__.useLocation)();
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""),
-    _useState6 = _slicedToArray(_useState5, 2),
-    selectedKey = _useState6[0],
-    setSelectedKey = _useState6[1];
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var _findMatchingItem = function findMatchingItem(menuItems, pathname) {
       var _iterator = _createForOfIteratorHelper(menuItems),
@@ -202539,8 +204701,8 @@ var Sidebar = function Sidebar() {
   var toggleCollapsed = function toggleCollapsed() {
     setCollapsed(!collapsed);
   };
-  var handleMenuClick = function handleMenuClick(_ref) {
-    var key = _ref.key;
+  var handleMenuClick = function handleMenuClick(_ref2) {
+    var key = _ref2.key;
     var _findItemByKey = function findItemByKey(menuItems, key) {
       var _iterator2 = _createForOfIteratorHelper(menuItems),
         _step2;
@@ -202571,7 +204733,21 @@ var Sidebar = function Sidebar() {
       (0,_AccessPage_Auth__WEBPACK_IMPORTED_MODULE_1__.logout)();
     }, 1000);
   };
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+
+  // Fallback for ShopNowButton
+  var ShopNowButton;
+  try {
+    ShopNowButton = (__webpack_require__(/*! ../AdminSidebar/ShopNow */ "./resources/js/components/AdminPage/AdminSidebar/ShopNow.js")["default"]);
+  } catch (error) {
+    console.error("Failed to load ShopNowButton:", error);
+    ShopNowButton = function ShopNowButton() {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
+        type: "primary",
+        children: "Shop Now"
+      });
+    };
+  }
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
     className: "sidebar-container",
     style: {
       height: "100vh",
@@ -202579,15 +204755,15 @@ var Sidebar = function Sidebar() {
       flexDirection: "column",
       justifyContent: "space-between"
     },
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
         type: "primary",
         onClick: toggleCollapsed,
         style: {
           margin: "16px"
         },
-        children: collapsed ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_18__["default"], {})
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_19__["default"], {
+        children: collapsed ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_16__["default"], {}) : /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_17__["default"], {})
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_18__["default"], {
         selectedKeys: [selectedKey],
         mode: "inline",
         theme: "dark",
@@ -202598,7 +204774,7 @@ var Sidebar = function Sidebar() {
           borderRight: 0
         }
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)("div", {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsxs)("div", {
       className: "sidebar-footer",
       style: {
         padding: "16px",
@@ -202608,19 +204784,19 @@ var Sidebar = function Sidebar() {
         justifyContent: "center",
         alignItems: "center"
       },
-      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("div", {
+      children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
         style: {
           marginBottom: "16px"
         },
-        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_AdminSidebar_ShopNow__WEBPACK_IMPORTED_MODULE_2__["default"], {})
-      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_16__["default"], {
+        children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(ShopNowButton, {})
+      }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_15__["default"], {
         type: "text",
-        icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_20__["default"], {}),
+        icon: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ant_design_icons__WEBPACK_IMPORTED_MODULE_19__["default"], {}),
         onClick: handleLogout,
         className: "logout-button",
         children: !collapsed && "Log Out"
       })]
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(antd__WEBPACK_IMPORTED_MODULE_21__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_20__["default"], {
       visible: isLoggingOut,
       footer: null,
       closable: false,
@@ -202630,7 +204806,7 @@ var Sidebar = function Sidebar() {
         textAlign: "center",
         padding: "20px"
       },
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("p", {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("p", {
         children: "Redirecting you to login page..."
       })
     })]

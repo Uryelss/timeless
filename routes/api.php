@@ -8,6 +8,7 @@ use App\Http\Controllers\API\InventoryController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\CustomerController;
 use App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\API\PasswordController;
 use App\Http\Controllers\API\ProductViewController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\PaymentMethodController;
@@ -81,6 +82,9 @@ Route::middleware(['auth:api', 'check.role:user'])->group(function () {
 */
 Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('/admin-dashboard', fn() => response()->json(['message' => 'Welcome to the Admin Dashboard']))->name('admin.dashboard');
+    Route::get('/admin/profile', [ProfileController::class, 'show'])->name('admin.profile.show');
+    Route::post('/admin/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
+    Route::post('/admin/password', [PasswordController::class, 'update'])->name('admin.password.update');
 
     Route::prefix('sub-categories')->name('subcategories.')->group(function () {
         Route::get('/', [SubCategoryController::class, 'index'])->name('index');

@@ -18,7 +18,6 @@ import {
 import { Button, Menu, Modal } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../../AccessPage/Auth";
-import ShopNowButton from "../AdminSidebar/ShopNow"; // adjust the path as needed
 
 const items = [
     {
@@ -96,12 +95,11 @@ const items = [
     },
 ];
 
-const Sidebar = () => {
-    const [collapsed, setCollapsed] = useState(false);
-    const [isLoggingOut, setIsLoggingOut] = useState(false);
+const Sidebar = ({ collapsed, setCollapsed }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [selectedKey, setSelectedKey] = useState("");
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     useEffect(() => {
         const findMatchingItem = (menuItems, pathname) => {
@@ -149,6 +147,15 @@ const Sidebar = () => {
             logout();
         }, 1000);
     };
+
+    // Fallback for ShopNowButton
+    let ShopNowButton;
+    try {
+        ShopNowButton = require("../AdminSidebar/ShopNow").default;
+    } catch (error) {
+        console.error("Failed to load ShopNowButton:", error);
+        ShopNowButton = () => <Button type="primary">Shop Now</Button>;
+    }
 
     return (
         <div
