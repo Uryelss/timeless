@@ -173,18 +173,10 @@ const CategoryCollection = () => {
 
     const getFilteredProducts = () => {
         let filtered = products.filter((product) => {
-            const productBrand = (
-                product.brand?.name ||
-                product.brand ||
-                ""
-            )
+            const productBrand = (product.brand?.name || product.brand || "")
                 .toLowerCase()
                 .trim();
-            const productGender = (
-                product.gender?.name ||
-                product.gender ||
-                ""
-            )
+            const productGender = (product.gender?.name || product.gender || "")
                 .toLowerCase()
                 .trim();
             const productMovement = (
@@ -507,8 +499,10 @@ const CategoryCollection = () => {
                     <div
                         style={{
                             display: "flex",
-                            flexWrap: "wrap",
+                            flexWrap: "nowrap",
                             gap: "8px",
+                            flexDirection: "row",
+                            width: "90px",
                         }}
                     >
                         {renderSizeOptions(modalProduct)}
@@ -526,8 +520,9 @@ const CategoryCollection = () => {
                     style={{
                         width: "100%",
                         height: "35px",
-                        background: "black",
+                        background: "#000000",
                     }}
+                    icon={<ShoppingCartOutlined />}
                 >
                     Add to Cart
                 </Button>
@@ -571,15 +566,25 @@ const CategoryCollection = () => {
                     <div>
                         <div style={{ marginBottom: "16px" }}>
                             <h3>BRAND</h3>
-                            <div style={{ display: "flex", flexDirection: "column" }}>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                }}
+                            >
                                 {filterOptions.brand.length > 0 ? (
                                     filterOptions.brand.map((brand) => (
                                         <Checkbox
                                             key={brand}
                                             onChange={() =>
-                                                handleFilterChange("brand", brand)
+                                                handleFilterChange(
+                                                    "brand",
+                                                    brand
+                                                )
                                             }
-                                            checked={filters.brand.includes(brand)}
+                                            checked={filters.brand.includes(
+                                                brand
+                                            )}
                                             style={{ marginBottom: "8px" }}
                                         >
                                             {brand}
@@ -592,15 +597,25 @@ const CategoryCollection = () => {
                         </div>
                         <div style={{ marginBottom: "16px" }}>
                             <h3>GENDER</h3>
-                            <div style={{ display: "flex", flexDirection: "column" }}>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                }}
+                            >
                                 {filterOptions.gender.length > 0 ? (
                                     filterOptions.gender.map((gender) => (
                                         <Checkbox
                                             key={gender}
                                             onChange={() =>
-                                                handleFilterChange("gender", gender)
+                                                handleFilterChange(
+                                                    "gender",
+                                                    gender
+                                                )
                                             }
-                                            checked={filters.gender.includes(gender)}
+                                            checked={filters.gender.includes(
+                                                gender
+                                            )}
                                             style={{ marginBottom: "8px" }}
                                         >
                                             {gender}
@@ -613,15 +628,25 @@ const CategoryCollection = () => {
                         </div>
                         <div style={{ marginBottom: "16px" }}>
                             <h3>MOVEMENT</h3>
-                            <div style={{ display: "flex", flexDirection: "column" }}>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                }}
+                            >
                                 {filterOptions.movement.length > 0 ? (
                                     filterOptions.movement.map((movement) => (
                                         <Checkbox
                                             key={movement}
                                             onChange={() =>
-                                                handleFilterChange("movement", movement)
+                                                handleFilterChange(
+                                                    "movement",
+                                                    movement
+                                                )
                                             }
-                                            checked={filters.movement.includes(movement)}
+                                            checked={filters.movement.includes(
+                                                movement
+                                            )}
                                             style={{ marginBottom: "8px" }}
                                         >
                                             {movement}
@@ -634,20 +659,32 @@ const CategoryCollection = () => {
                         </div>
                         <div style={{ marginBottom: "16px" }}>
                             <h3>STRAP MATERIAL</h3>
-                            <div style={{ display: "flex", flexDirection: "column" }}>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                }}
+                            >
                                 {filterOptions.strapMaterial.length > 0 ? (
-                                    filterOptions.strapMaterial.map((material) => (
-                                        <Checkbox
-                                            key={material}
-                                            onChange={() =>
-                                                handleFilterChange("strapMaterial", material)
-                                            }
-                                            checked={filters.strapMaterial.includes(material)}
-                                            style={{ marginBottom: "8px" }}
-                                        >
-                                            {material}
-                                        </Checkbox>
-                                    ))
+                                    filterOptions.strapMaterial.map(
+                                        (material) => (
+                                            <Checkbox
+                                                key={material}
+                                                onChange={() =>
+                                                    handleFilterChange(
+                                                        "strapMaterial",
+                                                        material
+                                                    )
+                                                }
+                                                checked={filters.strapMaterial.includes(
+                                                    material
+                                                )}
+                                                style={{ marginBottom: "8px" }}
+                                            >
+                                                {material}
+                                            </Checkbox>
+                                        )
+                                    )
                                 ) : (
                                     <span>No strap materials available</span>
                                 )}
@@ -695,14 +732,22 @@ const CategoryCollection = () => {
                                 onChange={setSortBy}
                             >
                                 <Option value="default">Sort By</Option>
-                                <Option value="priceAsc">Price: Low to High</Option>
-                                <Option value="priceDesc">Price: High to Low</Option>
+                                <Option value="priceAsc">
+                                    Price: Low to High
+                                </Option>
+                                <Option value="priceDesc">
+                                    Price: High to Low
+                                </Option>
                             </Select>
                         </Space>
                         {filteredProducts.length === 0 ? (
-                            <div style={{ textAlign: "center", padding: "50px" }}>
+                            <div
+                                style={{ textAlign: "center", padding: "50px" }}
+                            >
                                 <p>No products match the selected filters.</p>
-                                <Button onClick={clearFilters}>Clear Filters</Button>
+                                <Button onClick={clearFilters}>
+                                    Clear Filters
+                                </Button>
                             </div>
                         ) : (
                             <div
@@ -733,7 +778,8 @@ const CategoryCollection = () => {
                                                         width: "250px",
                                                         height: "250px",
                                                         objectFit: "cover",
-                                                        borderRadius: "8px 8px 0 0",
+                                                        borderRadius:
+                                                            "8px 8px 0 0",
                                                     }}
                                                 />
                                             }
@@ -743,26 +789,34 @@ const CategoryCollection = () => {
                                                 title={product.product_name}
                                                 description={
                                                     <div>
-                                                        <p>Price: {product.price}</p>
+                                                        <p>
+                                                            Price:{" "}
+                                                            {product.price}
+                                                        </p>
                                                         <div
                                                             style={{
                                                                 display: "flex",
-                                                                alignItems: "center",
+                                                                alignItems:
+                                                                    "center",
                                                             }}
                                                         >
                                                             <Rate
                                                                 disabled
                                                                 value={
-                                                                    product.average_rating || 0
+                                                                    product.average_rating ||
+                                                                    0
                                                                 }
                                                                 allowHalf
                                                                 style={{
-                                                                    fontSize: "14px",
-                                                                    marginRight: "8px",
+                                                                    fontSize:
+                                                                        "14px",
+                                                                    marginRight:
+                                                                        "8px",
                                                                 }}
                                                             />
                                                             <span>
-                                                                {product.average_rating || 0}
+                                                                {product.average_rating ||
+                                                                    0}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -772,7 +826,9 @@ const CategoryCollection = () => {
                                                 type="link"
                                                 icon={
                                                     <ShoppingCartOutlined
-                                                        style={{ fontSize: "28px" }}
+                                                        style={{
+                                                            fontSize: "28px",
+                                                        }}
                                                     />
                                                 }
                                                 disabled={!isLoggedIn}
