@@ -1,4 +1,3 @@
-// File: FloatingChatMenu.js
 import React, { useState } from "react";
 import { Button, Drawer, Menu } from "antd";
 import {
@@ -6,7 +5,7 @@ import {
     PhoneOutlined,
     QuestionCircleOutlined,
 } from "@ant-design/icons";
-import ChatBox from "./ChatBox";
+import ChatBox from "./Chatbox";
 
 const FloatingChatMenu = ({ userId }) => {
     const [menuVisible, setMenuVisible] = useState(false);
@@ -74,9 +73,7 @@ const FloatingChatMenu = ({ userId }) => {
                         icon={<QuestionCircleOutlined />}
                         title="Support"
                     >
-                        <Menu.Item key="terms">
-                            Terms &amp; Conditions
-                        </Menu.Item>
+                        <Menu.Item key="terms">Terms & Conditions</Menu.Item>
                         <Menu.Item key="payment">Modes of Payment</Menu.Item>
                         <Menu.Item key="faqs">FAQs</Menu.Item>
                         <Menu.Item key="order">How to Order</Menu.Item>
@@ -115,7 +112,7 @@ const FloatingChatMenu = ({ userId }) => {
                 width={350}
             >
                 <p>
-                    <strong>Terms &amp; Conditions:</strong>{" "}
+                    <strong>Terms & Conditions:</strong>{" "}
                     <a href="/terms" target="_blank" rel="noopener noreferrer">
                         Read here
                     </a>

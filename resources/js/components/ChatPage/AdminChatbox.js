@@ -1,4 +1,3 @@
-// File: AdminChatBox.js
 import React, { useState, useEffect, useRef } from "react";
 import { Drawer, List, Input, Button, Avatar, message } from "antd";
 import axios from "axios";
@@ -10,6 +9,10 @@ const AdminChatBox = ({ visible, onClose, conversation, token }) => {
     const [newMsg, setNewMsg] = useState("");
     const [attachedImage, setAttachedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [adminProfile, setAdminProfile] = useState({
+        username: "Admin",
+        profile_image: null,
+    });
     const fileInputRef = useRef(null);
 
     // Helper to return a full URL if needed
@@ -20,14 +23,45 @@ const AdminChatBox = ({ visible, onClose, conversation, token }) => {
         return url;
     };
 
-    // Log conversation data for debugging
-    useEffect(() => {
-        if (conversation) {
-            console.log("AdminChatBox conversation:", conversation);
-        } else {
-            console.log("No conversation data available.");
+    // Fetch admin profile
+    const fetchAdminProfile = async () => {
+        if (!token) {
+            console.error("No token found for admin profile fetch");
+            message.error("Authentication token missing");
+            return;
         }
-    }, [conversation]);
+        try {
+            const response = await axios.get(
+                "http://localhost:8000/api/admin/my-profile",
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            console.log("Admin profile fetched:", response.data);
+            setAdminProfile({
+                username: response.data.username || "Admin",
+                profile_image:
+                    getFullImageUrl(response.data.profile_image) ||
+                    "https://via.placeholder.com/40?text=A",
+            });
+        } catch (error) {
+            console.error("Error fetching admin profile:", {
+                status: error.response?.status,
+                data: error.response?.data,
+                message: error.message,
+            });
+            message.error("Failed to load admin profile");
+            setAdminProfile({
+                username: "Admin",
+                profile_image: "https://via.placeholder.com/40?text=A",
+            });
+        }
+    };
+
+    // Fetch admin profile when component mounts
+    useEffect(() => {
+        fetchAdminProfile();
+    }, []);
 
     // Fetch messages when visible and conversation exists
     const fetchMessages = async () => {
@@ -48,7 +82,7 @@ const AdminChatBox = ({ visible, onClose, conversation, token }) => {
         let intervalId;
         if (visible && conversation) {
             fetchMessages();
-            intervalId = setInterval(fetchMessages, 5000); // Poll every 5 seconds
+            intervalId = setInterval(fetchMessages, 5000);
         }
         return () => {
             if (intervalId) clearInterval(intervalId);
@@ -70,9 +104,9 @@ const AdminChatBox = ({ visible, onClose, conversation, token }) => {
         }
     };
 
-    // Send a new message (with optional image)
+    // Send a new message
     const sendMessage = async () => {
-        if (!newMsg.trim() && !attachedImage) return; // Require either text or an image
+        if (!newMsg.trim() && !attachedImage) return;
         try {
             let response;
             if (attachedImage) {
@@ -146,14 +180,15 @@ const AdminChatBox = ({ visible, onClose, conversation, token }) => {
                                 <Avatar
                                     src={
                                         item.sender_type === "admin"
-                                            ? "https://via.placeholder.com/40?text=Admin"
+                                            ? adminProfile.profile_image ||
+                                              "https://via.placeholder.com/40?text=A"
                                             : profileImage
                                     }
                                 />
                             }
                             title={
                                 item.sender_type === "admin"
-                                    ? "Admin"
+                                    ? adminProfile.username
                                     : displayUsername
                             }
                             description={

@@ -210094,7 +210094,6 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-// File: AdminChatInbox.js
 
 
 
@@ -210119,33 +210118,50 @@ var AdminChatInbox = function AdminChatInbox() {
     chatVisible = _useState8[0],
     setChatVisible = _useState8[1];
   var token = localStorage.getItem("token");
+
+  // Helper to return a full URL if needed
+  var getFullImageUrl = function getFullImageUrl(url) {
+    if (!url) return null;
+    if (!url.startsWith("http")) {
+      return window.location.origin + url;
+    }
+    return url;
+  };
   var fetchInbox = /*#__PURE__*/function () {
     var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      var response;
+      var response, _error$response;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
-            _context.next = 3;
+            if (token) {
+              _context.next = 3;
+              break;
+            }
+            console.error("No token found for inbox fetch");
+            return _context.abrupt("return");
+          case 3:
+            _context.prev = 3;
+            _context.next = 6;
             return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("http://localhost:8000/api/admin/chat/inbox", {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
-          case 3:
+          case 6:
             response = _context.sent;
+            console.log("Inbox fetched:", response.data);
             setConversations(response.data);
-            _context.next = 10;
+            _context.next = 14;
             break;
-          case 7:
-            _context.prev = 7;
-            _context.t0 = _context["catch"](0);
-            console.error("Failed to fetch inbox", _context.t0);
-          case 10:
+          case 11:
+            _context.prev = 11;
+            _context.t0 = _context["catch"](3);
+            console.error("Failed to fetch inbox:", ((_error$response = _context.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context.t0.message);
+          case 14:
           case "end":
             return _context.stop();
         }
-      }, _callee, null, [[0, 7]]);
+      }, _callee, null, [[3, 11]]);
     }));
     return function fetchInbox() {
       return _ref.apply(this, arguments);
@@ -210153,7 +210169,6 @@ var AdminChatInbox = function AdminChatInbox() {
   }();
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     fetchInbox();
-    // Poll every 5 seconds for updates.
     var interval = setInterval(fetchInbox, 5000);
     return function () {
       return clearInterval(interval);
@@ -210165,8 +210180,6 @@ var AdminChatInbox = function AdminChatInbox() {
     setChatVisible(true);
     setInboxVisible(false);
   };
-
-  // Compute total unread count.
   var totalUnread = conversations.reduce(function (sum, conv) {
     return sum + (conv.unread_count || 0);
   }, 0);
@@ -210182,6 +210195,7 @@ var AdminChatInbox = function AdminChatInbox() {
       children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
         dataSource: conversations,
         renderItem: function renderItem(item) {
+          var _item$username;
           return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"].Item, {
             onClick: function onClick(e) {
               return openChat(item, e);
@@ -210190,10 +210204,10 @@ var AdminChatInbox = function AdminChatInbox() {
               avatar: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
                 count: item.unread_count,
                 children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-                  src: item.profile_image ? item.profile_image : item.username ? "https://via.placeholder.com/40?text=".concat(item.username.charAt(0)) : "https://via.placeholder.com/40?text=U"
+                  src: getFullImageUrl(item.profile_image) || "https://via.placeholder.com/40?text=".concat(((_item$username = item.username) === null || _item$username === void 0 ? void 0 : _item$username.charAt(0)) || "U")
                 })
               }),
-              title: item.username ? item.username : "Unknown",
+              title: item.username || "Unknown",
               description: item.last_message
             })
           });
@@ -210244,12 +210258,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/drawer/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/list/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
@@ -210265,7 +210279,6 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-// File: AdminChatBox.js
 
 
 
@@ -210293,6 +210306,13 @@ var AdminChatBox = function AdminChatBox(_ref) {
     _useState8 = _slicedToArray(_useState7, 2),
     imagePreview = _useState8[0],
     setImagePreview = _useState8[1];
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      username: "Admin",
+      profile_image: null
+    }),
+    _useState10 = _slicedToArray(_useState9, 2),
+    adminProfile = _useState10[0],
+    setAdminProfile = _useState10[1];
   var fileInputRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
 
   // Helper to return a full URL if needed
@@ -210303,60 +210323,111 @@ var AdminChatBox = function AdminChatBox(_ref) {
     return url;
   };
 
-  // Log conversation data for debugging
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    if (conversation) {
-      console.log("AdminChatBox conversation:", conversation);
-    } else {
-      console.log("No conversation data available.");
-    }
-  }, [conversation]);
-
-  // Fetch messages when visible and conversation exists
-  var fetchMessages = /*#__PURE__*/function () {
+  // Fetch admin profile
+  var fetchAdminProfile = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      var response;
+      var response, _error$response, _error$response2;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            if (conversation) {
-              _context.next = 2;
+            if (token) {
+              _context.next = 4;
               break;
             }
+            console.error("No token found for admin profile fetch");
+            antd__WEBPACK_IMPORTED_MODULE_3__["default"].error("Authentication token missing");
             return _context.abrupt("return");
+          case 4:
+            _context.prev = 4;
+            _context.next = 7;
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/admin/my-profile", {
+              headers: {
+                Authorization: "Bearer ".concat(token)
+              }
+            });
+          case 7:
+            response = _context.sent;
+            console.log("Admin profile fetched:", response.data);
+            setAdminProfile({
+              username: response.data.username || "Admin",
+              profile_image: getFullImageUrl(response.data.profile_image) || "https://via.placeholder.com/40?text=A"
+            });
+            _context.next = 17;
+            break;
+          case 12:
+            _context.prev = 12;
+            _context.t0 = _context["catch"](4);
+            console.error("Error fetching admin profile:", {
+              status: (_error$response = _context.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.status,
+              data: (_error$response2 = _context.t0.response) === null || _error$response2 === void 0 ? void 0 : _error$response2.data,
+              message: _context.t0.message
+            });
+            antd__WEBPACK_IMPORTED_MODULE_3__["default"].error("Failed to load admin profile");
+            setAdminProfile({
+              username: "Admin",
+              profile_image: "https://via.placeholder.com/40?text=A"
+            });
+          case 17:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee, null, [[4, 12]]);
+    }));
+    return function fetchAdminProfile() {
+      return _ref2.apply(this, arguments);
+    };
+  }();
+
+  // Fetch admin profile when component mounts
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    fetchAdminProfile();
+  }, []);
+
+  // Fetch messages when visible and conversation exists
+  var fetchMessages = /*#__PURE__*/function () {
+    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+      var response;
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            if (conversation) {
+              _context2.next = 2;
+              break;
+            }
+            return _context2.abrupt("return");
           case 2:
-            _context.prev = 2;
-            _context.next = 5;
-            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("http://localhost:8000/api/admin/chat/".concat(conversation.user_id), {
+            _context2.prev = 2;
+            _context2.next = 5;
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/admin/chat/".concat(conversation.user_id), {
               headers: {
                 Authorization: "Bearer ".concat(token)
               }
             });
           case 5:
-            response = _context.sent;
+            response = _context2.sent;
             setMessages(response.data);
-            _context.next = 13;
+            _context2.next = 13;
             break;
           case 9:
-            _context.prev = 9;
-            _context.t0 = _context["catch"](2);
-            antd__WEBPACK_IMPORTED_MODULE_4__["default"].error("Failed to load messages");
-            console.error("Error fetching messages:", _context.t0);
+            _context2.prev = 9;
+            _context2.t0 = _context2["catch"](2);
+            antd__WEBPACK_IMPORTED_MODULE_3__["default"].error("Failed to load messages");
+            console.error("Error fetching messages:", _context2.t0);
           case 13:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
-      }, _callee, null, [[2, 9]]);
+      }, _callee2, null, [[2, 9]]);
     }));
     return function fetchMessages() {
-      return _ref2.apply(this, arguments);
+      return _ref3.apply(this, arguments);
     };
   }();
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var intervalId;
     if (visible && conversation) {
       fetchMessages();
-      intervalId = setInterval(fetchMessages, 5000); // Poll every 5 seconds
+      intervalId = setInterval(fetchMessages, 5000);
     }
     return function () {
       if (intervalId) clearInterval(intervalId);
@@ -210377,22 +210448,22 @@ var AdminChatBox = function AdminChatBox(_ref) {
     }
   };
 
-  // Send a new message (with optional image)
+  // Send a new message
   var sendMessage = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+    var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
       var response, formData;
-      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
           case 0:
             if (!(!newMsg.trim() && !attachedImage)) {
-              _context2.next = 2;
+              _context3.next = 2;
               break;
             }
-            return _context2.abrupt("return");
+            return _context3.abrupt("return");
           case 2:
-            _context2.prev = 2;
+            _context3.prev = 2;
             if (!attachedImage) {
-              _context2.next = 14;
+              _context3.next = 14;
               break;
             }
             formData = new FormData();
@@ -210400,20 +210471,20 @@ var AdminChatBox = function AdminChatBox(_ref) {
             formData.append("sender_type", "admin");
             formData.append("message", newMsg);
             formData.append("image", attachedImage);
-            _context2.next = 11;
-            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/admin/chat", formData, {
+            _context3.next = 11;
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].post("http://localhost:8000/api/admin/chat", formData, {
               headers: {
                 Authorization: "Bearer ".concat(token),
                 "Content-Type": "multipart/form-data"
               }
             });
           case 11:
-            response = _context2.sent;
-            _context2.next = 17;
+            response = _context3.sent;
+            _context3.next = 17;
             break;
           case 14:
-            _context2.next = 16;
-            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/admin/chat", {
+            _context3.next = 16;
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].post("http://localhost:8000/api/admin/chat", {
               user_id: conversation.user_id,
               sender_type: "admin",
               message: newMsg
@@ -210423,27 +210494,27 @@ var AdminChatBox = function AdminChatBox(_ref) {
               }
             });
           case 16:
-            response = _context2.sent;
+            response = _context3.sent;
           case 17:
             setMessages([].concat(_toConsumableArray(messages), [response.data]));
             setNewMsg("");
             setAttachedImage(null);
             setImagePreview(null);
-            _context2.next = 27;
+            _context3.next = 27;
             break;
           case 23:
-            _context2.prev = 23;
-            _context2.t0 = _context2["catch"](2);
-            antd__WEBPACK_IMPORTED_MODULE_4__["default"].error("Failed to send message");
-            console.error("Error sending message:", _context2.t0);
+            _context3.prev = 23;
+            _context3.t0 = _context3["catch"](2);
+            antd__WEBPACK_IMPORTED_MODULE_3__["default"].error("Failed to send message");
+            console.error("Error sending message:", _context3.t0);
           case 27:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
-      }, _callee2, null, [[2, 23]]);
+      }, _callee3, null, [[2, 23]]);
     }));
     return function sendMessage() {
-      return _ref3.apply(this, arguments);
+      return _ref4.apply(this, arguments);
     };
   }();
   if (!conversation) {
@@ -210480,9 +210551,9 @@ var AdminChatBox = function AdminChatBox(_ref) {
         return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Item, {
           children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Item.Meta, {
             avatar: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
-              src: item.sender_type === "admin" ? "https://via.placeholder.com/40?text=Admin" : profileImage
+              src: item.sender_type === "admin" ? adminProfile.profile_image || "https://via.placeholder.com/40?text=A" : profileImage
             }),
-            title: item.sender_type === "admin" ? "Admin" : displayUsername,
+            title: item.sender_type === "admin" ? adminProfile.username : displayUsername,
             description: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
                 children: item.message
@@ -210552,9 +210623,9 @@ var AdminChatBox = function AdminChatBox(_ref) {
 
 /***/ }),
 
-/***/ "./resources/js/components/ChatPage/ChatBox.js":
+/***/ "./resources/js/components/ChatPage/Chatbox.js":
 /*!*****************************************************!*\
-  !*** ./resources/js/components/ChatPage/ChatBox.js ***!
+  !*** ./resources/js/components/ChatPage/Chatbox.js ***!
   \*****************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -210565,12 +210636,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/input/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/drawer/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/list/index.js");
-/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/message/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/avatar/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/drawer/index.js");
+/* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/list/index.js");
 /* harmony import */ var antd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! antd */ "./node_modules/antd/es/button/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! axios */ "./node_modules/axios/lib/axios.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
@@ -210586,7 +210657,7 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-// File: ChatBox.js
+// File: resources/js/components/ChatPage/ChatBox.js
 
 
 
@@ -210604,39 +210675,164 @@ var ChatBox = function ChatBox(_ref) {
     _useState4 = _slicedToArray(_useState3, 2),
     newMsg = _useState4[0],
     setNewMsg = _useState4[1];
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      username: "You",
+      profile_image: "https://via.placeholder.com/40?text=Y"
+    }),
     _useState6 = _slicedToArray(_useState5, 2),
-    userProfileImage = _useState6[0],
-    setUserProfileImage = _useState6[1];
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    userProfile = _useState6[0],
+    setUserProfile = _useState6[1];
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+      username: "Admin",
+      profile_image: "https://via.placeholder.com/40?text=A"
+    }),
     _useState8 = _slicedToArray(_useState7, 2),
-    attachedImage = _useState8[0],
-    setAttachedImage = _useState8[1];
+    adminProfile = _useState8[0],
+    setAdminProfile = _useState8[1];
   var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
     _useState10 = _slicedToArray(_useState9, 2),
-    imagePreview = _useState10[0],
-    setImagePreview = _useState10[1];
+    attachedImage = _useState10[0],
+    setAttachedImage = _useState10[1];
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+    _useState12 = _slicedToArray(_useState11, 2),
+    imagePreview = _useState12[0],
+    setImagePreview = _useState12[1];
   var fileInputRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
   var token = localStorage.getItem("token");
+  console.log("ChatBox props:", {
+    userId: userId,
+    token: token
+  });
 
   // Helper to return a full URL if needed
   var getFullImageUrl = function getFullImageUrl(url) {
-    if (url && !url.startsWith("http")) {
+    if (!url) return null;
+    if (!url.startsWith("http")) {
       return window.location.origin + url;
     }
     return url;
   };
 
-  // Fetch chat messages
-  var fetchMessages = /*#__PURE__*/function () {
+  // Fetch admin profile
+  var fetchAdminProfile = /*#__PURE__*/function () {
     var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      var response;
+      var response, _error$response;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
-            _context.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("http://localhost:8000/api/chat", {
+            if (token) {
+              _context.next = 4;
+              break;
+            }
+            console.error("No token found for admin profile fetch");
+            antd__WEBPACK_IMPORTED_MODULE_3__["default"].error("Authentication token missing");
+            return _context.abrupt("return");
+          case 4:
+            _context.prev = 4;
+            _context.next = 7;
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/admin/profile", {
+              headers: {
+                Authorization: "Bearer ".concat(token)
+              }
+            });
+          case 7:
+            response = _context.sent;
+            console.log("Admin profile fetched:", response.data);
+            setAdminProfile({
+              username: response.data.username || "Support Admin",
+              profile_image: getFullImageUrl(response.data.profile_image) || "https://via.placeholder.com/40?text=A"
+            });
+            _context.next = 16;
+            break;
+          case 12:
+            _context.prev = 12;
+            _context.t0 = _context["catch"](4);
+            console.error("Error fetching admin profile:", ((_error$response = _context.t0.response) === null || _error$response === void 0 ? void 0 : _error$response.data) || _context.t0.message);
+            antd__WEBPACK_IMPORTED_MODULE_3__["default"].error("Failed to load admin profile");
+          case 16:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee, null, [[4, 12]]);
+    }));
+    return function fetchAdminProfile() {
+      return _ref2.apply(this, arguments);
+    };
+  }();
+
+  // Fetch user profile
+  var fetchUserProfile = /*#__PURE__*/function () {
+    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+      var _response$data$userna, response, _error$response2;
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            if (userId) {
+              _context2.next = 4;
+              break;
+            }
+            console.error("No userId provided for user profile fetch");
+            antd__WEBPACK_IMPORTED_MODULE_3__["default"].error("User ID missing");
+            return _context2.abrupt("return");
+          case 4:
+            if (token) {
+              _context2.next = 8;
+              break;
+            }
+            console.error("No token found for user profile fetch");
+            antd__WEBPACK_IMPORTED_MODULE_3__["default"].error("Authentication token missing");
+            return _context2.abrupt("return");
+          case 8:
+            _context2.prev = 8;
+            _context2.next = 11;
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/user/".concat(userId), {
+              headers: {
+                Authorization: "Bearer ".concat(token)
+              }
+            });
+          case 11:
+            response = _context2.sent;
+            console.log("Fetched user profile:", response.data);
+            setUserProfile({
+              username: response.data.username || "You",
+              profile_image: getFullImageUrl(response.data.profile_image) || "https://via.placeholder.com/40?text=".concat(((_response$data$userna = response.data.username) === null || _response$data$userna === void 0 ? void 0 : _response$data$userna.charAt(0)) || "Y")
+            });
+            _context2.next = 20;
+            break;
+          case 16:
+            _context2.prev = 16;
+            _context2.t0 = _context2["catch"](8);
+            console.error("Error fetching user profile:", ((_error$response2 = _context2.t0.response) === null || _error$response2 === void 0 ? void 0 : _error$response2.data) || _context2.t0.message);
+            antd__WEBPACK_IMPORTED_MODULE_3__["default"].error("Failed to load user profile");
+          case 20:
+          case "end":
+            return _context2.stop();
+        }
+      }, _callee2, null, [[8, 16]]);
+    }));
+    return function fetchUserProfile() {
+      return _ref3.apply(this, arguments);
+    };
+  }();
+
+  // Fetch chat messages
+  var fetchMessages = /*#__PURE__*/function () {
+    var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+      var response, _error$response3;
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
+          case 0:
+            if (userId) {
+              _context3.next = 4;
+              break;
+            }
+            console.error("No userId provided for messages fetch");
+            antd__WEBPACK_IMPORTED_MODULE_3__["default"].error("User ID missing");
+            return _context3.abrupt("return");
+          case 4:
+            _context3.prev = 4;
+            _context3.next = 7;
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].get("http://localhost:8000/api/chat", {
               params: {
                 user_id: userId
               },
@@ -210644,65 +210840,37 @@ var ChatBox = function ChatBox(_ref) {
                 Authorization: "Bearer ".concat(token)
               }
             });
-          case 3:
-            response = _context.sent;
-            setMessages(response.data);
-            _context.next = 11;
-            break;
           case 7:
-            _context.prev = 7;
-            _context.t0 = _context["catch"](0);
-            antd__WEBPACK_IMPORTED_MODULE_4__["default"].error("Failed to load messages");
-            console.error("Error fetching messages:", _context.t0);
-          case 11:
+            response = _context3.sent;
+            console.log("Fetched messages:", response.data);
+            setMessages(response.data);
+            _context3.next = 16;
+            break;
+          case 12:
+            _context3.prev = 12;
+            _context3.t0 = _context3["catch"](4);
+            console.error("Error fetching messages:", ((_error$response3 = _context3.t0.response) === null || _error$response3 === void 0 ? void 0 : _error$response3.data) || _context3.t0.message);
+            antd__WEBPACK_IMPORTED_MODULE_3__["default"].error("Failed to load messages");
+          case 16:
           case "end":
-            return _context.stop();
+            return _context3.stop();
         }
-      }, _callee, null, [[0, 7]]);
+      }, _callee3, null, [[4, 12]]);
     }));
     return function fetchMessages() {
-      return _ref2.apply(this, arguments);
-    };
-  }();
-
-  // Fetch user profile info
-  var fetchUserProfile = /*#__PURE__*/function () {
-    var _ref3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-      var response;
-      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.prev = 0;
-            _context2.next = 3;
-            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].get("http://localhost:8000/api/user/".concat(userId), {
-              headers: {
-                Authorization: "Bearer ".concat(token)
-              }
-            });
-          case 3:
-            response = _context2.sent;
-            console.log("Fetched user profile:", response.data);
-            setUserProfileImage(response.data.profile_image);
-            _context2.next = 11;
-            break;
-          case 8:
-            _context2.prev = 8;
-            _context2.t0 = _context2["catch"](0);
-            console.error("Error fetching user profile:", _context2.t0);
-          case 11:
-          case "end":
-            return _context2.stop();
-        }
-      }, _callee2, null, [[0, 8]]);
-    }));
-    return function fetchUserProfile() {
-      return _ref3.apply(this, arguments);
+      return _ref4.apply(this, arguments);
     };
   }();
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     if (visible) {
+      console.log("ChatBox visible, fetching data...");
       fetchMessages();
       fetchUserProfile();
+      fetchAdminProfile();
+      var interval = setInterval(fetchMessages, 5000); // Poll every 5 seconds
+      return function () {
+        return clearInterval(interval);
+      };
     }
   }, [visible, userId]);
   var handleFileChange = function handleFileChange(e) {
@@ -210718,20 +210886,20 @@ var ChatBox = function ChatBox(_ref) {
     }
   };
   var sendMessage = /*#__PURE__*/function () {
-    var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-      var response, formData;
-      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-        while (1) switch (_context3.prev = _context3.next) {
+    var _ref5 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+      var response, formData, _error$response4;
+      return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+        while (1) switch (_context4.prev = _context4.next) {
           case 0:
             if (!(!newMsg.trim() && !attachedImage)) {
-              _context3.next = 2;
+              _context4.next = 2;
               break;
             }
-            return _context3.abrupt("return");
+            return _context4.abrupt("return");
           case 2:
-            _context3.prev = 2;
+            _context4.prev = 2;
             if (!attachedImage) {
-              _context3.next = 14;
+              _context4.next = 14;
               break;
             }
             formData = new FormData();
@@ -210739,20 +210907,20 @@ var ChatBox = function ChatBox(_ref) {
             formData.append("sender_type", "user");
             formData.append("message", newMsg);
             formData.append("image", attachedImage);
-            _context3.next = 11;
-            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/chat", formData, {
+            _context4.next = 11;
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].post("http://localhost:8000/api/chat", formData, {
               headers: {
                 Authorization: "Bearer ".concat(token),
                 "Content-Type": "multipart/form-data"
               }
             });
           case 11:
-            response = _context3.sent;
-            _context3.next = 17;
+            response = _context4.sent;
+            _context4.next = 17;
             break;
           case 14:
-            _context3.next = 16;
-            return axios__WEBPACK_IMPORTED_MODULE_3__["default"].post("http://localhost:8000/api/chat", {
+            _context4.next = 16;
+            return axios__WEBPACK_IMPORTED_MODULE_4__["default"].post("http://localhost:8000/api/chat", {
               user_id: userId,
               sender_type: "user",
               message: newMsg
@@ -210762,45 +210930,65 @@ var ChatBox = function ChatBox(_ref) {
               }
             });
           case 16:
-            response = _context3.sent;
+            response = _context4.sent;
           case 17:
             setMessages([].concat(_toConsumableArray(messages), [response.data]));
             setNewMsg("");
             setAttachedImage(null);
             setImagePreview(null);
-            _context3.next = 27;
+            _context4.next = 27;
             break;
           case 23:
-            _context3.prev = 23;
-            _context3.t0 = _context3["catch"](2);
-            antd__WEBPACK_IMPORTED_MODULE_4__["default"].error("Failed to send message");
-            console.error("Error sending message:", _context3.t0);
+            _context4.prev = 23;
+            _context4.t0 = _context4["catch"](2);
+            console.error("Error sending message:", ((_error$response4 = _context4.t0.response) === null || _error$response4 === void 0 ? void 0 : _error$response4.data) || _context4.t0.message);
+            antd__WEBPACK_IMPORTED_MODULE_3__["default"].error("Failed to send message");
           case 27:
           case "end":
-            return _context3.stop();
+            return _context4.stop();
         }
-      }, _callee3, null, [[2, 23]]);
+      }, _callee4, null, [[2, 23]]);
     }));
     return function sendMessage() {
-      return _ref4.apply(this, arguments);
+      return _ref5.apply(this, arguments);
     };
   }();
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
-    title: "Chat with Admin",
+  console.log("Current state:", {
+    adminProfile: adminProfile,
+    userProfile: userProfile
+  });
+
+  // Custom header with admin avatar and username
+  var headerContent = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("div", {
+    style: {
+      display: "flex",
+      alignItems: "center"
+    },
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+      src: adminProfile.profile_image,
+      style: {
+        marginRight: 10
+      }
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)("span", {
+      children: ["Chat with ", adminProfile.username]
+    })]
+  });
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    title: headerContent,
     placement: "right",
     onClose: onClose,
     visible: visible,
     width: 350,
-    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"], {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
       itemLayout: "horizontal",
       dataSource: messages,
       renderItem: function renderItem(item) {
-        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item, {
-          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_6__["default"].Item.Meta, {
-            avatar: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"], {
-              src: item.sender_type === "admin" ? "https://via.placeholder.com/40?text=Admin" : userProfileImage || "https://via.placeholder.com/40?text=You"
+        return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Item, {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_7__["default"].Item.Meta, {
+            avatar: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(antd__WEBPACK_IMPORTED_MODULE_5__["default"], {
+              src: item.sender_type === "admin" ? adminProfile.profile_image : userProfile.profile_image
             }),
-            title: item.sender_type === "admin" ? "Admin" : "You",
+            title: item.sender_type === "admin" ? adminProfile.username : userProfile.username,
             description: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.Fragment, {
               children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
                 children: item.message
@@ -210888,7 +211076,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/MessageOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/PhoneOutlined.js");
 /* harmony import */ var _ant_design_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @ant-design/icons */ "./node_modules/@ant-design/icons/es/icons/QuestionCircleOutlined.js");
-/* harmony import */ var _ChatBox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ChatBox */ "./resources/js/components/ChatPage/ChatBox.js");
+/* harmony import */ var _Chatbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Chatbox */ "./resources/js/components/ChatPage/Chatbox.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -210896,7 +211084,6 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-// File: FloatingChatMenu.js
 
 
 
@@ -210981,7 +211168,7 @@ var FloatingChatMenu = function FloatingChatMenu(_ref) {
           }, "order")]
         }, "support")]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_ChatBox__WEBPACK_IMPORTED_MODULE_1__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(_Chatbox__WEBPACK_IMPORTED_MODULE_1__["default"], {
       visible: chatVisible,
       onClose: function onClose() {
         return setChatVisible(false);

@@ -1,4 +1,4 @@
-// File: ChatBox.js
+// File: resources/js/components/ChatPage/ChatBox.js
 import React, { useState, useEffect, useRef } from "react";
 import { Drawer, Input, Button, List, Avatar, message } from "antd";
 import axios from "axios";
@@ -8,52 +8,128 @@ const { TextArea } = Input;
 const ChatBox = ({ visible, onClose, userId }) => {
     const [messages, setMessages] = useState([]);
     const [newMsg, setNewMsg] = useState("");
-    const [userProfileImage, setUserProfileImage] = useState(null);
+    const [userProfile, setUserProfile] = useState({
+        username: "You",
+        profile_image: "https://via.placeholder.com/40?text=Y",
+    });
+    const [adminProfile, setAdminProfile] = useState({
+        username: "Admin",
+        profile_image: "https://via.placeholder.com/40?text=A",
+    });
     const [attachedImage, setAttachedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const fileInputRef = useRef(null);
     const token = localStorage.getItem("token");
 
+    console.log("ChatBox props:", { userId, token });
+
     // Helper to return a full URL if needed
     const getFullImageUrl = (url) => {
-        if (url && !url.startsWith("http")) {
+        if (!url) return null;
+        if (!url.startsWith("http")) {
             return window.location.origin + url;
         }
         return url;
     };
 
+    // Fetch admin profile
+    const fetchAdminProfile = async () => {
+        if (!token) {
+            console.error("No token found for admin profile fetch");
+            message.error("Authentication token missing");
+            return;
+        }
+        try {
+            const response = await axios.get(
+                "http://localhost:8000/api/admin/profile",
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            console.log("Admin profile fetched:", response.data);
+            setAdminProfile({
+                username: response.data.username || "Support Admin",
+                profile_image:
+                    getFullImageUrl(response.data.profile_image) ||
+                    "https://via.placeholder.com/40?text=A",
+            });
+        } catch (error) {
+            console.error(
+                "Error fetching admin profile:",
+                error.response?.data || error.message
+            );
+            message.error("Failed to load admin profile");
+        }
+    };
+
+    // Fetch user profile
+    const fetchUserProfile = async () => {
+        if (!userId) {
+            console.error("No userId provided for user profile fetch");
+            message.error("User ID missing");
+            return;
+        }
+        if (!token) {
+            console.error("No token found for user profile fetch");
+            message.error("Authentication token missing");
+            return;
+        }
+        try {
+            const response = await axios.get(
+                `http://localhost:8000/api/user/${userId}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            console.log("Fetched user profile:", response.data);
+            setUserProfile({
+                username: response.data.username || "You",
+                profile_image:
+                    getFullImageUrl(response.data.profile_image) ||
+                    `https://via.placeholder.com/40?text=${
+                        response.data.username?.charAt(0) || "Y"
+                    }`,
+            });
+        } catch (error) {
+            console.error(
+                "Error fetching user profile:",
+                error.response?.data || error.message
+            );
+            message.error("Failed to load user profile");
+        }
+    };
+
     // Fetch chat messages
     const fetchMessages = async () => {
+        if (!userId) {
+            console.error("No userId provided for messages fetch");
+            message.error("User ID missing");
+            return;
+        }
         try {
             const response = await axios.get("http://localhost:8000/api/chat", {
                 params: { user_id: userId },
                 headers: { Authorization: `Bearer ${token}` },
             });
+            console.log("Fetched messages:", response.data);
             setMessages(response.data);
         } catch (error) {
-            message.error("Failed to load messages");
-            console.error("Error fetching messages:", error);
-        }
-    };
-
-    // Fetch user profile info
-    const fetchUserProfile = async () => {
-        try {
-            const response = await axios.get(
-                `http://localhost:8000/api/user/${userId}`,
-                { headers: { Authorization: `Bearer ${token}` } }
+            console.error(
+                "Error fetching messages:",
+                error.response?.data || error.message
             );
-            console.log("Fetched user profile:", response.data);
-            setUserProfileImage(response.data.profile_image);
-        } catch (error) {
-            console.error("Error fetching user profile:", error);
+            message.error("Failed to load messages");
         }
     };
 
     useEffect(() => {
         if (visible) {
+            console.log("ChatBox visible, fetching data...");
             fetchMessages();
             fetchUserProfile();
+            fetchAdminProfile();
+            const interval = setInterval(fetchMessages, 5000); // Poll every 5 seconds
+            return () => clearInterval(interval);
         }
     }, [visible, userId]);
 
@@ -99,7 +175,9 @@ const ChatBox = ({ visible, onClose, userId }) => {
                         sender_type: "user",
                         message: newMsg,
                     },
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
                 );
             }
             setMessages([...messages, response.data]);
@@ -107,14 +185,30 @@ const ChatBox = ({ visible, onClose, userId }) => {
             setAttachedImage(null);
             setImagePreview(null);
         } catch (error) {
+            console.error(
+                "Error sending message:",
+                error.response?.data || error.message
+            );
             message.error("Failed to send message");
-            console.error("Error sending message:", error);
         }
     };
 
+    console.log("Current state:", { adminProfile, userProfile });
+
+    // Custom header with admin avatar and username
+    const headerContent = (
+        <div style={{ display: "flex", alignItems: "center" }}>
+            <Avatar
+                src={adminProfile.profile_image}
+                style={{ marginRight: 10 }}
+            />
+            <span>Chat with {adminProfile.username}</span>
+        </div>
+    );
+
     return (
         <Drawer
-            title="Chat with Admin"
+            title={headerContent}
             placement="right"
             onClose={onClose}
             visible={visible}
@@ -130,14 +224,15 @@ const ChatBox = ({ visible, onClose, userId }) => {
                                 <Avatar
                                     src={
                                         item.sender_type === "admin"
-                                            ? "https://via.placeholder.com/40?text=Admin"
-                                            : userProfileImage ||
-                                              "https://via.placeholder.com/40?text=You"
+                                            ? adminProfile.profile_image
+                                            : userProfile.profile_image
                                     }
                                 />
                             }
                             title={
-                                item.sender_type === "admin" ? "Admin" : "You"
+                                item.sender_type === "admin"
+                                    ? adminProfile.username
+                                    : userProfile.username
                             }
                             description={
                                 <>

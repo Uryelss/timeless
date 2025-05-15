@@ -50,9 +50,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/shipping-methods', fn() => App\Models\ShippingMethod::all())->name('shipping.methods');
     Route::get('/my-purchases', [UserOrderController::class, 'myPurchases'])->name('user.orders.my_purchases');
     Route::get('/users/me', [UserController::class, 'getCurrentUser'])->name('users.me');
-    Route::get('/user/{id}', [UserController::class, 'show']);
+    Route::get('/user/{id}', [ChatController::class, 'getUserProfile'])->name('user.show');
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
+    Route::get('/admin/profile', [ChatController::class, 'getAdminProfile'])->name('admin.profile');
     Route::post('/return-refunds', [ReturnRefundController::class, 'store'])->name('return-refunds.store');
 });
 
@@ -82,7 +83,7 @@ Route::middleware(['auth:api', 'check.role:user'])->group(function () {
 */
 Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('/admin-dashboard', fn() => response()->json(['message' => 'Welcome to the Admin Dashboard']))->name('admin.dashboard');
-    Route::get('/admin/profile', [ProfileController::class, 'show'])->name('admin.profile.show');
+    Route::get('/admin/my-profile', [ProfileController::class, 'show'])->name('admin.profile.show'); // Changed to avoid conflict
     Route::post('/admin/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
     Route::post('/admin/password', [PasswordController::class, 'update'])->name('admin.password.update');
 
@@ -153,7 +154,6 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('/admin/chat/inbox', [ChatController::class, 'inbox'])->name('chat.inbox');
     Route::get('/admin/chat/{user_id}', [ChatController::class, 'adminConversation'])->name('chat.adminConversation');
     Route::post('/admin/chat', [ChatController::class, 'store'])->name('chat.adminStore');
-
     Route::prefix('transactions')->name('transactions.')->group(function () {
         Route::get('/', [TransactionController::class, 'index'])->name('index');
         Route::put('/{id}', [TransactionController::class, 'update'])->name('update');

@@ -1,4 +1,3 @@
-// File: AdminChatInbox.js
 import React, { useState, useEffect } from "react";
 import { Drawer, List, Avatar, Badge, Button } from "antd";
 import { MessageOutlined } from "@ant-design/icons";
@@ -12,21 +11,39 @@ const AdminChatInbox = () => {
     const [chatVisible, setChatVisible] = useState(false);
     const token = localStorage.getItem("token");
 
+    // Helper to return a full URL if needed
+    const getFullImageUrl = (url) => {
+        if (!url) return null;
+        if (!url.startsWith("http")) {
+            return window.location.origin + url;
+        }
+        return url;
+    };
+
     const fetchInbox = async () => {
+        if (!token) {
+            console.error("No token found for inbox fetch");
+            return;
+        }
         try {
             const response = await axios.get(
                 "http://localhost:8000/api/admin/chat/inbox",
-                { headers: { Authorization: `Bearer ${token}` } }
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
             );
+            console.log("Inbox fetched:", response.data);
             setConversations(response.data);
         } catch (error) {
-            console.error("Failed to fetch inbox", error);
+            console.error(
+                "Failed to fetch inbox:",
+                error.response?.data || error.message
+            );
         }
     };
 
     useEffect(() => {
         fetchInbox();
-        // Poll every 5 seconds for updates.
         const interval = setInterval(fetchInbox, 5000);
         return () => clearInterval(interval);
     }, []);
@@ -38,7 +55,6 @@ const AdminChatInbox = () => {
         setInboxVisible(false);
     };
 
-    // Compute total unread count.
     const totalUnread = conversations.reduce(
         (sum, conv) => sum + (conv.unread_count || 0),
         0
@@ -62,20 +78,18 @@ const AdminChatInbox = () => {
                                     <Badge count={item.unread_count}>
                                         <Avatar
                                             src={
-                                                item.profile_image
-                                                    ? item.profile_image
-                                                    : item.username
-                                                    ? `https://via.placeholder.com/40?text=${item.username.charAt(
-                                                          0
-                                                      )}`
-                                                    : "https://via.placeholder.com/40?text=U"
+                                                getFullImageUrl(
+                                                    item.profile_image
+                                                ) ||
+                                                `https://via.placeholder.com/40?text=${
+                                                    item.username?.charAt(0) ||
+                                                    "U"
+                                                }`
                                             }
                                         />
                                     </Badge>
                                 }
-                                title={
-                                    item.username ? item.username : "Unknown"
-                                }
+                                title={item.username || "Unknown"}
                                 description={item.last_message}
                             />
                         </List.Item>
