@@ -55,6 +55,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/chat', [ChatController::class, 'store'])->name('chat.store');
     Route::get('/admin/profile', [ChatController::class, 'getAdminProfile'])->name('admin.profile');
     Route::post('/return-refunds', [ReturnRefundController::class, 'store'])->name('return-refunds.store');
+    Route::get('/my-return-refunds', [ReturnRefundController::class, 'userRequests'])->name('return-refunds.user');
 });
 
 /*
@@ -83,7 +84,7 @@ Route::middleware(['auth:api', 'check.role:user'])->group(function () {
 */
 Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::get('/admin-dashboard', fn() => response()->json(['message' => 'Welcome to the Admin Dashboard']))->name('admin.dashboard');
-    Route::get('/admin/my-profile', [ProfileController::class, 'show'])->name('admin.profile.show'); // Changed to avoid conflict
+    Route::get('/admin/my-profile', [ProfileController::class, 'show'])->name('admin.profile.show');
     Route::post('/admin/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
     Route::post('/admin/password', [PasswordController::class, 'update'])->name('admin.password.update');
 
@@ -141,6 +142,7 @@ Route::middleware(['auth:api', 'admin'])->group(function () {
         Route::put('/{id}', [ReturnRefundController::class, 'update'])->name('update');
         Route::post('/{id}/archive', [ReturnRefundController::class, 'archive'])->name('archive');
         Route::post('/{id}/restore', [ReturnRefundController::class, 'restore'])->name('restore');
+        Route::get('/stats', [ReturnRefundController::class, 'stats'])->name('stats');
     });
 
     Route::prefix('admin/reviews')->name('admin.reviews.')->group(function () {

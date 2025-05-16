@@ -28,7 +28,8 @@ class ReturnRefundController extends Controller
             'profile' => function ($query) {
                 $query->withTrashed();
             }
-        ])->get();
+        ])->paginate(10); // Added pagination
+
         return response()->json($requests);
     }
 
@@ -209,5 +210,33 @@ class ReturnRefundController extends Controller
         return response()->json([
             'message' => 'Return/Refund request restored successfully',
         ]);
+    }
+
+    public function stats()
+    {
+        $user = Auth::user();
+        if (!$user->hasRole('admin')) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $approvedCount = ReturnRefund::where('status', 'approved')->count();
+
+        return response()->json([
+            'total_returns_refunds' => $approvedCount,
+        ]);
+    }
+
+    public function userRequests()
+    {
+        $user = Auth::user();
+        if (!$user->profile) {
+            return response()->json(['error' => 'User profile not found'], 400);
+        }
+
+        $requests = ReturnRefund::where('profile_id', $user->profile->id)
+            ->with(['order', 'profile'])
+            ->paginate(10); // Added pagination
+
+        return response()->json($requests);
     }
 }

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Profile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AdminAccountSeeder extends Seeder
 {
@@ -26,7 +27,10 @@ class AdminAccountSeeder extends Seeder
             ]
         );
 
-        // Create or update admin profile
+        // Set default image path
+        $defaultImagePath = 'profiles/default-admin.png';
+
+        // Create or update admin profile, preserving existing profile_image if set
         Profile::updateOrCreate(
             ['user_id' => $adminUser->id],
             [
@@ -36,7 +40,7 @@ class AdminAccountSeeder extends Seeder
                 'suffix' => '',
                 'gender' => 'Male',
                 'date_of_birth' => '1980-01-01',
-                'profile_image' => 'http://localhost:8000/storage/profiles/default-admin.png',
+                'profile_image' => Profile::where('user_id', $adminUser->id)->value('profile_image') ?? $defaultImagePath,
             ]
         );
 

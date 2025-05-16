@@ -197,7 +197,7 @@ const ProductOverview = () => {
         (inv) => normalizeSize(inv.size) === normalizeSize(selectedSize || "")
     );
 
-    // Function to add product to cart (Updated from second code)
+    // Function to add product to cart
     const handleAddToCart = () => {
         if (!selectedSize) {
             message.warning("Please select a size.");
@@ -380,7 +380,7 @@ const ProductOverview = () => {
                         </Paragraph>
                         <Title
                             level={3}
-                            style={{ color: "#ff4d4f", margin: 0 }}
+                            style={{ color: "#ff ❤4d4f", margin: 0 }}
                         >
                             ₱{number_format(product.price)}
                         </Title>
@@ -630,7 +630,7 @@ const ProductOverview = () => {
                             <Card
                                 bodyStyle={{
                                     padding: "24px",
-                                    backgroundColor: "#ffffff", // Light background for contrast
+                                    backgroundColor: "#ffffff",
                                     borderRadius: "8px",
                                     height: "100%",
                                 }}
@@ -640,7 +640,7 @@ const ProductOverview = () => {
                                     size="large"
                                     style={{
                                         width: "100%",
-                                        textAlign: "left ",
+                                        textAlign: "left",
                                         alignItems: "flex-start",
                                     }}
                                 >
@@ -670,7 +670,7 @@ const ProductOverview = () => {
                                             disabled
                                             value={product.average_rating || 0}
                                             allowHalf
-                                            style={{ color: "#fadb14" }} // Gold color for stars
+                                            style={{ color: "#fadb14" }}
                                         />
                                         <span
                                             style={{
@@ -697,7 +697,7 @@ const ProductOverview = () => {
                                             level={2}
                                             style={{
                                                 margin: 0,
-                                                color: "#000000", //  color for price
+                                                color: "#000000",
                                                 fontWeight: "bold",
                                             }}
                                         >
@@ -747,74 +747,102 @@ const ProductOverview = () => {
                                                                 inventory.quantity ===
                                                                     0;
                                                             return (
-                                                                <Button
+                                                                <div
                                                                     key={index}
-                                                                    onClick={() =>
-                                                                        !isOutOfStock &&
-                                                                        setSelectedSize(
-                                                                            size
-                                                                        )
-                                                                    }
-                                                                    disabled={
-                                                                        isOutOfStock
-                                                                    }
                                                                     style={{
-                                                                        width: "50px",
-                                                                        height: "50px",
-                                                                        borderRadius:
-                                                                            "8px",
-                                                                        backgroundColor:
-                                                                            selectedSize ===
-                                                                                size &&
-                                                                            !isOutOfStock
-                                                                                ? "#000000" // Black for selected
-                                                                                : isOutOfStock
-                                                                                ? "#ffffff"
-                                                                                : "#fff",
-                                                                        color:
-                                                                            selectedSize ===
-                                                                                size &&
-                                                                            !isOutOfStock
-                                                                                ? "#fff"
-                                                                                : isOutOfStock
-                                                                                ? "#fff"
-                                                                                : "#333",
-                                                                        border: `1px solid ${
-                                                                            isOutOfStock
-                                                                                ? "#ccc"
-                                                                                : "#d9d9d9"
-                                                                        }`,
                                                                         display:
                                                                             "flex",
+                                                                        flexDirection:
+                                                                            "column",
                                                                         alignItems:
                                                                             "center",
-                                                                        justifyContent:
-                                                                            "center",
-                                                                        cursor: isOutOfStock
-                                                                            ? "not-allowed"
-                                                                            : "pointer",
-                                                                        transition:
-                                                                            "all 0.3s", // Smooth hover effect
                                                                     }}
-                                                                    onMouseEnter={(
-                                                                        e
-                                                                    ) =>
-                                                                        !isOutOfStock &&
-                                                                        (e.currentTarget.style.backgroundColor =
-                                                                            "#808284")
-                                                                    }
-                                                                    onMouseLeave={(
-                                                                        e
-                                                                    ) =>
-                                                                        !isOutOfStock &&
-                                                                        selectedSize !==
-                                                                            size &&
-                                                                        (e.currentTarget.style.backgroundColor =
-                                                                            "#ffffff")
-                                                                    }
                                                                 >
-                                                                    {size}
-                                                                </Button>
+                                                                    <Button
+                                                                        onClick={() =>
+                                                                            !isOutOfStock &&
+                                                                            setSelectedSize(
+                                                                                size
+                                                                            )
+                                                                        }
+                                                                        disabled={
+                                                                            isOutOfStock
+                                                                        }
+                                                                        style={{
+                                                                            width: "50px",
+                                                                            height: "50px",
+                                                                            borderRadius:
+                                                                                "8px",
+                                                                            backgroundColor:
+                                                                                selectedSize ===
+                                                                                    size &&
+                                                                                !isOutOfStock
+                                                                                    ? "#000000"
+                                                                                    : isOutOfStock
+                                                                                    ? "#ffffff"
+                                                                                    : "#fff",
+                                                                            color:
+                                                                                selectedSize ===
+                                                                                    size &&
+                                                                                !isOutOfStock
+                                                                                    ? "#fff"
+                                                                                    : isOutOfStock
+                                                                                    ? "#ccc"
+                                                                                    : "#333",
+                                                                            border: `1px solid ${
+                                                                                isOutOfStock
+                                                                                    ? "#ccc"
+                                                                                    : "#d9d9d9"
+                                                                            }`,
+                                                                            display:
+                                                                                "flex",
+                                                                            alignItems:
+                                                                                "center",
+                                                                            justifyContent:
+                                                                                "center",
+                                                                            cursor: isOutOfStock
+                                                                                ? "not-allowed"
+                                                                                : "pointer",
+                                                                            transition:
+                                                                                "all 0.3s",
+                                                                        }}
+                                                                        onMouseEnter={(
+                                                                            e
+                                                                        ) =>
+                                                                            !isOutOfStock &&
+                                                                            (e.currentTarget.style.backgroundColor =
+                                                                                "#808284")
+                                                                        }
+                                                                        onMouseLeave={(
+                                                                            e
+                                                                        ) =>
+                                                                            !isOutOfStock &&
+                                                                            selectedSize !==
+                                                                                size &&
+                                                                            (e.currentTarget.style.backgroundColor =
+                                                                                "#ffffff")
+                                                                        }
+                                                                    >
+                                                                        {size}
+                                                                    </Button>
+                                                                    {isOutOfStock && (
+                                                                        <span
+                                                                            style={{
+                                                                                fontSize:
+                                                                                    "12px",
+                                                                                color: "#ff4d4f",
+                                                                                marginTop:
+                                                                                    "4px",
+                                                                                textAlign:
+                                                                                    "center",
+                                                                            }}
+                                                                        >
+                                                                            Out
+                                                                            of
+                                                                            Stock
+                                                                        </span>
+                                                                    )}
+                                                                </div>
                                                             );
                                                         }
                                                     )}
@@ -893,9 +921,8 @@ const ProductOverview = () => {
                                             "#ffffff")
                                     }
                                 >
-                                    <i className="fas fa-cart-plus" />{" "}
-                                    {/* FontAwesome cart icon */}
-                                    Add to Cart
+                                    <i className="fas fa-cart-plus" /> Add to
+                                    Cart
                                 </Button>
                                 <Button
                                     style={{
@@ -927,9 +954,7 @@ const ProductOverview = () => {
                                             "#000000")
                                     }
                                 >
-                                    <i className="fas fa-bolt" />{" "}
-                                    {/* FontAwesome bolt icon */}
-                                    Buy Now
+                                    <i className="fas fa-bolt" /> Buy Now
                                 </Button>
                             </Space>
                         </div>
@@ -1007,7 +1032,6 @@ const ProductOverview = () => {
                                         )}
                                         {reviews.length > 0 ? (
                                             reviews.map((review) => {
-                                                // Handle profile_image: if it's a full URL, use it; otherwise, prepend baseUrl
                                                 const avatarSrc = review.user
                                                     ?.profile?.profile_image
                                                     ? review.user.profile.profile_image.startsWith(
@@ -1046,7 +1070,7 @@ const ProductOverview = () => {
                                                                     console.log(
                                                                         `Failed to load image for review ${review.id}: ${avatarSrc}`
                                                                     );
-                                                                    return true; // Fallback to icon
+                                                                    return true;
                                                                 }}
                                                             />
                                                             <div>
@@ -1093,7 +1117,7 @@ const ProductOverview = () => {
                 </Row>
             </div>
 
-            {/*  Buy Now Modal */}
+            {/* Buy Now Modal */}
             <Modal
                 title="Buy Now"
                 visible={showQuantityModal}

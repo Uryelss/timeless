@@ -74,11 +74,18 @@ const AdminProfile = () => {
                 "http://localhost:8000/api/admin/profile",
                 {
                     headers: { Authorization: `Bearer ${token}` },
+                    cache: "no-store",
                 }
             );
+            console.log("Fetched profile data:", res.data);
             const formattedData = {
-                ...res.data,
-                email: res.data.email || "",
+                id: res.data.id ?? null,
+                user_id: res.data.user_id ?? null,
+                username: res.data.username ?? "",
+                first_name: res.data.first_name ?? "",
+                middle_name: res.data.middle_name ?? "",
+                last_name: res.data.last_name ?? "",
+                suffix: res.data.suffix ?? "",
                 date_of_birth: res.data.date_of_birth
                     ? dayjs(res.data.date_of_birth).format("YYYY-MM-DD")
                     : "",
@@ -86,7 +93,10 @@ const AdminProfile = () => {
                     ? res.data.gender.charAt(0).toUpperCase() +
                       res.data.gender.slice(1).toLowerCase()
                     : "",
+                email: res.data.email ?? "",
+                profile_image: res.data.profile_image ?? null,
             };
+            console.log("Formatted profile data:", formattedData);
             setProfileData(formattedData);
             setFormValues(formattedData);
             setPreviewImage(
@@ -106,6 +116,18 @@ const AdminProfile = () => {
                     error.response?.data?.message || error.message
                 }`
             );
+            setProfileData(null);
+            setFormValues({
+                username: "",
+                first_name: "",
+                middle_name: "",
+                last_name: "",
+                suffix: "",
+                date_of_birth: "",
+                gender: "",
+                email: "",
+                profile_image: null,
+            });
         } finally {
             setLoading(false);
         }
@@ -155,6 +177,10 @@ const AdminProfile = () => {
                 optimisticData.gender.charAt(0).toUpperCase() +
                 optimisticData.gender.slice(1).toLowerCase();
         }
+        optimisticData.email = optimisticData.email ?? "";
+        optimisticData.middle_name = optimisticData.middle_name ?? "";
+        optimisticData.suffix = optimisticData.suffix ?? "";
+        console.log("Submitting profile data:", optimisticData);
 
         setProfileData(optimisticData);
         setEditMode(false);
@@ -170,7 +196,7 @@ const AdminProfile = () => {
             const formData = new FormData();
             Object.keys(formValues).forEach((key) => {
                 if (key !== "profile_image") {
-                    formData.append(key, formValues[key] || "");
+                    formData.append(key, formValues[key] ?? "");
                 }
             });
             if (formValues.profile_image instanceof File) {
@@ -187,9 +213,16 @@ const AdminProfile = () => {
                     },
                 }
             );
+            console.log("Update response:", res.data);
 
             const updatedData = {
-                ...res.data,
+                id: res.data.id ?? null,
+                user_id: res.data.user_id ?? null,
+                username: res.data.username ?? "",
+                first_name: res.data.first_name ?? "",
+                middle_name: res.data.middle_name ?? "",
+                last_name: res.data.last_name ?? "",
+                suffix: res.data.suffix ?? "",
                 date_of_birth: res.data.date_of_birth
                     ? dayjs(res.data.date_of_birth).format("YYYY-MM-DD")
                     : "",
@@ -197,7 +230,10 @@ const AdminProfile = () => {
                     ? res.data.gender.charAt(0).toUpperCase() +
                       res.data.gender.slice(1).toLowerCase()
                     : "",
+                email: res.data.email ?? "",
+                profile_image: res.data.profile_image ?? null,
             };
+            console.log("Updated formatted data:", updatedData);
             setProfileData(updatedData);
             setFormValues(updatedData);
             setPreviewImage(
@@ -432,7 +468,7 @@ const AdminProfile = () => {
                                                 <label>Username:</label>
                                                 <Input
                                                     name="username"
-                                                    value={formValues.username}
+                                                    value={formValues.username ?? ""}
                                                     onChange={handleInputChange}
                                                     disabled={!editMode}
                                                     style={{
@@ -446,7 +482,7 @@ const AdminProfile = () => {
                                                 <Input
                                                     type="email"
                                                     name="email"
-                                                    value={formValues.email}
+                                                    value={formValues.email ?? ""}
                                                     onChange={handleInputChange}
                                                     disabled={!editMode}
                                                     style={{
@@ -469,9 +505,7 @@ const AdminProfile = () => {
                                                 <label>First Name:</label>
                                                 <Input
                                                     name="first_name"
-                                                    value={
-                                                        formValues.first_name
-                                                    }
+                                                    value={formValues.first_name ?? ""}
                                                     onChange={handleInputChange}
                                                     disabled={!editMode}
                                                     style={{
@@ -484,9 +518,7 @@ const AdminProfile = () => {
                                                 <label>Middle Name:</label>
                                                 <Input
                                                     name="middle_name"
-                                                    value={
-                                                        formValues.middle_name
-                                                    }
+                                                    value={formValues.middle_name ?? ""}
                                                     onChange={handleInputChange}
                                                     disabled={!editMode}
                                                     style={{
@@ -509,7 +541,7 @@ const AdminProfile = () => {
                                                 <label>Last Name:</label>
                                                 <Input
                                                     name="last_name"
-                                                    value={formValues.last_name}
+                                                    value={formValues.last_name ?? ""}
                                                     onChange={handleInputChange}
                                                     disabled={!editMode}
                                                     style={{
@@ -522,12 +554,12 @@ const AdminProfile = () => {
                                                 <label>Suffix:</label>
                                                 <Select
                                                     name="suffix"
-                                                    value={formValues.suffix}
+                                                    value={formValues.suffix ?? ""}
                                                     onChange={(value) =>
                                                         setFormValues(
                                                             (prev) => ({
                                                                 ...prev,
-                                                                suffix: value,
+                                                                suffix: value ?? "",
                                                             })
                                                         )
                                                     }
@@ -569,9 +601,7 @@ const AdminProfile = () => {
                                                 <Input
                                                     type="date"
                                                     name="date_of_birth"
-                                                    value={
-                                                        formValues.date_of_birth
-                                                    }
+                                                    value={formValues.date_of_birth ?? ""}
                                                     onChange={handleInputChange}
                                                     disabled={!editMode}
                                                     style={{
@@ -584,10 +614,7 @@ const AdminProfile = () => {
                                                 <label>Gender:</label>
                                                 <Select
                                                     name="gender"
-                                                    value={
-                                                        formValues.gender ||
-                                                        "Select Gender"
-                                                    }
+                                                    value={formValues.gender ?? "Select Gender"}
                                                     onChange={(value) =>
                                                         setFormValues(
                                                             (prev) => ({

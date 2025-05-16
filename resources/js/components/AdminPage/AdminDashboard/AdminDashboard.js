@@ -70,8 +70,11 @@ const AdminDashboard = () => {
             fetch("http://localhost:8000/api/customers", {
                 headers: { Authorization: `Bearer ${authToken}` },
             }).then((res) => res.json()),
+            fetch("http://localhost:8000/api/return-refunds/stats", {
+                headers: { Authorization: `Bearer ${authToken}` },
+            }).then((res) => res.json()),
         ])
-            .then(([orders, products, customers]) => {
+            .then(([orders, products, customers, returnRefundStats]) => {
                 const totalOrders = orders.length;
                 const completedOrders = orders.filter(
                     (o) => o.order_status === "completed"
@@ -89,6 +92,7 @@ const AdminDashboard = () => {
                 );
                 const usersCount = customers.length;
                 const totalProducts = products.length;
+                const totalReturnsRefunds = returnRefundStats.total_returns_refunds || 0;
 
                 setStatsData([
                     {
@@ -121,6 +125,11 @@ const AdminDashboard = () => {
                         title: "Total Products",
                         value: totalProducts,
                         color: "#f39c12",
+                    },
+                    {
+                        title: "Total Returns/Refunds",
+                        value: totalReturnsRefunds,
+                        color: "#d35400",
                     },
                 ]);
 
