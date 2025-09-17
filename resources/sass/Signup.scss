@@ -1,0 +1,212 @@
+@font-face {
+    font-family: "LEMON MILK";
+    src: url("/fonts/LEMONMILK-MediumItalic.otf") format("opentype");
+    font-weight: 700;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Montserrat";
+    src: url("/fonts/Montserrat-Regular.ttf") format("truetype");
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Montserrat";
+    src: url("/fonts/Montserrat-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+.Signup {
+    width: 100vw;
+    margin: 0;
+    height: 100vh; /* Fixed height to viewport */
+    overflow: hidden; /* Prevent scrolling */
+    position: relative;
+    box-sizing: border-box;
+    background: url("/1 1.svg") no-repeat center center/cover; /* Background image for the page */
+    background-size: cover; /* Ensure the image fits the full page */
+    background-position: center; /* Center the image */
+    background-attachment: fixed; /* Keep background fixed */
+
+    .main-content {
+        width: 100%;
+        max-width: 1285px;
+        margin: 0 auto;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%; /* Fill the parent height */
+        overflow: hidden; /* Prevent scrolling in main-content */
+
+        .signup-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            width: 100%;
+            box-sizing: border-box;
+            height: 100%; /* Fill the parent height */
+            overflow: hidden; /* Prevent scrolling in section */
+
+            .signup-modal {
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                padding: 30px;
+                max-width: 500px;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                max-height: 80vh; /* Limit modal height to 80% of viewport */
+                overflow-y: auto; /* Allow scrolling within modal if content overflows */
+
+                h1 {
+                    font-size: 48px;
+                    font-family: "LEMON MILK", sans-serif;
+                    font-weight: 700;
+                    font-style: italic;
+                    color: #333333; /* Dark gray for text */
+                    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+                    margin-bottom: 40px;
+                }
+
+                .signup-form {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 20px;
+                    width: 100%;
+
+                    .signup-input {
+                        width: 100%;
+                        padding: 12px;
+                        font-size: 16px;
+                        font-family: "Montserrat", sans-serif;
+                        font-weight: 300;
+                        border: none; /* No borders as requested */
+                        border-radius: 5px;
+                        background: rgba(255, 255, 255, 0.9);
+                        outline: none;
+                        transition: background-color 0.3s;
+
+                        &:focus {
+                            background-color: rgba(
+                                255,
+                                255,
+                                255,
+                                1
+                            ); /* Slight background change on focus */
+                        }
+                    }
+
+                    .signup-button {
+                        background: #151414;
+                        outline: 1px solid #333333; /* Dark gray outline */
+                        color: white;
+                        font-size: 16px; /* Standard font size for buttons */
+                        font-family: "Montserrat", sans-serif;
+                        font-weight: 400;
+                        padding: 12px 24px; /* Standard padding ratio */
+                        border: none;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Reduced shadow */
+                        transition: background 0.3s;
+
+                        &:hover {
+                            background: #2a2a2a;
+                        }
+
+                        &:focus {
+                            outline: 2px solid #555555; /* Darker gray for focus */
+                            outline-offset: 2px;
+                        }
+                    }
+
+                    .login-link {
+                        font-size: 16px;
+                        font-family: "Montserrat", sans-serif;
+                        font-weight: 400;
+                        color: #333333; /* Dark gray for link */
+                        text-decoration: underline;
+                        cursor: pointer;
+                        transition: color 0.3s;
+
+                        &:hover {
+                            color: #555555; /* Darker gray for hover */
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @media (max-width: 768px) {
+        .main-content {
+            .signup-section {
+                .signup-modal {
+                    max-width: 400px;
+                    padding: 20px;
+
+                    h1 {
+                        font-size: 36px;
+                    }
+
+                    .signup-form {
+                        .signup-input {
+                            font-size: 14px;
+                            padding: 10px;
+                        }
+
+                        .signup-button {
+                            font-size: 14px;
+                            padding: 10px 20px;
+                        }
+
+                        .login-link {
+                            font-size: 14px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @media (max-width: 480px) {
+        .main-content {
+            .signup-section {
+                .signup-modal {
+                    max-width: 300px;
+                    padding: 15px;
+
+                    h1 {
+                        font-size: 28px;
+                    }
+
+                    .signup-form {
+                        .signup-input {
+                            font-size: 12px;
+                            padding: 8px;
+                        }
+
+                        .signup-button {
+                            font-size: 12px;
+                            padding: 8px 16px;
+                        }
+
+                        .login-link {
+                            font-size: 12px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

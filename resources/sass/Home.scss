@@ -1,0 +1,482 @@
+@font-face {
+    font-family: "LEMON MILK";
+    src: url("/fonts/LEMONMILK-MediumItalic.otf") format("opentype");
+    font-weight: 700;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Montserrat";
+    src: url("/fonts/Montserrat-Regular.ttf") format("truetype");
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Montserrat";
+    src: url("/fonts/Montserrat-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+.home {
+    width: 100vw;
+    margin: 0;
+    min-height: 100vh; /* Allow growth with content */
+    position: relative;
+    box-sizing: border-box;
+    background: url("/bg.svg") no-repeat center center/cover; /* Use bg.svg as background */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Fixed background for a static feel */
+    color: #333333; /* Dark gray text */
+    font-family: "Montserrat", sans-serif;
+
+    .main-content {
+        width: 100%;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 20px 0;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(
+                255,
+                255,
+                255,
+                0.9
+            ); /* Semi-transparent white overlay */
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+            h1 {
+                font-family: "LEMON MILK", sans-serif;
+                font-size: 48px;
+                font-weight: 700;
+                font-style: italic;
+                margin: 0;
+                line-height: 1.2;
+
+                .text-part1 {
+                    color: #333333;
+                }
+
+                .text-part2 {
+                    color: #555555; /* Darker gray for comma */
+                }
+
+                .text-part3 {
+                    color: #333333;
+                }
+            }
+
+            .adopt-button {
+                margin-top: 20px;
+                background: #151414;
+                color: white;
+                font-size: 16px;
+                font-family: "Montserrat", sans-serif;
+                font-weight: 400;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                transition: background 0.3s;
+
+                &:hover {
+                    background: #2a2a2a;
+                }
+
+                &:focus {
+                    outline: 2px solid #555555;
+                    outline-offset: 2px;
+                }
+            }
+        }
+
+        .ways-section {
+            padding: 40px 20px;
+            background: rgba(
+                255,
+                255,
+                255,
+                0.9
+            ); /* Semi-transparent white overlay */
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+            .ways-title {
+                font-size: 32px;
+                font-family: "LEMON MILK", sans-serif;
+                font-weight: 700;
+                font-style: italic;
+                margin-bottom: 20px;
+                color: #333333;
+            }
+
+            .ways-content {
+                display: flex;
+                justify-content: space-around;
+                gap: 20px;
+                flex-wrap: wrap;
+
+                .way-item {
+                    flex: 1;
+                    min-width: 250px;
+                    text-align: center;
+                    padding: 20px;
+                    background: white;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+
+                    .way-image {
+                        width: 100px;
+                        height: auto;
+                        margin-bottom: 10px;
+                    }
+
+                    h3 {
+                        font-size: 20px;
+                        margin: 10px 0;
+                    }
+
+                    p {
+                        font-size: 14px;
+                        color: #555555;
+                    }
+                }
+            }
+        }
+
+        .product-section {
+            padding: 40px 20px;
+            background: rgba(
+                255,
+                255,
+                255,
+                0.9
+            ); /* Semi-transparent white overlay */
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+            .product-title {
+                font-size: 32px;
+                font-family: "LEMON MILK", sans-serif;
+                font-weight: 700;
+                font-style: italic;
+                margin-bottom: 20px;
+                color: #333333;
+            }
+
+            .product-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+                margin-bottom: 20px;
+
+                .product-card {
+                    background: white;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                    padding: 15px;
+                    text-align: center;
+
+                    .product-image {
+                        width: 100%;
+                        height: auto;
+                        border-radius: 5px;
+                    }
+
+                    h3 {
+                        font-size: 18px;
+                        margin: 10px 0;
+                    }
+
+                    p {
+                        font-size: 14px;
+                        color: #555555;
+                    }
+                }
+            }
+
+            .see-all-button {
+                background: #151414;
+                color: white;
+                font-size: 16px;
+                font-family: "Montserrat", sans-serif;
+                font-weight: 400;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                transition: background 0.3s;
+
+                &:hover {
+                    background: #2a2a2a;
+                }
+
+                &:focus {
+                    outline: 2px solid #555555;
+                    outline-offset: 2px;
+                }
+            }
+        }
+
+        .volunteer-section {
+            padding: 40px 20px;
+            background: rgba(
+                255,
+                255,
+                255,
+                0.9
+            ); /* Semi-transparent white overlay */
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+
+            .volunteer-title {
+                font-size: 32px;
+                font-family: "LEMON MILK", sans-serif;
+                font-weight: 700;
+                font-style: italic;
+                margin-bottom: 20px;
+                color: #333333;
+            }
+
+            .volunteer-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+
+                .volunteer-image {
+                    width: 300px;
+                    height: auto;
+                    border-radius: 5px;
+                }
+
+                p {
+                    font-size: 16px;
+                    color: #555555;
+                    max-width: 600px;
+                }
+
+                .join-volunteer-button {
+                    background: #151414;
+                    color: white;
+                    font-size: 16px;
+                    font-family: "Montserrat", sans-serif;
+                    font-weight: 400;
+                    padding: 12px 24px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                    transition: background 0.3s;
+
+                    &:hover {
+                        background: #2a2a2a;
+                    }
+
+                    &:focus {
+                        outline: 2px solid #555555;
+                        outline-offset: 2px;
+                    }
+                }
+            }
+        }
+    }
+
+    @media (max-width: 768px) {
+        .main-content {
+            padding: 15px 0;
+            gap: 30px;
+
+            .hero {
+                padding: 40px 15px;
+
+                h1 {
+                    font-size: 36px;
+                }
+
+                .adopt-button {
+                    font-size: 14px;
+                    padding: 10px 20px;
+                }
+            }
+
+            .ways-section {
+                padding: 30px 15px;
+
+                .ways-title {
+                    font-size: 28px;
+                }
+
+                .ways-content .way-item {
+                    min-width: 200px;
+                    padding: 15px;
+
+                    .way-image {
+                        width: 80px;
+                    }
+
+                    h3 {
+                        font-size: 18px;
+                    }
+
+                    p {
+                        font-size: 12px;
+                    }
+                }
+            }
+
+            .product-section {
+                padding: 30px 15px;
+
+                .product-title {
+                    font-size: 28px;
+                }
+
+                .product-container .product-card {
+                    padding: 10px;
+
+                    h3 {
+                        font-size: 16px;
+                    }
+
+                    p {
+                        font-size: 12px;
+                    }
+                }
+
+                .see-all-button {
+                    font-size: 14px;
+                    padding: 10px 20px;
+                }
+            }
+
+            .volunteer-section {
+                padding: 30px 15px;
+
+                .volunteer-title {
+                    font-size: 28px;
+                }
+
+                .volunteer-content {
+                    .volunteer-image {
+                        width: 250px;
+                    }
+
+                    p {
+                        font-size: 14px;
+                    }
+
+                    .join-volunteer-button {
+                        font-size: 14px;
+                        padding: 10px 20px;
+                    }
+                }
+            }
+        }
+    }
+
+    @media (max-width: 480px) {
+        .main-content {
+            padding: 10px 0;
+            gap: 20px;
+
+            .hero {
+                padding: 30px 10px;
+
+                h1 {
+                    font-size: 28px;
+                }
+
+                .adopt-button {
+                    font-size: 12px;
+                    padding: 8px 16px;
+                }
+            }
+
+            .ways-section {
+                padding: 20px 10px;
+
+                .ways-title {
+                    font-size: 24px;
+                }
+
+                .ways-content .way-item {
+                    min-width: 150px;
+                    padding: 10px;
+
+                    .way-image {
+                        width: 60px;
+                    }
+
+                    h3 {
+                        font-size: 16px;
+                    }
+
+                    p {
+                        font-size: 10px;
+                    }
+                }
+            }
+
+            .product-section {
+                padding: 20px 10px;
+
+                .product-title {
+                    font-size: 24px;
+                }
+
+                .product-container .product-card {
+                    padding: 8px;
+
+                    h3 {
+                        font-size: 14px;
+                    }
+
+                    p {
+                        font-size: 10px;
+                    }
+                }
+
+                .see-all-button {
+                    font-size: 12px;
+                    padding: 8px 16px;
+                }
+            }
+
+            .volunteer-section {
+                padding: 20px 10px;
+
+                .volunteer-title {
+                    font-size: 24px;
+                }
+
+                .volunteer-content {
+                    .volunteer-image {
+                        width: 200px;
+                    }
+
+                    p {
+                        font-size: 12px;
+                    }
+
+                    .join-volunteer-button {
+                        font-size: 12px;
+                        padding: 8px 16px;
+                    }
+                }
+            }
+        }
+    }
+}
